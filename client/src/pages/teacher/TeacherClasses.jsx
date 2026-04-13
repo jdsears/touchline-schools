@@ -4,7 +4,13 @@ import { teachingGroupService } from '../../services/api'
 import { GraduationCap, Plus, Search, Users, BookOpen, X, ChevronRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const KEY_STAGES = { 7: 'KS3', 8: 'KS3', 9: 'KS3', 10: 'KS4', 11: 'KS4', 12: 'KS5', 13: 'KS5' }
+const KEY_STAGES = {
+  2: 'KS1', 3: 'KS1',
+  4: 'KS2', 5: 'KS2', 6: 'KS2',
+  7: 'KS3', 8: 'KS3', 9: 'KS3',
+  10: 'KS4', 11: 'KS4',
+  12: 'KS5', 13: 'KS5',
+}
 
 const currentAcademicYear = () => {
   const now = new Date()
@@ -129,7 +135,7 @@ export default function TeacherClasses() {
                     onChange={e => setForm({ ...form, year_group: e.target.value })}
                     className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
                   >
-                    {[7, 8, 9, 10, 11, 12, 13].map(y => (
+                    {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(y => (
                       <option key={y} value={y}>Year {y} ({KEY_STAGES[y]})</option>
                     ))}
                   </select>

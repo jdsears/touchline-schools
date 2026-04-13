@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import dotenv from 'dotenv'
+import { getSportFramework, getSportAgeGuidance, getSportGoverningBody, SUPPORTED_SPORTS } from './sportKnowledge.js'
 
 dotenv.config()
 
@@ -1327,16 +1328,26 @@ export async function sendChatMessage(message, context = {}, conversationHistory
     // Build the system prompt with context
     let systemPrompt = systemPrompts.general
 
+    // Determine the sport context (from team, explicit context, or default to football)
+    const sport = context.sport || context.team?.sport || 'football'
+
+    // Inject sport-specific development framework
+    const sportFramework = getSportFramework(sport)
+    if (sportFramework) {
+      systemPrompt += `\n\n${sportFramework}`
+    }
+
     if (context.team) {
       const teamFormat = context.team.teamFormat || 11
       systemPrompt += `\n\nTeam Context:
 - Team: ${context.team.name}
+- Sport: ${sport}
 - Age Group: ${context.team.ageGroup}
 - Game Format: ${teamFormat}-a-side
 - Formation: ${context.team.formation || (teamFormat === 9 ? '3-3-2' : '4-3-3')}
 - Squad Size: ${context.squadSize || 'Unknown'}`
 
-      if (teamFormat !== 11) {
+      if (sport === 'football' && teamFormat !== 11) {
         systemPrompt += `\n\nIMPORTANT: This team plays ${teamFormat}-a-side football. All tactical advice, formations, training sessions, and drills MUST be appropriate for ${teamFormat}-a-side. ${teamFormat === 9 ? 'Use 9-a-side formations (e.g. 3-3-2, 3-2-3, 2-4-2, 3-1-3-1). The pitch is smaller, there are 8 outfield pupils + 1 GK, no offside in own half, and retreating lines may apply.' : teamFormat === 7 ? 'Use 7-a-side formations (e.g. 2-3-1, 3-2-1, 2-1-2-1). The pitch is much smaller, there are 6 outfield pupils + 1 GK, no offside, and rolling subs apply.' : teamFormat === 5 ? 'Use 5-a-side/futsal formations (e.g. 1-2-1, 2-1-1, 2-2). Tiny pitch, 4 outfield + 1 GK, no offside, fast transitions are key.' : ''} Do NOT suggest 11-a-side formations or tactics.`
       }
 
@@ -1345,13 +1356,28 @@ export async function sendChatMessage(message, context = {}, conversationHistory
       }
 
       if (context.team.coachingPhilosophy) {
-        systemPrompt += `\n\nCOACHING PHILOSOPHY:\nThe coach has described their coaching philosophy as: "${context.team.coachingPhilosophy}"\nTailor your advice, suggestions, and session designs to align with this philosophy. Respect the coach's approach and values.`
+        systemPrompt += `\n\nCOACHING PHILOSOPHY:\nThe teacher has described their coaching philosophy as: "${context.team.coachingPhilosophy}"\nTailor your advice, suggestions, and session designs to align with this philosophy. Respect the teacher's approach and values.`
       }
 
-      // Inject age-group-specific FA guidance
-      const ageGuidance = getAgeGroupGuidance(context.team.ageGroup)
-      if (ageGuidance) {
-        systemPrompt += `\n\n${ageGuidance}`
+      // Inject age-group-specific sport guidance (NGB-aligned)
+      const yearGroup = context.team.yearGroup || parseInt(context.team.ageGroup?.replace(/\D/g, '')) || null
+      if (yearGroup) {
+        const sportAgeGuidance = getSportAgeGuidance(sport, yearGroup)
+        if (sportAgeGuidance) {
+          systemPrompt += `\n\n${sportAgeGuidance}`
+        }
+      } else {
+        // Fallback to existing football-specific guidance
+        const ageGuidance = getAgeGroupGuidance(context.team.ageGroup)
+        if (ageGuidance) {
+          systemPrompt += `\n\n${ageGuidance}`
+        }
+      }
+
+      // Remind the AI which sport we are talking about
+      if (sport !== 'football') {
+        const gb = getSportGoverningBody(sport)
+        systemPrompt += `\n\nIMPORTANT: This conversation is about ${sport.toUpperCase()}, not football. All advice, training sessions, drills, and tactical guidance MUST be specific to ${sport}. Reference ${gb} guidelines where appropriate. Do NOT give football-specific advice.`
       }
     }
 

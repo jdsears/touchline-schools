@@ -20,7 +20,13 @@ export default function TeacherCurriculum() {
       </div>
 
       {/* Key Stage tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button className="px-4 py-2 rounded-lg bg-navy-800 text-navy-400 hover:text-white text-sm font-medium transition-colors">
+          KS1 (Years 2-3)
+        </button>
+        <button className="px-4 py-2 rounded-lg bg-navy-800 text-navy-400 hover:text-white text-sm font-medium transition-colors">
+          KS2 (Years 4-6)
+        </button>
         <button className="px-4 py-2 rounded-lg bg-pitch-600/20 text-pitch-400 text-sm font-medium">
           KS3 (Years 7-9)
         </button>

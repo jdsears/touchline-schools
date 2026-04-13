@@ -665,4 +665,14 @@ export const assessmentService = {
   getDashboard: () => api.get('/assessments/dashboard'),
 }
 
+// Sport Knowledge Base service
+export const sportKnowledgeService = {
+  list: (params) => api.get('/sport-knowledge', { params }),
+  getSports: () => api.get('/sport-knowledge/sports'),
+  create: (data) => api.post('/sport-knowledge', data),
+  update: (id, data) => api.put(`/sport-knowledge/${id}`, data),
+  remove: (id) => api.delete(`/sport-knowledge/${id}`),
+  getForAI: (sport, schoolId) => api.get(`/sport-knowledge/for-ai/${sport}`, { params: { school_id: schoolId } }),
+}
+
 export default api

@@ -3232,6 +3232,127 @@ export async function runMigrations() {
 
     console.log('Phase 9: Curriculum PE and assessment complete')
 
+    // ==========================================
+    // PHASE 10: U7+ AGE RANGE AND SPORT KNOWLEDGE BASE
+    // ==========================================
+    // Extend to primary/prep schools (Years 2-6), add sport knowledge base.
+
+    console.log('Running Phase 10: Extended age range and sport knowledge base...')
+
+    // --- 10a: Extend year_group range to support Years 2-13 (U7 upwards) ---
+    // Drop the old CHECK constraint and add a wider one
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils DROP CONSTRAINT IF EXISTS pupils_year_group_check;
+      ALTER TABLE pupils ADD CONSTRAINT pupils_year_group_check CHECK (year_group BETWEEN 2 AND 13);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teaching_groups DROP CONSTRAINT IF EXISTS teaching_groups_year_group_check;
+      ALTER TABLE teaching_groups ADD CONSTRAINT teaching_groups_year_group_check CHECK (year_group BETWEEN 2 AND 13);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 10b: Extend key_stage enums to include KS1 and KS2 ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teaching_groups DROP CONSTRAINT IF EXISTS teaching_groups_key_stage_check;
+      ALTER TABLE teaching_groups ADD CONSTRAINT teaching_groups_key_stage_check
+        CHECK (key_stage IN ('KS1', 'KS2', 'KS3', 'KS4', 'KS5'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE curriculum_strands DROP CONSTRAINT IF EXISTS curriculum_strands_key_stage_check;
+      ALTER TABLE curriculum_strands ADD CONSTRAINT curriculum_strands_key_stage_check
+        CHECK (key_stage IN ('KS1', 'KS2', 'KS3', 'KS4', 'KS5'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE assessment_criteria DROP CONSTRAINT IF EXISTS assessment_criteria_key_stage_check;
+      ALTER TABLE assessment_criteria ADD CONSTRAINT assessment_criteria_key_stage_check
+        CHECK (key_stage IN ('KS1', 'KS2', 'KS3', 'KS4', 'KS5'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 10c: Extend school_type enum for primary/prep ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools DROP CONSTRAINT IF EXISTS schools_school_type_check;
+      ALTER TABLE schools ADD CONSTRAINT schools_school_type_check
+        CHECK (school_type IN ('state', 'independent', 'academy', 'grammar', 'sixth_form_college', 'primary', 'prep', 'all_through', 'middle'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 10d: Create sport_knowledge_base table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sport_knowledge_base (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      category TEXT DEFAULT 'general' CHECK (category IN (
+        'general', 'development_framework', 'age_guidance', 'tactics',
+        'training_methodology', 'safeguarding', 'assessment_criteria',
+        'rules_and_regulations', 'custom'
+      )),
+      age_range TEXT,
+      is_system_default BOOLEAN DEFAULT false,
+      created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_kb_school ON sport_knowledge_base(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_kb_sport ON sport_knowledge_base(sport)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_kb_category ON sport_knowledge_base(category)`)
+
+    // --- 10e: Seed KS1 and KS2 curriculum strands ---
+    try {
+      const ks1Strands = [
+        ['Master Basic Movements', 'Develop fundamental movements including running, jumping, throwing and catching', 1],
+        ['Participate in Team Activities', 'Engage in team games, developing simple tactics for attacking and defending', 2],
+        ['Perform Dances', 'Perform dances using simple movement patterns', 3],
+      ]
+      for (const [name, desc, order] of ks1Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS1' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS1', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+
+      const ks2Strands = [
+        ['Apply Skills in Competition', 'Use running, jumping, throwing and catching in isolation and combination', 1],
+        ['Play Competitive Games', 'Play competitive games and apply basic principles of attacking and defending', 2],
+        ['Develop Flexibility and Control', 'Develop flexibility, strength, technique, control and balance through gymnastics and athletics', 3],
+        ['Perform Dances', 'Perform dances using a range of movement patterns', 4],
+        ['Swimming and Water Safety', 'Swim competently, confidently and proficiently over 25 metres, using a range of strokes', 5],
+        ['Compare and Improve', 'Compare performances with previous ones and demonstrate improvement', 6],
+      ]
+      for (const [name, desc, order] of ks2Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS2' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS2', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+    } catch (e) {
+      console.warn('KS1/KS2 strands seeding warning:', e.message)
+    }
+
+    console.log('Phase 10: Extended age range and sport knowledge base complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
