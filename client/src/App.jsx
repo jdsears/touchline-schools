@@ -79,6 +79,29 @@ const SchoolInsights = lazy(() => import('./pages/school/SchoolInsights'))
 const SchoolReports = lazy(() => import('./pages/school/SchoolReports'))
 const SeasonDevelopment = lazy(() => import('./pages/SeasonDevelopment'))
 
+// Teacher Hub pages
+const TeacherLayout = lazy(() => import('./pages/teacher/TeacherLayout'))
+const TeacherDashboard = lazy(() => import('./pages/teacher/TeacherDashboard'))
+const TeacherClasses = lazy(() => import('./pages/teacher/TeacherClasses'))
+const TeacherLessons = lazy(() => import('./pages/teacher/TeacherLessons'))
+const TeacherAssessment = lazy(() => import('./pages/teacher/TeacherAssessment'))
+const TeacherReports = lazy(() => import('./pages/teacher/TeacherReports'))
+const TeacherCurriculum = lazy(() => import('./pages/teacher/TeacherCurriculum'))
+const TeacherTeams = lazy(() => import('./pages/teacher/TeacherTeams'))
+const TeacherFixtures = lazy(() => import('./pages/teacher/TeacherFixtures'))
+const TeacherSessions = lazy(() => import('./pages/teacher/TeacherSessions'))
+const TeacherDevelopment = lazy(() => import('./pages/teacher/TeacherDevelopment'))
+
+// Pupil Portal pages
+const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
+const PupilSports = lazy(() => import('./pages/pupil/PupilSports'))
+const PupilWeek = lazy(() => import('./pages/pupil/PupilWeek'))
+const PupilDevelopmentPage = lazy(() => import('./pages/pupil/PupilDevelopment'))
+const PupilTrainingPage = lazy(() => import('./pages/pupil/PupilTraining'))
+const PupilClipsPage = lazy(() => import('./pages/pupil/PupilClipsPage'))
+const PupilAssistantPage = lazy(() => import('./pages/pupil/PupilAssistantPage'))
+const PupilAchievements = lazy(() => import('./pages/pupil/PupilAchievements'))
+
 // Protected route wrapper
 function ProtectedRoute({ children, allowedRoles = [] }) {
   const { user, loading } = useAuth()
@@ -93,9 +116,9 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil-lounge" replace />
+      return <Navigate to="/pupil" replace />
     }
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/teacher" replace />
   }
 
   return children
@@ -111,9 +134,9 @@ function PublicRoute({ children }) {
 
   if (user) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil-lounge" replace />
+      return <Navigate to="/pupil" replace />
     }
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/teacher" replace />
   }
 
   return children
@@ -129,9 +152,9 @@ function CatchAllRedirect() {
 
   if (user) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil-lounge" replace />
+      return <Navigate to="/pupil" replace />
     }
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/teacher" replace />
   }
 
   return <Navigate to="/" replace />
@@ -229,12 +252,48 @@ export default function App() {
           <Route path="admin" element={<Admin />} />
         </Route>
 
-        {/* Protected routes - Pupils */}
-        <Route path="/pupil-lounge" element={
-          <ProtectedRoute allowedRoles={['player']}>
-            <PupilLounge />
+        {/* Teacher Hub */}
+        <Route path="/teacher" element={
+          <ProtectedRoute allowedRoles={['manager', 'assistant', 'scout']}>
+            <TeacherLayout />
           </ProtectedRoute>
-        } />
+        }>
+          <Route index element={<TeacherDashboard />} />
+          <Route path="classes" element={<TeacherClasses />} />
+          <Route path="lessons" element={<TeacherLessons />} />
+          <Route path="assessment" element={<TeacherAssessment />} />
+          <Route path="reports" element={<TeacherReports />} />
+          <Route path="curriculum" element={<TeacherCurriculum />} />
+          <Route path="teams" element={<TeacherTeams />} />
+          <Route path="fixtures" element={<TeacherFixtures />} />
+          <Route path="sessions" element={<TeacherSessions />} />
+          <Route path="development" element={<TeacherDevelopment />} />
+          <Route path="tactics" element={<Tactics />} />
+          <Route path="video" element={<VideoLibrary />} />
+          <Route path="film-room" element={<FilmRoom />} />
+          <Route path="assistant" element={<Chat />} />
+          <Route path="settings" element={<Settings />} />
+        </Route>
+
+        {/* Pupil Portal */}
+        <Route path="/pupil" element={
+          <ProtectedRoute allowedRoles={['player']}>
+            <PupilLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<PupilSports />} />
+          <Route path="week" element={<PupilWeek />} />
+          <Route path="development" element={<PupilDevelopmentPage />} />
+          <Route path="training" element={<PupilTrainingPage />} />
+          <Route path="clips" element={<PupilClipsPage />} />
+          <Route path="assistant" element={<PupilAssistantPage />} />
+          <Route path="achievements" element={<PupilAchievements />} />
+        </Route>
+
+        {/* Legacy redirects */}
+        <Route path="/pupil-lounge" element={<Navigate to="/pupil" replace />} />
+        <Route path="/player-lounge" element={<Navigate to="/pupil" replace />} />
+        <Route path="/dashboard" element={<Navigate to="/teacher" replace />} />
 
         {/* Catch all - redirect based on auth status */}
         <Route path="*" element={<CatchAllRedirect />} />

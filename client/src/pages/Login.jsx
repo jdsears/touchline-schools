@@ -52,9 +52,9 @@ export default function Login() {
       // Navigate based on user role
       const userRole = result.user?.role
       if (userRole === 'pupil' || userRole === 'parent') {
-        navigate('/pupil-lounge')
+        navigate('/pupil')
       } else {
-        navigate('/dashboard')
+        navigate('/teacher')
       }
     }
 

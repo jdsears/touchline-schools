@@ -1,0 +1,23 @@
+import { Video } from 'lucide-react'
+
+export default function PupilClipsPage() {
+  return (
+    <div className="p-6 max-w-5xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-white">My Clips</h1>
+        <p className="text-navy-400 mt-1">Video highlights tagged by your teachers</p>
+      </div>
+
+      <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
+        <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
+          <Video className="w-8 h-8 text-navy-500" />
+        </div>
+        <h3 className="text-lg font-semibold text-white mb-2">No clips yet</h3>
+        <p className="text-navy-400 text-sm max-w-md mx-auto">
+          When your teachers tag you in match or training footage, those clips will appear here.
+          You can review your performances and see teacher comments.
+        </p>
+      </div>
+    </div>
+  )
+}

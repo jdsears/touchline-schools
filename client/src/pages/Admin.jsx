@@ -818,7 +818,7 @@ export default function Admin() {
 
   // Redirect non-admins
   if (!user?.is_admin) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/teacher" replace />
   }
 
   useEffect(() => {

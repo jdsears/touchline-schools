@@ -3032,6 +3032,206 @@ export async function runMigrations() {
 
     console.log('Phase 8: Schools transformation complete')
 
+    // ==========================================
+    // PHASE 9: CURRICULUM PE AND ASSESSMENT
+    // ==========================================
+    // Teaching groups (timetabled PE classes), sport units, assessment
+    // criteria, pupil assessments, and reporting infrastructure.
+
+    console.log('Running Phase 9: Curriculum PE and assessment...')
+
+    // --- 9a: Teaching groups (timetabled PE classes) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS teaching_groups (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      year_group INTEGER NOT NULL CHECK (year_group BETWEEN 7 AND 13),
+      group_identifier TEXT,
+      teacher_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      academic_year TEXT NOT NULL,
+      key_stage TEXT NOT NULL DEFAULT 'KS3' CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teaching_groups_school ON teaching_groups(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teaching_groups_teacher ON teaching_groups(teacher_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teaching_groups_year ON teaching_groups(year_group)`)
+
+    // --- 9b: Teaching group pupils (which pupils are in each class) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS teaching_group_pupils (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teaching_group_id UUID NOT NULL REFERENCES teaching_groups(id) ON DELETE CASCADE,
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(teaching_group_id, pupil_id)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_tg_pupils_group ON teaching_group_pupils(teaching_group_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_tg_pupils_pupil ON teaching_group_pupils(pupil_id)`)
+
+    // --- 9c: Sport units (blocks of lessons within a teaching group) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sport_units (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teaching_group_id UUID NOT NULL REFERENCES teaching_groups(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball',
+        'athletics', 'gymnastics', 'dance', 'swimming', 'badminton', 'tennis', 'table_tennis',
+        'rounders', 'basketball', 'handball', 'outdoor_adventurous', 'fitness', 'other')),
+      unit_name TEXT NOT NULL,
+      curriculum_area TEXT NOT NULL CHECK (curriculum_area IN (
+        'invasion_games', 'net_wall', 'striking_fielding', 'athletics',
+        'gymnastics', 'dance', 'swimming', 'outdoor_adventurous', 'fitness', 'other'
+      )),
+      start_date DATE,
+      end_date DATE,
+      term TEXT CHECK (term IN ('autumn', 'spring', 'summer')),
+      lesson_count INTEGER,
+      display_order INTEGER DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_units_group ON sport_units(teaching_group_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_units_sport ON sport_units(sport)`)
+
+    // --- 9d: Assessment scales (school-defined grading systems) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS assessment_scales (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      key_stage TEXT NOT NULL CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      scale_type TEXT NOT NULL DEFAULT 'descriptive' CHECK (scale_type IN ('descriptive', 'numeric', 'percentage')),
+      grades JSONB NOT NULL,
+      is_default BOOLEAN DEFAULT false,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_scales_school ON assessment_scales(school_id)`)
+
+    // --- 9e: Curriculum strands (assessment dimensions) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS curriculum_strands (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+      key_stage TEXT NOT NULL CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      strand_name TEXT NOT NULL,
+      description TEXT,
+      display_order INTEGER DEFAULT 0,
+      is_system_default BOOLEAN DEFAULT false,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_curriculum_strands_school ON curriculum_strands(school_id)`)
+
+    // --- 9f: Assessment criteria (specific criteria within strands) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS assessment_criteria (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      strand_id UUID NOT NULL REFERENCES curriculum_strands(id) ON DELETE CASCADE,
+      sport TEXT,
+      criterion TEXT NOT NULL,
+      grade_descriptors JSONB,
+      key_stage TEXT NOT NULL CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      display_order INTEGER DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_criteria_strand ON assessment_criteria(strand_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_criteria_sport ON assessment_criteria(sport)`)
+
+    // --- 9g: Pupil assessments (actual marks and observations) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS pupil_assessments (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL,
+      criteria_id UUID REFERENCES assessment_criteria(id) ON DELETE SET NULL,
+      assessment_type TEXT NOT NULL DEFAULT 'formative' CHECK (assessment_type IN ('formative', 'summative', 'practical_exam')),
+      grade TEXT,
+      score NUMERIC,
+      teacher_notes TEXT,
+      assessed_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      assessed_at TIMESTAMPTZ DEFAULT NOW(),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_assessments_pupil ON pupil_assessments(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_assessments_unit ON pupil_assessments(unit_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_assessments_criteria ON pupil_assessments(criteria_id)`)
+
+    // --- 9h: Reporting windows (school reporting periods) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS reporting_windows (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      academic_year TEXT NOT NULL,
+      term TEXT CHECK (term IN ('autumn', 'spring', 'summer')),
+      opens_at TIMESTAMPTZ,
+      closes_at TIMESTAMPTZ,
+      year_groups INTEGER[],
+      status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'open', 'closed', 'published')),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_reporting_windows_school ON reporting_windows(school_id)`)
+
+    // --- 9i: Pupil reports (generated report data per pupil per subject) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS pupil_reports (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      reporting_window_id UUID NOT NULL REFERENCES reporting_windows(id) ON DELETE CASCADE,
+      unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL,
+      sport TEXT,
+      attainment_grade TEXT,
+      effort_grade TEXT,
+      teacher_comment TEXT,
+      ai_draft_comment TEXT,
+      generated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'submitted', 'published')),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_reports_pupil ON pupil_reports(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_reports_window ON pupil_reports(reporting_window_id)`)
+
+    // --- 9j: Seed default curriculum strands for KS3 and KS4 ---
+    try {
+      const ks3Strands = [
+        ['Physical Competence', 'Develop competence to excel in a broad range of physical activities', 1],
+        ['Rules, Strategies and Tactics', 'Apply rules, strategies and tactics across different sports and activities', 2],
+        ['Health and Fitness', 'Understand how to lead a healthy, active lifestyle and improve fitness', 3],
+        ['Evaluation and Improvement', 'Analyse performance, identify strengths and areas for development', 4],
+      ]
+      for (const [name, desc, order] of ks3Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS3' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS3', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+
+      const ks4Strands = [
+        ['Practical Performance', 'Demonstrate skills, techniques and tactics in chosen sports', 1],
+        ['Analysis and Evaluation', 'Analyse and evaluate performance to produce strategies for improvement', 2],
+        ['Anatomy and Physiology', 'Understand the body systems and their role in physical activity', 3],
+        ['Physical Training', 'Understand the principles and methods of training', 4],
+        ['Sport Psychology', 'Understand psychological factors affecting performance', 5],
+        ['Socio-cultural Influences', 'Understand social, cultural and ethical factors in sport', 6],
+      ]
+      for (const [name, desc, order] of ks4Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS4' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS4', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+    } catch (e) {
+      console.warn('Curriculum strands seeding warning:', e.message)
+    }
+
+    console.log('Phase 9: Curriculum PE and assessment complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
