@@ -1,0 +1,30 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/blog/:slug",
+      "destination": "/api/og-blog?slug=:slug",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|PinterestBot|Googlebot|Applebot|iMessageLinkPreviews).*"
+        }
+      ]
+    },
+    {
+      "source": "/watch/:code",
+      "destination": "/api/og-watch?code=:code",
+      "has": [
+        {
+          "type": "header",
+          "key": "user-agent",
+          "value": ".*(facebookexternalhit|Facebot|Twitterbot|LinkedInBot|WhatsApp|Slackbot|TelegramBot|Discordbot|PinterestBot|Googlebot|Applebot|iMessageLinkPreviews).*"
+        }
+      ]
+    },
+    { "source": "/((?!api/|uploads/|sw\\.js|manifest\\.json|favicon|icons/|apple-touch-icon|touchline-|sitemap\\.xml|robots\\.txt).*)", "destination": "/index.html" }
+  ]
+}

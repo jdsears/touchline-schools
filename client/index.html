@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags (React Helmet manages title, description, OG, Twitter per page) -->
+    <title>AI Coaching for Grassroots Football | Touchline</title>
+    <meta name="keywords" content="grassroots football app, AI football coaching, football training session generator, youth football coaching app, football tactics app, player development, team management" />
+    <meta name="author" content="Touchline" />
+
+    <!-- Theme & Appearance -->
+    <meta name="theme-color" content="#0B1C2D" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="msapplication-TileColor" content="#0B1C2D" />
+
+    <!-- OG site_name and locale are static; all other OG/Twitter tags managed by React Helmet per page -->
+    <meta property="og:site_name" content="Touchline" />
+    <meta property="og:locale" content="en_GB" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+
+    <!-- Favicons & App Icons -->
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Service Worker registration (inline for PWABuilder detection) -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js');
+      }
+    </script>
+
+    <!-- iOS PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Touchline" />
+
+    <!-- Fonts: preconnect + non-blocking load -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+
+    <!-- JSON-LD structured data is rendered per-page by React components (Landing.jsx, FeaturePage.jsx, etc.) -->
+  </head>
+  <body class="bg-navy-950 text-white antialiased">
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+
+    <!-- Google Analytics 4 with Consent Mode v2 (loaded after app, non-blocking) -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+        'analytics_storage': 'denied',
+        'functionality_storage': 'granted',
+        'personalization_storage': 'denied',
+        'security_storage': 'granted',
+        'wait_for_update': 500
+      });
+      (function() {
+        var consent = localStorage.getItem('touchline_cookie_consent');
+        if (consent) {
+          try {
+            var parsed = JSON.parse(consent);
+            if (parsed.analytics) {
+              gtag('consent', 'update', { 'analytics_storage': 'granted' });
+            }
+            if (parsed.marketing) {
+              gtag('consent', 'update', {
+                'ad_storage': 'granted',
+                'ad_user_data': 'granted',
+                'ad_personalization': 'granted'
+              });
+            }
+          } catch (e) {}
+        }
+      })();
+    </script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-MPERLFYR42"></script>
+    <script>
+      gtag('js', new Date());
+      gtag('config', 'G-MPERLFYR42', { send_page_view: false });
+    </script>
+  </body>
+</html>

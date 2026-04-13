@@ -1,0 +1,319 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Touchline brand color CSS variables - defaults, can be overridden by TeamContext */
+:root {
+  --team-primary: #2ED573;      /* Pitch Green - guidance, confirmation */
+  --team-secondary: #0B1C2D;    /* Background primary */
+  --team-accent: #F5A623;       /* Amber - attention, emphasis */
+  --team-primary-text: #F5F7FA; /* Text primary */
+  --team-accent-text: #F5F7FA;  /* Text on accent */
+}
+
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-navy-950 text-navy-100;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', system-ui, sans-serif;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-navy-900;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-navy-700 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-navy-600;
+  }
+}
+
+@layer components {
+  /* Card styles */
+  .card {
+    @apply bg-navy-900/50 backdrop-blur-sm border border-navy-800 rounded-xl;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-navy-700 hover:shadow-card-hover;
+  }
+
+  /* Button variants */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-navy-950 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn;
+    background-color: var(--team-primary);
+    color: var(--team-primary-text);
+  }
+
+  .btn-primary:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-primary:focus {
+    --tw-ring-color: var(--team-primary);
+  }
+
+  .btn-secondary {
+    @apply btn bg-navy-800 text-navy-100 hover:bg-navy-700 focus:ring-navy-500;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-navy-300 hover:bg-navy-800 hover:text-white focus:ring-navy-500;
+  }
+
+  .btn-danger {
+    @apply btn bg-alert-600 text-white hover:bg-alert-500 focus:ring-alert-500;
+  }
+
+  .btn-energy {
+    @apply btn;
+    background-color: var(--team-accent);
+    color: var(--team-accent-text);
+  }
+
+  .btn-energy:hover {
+    filter: brightness(1.1);
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-sm;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-lg;
+  }
+
+  /* Input styles */
+  .input {
+    @apply w-full px-4 py-2.5 bg-navy-900 border border-navy-700 rounded-lg text-white placeholder-navy-500 transition-all duration-200;
+  }
+
+  .input:focus {
+    @apply outline-none border-transparent;
+    --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+    --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--team-primary);
+    box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  }
+
+  .input-error {
+    @apply input border-alert-500 focus:ring-alert-500;
+  }
+
+  /* Label styles */
+  .label {
+    @apply block text-sm font-medium text-navy-300 mb-1.5;
+  }
+
+  /* Badge styles */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-pitch, .badge-primary {
+    @apply badge;
+    background-color: color-mix(in srgb, var(--team-primary) 20%, transparent);
+    color: var(--team-primary);
+  }
+
+  .badge-energy, .badge-accent {
+    @apply badge;
+    background-color: color-mix(in srgb, var(--team-accent) 20%, transparent);
+    color: var(--team-accent);
+  }
+
+  .badge-alert {
+    @apply badge bg-alert-500/20 text-alert-400;
+  }
+
+  .badge-caution {
+    @apply badge bg-caution-500/20 text-caution-400;
+  }
+
+  .badge-navy {
+    @apply badge bg-navy-700 text-navy-200;
+  }
+
+  .badge-blue {
+    @apply badge bg-blue-500/20 text-blue-400;
+  }
+
+  /* Pitch visualization - always green regardless of brand colors */
+  .pitch {
+    @apply relative rounded-xl overflow-hidden;
+    background: linear-gradient(to bottom, #17753F, #2ED573, #17753F);
+  }
+
+  .pitch::before {
+    content: '';
+    @apply absolute inset-0 opacity-10;
+    background-image: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 20px,
+      rgba(255, 255, 255, 0.1) 20px,
+      rgba(255, 255, 255, 0.1) 21px
+    );
+  }
+
+  /* Chat message styles */
+  .chat-bubble {
+    @apply max-w-[85%] p-4 rounded-2xl;
+  }
+
+  .chat-bubble-user {
+    @apply chat-bubble ml-auto rounded-br-md;
+    background-color: var(--team-primary);
+    color: var(--team-primary-text);
+  }
+
+  .chat-bubble-ai {
+    @apply chat-bubble bg-navy-800 text-navy-100 mr-auto rounded-bl-md;
+  }
+
+  /* Sidebar navigation */
+  .nav-item {
+    @apply flex items-center gap-3 px-4 py-2.5 rounded-lg text-navy-400 hover:text-white hover:bg-navy-800 transition-all duration-200;
+  }
+
+  .nav-item-active {
+    @apply nav-item text-white;
+    background-color: color-mix(in srgb, var(--team-primary) 20%, transparent);
+    color: var(--team-primary);
+  }
+
+  /* Player card */
+  .player-card {
+    @apply card-hover p-4 flex items-center gap-4;
+  }
+
+  .player-avatar {
+    @apply w-12 h-12 rounded-full flex items-center justify-center text-lg font-semibold text-white;
+    background-color: color-mix(in srgb, var(--team-primary) 60%, var(--team-secondary));
+  }
+
+  /* Position badges */
+  .position-gk {
+    @apply badge bg-caution-500/20 text-caution-400;
+  }
+
+  .position-def {
+    @apply badge bg-blue-500/20 text-blue-400;
+  }
+
+  .position-mid {
+    @apply badge;
+    background-color: color-mix(in srgb, var(--team-primary) 20%, transparent);
+    color: var(--team-primary);
+  }
+
+  .position-fwd {
+    @apply badge bg-alert-500/20 text-alert-400;
+  }
+
+  /* Stat bars */
+  .stat-bar {
+    @apply h-2 rounded-full bg-navy-700 overflow-hidden;
+  }
+
+  .stat-fill {
+    @apply h-full rounded-full transition-all duration-500;
+    background-color: var(--team-primary);
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply animate-spin rounded-full border-2 border-navy-700;
+    border-top-color: var(--team-primary);
+  }
+
+  /* Tooltip */
+  .tooltip {
+    @apply absolute z-50 px-2 py-1 text-xs font-medium text-white bg-navy-800 rounded shadow-lg opacity-0 pointer-events-none transition-opacity duration-200;
+  }
+
+  /* Modal overlay */
+  .modal-overlay {
+    @apply fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4;
+  }
+
+  .modal-content {
+    @apply bg-navy-900 border border-navy-800 rounded-2xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto;
+  }
+}
+
+@layer utilities {
+  /* Text gradient */
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(to right, var(--team-primary), var(--team-accent));
+  }
+
+  /* Glass effect */
+  .glass {
+    @apply bg-white/5 backdrop-blur-md border border-white/10;
+  }
+
+  /* Fade edges */
+  .fade-bottom {
+    mask-image: linear-gradient(to bottom, black 80%, transparent 100%);
+  }
+
+  /* Hide scrollbar */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Brand color utilities */
+  .bg-brand-primary {
+    background-color: var(--team-primary);
+  }
+
+  .bg-brand-secondary {
+    background-color: var(--team-secondary);
+  }
+
+  .bg-brand-accent {
+    background-color: var(--team-accent);
+  }
+
+  .text-brand-primary {
+    color: var(--team-primary);
+  }
+
+  .text-brand-accent {
+    color: var(--team-accent);
+  }
+
+  .border-brand-primary {
+    border-color: var(--team-primary);
+  }
+
+  .ring-brand-primary {
+    --tw-ring-color: var(--team-primary);
+  }
+}

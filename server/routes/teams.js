@@ -1,0 +1,1522 @@
+import { Router } from 'express'
+import { v4 as uuidv4 } from 'uuid'
+import multer from 'multer'
+import path from 'path'
+import fs from 'fs'
+import pool from '../config/database.js'
+import { authenticateToken, requireTeamAccess } from '../middleware/auth.js'
+import { extractFixturesFromImage, extractPlayersFromImage, generateTrainingSession, generateTrainingSummary } from '../services/claudeService.js'
+import { normalizePlayerPositions, normalizePlayersPositions } from '../utils/playerUtils.js'
+import { sendTeamInviteEmail, sendNotificationEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
+import { sendPushToUser } from '../services/pushService.js'
+import { getFrontendUrl } from '../utils/urlUtils.js'
+import { canAddPlayer, checkAndIncrementUsage, getEntitlements } from '../services/billingService.js'
+import { seedFAGuidelines } from '../services/knowledgeBaseService.js'
+
+const router = Router()
+
+// Configure multer for logo uploads
+const uploadDir = './uploads/logos'
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true })
+}
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, uploadDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname)
+    cb(null, `${uuidv4()}${ext}`)
+  }
+})
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB max
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp']
+    const ext = path.extname(file.originalname).toLowerCase()
+    if (allowed.includes(ext)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only image files are allowed'))
+    }
+  }
+})
+
+// Configure multer for training session plan images
+const trainingImgDir = './uploads/training'
+if (!fs.existsSync(trainingImgDir)) {
+  fs.mkdirSync(trainingImgDir, { recursive: true })
+}
+
+const trainingImgStorage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, trainingImgDir),
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname)
+    cb(null, `${uuidv4()}${ext}`)
+  }
+})
+
+const trainingImgUpload = multer({
+  storage: trainingImgStorage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max per image
+  fileFilter: (req, file, cb) => {
+    const allowed = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.heic']
+    const ext = path.extname(file.originalname).toLowerCase()
+    if (allowed.includes(ext)) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only image files are allowed'))
+    }
+  }
+})
+
+// Get team
+router.get('/:id', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const result = await pool.query('SELECT * FROM teams WHERE id = $1', [id])
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Team not found' })
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Update team
+router.put('/:id', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const {
+      name,
+      age_group,
+      team_format, // 11, 9, 7, or 5 a-side
+      formation,
+      formations, // New: up to 3 formations the team plays
+      game_model,
+      positions,
+      planned_subs,
+      custom_formations,
+      bench_players,
+      // White-label branding
+      hub_name,
+      primary_color,
+      secondary_color,
+      accent_color,
+      logo_url,
+      fa_fulltime_url,
+      // Coaching philosophy
+      coaching_philosophy,
+      // Timezone
+      timezone,
+    } = req.body
+
+    let result
+    try {
+      result = await pool.query(
+        `UPDATE teams SET
+          name = COALESCE($1, name),
+          age_group = COALESCE($2, age_group),
+          formation = COALESCE($3, formation),
+          game_model = COALESCE($4, game_model),
+          positions = COALESCE($5, positions),
+          hub_name = COALESCE($6, hub_name),
+          primary_color = COALESCE($7, primary_color),
+          secondary_color = COALESCE($8, secondary_color),
+          accent_color = COALESCE($9, accent_color),
+          logo_url = COALESCE($10, logo_url),
+          fa_fulltime_url = COALESCE($11, fa_fulltime_url),
+          formations = COALESCE($12, formations),
+          planned_subs = COALESCE($13, planned_subs),
+          custom_formations = COALESCE($14, custom_formations),
+          team_format = COALESCE($15, team_format),
+          bench_players = COALESCE($16, bench_players),
+          coaching_philosophy = COALESCE($17, coaching_philosophy),
+          timezone = COALESCE($18, timezone),
+          updated_at = NOW()
+         WHERE id = $19 RETURNING *`,
+        [
+          name, age_group, formation,
+          game_model ? JSON.stringify(game_model) : null,
+          positions ? JSON.stringify(positions) : null,
+          hub_name, primary_color, secondary_color, accent_color, logo_url, fa_fulltime_url,
+          formations ? JSON.stringify(formations) : null,
+          planned_subs ? JSON.stringify(planned_subs) : null,
+          custom_formations ? JSON.stringify(custom_formations) : null,
+          team_format,
+          bench_players ? JSON.stringify(bench_players) : null,
+          coaching_philosophy !== undefined ? coaching_philosophy : null,
+          timezone || null,
+          id
+        ]
+      )
+    } catch (queryError) {
+      // coaching_philosophy column may not exist yet if migration hasn't run
+      if (queryError.message.includes('coaching_philosophy')) {
+        result = await pool.query(
+          `UPDATE teams SET
+            name = COALESCE($1, name),
+            age_group = COALESCE($2, age_group),
+            formation = COALESCE($3, formation),
+            game_model = COALESCE($4, game_model),
+            positions = COALESCE($5, positions),
+            hub_name = COALESCE($6, hub_name),
+            primary_color = COALESCE($7, primary_color),
+            secondary_color = COALESCE($8, secondary_color),
+            accent_color = COALESCE($9, accent_color),
+            logo_url = COALESCE($10, logo_url),
+            fa_fulltime_url = COALESCE($11, fa_fulltime_url),
+            formations = COALESCE($12, formations),
+            planned_subs = COALESCE($13, planned_subs),
+            custom_formations = COALESCE($14, custom_formations),
+            team_format = COALESCE($15, team_format),
+            bench_players = COALESCE($16, bench_players),
+            updated_at = NOW()
+           WHERE id = $17 RETURNING *`,
+          [
+            name, age_group, formation,
+            game_model ? JSON.stringify(game_model) : null,
+            positions ? JSON.stringify(positions) : null,
+            hub_name, primary_color, secondary_color, accent_color, logo_url, fa_fulltime_url,
+            formations ? JSON.stringify(formations) : null,
+            planned_subs ? JSON.stringify(planned_subs) : null,
+            custom_formations ? JSON.stringify(custom_formations) : null,
+            team_format,
+            bench_players ? JSON.stringify(bench_players) : null,
+            id
+          ]
+        )
+      } else {
+        throw queryError
+      }
+    }
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Team not found' })
+    }
+
+    // If age group changed, re-seed FA development guidelines (non-blocking)
+    if (age_group) {
+      const updatedTeam = result.rows[0]
+      seedFAGuidelines(updatedTeam.id, updatedTeam.age_group).catch(err =>
+        console.error('FA guidelines re-seed failed (non-critical):', err.message)
+      )
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get team members
+router.get('/:id/members', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    
+    const result = await pool.query(
+      'SELECT id, email, name, role, created_at FROM users WHERE team_id = $1 ORDER BY role, name',
+      [id]
+    )
+    
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get pending invites
+router.get('/:id/invites', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const result = await pool.query(
+      `SELECT id, email, role, token, created_at, expires_at
+       FROM invites
+       WHERE team_id = $1 AND expires_at > NOW() AND accepted_at IS NULL
+       ORDER BY created_at DESC`,
+      [id]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Invite member
+router.post('/:id/invite', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { email, role } = req.body
+
+    if (!email || !role) {
+      return res.status(400).json({ message: 'Email and role required' })
+    }
+
+    // Check if already a member
+    const existing = await pool.query(
+      'SELECT id FROM users WHERE email = $1 AND team_id = $2',
+      [email, id]
+    )
+
+    if (existing.rows.length > 0) {
+      return res.status(400).json({ message: 'User is already a team member' })
+    }
+
+    // Check if already invited
+    const existingInvite = await pool.query(
+      'SELECT id FROM invites WHERE email = $1 AND team_id = $2 AND expires_at > NOW()',
+      [email, id]
+    )
+
+    if (existingInvite.rows.length > 0) {
+      return res.status(400).json({ message: 'User already has a pending invite' })
+    }
+
+    // Get team name and inviter name for email
+    const teamResult = await pool.query('SELECT name FROM teams WHERE id = $1', [id])
+    const teamName = teamResult.rows[0]?.name || 'the team'
+
+    const token = uuidv4()
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+
+    const result = await pool.query(
+      `INSERT INTO invites (team_id, email, role, token, expires_at)
+       VALUES ($1, $2, $3, $4, $5) RETURNING id, email, role, created_at, expires_at`,
+      [id, email, role, token, expiresAt]
+    )
+
+    // Generate invite link (always return it for manual sharing)
+    const inviteLink = `${getFrontendUrl()}/invite/${token}`
+    console.log(`Invite link for ${email}: ${inviteLink}`)
+
+    // Send invite email
+    const emailResult = await sendTeamInviteEmail(email, {
+      teamName,
+      inviterName: req.user.name,
+      role,
+      inviteLink,
+    })
+
+    res.json({
+      message: 'Invite created successfully',
+      invite: result.rows[0],
+      inviteLink: inviteLink, // Always return for copying
+      emailSent: emailResult.success,
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Cancel invite
+router.delete('/:id/invites/:inviteId', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id, inviteId } = req.params
+
+    const result = await pool.query(
+      'DELETE FROM invites WHERE id = $1 AND team_id = $2 RETURNING id',
+      [inviteId, id]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Invite not found' })
+    }
+
+    res.json({ message: 'Invite cancelled' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Remove team member
+router.delete('/:id/members/:userId', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id, userId } = req.params
+
+    // Prevent removing yourself
+    if (req.user.id === userId) {
+      return res.status(400).json({ message: 'You cannot remove yourself from the team' })
+    }
+
+    // Check if user is a manager (only managers can remove members)
+    if (req.user.role !== 'manager') {
+      return res.status(403).json({ message: 'Only managers can remove team members' })
+    }
+
+    const result = await pool.query(
+      'UPDATE users SET team_id = NULL WHERE id = $1 AND team_id = $2 RETURNING id',
+      [userId, id]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Team member not found' })
+    }
+
+    res.json({ message: 'Team member removed' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get players
+router.get('/:id/players', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const result = await pool.query(
+      'SELECT * FROM players WHERE team_id = $1 ORDER BY squad_number NULLS LAST, name',
+      [id]
+    )
+
+    // Normalize positions from JSONB format to simple string array for client compatibility
+    const players = result.rows.map(normalizePlayerPositions)
+    res.json(players)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Add player
+router.post('/:id/players', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { name, dob, positions, parentContact, notes, squadNumber } = req.body
+
+    if (!name) {
+      return res.status(400).json({ message: 'Player name is required' })
+    }
+
+    // Check player limit
+    const playerLimit = await canAddPlayer(id)
+    if (!playerLimit.allowed) {
+      return res.status(403).json({
+        message: `Team limit reached (${playerLimit.limit} players). Upgrade your plan to add more players.`,
+        code: 'PLAYER_LIMIT_REACHED',
+        current: playerLimit.current,
+        limit: playerLimit.limit,
+      })
+    }
+
+    const result = await pool.query(
+      `INSERT INTO players (team_id, name, dob, positions, parent_contact, notes, squad_number)
+       VALUES ($1, $2, $3, $4::jsonb, $5, $6, $7) RETURNING *`,
+      [id, name, dob || null, JSON.stringify(positions || []), parentContact || null, notes || null, squadNumber || null]
+    )
+
+    // Normalize positions for client compatibility
+    res.status(201).json(normalizePlayerPositions(result.rows[0]))
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Extract players from image using AI
+router.post('/:id/players/extract-from-image', authenticateToken, requireTeamAccess, upload.single('image'), async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'Image file is required' })
+    }
+
+    // Check OCR usage limit
+    const usageCheck = await checkAndIncrementUsage(id, 'ocr')
+    if (!usageCheck.allowed) {
+      // Clean up file
+      if (req.file?.path) {
+        try { fs.unlinkSync(req.file.path) } catch {}
+      }
+      return res.status(429).json({
+        message: usageCheck.limit === 0
+          ? 'Image import is not available on your current plan. Upgrade to Core or Pro to import players from images.'
+          : `Monthly import limit reached (${usageCheck.limit}). Upgrade your plan for more imports.`,
+        code: 'OCR_LIMIT_REACHED',
+        usage: { current: usageCheck.current, limit: usageCheck.limit },
+        upgradeRequired: true,
+      })
+    }
+
+    // Read the image file and convert to base64
+    const imageBuffer = fs.readFileSync(req.file.path)
+    const imageBase64 = imageBuffer.toString('base64')
+    const mediaType = req.file.mimetype || 'image/png'
+
+    // Extract players using Claude
+    const players = await extractPlayersFromImage(imageBase64, mediaType)
+
+    // Clean up uploaded file
+    fs.unlinkSync(req.file.path)
+
+    res.json({
+      players,
+      count: players.length,
+    })
+  } catch (error) {
+    // Clean up file on error
+    if (req.file?.path) {
+      try { fs.unlinkSync(req.file.path) } catch {}
+    }
+    next(error)
+  }
+})
+
+// Bulk import players
+router.post('/:id/players/bulk', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { players } = req.body
+
+    if (!players || !Array.isArray(players) || players.length === 0) {
+      return res.status(400).json({ message: 'Players array is required' })
+    }
+
+    // Check if team can add all these players
+    const playerLimit = await canAddPlayer(id)
+    const availableSlots = playerLimit.limit - playerLimit.current
+    if (players.length > availableSlots) {
+      return res.status(403).json({
+        message: `Cannot add ${players.length} players. Team has ${availableSlots} slots remaining (${playerLimit.limit} max).`,
+        code: 'PLAYER_LIMIT_REACHED',
+        current: playerLimit.current,
+        limit: playerLimit.limit,
+        requested: players.length,
+        available: availableSlots,
+      })
+    }
+
+    // Build all player data first, then batch insert
+    const playerData = players.map(player => {
+      let parentContact = null
+      if (player.parentName || player.parentEmail) {
+        const contacts = []
+        if (player.parentName) {
+          contacts.push({
+            name: player.parentName,
+            email: player.parentEmail || null,
+            phone: player.parentPhone || null,
+          })
+        }
+        if (player.secondaryParentName) {
+          contacts.push({
+            name: player.secondaryParentName,
+            email: player.secondaryParentEmail || null,
+            phone: null,
+          })
+        }
+        parentContact = JSON.stringify(contacts)
+      }
+      return {
+        name: player.name,
+        dob: player.dateOfBirth || null,
+        positions: player.positions || [],
+        parentContact,
+        notes: player.registrationId ? `Registration ID: ${player.registrationId}` : null,
+      }
+    })
+
+    // Batch insert all players in a single query
+    const values = []
+    const params = []
+    let paramIdx = 1
+    for (const p of playerData) {
+      values.push(`($${paramIdx}, $${paramIdx+1}, $${paramIdx+2}, $${paramIdx+3}, $${paramIdx+4}, $${paramIdx+5})`)
+      params.push(id, p.name, p.dob, JSON.stringify(p.positions), p.parentContact, p.notes)
+      paramIdx += 6
+    }
+    const batchResult = await pool.query(
+      `INSERT INTO players (team_id, name, dob, positions, parent_contact, notes)
+       VALUES ${values.join(', ')} RETURNING *`,
+      params
+    )
+    const results = batchResult.rows
+
+    // Normalize positions for client compatibility
+    res.status(201).json({
+      players: normalizePlayersPositions(results),
+      count: results.length,
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get matches
+router.get('/:id/matches', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    
+    const result = await pool.query(
+      `SELECT m.*,
+        (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'available') as available_count,
+        (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'unavailable') as unavailable_count,
+        (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'maybe') as maybe_count
+      FROM matches m WHERE m.team_id = $1 ORDER BY m.date DESC`,
+      [id]
+    )
+    
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Add match
+router.post('/:id/matches', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { opponent, date, location, isHome, veoLink, result: matchResult, kitType, meetTime } = req.body
+
+    if (!opponent || !date) {
+      return res.status(400).json({ message: 'Opponent and date are required' })
+    }
+
+    const dbResult = await pool.query(
+      `INSERT INTO matches (team_id, opponent, date, location, is_home, veo_link, result, kit_type, meet_time)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
+      [id, opponent, date, location || null, isHome !== false, veoLink || null, matchResult || null, kitType || (isHome !== false ? 'home' : 'away'), meetTime || null]
+    )
+
+    res.status(201).json(dbResult.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Extract fixtures from image using AI
+router.post('/:id/matches/extract-from-image', authenticateToken, requireTeamAccess, upload.single('image'), async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'No image uploaded' })
+    }
+
+    // Get team name
+    const teamResult = await pool.query('SELECT name FROM teams WHERE id = $1', [id])
+    if (teamResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Team not found' })
+    }
+    const teamName = teamResult.rows[0].name
+
+    // Read the image and convert to base64
+    const imageBuffer = fs.readFileSync(req.file.path)
+    const imageBase64 = imageBuffer.toString('base64')
+
+    // Determine media type
+    const ext = path.extname(req.file.originalname).toLowerCase()
+    const mediaTypeMap = {
+      '.png': 'image/png',
+      '.jpg': 'image/jpeg',
+      '.jpeg': 'image/jpeg',
+      '.gif': 'image/gif',
+      '.webp': 'image/webp',
+    }
+    const mediaType = mediaTypeMap[ext] || 'image/png'
+
+    // Extract fixtures using AI
+    const fixtures = await extractFixturesFromImage(imageBase64, teamName, mediaType)
+
+    // Clean up uploaded file
+    fs.unlinkSync(req.file.path)
+
+    res.json({
+      teamName,
+      fixtures,
+      count: fixtures.length,
+    })
+  } catch (error) {
+    // Clean up uploaded file on error
+    if (req.file?.path) {
+      try { fs.unlinkSync(req.file.path) } catch (e) {}
+    }
+    next(error)
+  }
+})
+
+// Bulk add matches (for importing extracted fixtures)
+router.post('/:id/matches/bulk', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { matches } = req.body
+
+    if (!matches || !Array.isArray(matches) || matches.length === 0) {
+      return res.status(400).json({ message: 'No matches provided' })
+    }
+
+    const inserted = []
+    for (const match of matches) {
+      // Parse result string to extract goals_for and goals_against
+      let goalsFor = null
+      let goalsAgainst = null
+      let resultStr = match.result || null
+
+      if (resultStr) {
+        const parts = resultStr.split('-').map(s => parseInt(s.trim(), 10))
+        if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
+          goalsFor = parts[0]
+          goalsAgainst = parts[1]
+        }
+      }
+
+      // Ensure result string is set when we have goals (for consistency)
+      if (goalsFor !== null && goalsAgainst !== null && !resultStr) {
+        resultStr = `${goalsFor}-${goalsAgainst}`
+      }
+
+      const result = await pool.query(
+        `INSERT INTO matches (team_id, opponent, date, location, is_home, result, goals_for, goals_against, notes)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         ON CONFLICT DO NOTHING
+         RETURNING *`,
+        [
+          id,
+          match.opponent,
+          match.date + (match.time ? `T${match.time}:00` : 'T00:00:00'),
+          match.location || null,
+          match.isHome !== false,
+          resultStr,
+          goalsFor,
+          goalsAgainst,
+          match.competition ? `Competition: ${match.competition}` : null
+        ]
+      )
+      if (result.rows.length > 0) {
+        inserted.push(result.rows[0])
+      }
+    }
+
+    res.status(201).json({
+      message: `${inserted.length} matches imported`,
+      matches: inserted,
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Delete all matches for a team
+router.delete('/:id/matches/all', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { type } = req.query // 'upcoming', 'results', or 'all' (default)
+
+    let query = 'DELETE FROM matches WHERE team_id = $1'
+    const params = [id]
+
+    if (type === 'upcoming') {
+      query += ' AND date > NOW() AND result IS NULL'
+    } else if (type === 'results') {
+      query += ' AND (date < NOW() OR result IS NOT NULL)'
+    }
+    query += ' RETURNING id'
+
+    const result = await pool.query(query, params)
+
+    res.json({
+      message: `${result.rowCount} matches deleted`,
+      count: result.rowCount
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Chat history
+router.get('/:id/chat/history', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { limit = 50 } = req.query
+
+    const result = await pool.query(
+      `SELECT * FROM messages WHERE team_id = $1 ORDER BY created_at DESC LIMIT $2`,
+      [id, limit]
+    )
+
+    res.json(result.rows.reverse())
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Upload team logo
+router.post('/:id/logo', authenticateToken, requireTeamAccess, upload.single('logo'), async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' })
+    }
+
+    const logoUrl = `/uploads/logos/${req.file.filename}`
+
+    // Update team with new logo URL
+    const result = await pool.query(
+      'UPDATE teams SET logo_url = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+      [logoUrl, id]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Team not found' })
+    }
+
+    res.json({ logoUrl, team: result.rows[0] })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Upload logo during registration (no auth required, returns temp URL)
+router.post('/upload-logo', upload.single('logo'), async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ message: 'No file uploaded' })
+    }
+
+    const logoUrl = `/uploads/logos/${req.file.filename}`
+    res.json({ logoUrl })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============== TRAINING ==============
+
+// Get training sessions for team
+router.get('/:id/training', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const result = await pool.query(
+      `SELECT ts.*,
+        (SELECT COUNT(*) FROM training_availability ta WHERE ta.session_id = ts.id AND ta.status = 'available') as available_count,
+        (SELECT COUNT(*) FROM training_availability ta WHERE ta.session_id = ts.id AND ta.status = 'unavailable') as unavailable_count,
+        (SELECT COUNT(*) FROM training_availability ta WHERE ta.session_id = ts.id AND ta.status = 'maybe') as maybe_count
+      FROM training_sessions ts WHERE ts.team_id = $1 ORDER BY ts.date DESC`,
+      [id]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Generate training session using AI
+router.post('/:id/training/generate', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { duration, focusAreas, players, constraints, coachDrills, date, time, meet_time, venue_type, existingSessionId, location, session_type, level } = req.body
+
+    // For existing sessions (e.g. scheduled sessions), allow empty focus areas with a sensible default
+    const resolvedFocusAreas = (focusAreas && focusAreas.length > 0)
+      ? focusAreas
+      : existingSessionId
+        ? ['passing', 'teamwork']
+        : null
+
+    if (!duration || !resolvedFocusAreas) {
+      return res.status(400).json({ message: 'Duration and focus areas are required' })
+    }
+
+    // Check manager role
+    if (req.user.role !== 'manager' && req.user.role !== 'assistant') {
+      return res.status(403).json({ message: 'Only managers can generate training sessions' })
+    }
+
+    // Get team format, age group, and coaching philosophy
+    const teamResult = await pool.query('SELECT * FROM teams WHERE id = $1', [id])
+    const teamFormat = teamResult.rows[0]?.team_format || 11
+    const ageGroup = teamResult.rows[0]?.age_group
+    const coachingPhilosophy = teamResult.rows[0]?.coaching_philosophy
+
+    // Generate the session plan using AI
+    const sessionPlan = await generateTrainingSession({
+      duration,
+      focusAreas: resolvedFocusAreas,
+      players: players || 14,
+      constraints,
+      coachDrills,
+      teamFormat,
+      ageGroup,
+      level,
+      coachingPhilosophy,
+    })
+
+    let result
+    if (existingSessionId) {
+      // Update existing session with the generated plan and focus areas
+      result = await pool.query(
+        `UPDATE training_sessions SET plan = $1, focus_areas = COALESCE($4, focus_areas) WHERE id = $2 AND team_id = $3 RETURNING *`,
+        [JSON.stringify(sessionPlan), existingSessionId, id, resolvedFocusAreas]
+      )
+      if (result.rows.length === 0) {
+        return res.status(404).json({ message: 'Session not found' })
+      }
+    } else {
+      // Save as a new session
+      result = await pool.query(
+        `INSERT INTO training_sessions (team_id, date, time, meet_time, duration, focus_areas, plan, notes, venue_type, location, session_type)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+        [
+          id,
+          date || new Date().toISOString().split('T')[0],
+          time || null,
+          meet_time || null,
+          duration,
+          resolvedFocusAreas,
+          JSON.stringify(sessionPlan),
+          constraints || null,
+          venue_type || 'outdoor',
+          location || null,
+          session_type || 'training'
+        ]
+      )
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    console.error('Training generation error:', error)
+    next(error)
+  }
+})
+
+// Create manual training session (supports recurring weekly)
+router.post('/:id/training', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { date, time, meet_time, duration, focusAreas, plan, notes, location, session_type, venue_type, recurring, recurring_end_date } = req.body
+
+    // Recurring: create one session per week from date to recurring_end_date
+    if (recurring && recurring_end_date) {
+      const startDate = new Date(date + 'T12:00:00')
+      const endDate = new Date(recurring_end_date + 'T12:00:00')
+
+      if (endDate <= startDate) {
+        return res.status(400).json({ message: 'End date must be after start date' })
+      }
+
+      // Cap at 52 weeks (1 year)
+      const maxWeeks = 52
+      const rows = []
+      let current = new Date(startDate)
+      let count = 0
+
+      while (current <= endDate && count < maxWeeks) {
+        const dateStr = current.toISOString().split('T')[0]
+        const result = await pool.query(
+          `INSERT INTO training_sessions (team_id, date, time, meet_time, duration, focus_areas, plan, notes, location, session_type, venue_type)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+          [id, dateStr, time || null, meet_time || null, duration, focusAreas, plan ? JSON.stringify(plan) : null, notes, location || null, session_type || 'training', venue_type || 'outdoor']
+        )
+        rows.push(result.rows[0])
+        current.setDate(current.getDate() + 7)
+        count++
+      }
+
+      return res.json(rows)
+    }
+
+    // Single session
+    const result = await pool.query(
+      `INSERT INTO training_sessions (team_id, date, time, meet_time, duration, focus_areas, plan, notes, location, session_type, venue_type)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      [id, date, time || null, meet_time || null, duration, focusAreas, plan ? JSON.stringify(plan) : null, notes, location || null, session_type || 'training', venue_type || 'outdoor']
+    )
+
+    res.json(result.rows[0])
+  } catch (error) {
+    console.error('Training session create error:', error.message, 'code:', error.code, 'detail:', error.detail || '', 'column:', error.column || '')
+    next(error)
+  }
+})
+
+// Update training session
+router.put('/:id/training/:sessionId', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+    const { date, time, meet_time, duration, focusAreas, notes, location, session_type, share_plan_with_players, plan } = req.body
+
+    const result = await pool.query(
+      `UPDATE training_sessions
+       SET date = COALESCE($1, date),
+           time = $2,
+           meet_time = $3,
+           duration = COALESCE($4, duration),
+           focus_areas = COALESCE($5, focus_areas),
+           notes = $6,
+           location = $7,
+           session_type = COALESCE($8, session_type),
+           share_plan_with_players = COALESCE($9, share_plan_with_players),
+           plan = COALESCE($11, plan)
+       WHERE id = $10
+       RETURNING *`,
+      [date, time || null, meet_time || null, duration, focusAreas, notes, location || null, session_type, share_plan_with_players, sessionId, plan ? JSON.stringify(plan) : null]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' })
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Toggle share plan with players
+router.put('/:id/training/:sessionId/share', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+    const { share_plan_with_players } = req.body
+
+    const result = await pool.query(
+      `UPDATE training_sessions
+       SET share_plan_with_players = $1
+       WHERE id = $2
+       RETURNING *`,
+      [share_plan_with_players, sessionId]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' })
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Save custom (coach-written) plan for a training session
+router.put('/:id/training/:sessionId/custom-plan', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+    const { custom_plan } = req.body
+
+    const result = await pool.query(
+      `UPDATE training_sessions
+       SET custom_plan = $1, updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [custom_plan || null, sessionId]
+    )
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' })
+    }
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Upload images to a training session plan
+router.post('/:id/training/:sessionId/images', authenticateToken, requireTeamAccess, trainingImgUpload.array('images', 10), async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+
+    if (!req.files || req.files.length === 0) {
+      return res.status(400).json({ message: 'No images uploaded' })
+    }
+
+    // Get existing images
+    const existing = await pool.query(
+      'SELECT plan_images FROM training_sessions WHERE id = $1',
+      [sessionId]
+    )
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' })
+    }
+
+    const currentImages = existing.rows[0].plan_images || []
+    const newImages = req.files.map(file => ({
+      id: uuidv4(),
+      url: `/uploads/training/${file.filename}`,
+      filename: file.originalname,
+      uploaded_at: new Date().toISOString(),
+    }))
+
+    const allImages = [...currentImages, ...newImages]
+
+    const result = await pool.query(
+      `UPDATE training_sessions
+       SET plan_images = $1, updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [JSON.stringify(allImages), sessionId]
+    )
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Delete an image from a training session plan
+router.delete('/:id/training/:sessionId/images/:imageId', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { sessionId, imageId } = req.params
+
+    const existing = await pool.query(
+      'SELECT plan_images FROM training_sessions WHERE id = $1',
+      [sessionId]
+    )
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ message: 'Session not found' })
+    }
+
+    const currentImages = existing.rows[0].plan_images || []
+    const imageToDelete = currentImages.find(img => img.id === imageId)
+
+    // Delete file from disk
+    if (imageToDelete) {
+      const filePath = path.join('.', imageToDelete.url)
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath)
+      }
+    }
+
+    const updatedImages = currentImages.filter(img => img.id !== imageId)
+
+    const result = await pool.query(
+      `UPDATE training_sessions
+       SET plan_images = $1, updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [JSON.stringify(updatedImages), sessionId]
+    )
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Generate AI training summary for parents
+router.post('/:id/training/:sessionId/summary', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id, sessionId } = req.params
+
+    // Get training session
+    const sessionResult = await pool.query('SELECT * FROM training_sessions WHERE id = $1 AND team_id = $2', [sessionId, id])
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Training session not found' })
+    }
+    const session = sessionResult.rows[0]
+
+    // Get team
+    const teamResult = await pool.query('SELECT * FROM teams WHERE id = $1', [id])
+    const team = teamResult.rows[0]
+
+    // Generate summary
+    const summary = await generateTrainingSummary(session, team)
+
+    // Save the summary
+    await pool.query(
+      'UPDATE training_sessions SET summary = $1 WHERE id = $2',
+      [summary, sessionId]
+    )
+
+    res.json({ summary })
+  } catch (error) {
+    console.error('Training summary generation error:', error)
+    next(error)
+  }
+})
+
+// ============== TRAINING ATTENDANCE ==============
+
+// Get attendance for a training session
+router.get('/:id/training/:sessionId/attendance', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id, sessionId } = req.params
+
+    // First ensure training_attendance table exists
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS training_attendance (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        session_id UUID NOT NULL REFERENCES training_sessions(id) ON DELETE CASCADE,
+        player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        attended BOOLEAN NOT NULL DEFAULT false,
+        notes TEXT,
+        recorded_by UUID REFERENCES users(id),
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(session_id, player_id)
+      )
+    `)
+
+    const result = await pool.query(
+      `SELECT
+        p.id as player_id,
+        p.name as player_name,
+        COALESCE(ta.attended, false) as attended,
+        ta.notes,
+        ta.effort_rating
+       FROM players p
+       LEFT JOIN training_attendance ta ON ta.player_id = p.id AND ta.session_id = $1
+       WHERE p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
+       ORDER BY p.name`,
+      [sessionId, id]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Attendance load error:', error.message, error.code, error.detail || '')
+    next(error)
+  }
+})
+
+// Save attendance for a training session (bulk)
+router.put('/:id/training/:sessionId/attendance', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+    const { attendance } = req.body // Array of { player_id, attended, notes? }
+
+    if (!Array.isArray(attendance)) {
+      return res.status(400).json({ message: 'attendance must be an array' })
+    }
+
+    const results = []
+    for (const record of attendance) {
+      const { player_id, attended, notes, effort_rating } = record
+      // effort_rating is optional (1-5) — only set if provided
+      const effortVal = effort_rating && effort_rating >= 1 && effort_rating <= 5 ? effort_rating : null
+      const result = await pool.query(
+        `INSERT INTO training_attendance (session_id, player_id, attended, notes, recorded_by, effort_rating)
+         VALUES ($1, $2, $3, $4, $5, $6)
+         ON CONFLICT (session_id, player_id)
+         DO UPDATE SET attended = $3, notes = $4, recorded_by = $5,
+           effort_rating = COALESCE($6, training_attendance.effort_rating),
+           updated_at = NOW()
+         RETURNING *`,
+        [sessionId, player_id, attended, notes || null, req.user.id, effortVal]
+      )
+      results.push(result.rows[0])
+    }
+
+    res.json(results)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============== TRAINING AVAILABILITY ==============
+
+// Get training session availability for all players
+router.get('/:id/training/:sessionId/availability', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id, sessionId } = req.params
+
+    const result = await pool.query(
+      `SELECT
+        p.id as player_id,
+        p.name as player_name,
+        p.squad_number,
+        COALESCE(ta.status, 'pending') as status,
+        ta.notes,
+        ta.responded_at,
+        ta.user_id
+       FROM players p
+       LEFT JOIN training_availability ta ON ta.player_id = p.id AND ta.session_id = $1
+       WHERE p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
+       ORDER BY p.name`,
+      [sessionId, id]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Update training availability for a player
+router.post('/:id/training/:sessionId/availability', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+    const { player_id, status, notes } = req.body
+
+    if (!player_id || !status) {
+      return res.status(400).json({ message: 'player_id and status are required' })
+    }
+
+    if (!['available', 'unavailable', 'maybe', 'pending'].includes(status)) {
+      return res.status(400).json({ message: 'Invalid status' })
+    }
+
+    const result = await pool.query(
+      `INSERT INTO training_availability (session_id, player_id, user_id, status, notes, responded_at)
+       VALUES ($1, $2, $3, $4, $5, NOW())
+       ON CONFLICT (session_id, player_id)
+       DO UPDATE SET status = $4, notes = $5, user_id = $3, responded_at = NOW(), updated_at = NOW()
+       RETURNING *`,
+      [sessionId, player_id, req.user.id, status, notes || null]
+    )
+
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Bulk update training availability
+router.post('/:id/training/:sessionId/availability/bulk', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { sessionId } = req.params
+    const { availabilities } = req.body
+
+    if (!Array.isArray(availabilities)) {
+      return res.status(400).json({ message: 'availabilities must be an array' })
+    }
+
+    const results = []
+    for (const avail of availabilities) {
+      const { player_id, status, notes } = avail
+      const result = await pool.query(
+        `INSERT INTO training_availability (session_id, player_id, user_id, status, notes, responded_at)
+         VALUES ($1, $2, $3, $4, $5, NOW())
+         ON CONFLICT (session_id, player_id)
+         DO UPDATE SET status = $4, notes = $5, user_id = $3, responded_at = NOW(), updated_at = NOW()
+         RETURNING *`,
+        [sessionId, player_id, req.user.id, status, notes || null]
+      )
+      results.push(result.rows[0])
+    }
+
+    res.json(results)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Request training availability (send notifications)
+router.post('/:id/training/:sessionId/availability/request', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id, sessionId } = req.params
+    const { pendingOnly } = req.body
+
+    if (req.user.role !== 'manager' && req.user.role !== 'assistant') {
+      return res.status(403).json({ message: 'Only managers can request availability' })
+    }
+
+    // Get session details
+    const sessionResult = await pool.query('SELECT * FROM training_sessions WHERE id = $1 AND team_id = $2', [sessionId, id])
+    if (sessionResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Training session not found' })
+    }
+    const session = sessionResult.rows[0]
+
+    // Get team name
+    const teamResult = await pool.query('SELECT name, club_id FROM teams WHERE id = $1', [id])
+    const teamName = teamResult.rows[0]?.name || 'Your Team'
+    const clubId = teamResult.rows[0]?.club_id
+
+    const sessionType = session.session_type === 's&c' ? 'S&C' : 'Training'
+    const sessionDate = new Date(session.date).toLocaleDateString('en-GB', {
+      weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'
+    })
+    const sessionTime = session.time ? ` at ${session.time.slice(0, 5)}` : ''
+
+    // Get players — optionally filter to only those who haven't responded
+    const playersResult = await pool.query(
+      `SELECT p.*, u.id as user_id, u.email as user_email
+       FROM players p
+       LEFT JOIN users u ON u.player_id = p.id
+       ${pendingOnly ? 'LEFT JOIN training_availability ta ON ta.player_id = p.id AND ta.session_id = $2' : ''}
+       WHERE p.team_id = $1 AND (p.is_active IS NULL OR p.is_active = true)
+       ${pendingOnly ? 'AND ta.id IS NULL' : ''}`,
+      pendingOnly ? [id, sessionId] : [id]
+    )
+
+    // Batch insert notifications
+    const playersWithAccounts = playersResult.rows.filter(p => p.user_id)
+    let notified = playersWithAccounts.length
+    if (playersWithAccounts.length > 0) {
+      const notifValues = []
+      const notifParams = []
+      let paramIdx = 1
+      const notifTitle = `${sessionType} Availability: ${sessionDate}`
+      const notifMessage = `Please confirm your availability for ${sessionType.toLowerCase()} on ${sessionDate}${sessionTime}.`
+      const notifData = JSON.stringify({ session_id: sessionId })
+
+      for (const player of playersWithAccounts) {
+        notifValues.push(`($${paramIdx}, $${paramIdx+1}, 'availability_request', $${paramIdx+2}, $${paramIdx+3}, $${paramIdx+4})`)
+        notifParams.push(player.user_id, id, notifTitle, notifMessage, notifData)
+        paramIdx += 5
+      }
+      await pool.query(
+        `INSERT INTO notifications (user_id, team_id, type, title, message, data)
+         VALUES ${notifValues.join(', ')}`,
+        notifParams
+      )
+    }
+
+    // Build batch emails
+    const sessionInfo = `${sessionType} session`
+    const responseLink = `${getFrontendUrl()}/training`
+    const batchEmails = []
+    const emailledAddresses = new Set()
+
+    for (const player of playersWithAccounts) {
+      if (!player.user_email) continue
+      emailledAddresses.add(player.user_email.toLowerCase())
+      batchEmails.push({
+        to: player.user_email,
+        template: 'availabilityRequest',
+        data: { teamName, playerName: player.name, matchInfo: sessionInfo, matchDate: `${sessionDate}${sessionTime}`, responseLink }
+      })
+    }
+
+    // Add linked guardians/parents
+    if (clubId) {
+      const guardiansResult = await pool.query(
+        `SELECT DISTINCT g.email, g.first_name, g.notification_preferences, p.name as player_name
+         FROM guardians g
+         JOIN player_guardians pg ON pg.guardian_id = g.id
+         JOIN players p ON pg.player_id = p.id
+         ${pendingOnly ? 'LEFT JOIN training_availability ta ON ta.player_id = p.id AND ta.session_id = $3' : ''}
+         WHERE g.club_id = $1 AND p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
+         AND g.email IS NOT NULL
+         ${pendingOnly ? 'AND ta.id IS NULL' : ''}`,
+        pendingOnly ? [clubId, id, sessionId] : [clubId, id]
+      )
+      for (const guardian of guardiansResult.rows) {
+        const prefs = guardian.notification_preferences || {}
+        if (prefs.availability === false) continue
+        if (emailledAddresses.has(guardian.email.toLowerCase())) continue
+        emailledAddresses.add(guardian.email.toLowerCase())
+        batchEmails.push({
+          to: guardian.email,
+          template: 'availabilityRequest',
+          data: { teamName, playerName: guardian.player_name, matchInfo: sessionInfo, matchDate: `${sessionDate}${sessionTime}`, responseLink }
+        })
+      }
+    }
+
+    const { sent: emailsSent } = await sendBatchEmails(batchEmails)
+
+    // Send push notifications
+    for (const player of playersWithAccounts) {
+      sendPushToUser(player.user_id, {
+        title: `📋 ${sessionType} Availability`,
+        body: `Please confirm availability for ${sessionDate}`,
+        tag: `training-availability-${sessionId}`,
+        url: `/training`,
+      })
+    }
+
+    res.json({
+      message: 'Availability request sent',
+      players_notified: notified,
+      total_players: playersResult.rows.length,
+      emails_sent: emailsSent,
+      email_enabled: isEmailEnabled()
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============== TEAM ANNOUNCEMENTS ==============
+
+// Send announcement email to all team parents
+router.post('/:id/announce', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { title, message, actionLink, actionText } = req.body
+
+    // Check manager role
+    if (req.user.role !== 'manager' && req.user.role !== 'assistant') {
+      return res.status(403).json({ message: 'Only managers can send team announcements' })
+    }
+
+    if (!title || !message) {
+      return res.status(400).json({ message: 'Title and message are required' })
+    }
+
+    // Get team
+    const teamResult = await pool.query('SELECT name FROM teams WHERE id = $1', [id])
+    if (teamResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Team not found' })
+    }
+    const teamName = teamResult.rows[0].name
+
+    // Get all active players with parent emails
+    const playersResult = await pool.query(
+      `SELECT id, name, parent_email, parent_contact
+       FROM players
+       WHERE team_id = $1 AND is_active = true`,
+      [id]
+    )
+
+    // Collect all unique parent emails
+    const allParentEmails = new Set()
+    for (const player of playersResult.rows) {
+      if (player.parent_email) {
+        allParentEmails.add(player.parent_email)
+      }
+      if (player.parent_contact) {
+        try {
+          const contacts = typeof player.parent_contact === 'string'
+            ? JSON.parse(player.parent_contact)
+            : player.parent_contact
+          if (Array.isArray(contacts)) {
+            contacts.filter(c => c.email).forEach(c => allParentEmails.add(c.email))
+          }
+        } catch {}
+      }
+    }
+
+    // Send emails
+    let emailsSent = 0
+    for (const email of allParentEmails) {
+      await sendNotificationEmail(email, {
+        teamName,
+        title,
+        message,
+        actionLink: actionLink || null,
+        actionText: actionText || null
+      })
+      emailsSent++
+    }
+
+    // Also create in-app notifications for all team members
+    const usersResult = await pool.query(
+      'SELECT id FROM users WHERE team_id = $1',
+      [id]
+    )
+
+    for (const user of usersResult.rows) {
+      await pool.query(
+        `INSERT INTO notifications (user_id, team_id, type, title, message, data)
+         VALUES ($1, $2, 'announcement', $3, $4, $5)`,
+        [
+          user.id,
+          id,
+          title,
+          message,
+          JSON.stringify({ action_link: actionLink, action_text: actionText })
+        ]
+      )
+    }
+
+    console.log(`Announcement sent for team ${id}: ${emailsSent} emails, ${usersResult.rows.length} in-app notifications`)
+
+    res.json({
+      message: 'Announcement sent successfully',
+      emails_sent: emailsSent,
+      notifications_created: usersResult.rows.length
+    })
+  } catch (error) {
+    console.error('Team announcement error:', error)
+    next(error)
+  }
+})
+
+export default router
