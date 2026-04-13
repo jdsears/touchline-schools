@@ -23,7 +23,7 @@ router.get('/:teamId', authenticateToken, async (req, res, next) => {
         r.name as responded_by_name
       FROM team_suggestions s
       LEFT JOIN users u ON s.submitted_by = u.id
-      LEFT JOIN players p ON s.player_id = p.id
+      LEFT JOIN pupils p ON s.pupil_id = p.id
       LEFT JOIN users r ON s.responded_by = r.id
       WHERE s.team_id = $1
     `
@@ -66,7 +66,7 @@ router.get('/:teamId', authenticateToken, async (req, res, next) => {
   }
 })
 
-// Get suggestions submitted by current user (players/parents)
+// Get suggestions submitted by current user (pupils/parents)
 router.get('/:teamId/my-suggestions', authenticateToken, async (req, res, next) => {
   try {
     const { teamId } = req.params
@@ -88,15 +88,15 @@ router.get('/:teamId/my-suggestions', authenticateToken, async (req, res, next) 
   }
 })
 
-// Create a suggestion (players/parents only)
+// Create a suggestion (pupils/parents only)
 router.post('/:teamId', authenticateToken, async (req, res, next) => {
   try {
     const { teamId } = req.params
     const { category, title, content, is_anonymous } = req.body
 
-    // Only players and parents can submit suggestions
-    if (!['player', 'parent'].includes(req.user.role)) {
-      return res.status(403).json({ message: 'Only players and parents can submit suggestions' })
+    // Only pupils and parents can submit suggestions
+    if (!['pupil', 'parent'].includes(req.user.role)) {
+      return res.status(403).json({ message: 'Only pupils and parents can submit suggestions' })
     }
 
     if (!title || !content) {
@@ -108,13 +108,13 @@ router.post('/:teamId', authenticateToken, async (req, res, next) => {
     const finalCategory = validCategories.includes(category) ? category : 'general'
 
     const result = await pool.query(
-      `INSERT INTO team_suggestions (team_id, submitted_by, player_id, category, title, content, is_anonymous)
+      `INSERT INTO team_suggestions (team_id, submitted_by, pupil_id, category, title, content, is_anonymous)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING *`,
       [
         teamId,
         req.user.id,
-        req.user.player_id || null,
+        req.user.pupil_id || null,
         finalCategory,
         title.trim(),
         content.trim(),

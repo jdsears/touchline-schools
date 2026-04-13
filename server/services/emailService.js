@@ -88,7 +88,7 @@ const templates = {
           h1 { color: #0f172a; font-size: 24px; margin: 0 0 16px 0; }
           p { color: #475569; font-size: 16px; line-height: 1.6; margin: 0 0 16px 0; }
           .highlight { color: #2ED573; font-weight: 600; }
-          .player-name { color: #f97316; font-weight: 600; }
+          .pupil-name { color: #f97316; font-weight: 600; }
           .feature-list { background: #f8fafc; border-radius: 8px; padding: 20px; margin: 20px 0; }
           .feature-list li { color: #475569; margin: 8px 0; }
           .button { display: inline-block; background: #2ED573; color: white; text-decoration: none; padding: 14px 28px; border-radius: 8px; font-weight: 600; margin: 24px 0; }
@@ -101,7 +101,7 @@ const templates = {
         <div class="container">
           <div class="card">
             <div class="logo">⚽️</div>
-            <h1>Stay connected with <span class="player-name">${playerName}</span>'s football journey</h1>
+            <h1>Stay connected with <span class="pupil-name">${playerName}</span>'s football journey</h1>
             <p>You've been invited to join <span class="highlight">${teamName}</span> as ${playerName}'s parent.</p>
             <div class="feature-list">
               <p style="margin: 0 0 12px 0; font-weight: 600; color: #0f172a;">As a parent, you'll be able to:</p>
@@ -293,9 +293,9 @@ const templates = {
     text: `Congratulations ${playerName}!\n\nYou've been awarded: ${badgeTitle}!\n\n${badgeDescription}\n\n${reason ? `Coach's Note: "${reason}"\n\n` : ''}Awarded by ${awardedBy} on ${awardDate}\n\n${teamName}`
   }),
 
-  // Player of the Match
+  // Pupil of the Match
   potm: ({ teamName, playerName, matchInfo, reason, awardedBy }) => ({
-    subject: `⭐ Player of the Match: ${playerName}!`,
+    subject: `⭐ Pupil of the Match: ${playerName}!`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -308,7 +308,7 @@ const templates = {
           .card { background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%); border-radius: 12px; padding: 40px; box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3); }
           .star { text-align: center; font-size: 80px; margin-bottom: 16px; }
           h1 { color: #78350f; font-size: 20px; margin: 0 0 8px 0; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
-          .player-name { color: #92400e; font-size: 36px; font-weight: 700; text-align: center; margin: 0 0 8px 0; }
+          .pupil-name { color: #92400e; font-size: 36px; font-weight: 700; text-align: center; margin: 0 0 8px 0; }
           .match-info { color: #a16207; font-size: 16px; text-align: center; margin-bottom: 24px; }
           .reason-box { background: rgba(255,255,255,0.7); border-radius: 12px; padding: 20px; margin: 20px 0; }
           .reason-label { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #92400e; margin-bottom: 8px; }
@@ -321,8 +321,8 @@ const templates = {
         <div class="container">
           <div class="card">
             <div class="star">⭐</div>
-            <h1>Player of the Match</h1>
-            <p class="player-name">${playerName}</p>
+            <h1>Pupil of the Match</h1>
+            <p class="pupil-name">${playerName}</p>
             <p class="match-info">${matchInfo}</p>
             ${reason ? `
               <div class="reason-box">
@@ -384,7 +384,7 @@ const templates = {
     text: `${title}\n\n${message}${actionLink ? `\n\n${actionText || 'View Details'}: ${actionLink}` : ''}\n\n${teamName}`
   }),
 
-  // Compliance daily digest — sent to club owners & welfare officers
+  // Compliance daily digest — sent to school owners & welfare officers
   complianceDigest: ({ clubName, alertCount, alerts, scanDate }) => ({
     subject: `Compliance Alert: ${alertCount} critical issue${alertCount === 1 ? '' : 's'} for ${clubName}`,
     html: `
@@ -483,7 +483,7 @@ const templates = {
                 <span class="detail-value">${expiryDate}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Club</span>
+                <span class="detail-label">School</span>
                 <span class="detail-value">${clubName}</span>
               </div>
             </div>
@@ -549,7 +549,7 @@ const templates = {
                 <span class="detail-value">${expiryDate}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Club</span>
+                <span class="detail-label">School</span>
                 <span class="detail-value">${clubName}</span>
               </div>
             </div>
@@ -617,7 +617,7 @@ const templates = {
                 <span class="detail-value">${incidentDate}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Club</span>
+                <span class="detail-label">School</span>
                 <span class="detail-value">${clubName}</span>
               </div>
             </div>
@@ -695,7 +695,7 @@ const templates = {
                 <span class="detail-value">${updatedBy}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Club</span>
+                <span class="detail-label">School</span>
                 <span class="detail-value">${clubName}</span>
               </div>
             </div>
@@ -722,7 +722,7 @@ const templates = {
     text: `Incident Updated: ${incidentType}\n\nStatus: ${status || 'Updated'}\nUpdated by: ${updatedBy}\nClub: ${clubName}\n\n${updateSummary ? `Update: ${updateSummary}\n\n` : ''}${actionLink ? `View incident: ${actionLink}\n\n` : ''}This email contains confidential safeguarding information. Do not forward this email.`
   }),
 
-  // Event registration confirmation — sent to parent/guardian after registering for a club event
+  // Event registration confirmation — sent to parent/guardian after registering for a school event
   eventRegistrationConfirmation: ({ clubName, eventTitle, eventDate, eventTime, venueName, venueAddress, recipientName, isPaid, amountPaid, confirmationText }) => ({
     subject: `Registration Confirmed: ${eventTitle}`,
     html: `
@@ -773,7 +773,7 @@ const templates = {
               </div>
             ` : ''}
             ${confirmationText ? `<div class="custom-text">${confirmationText}</div>` : ''}
-            <p style="font-size: 14px; color: #94a3b8;">If you need to make any changes to your registration, please contact the club directly.</p>
+            <p style="font-size: 14px; color: #94a3b8;">If you need to make any changes to your registration, please contact the school directly.</p>
           </div>
           <div class="footer">
             <p>${clubName} - via Touchline</p>
@@ -782,7 +782,7 @@ const templates = {
       </body>
       </html>
     `,
-    text: `Registration Confirmed: ${eventTitle}\n\nHi ${recipientName},\n\nYour registration has been confirmed.\n\nEvent: ${eventTitle}\nDate: ${eventDate} at ${eventTime}\nVenue: ${venueName}${venueAddress ? `, ${venueAddress}` : ''}\n${isPaid ? `Amount paid: £${(amountPaid / 100).toFixed(2)}\n` : ''}\n${confirmationText ? `${confirmationText}\n\n` : ''}If you need to make any changes, please contact the club directly.\n\n${clubName}`
+    text: `Registration Confirmed: ${eventTitle}\n\nHi ${recipientName},\n\nYour registration has been confirmed.\n\nEvent: ${eventTitle}\nDate: ${eventDate} at ${eventTime}\nVenue: ${venueName}${venueAddress ? `, ${venueAddress}` : ''}\n${isPaid ? `Amount paid: £${(amountPaid / 100).toFixed(2)}\n` : ''}\n${confirmationText ? `${confirmationText}\n\n` : ''}If you need to make any changes, please contact the school directly.\n\n${clubName}`
   }),
 
   // Event cancelled — notification to registered participants
@@ -820,7 +820,7 @@ const templates = {
               <p class="cancelled-text">${eventTitle}</p>
               <p class="cancelled-detail">Originally scheduled for ${eventDate}</p>
             </div>
-            <p>If you made a payment for this event, the club will arrange a refund. Please contact the club directly if you have any questions.</p>
+            <p>If you made a payment for this event, the school will arrange a refund. Please contact the school directly if you have any questions.</p>
           </div>
           <div class="footer">
             <p>${clubName} - via Touchline</p>
@@ -829,7 +829,7 @@ const templates = {
       </body>
       </html>
     `,
-    text: `Event Cancelled: ${eventTitle}\n\nHi ${recipientName},\n\nWe're sorry to let you know that the following event has been cancelled.\n\nEvent: ${eventTitle}\nOriginally scheduled for: ${eventDate}\n\nIf you made a payment, the club will arrange a refund. Please contact the club directly if you have any questions.\n\n${clubName}`
+    text: `Event Cancelled: ${eventTitle}\n\nHi ${recipientName},\n\nWe're sorry to let you know that the following event has been cancelled.\n\nEvent: ${eventTitle}\nOriginally scheduled for: ${eventDate}\n\nIf you made a payment, the school will arrange a refund. Please contact the school directly if you have any questions.\n\n${clubName}`
   }),
 
   // Session created — notification to team parents about new training/match session
@@ -1042,7 +1042,7 @@ const templates = {
               <ul style="margin: 0; padding-left: 20px;">
                 <li>AI-powered session planning</li>
                 <li>Video analysis and highlights</li>
-                <li>Player development tracking</li>
+                <li>Pupil development tracking</li>
                 <li>Match preparation tools</li>
               </ul>
             </div>
@@ -1058,7 +1058,7 @@ const templates = {
       </body>
       </html>
     `,
-    text: `Your Touchline trial ends in ${daysRemaining} days\n\nHi ${ownerName},\n\nYour free trial of Touchline for ${teamName} ends on ${trialEndDate}.\n\nDon't lose access to:\n- AI-powered session planning\n- Video analysis and highlights\n- Player development tracking\n- Match preparation tools\n\nChoose a plan now: ${pricingLink}`
+    text: `Your Touchline trial ends in ${daysRemaining} days\n\nHi ${ownerName},\n\nYour free trial of Touchline for ${teamName} ends on ${trialEndDate}.\n\nDon't lose access to:\n- AI-powered session planning\n- Video analysis and highlights\n- Pupil development tracking\n- Match preparation tools\n\nChoose a plan now: ${pricingLink}`
   }),
 
   // Trial ending tomorrow — sent 1 day before trial expires
@@ -1254,7 +1254,7 @@ const templates = {
                 <span class="detail-value">${planName}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Player</span>
+                <span class="detail-label">Pupil</span>
                 <span class="detail-value">${playerName}</span>
               </div>
             </div>
@@ -1321,7 +1321,7 @@ const templates = {
                 <span class="detail-value">${planName}</span>
               </div>
               <div class="detail-row">
-                <span class="detail-label">Player</span>
+                <span class="detail-label">Pupil</span>
                 <span class="detail-value">${playerName}</span>
               </div>
             </div>
@@ -1329,7 +1329,7 @@ const templates = {
             <div style="text-align: center;">
               <a href="${paymentLink}" class="button">Pay Now</a>
             </div>
-            <p style="font-size: 14px; color: #94a3b8;">If you're having difficulty with payments, please contact the club directly.</p>
+            <p style="font-size: 14px; color: #94a3b8;">If you're having difficulty with payments, please contact the school directly.</p>
           </div>
           <div class="footer">
             <p>${clubName} - via Touchline</p>
@@ -1338,7 +1338,7 @@ const templates = {
       </body>
       </html>
     `,
-    text: `Payment Overdue\n\nHi ${guardianName},\n\nA payment to ${clubName} is overdue.\n\nAmount: £${amount}\nWas due: ${dueDate}\nPlan: ${planName}\nPlayer: ${playerName}\n\nPlease make this payment as soon as possible: ${paymentLink}\n\nIf you're having difficulty with payments, please contact the club directly.\n\n${clubName}`
+    text: `Payment Overdue\n\nHi ${guardianName},\n\nA payment to ${clubName} is overdue.\n\nAmount: £${amount}\nWas due: ${dueDate}\nPlan: ${planName}\nPlayer: ${playerName}\n\nPlease make this payment as soon as possible: ${paymentLink}\n\nIf you're having difficulty with payments, please contact the school directly.\n\n${clubName}`
   }),
 
   passwordReset: ({ resetUrl }) => ({

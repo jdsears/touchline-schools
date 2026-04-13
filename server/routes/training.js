@@ -65,7 +65,7 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
 // Generate training session using AI (team route)
 router.post('/generate', authenticateToken, async (req, res, next) => {
   try {
-    const { teamId, duration, focusAreas, players, constraints } = req.body
+    const { teamId, duration, focusAreas, pupils, constraints } = req.body
 
     if (!duration || !focusAreas || focusAreas.length === 0) {
       return res.status(400).json({ message: 'Duration and focus areas are required' })
@@ -101,7 +101,7 @@ router.post('/generate', authenticateToken, async (req, res, next) => {
     const session = await generateTrainingSession({
       duration,
       focusAreas,
-      players,
+      pupils,
       constraints,
       teamFormat,
       ageGroup,

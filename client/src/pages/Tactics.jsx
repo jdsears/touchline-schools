@@ -96,279 +96,279 @@ const TACTICAL_ZONES = {
 // Base positions (used as default) and phase-specific offsets
 const defaultPositions = {
   '4-3-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, playerId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 52, playerId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 46, playerId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 52, playerId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 25, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 25, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 30, y: 52, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 50, y: 46, pupilId: null },
+    { id: 'CM3', label: 'CM', x: 70, y: 52, pupilId: null },
+    { id: 'LW', label: 'LW', x: 20, y: 25, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
+    { id: 'RW', label: 'RW', x: 80, y: 25, pupilId: null },
   ],
   '4-4-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, playerId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 48, playerId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 52, playerId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 52, playerId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 48, playerId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, playerId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
+    { id: 'LM', label: 'LM', x: 15, y: 48, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 35, y: 52, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 65, y: 52, pupilId: null },
+    { id: 'RM', label: 'RM', x: 85, y: 48, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
   ],
   '4-2-3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, playerId: null },
-    { id: 'CDM1', label: 'CDM', x: 35, y: 58, playerId: null },
-    { id: 'CDM2', label: 'CDM', x: 65, y: 58, playerId: null },
-    { id: 'LAM', label: 'LAM', x: 20, y: 38, playerId: null },
-    { id: 'CAM', label: 'CAM', x: 50, y: 35, playerId: null },
-    { id: 'RAM', label: 'RAM', x: 80, y: 38, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
+    { id: 'CDM1', label: 'CDM', x: 35, y: 58, pupilId: null },
+    { id: 'CDM2', label: 'CDM', x: 65, y: 58, pupilId: null },
+    { id: 'LAM', label: 'LAM', x: 20, y: 38, pupilId: null },
+    { id: 'CAM', label: 'CAM', x: 50, y: 35, pupilId: null },
+    { id: 'RAM', label: 'RAM', x: 80, y: 38, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
   ],
   '3-5-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'CB1', label: 'CB', x: 25, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, playerId: null },
-    { id: 'CB3', label: 'CB', x: 75, y: 78, playerId: null },
-    { id: 'LWB', label: 'LWB', x: 10, y: 52, playerId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 55, playerId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 50, playerId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 55, playerId: null },
-    { id: 'RWB', label: 'RWB', x: 90, y: 52, playerId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, playerId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 25, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
+    { id: 'CB3', label: 'CB', x: 75, y: 78, pupilId: null },
+    { id: 'LWB', label: 'LWB', x: 10, y: 52, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 30, y: 55, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 50, y: 50, pupilId: null },
+    { id: 'CM3', label: 'CM', x: 70, y: 55, pupilId: null },
+    { id: 'RWB', label: 'RWB', x: 90, y: 52, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
   ],
   '3-4-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'CB1', label: 'CB', x: 25, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, playerId: null },
-    { id: 'CB3', label: 'CB', x: 75, y: 78, playerId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 52, playerId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 55, playerId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 55, playerId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 52, playerId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 22, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 22, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 25, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
+    { id: 'CB3', label: 'CB', x: 75, y: 78, pupilId: null },
+    { id: 'LM', label: 'LM', x: 15, y: 52, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 35, y: 55, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 65, y: 55, pupilId: null },
+    { id: 'RM', label: 'RM', x: 85, y: 52, pupilId: null },
+    { id: 'LW', label: 'LW', x: 20, y: 22, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
+    { id: 'RW', label: 'RW', x: 80, y: 22, pupilId: null },
   ],
   '4-1-4-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, playerId: null },
-    { id: 'CDM', label: 'CDM', x: 50, y: 60, playerId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 42, playerId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 45, playerId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 45, playerId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 42, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
+    { id: 'CDM', label: 'CDM', x: 50, y: 60, pupilId: null },
+    { id: 'LM', label: 'LM', x: 15, y: 42, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 35, y: 45, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 65, y: 45, pupilId: null },
+    { id: 'RM', label: 'RM', x: 85, y: 42, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
   ],
   '4-5-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, playerId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 48, playerId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 52, playerId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 48, playerId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 52, playerId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 48, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
+    { id: 'LM', label: 'LM', x: 15, y: 48, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 30, y: 52, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 50, y: 48, pupilId: null },
+    { id: 'CM3', label: 'CM', x: 70, y: 52, pupilId: null },
+    { id: 'RM', label: 'RM', x: 85, y: 48, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
   ],
   '5-3-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LWB', label: 'LWB', x: 10, y: 65, playerId: null },
-    { id: 'CB1', label: 'CB', x: 28, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, playerId: null },
-    { id: 'CB3', label: 'CB', x: 72, y: 78, playerId: null },
-    { id: 'RWB', label: 'RWB', x: 90, y: 65, playerId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 50, playerId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 45, playerId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 50, playerId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, playerId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LWB', label: 'LWB', x: 10, y: 65, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 28, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
+    { id: 'CB3', label: 'CB', x: 72, y: 78, pupilId: null },
+    { id: 'RWB', label: 'RWB', x: 90, y: 65, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 30, y: 50, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 50, y: 45, pupilId: null },
+    { id: 'CM3', label: 'CM', x: 70, y: 50, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
   ],
   '5-4-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LWB', label: 'LWB', x: 10, y: 65, playerId: null },
-    { id: 'CB1', label: 'CB', x: 28, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, playerId: null },
-    { id: 'CB3', label: 'CB', x: 72, y: 78, playerId: null },
-    { id: 'RWB', label: 'RWB', x: 90, y: 65, playerId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 45, playerId: null },
-    { id: 'CM1', label: 'CM', x: 40, y: 48, playerId: null },
-    { id: 'CM2', label: 'CM', x: 60, y: 48, playerId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 45, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LWB', label: 'LWB', x: 10, y: 65, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 28, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
+    { id: 'CB3', label: 'CB', x: 72, y: 78, pupilId: null },
+    { id: 'RWB', label: 'RWB', x: 90, y: 65, pupilId: null },
+    { id: 'LM', label: 'LM', x: 20, y: 45, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 40, y: 48, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 60, y: 48, pupilId: null },
+    { id: 'RM', label: 'RM', x: 80, y: 45, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
   ],
 }
 
 // 9-a-side default positions (8 outfield + GK)
 const defaultPositions9 = {
   '3-3-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 20, y: 72, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 80, y: 72, playerId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 48, playerId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 45, playerId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 48, playerId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, playerId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 20, y: 72, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 80, y: 72, pupilId: null },
+    { id: 'LM', label: 'LM', x: 20, y: 48, pupilId: null },
+    { id: 'CM', label: 'CM', x: 50, y: 45, pupilId: null },
+    { id: 'RM', label: 'RM', x: 80, y: 48, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
   ],
   '3-2-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 20, y: 72, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 80, y: 72, playerId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 50, playerId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 50, playerId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 22, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 22, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 20, y: 72, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 80, y: 72, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 35, y: 50, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 65, y: 50, pupilId: null },
+    { id: 'LW', label: 'LW', x: 20, y: 22, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
+    { id: 'RW', label: 'RW', x: 80, y: 22, pupilId: null },
   ],
   '2-4-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 48, playerId: null },
-    { id: 'CM1', label: 'CM', x: 38, y: 52, playerId: null },
-    { id: 'CM2', label: 'CM', x: 62, y: 52, playerId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 48, playerId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, playerId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'LM', label: 'LM', x: 15, y: 48, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 38, y: 52, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 62, y: 52, pupilId: null },
+    { id: 'RM', label: 'RM', x: 85, y: 48, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
   ],
   '3-1-3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 20, y: 72, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 78, playerId: null },
-    { id: 'RB', label: 'RB', x: 80, y: 72, playerId: null },
-    { id: 'CDM', label: 'CDM', x: 50, y: 58, playerId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 38, playerId: null },
-    { id: 'CAM', label: 'CAM', x: 50, y: 35, playerId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 38, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 20, y: 72, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 78, pupilId: null },
+    { id: 'RB', label: 'RB', x: 80, y: 72, pupilId: null },
+    { id: 'CDM', label: 'CDM', x: 50, y: 58, pupilId: null },
+    { id: 'LM', label: 'LM', x: 20, y: 38, pupilId: null },
+    { id: 'CAM', label: 'CAM', x: 50, y: 35, pupilId: null },
+    { id: 'RM', label: 'RM', x: 80, y: 38, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
   ],
   '2-3-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 52, playerId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 55, playerId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 52, playerId: null },
-    { id: 'LAM', label: 'AM', x: 35, y: 32, playerId: null },
-    { id: 'RAM', label: 'AM', x: 65, y: 32, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'LM', label: 'LM', x: 20, y: 52, pupilId: null },
+    { id: 'CM', label: 'CM', x: 50, y: 55, pupilId: null },
+    { id: 'RM', label: 'RM', x: 80, y: 52, pupilId: null },
+    { id: 'LAM', label: 'AM', x: 35, y: 32, pupilId: null },
+    { id: 'RAM', label: 'AM', x: 65, y: 32, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
   ],
   '2-3-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, playerId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, playerId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 50, playerId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 48, playerId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 50, playerId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 22, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, playerId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 22, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
+    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
+    { id: 'LM', label: 'LM', x: 20, y: 50, pupilId: null },
+    { id: 'CM', label: 'CM', x: 50, y: 48, pupilId: null },
+    { id: 'RM', label: 'RM', x: 80, y: 50, pupilId: null },
+    { id: 'LW', label: 'LW', x: 20, y: 22, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
+    { id: 'RW', label: 'RW', x: 80, y: 22, pupilId: null },
   ],
 }
 
 // 7-a-side default positions (6 outfield + GK)
 const defaultPositions7 = {
   '2-3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 25, y: 72, playerId: null },
-    { id: 'RB', label: 'RB', x: 75, y: 72, playerId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 45, playerId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 48, playerId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 45, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 25, y: 72, pupilId: null },
+    { id: 'RB', label: 'RB', x: 75, y: 72, pupilId: null },
+    { id: 'LM', label: 'LM', x: 20, y: 45, pupilId: null },
+    { id: 'CM', label: 'CM', x: 50, y: 48, pupilId: null },
+    { id: 'RM', label: 'RM', x: 80, y: 45, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
   ],
   '3-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 22, y: 72, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 75, playerId: null },
-    { id: 'RB', label: 'RB', x: 78, y: 72, playerId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 45, playerId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 45, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 22, y: 72, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 75, pupilId: null },
+    { id: 'RB', label: 'RB', x: 78, y: 72, pupilId: null },
+    { id: 'CM1', label: 'CM', x: 35, y: 45, pupilId: null },
+    { id: 'CM2', label: 'CM', x: 65, y: 45, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
   ],
   '2-1-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 25, y: 72, playerId: null },
-    { id: 'RB', label: 'RB', x: 75, y: 72, playerId: null },
-    { id: 'CDM', label: 'CDM', x: 50, y: 55, playerId: null },
-    { id: 'LM', label: 'LM', x: 25, y: 35, playerId: null },
-    { id: 'RM', label: 'RM', x: 75, y: 35, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 25, y: 72, pupilId: null },
+    { id: 'RB', label: 'RB', x: 75, y: 72, pupilId: null },
+    { id: 'CDM', label: 'CDM', x: 50, y: 55, pupilId: null },
+    { id: 'LM', label: 'LM', x: 25, y: 35, pupilId: null },
+    { id: 'RM', label: 'RM', x: 75, y: 35, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
   ],
   '1-2-1-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 75, playerId: null },
-    { id: 'LM', label: 'LM', x: 22, y: 52, playerId: null },
-    { id: 'RM', label: 'RM', x: 78, y: 52, playerId: null },
-    { id: 'CAM', label: 'CAM', x: 50, y: 35, playerId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, playerId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 75, pupilId: null },
+    { id: 'LM', label: 'LM', x: 22, y: 52, pupilId: null },
+    { id: 'RM', label: 'RM', x: 78, y: 52, pupilId: null },
+    { id: 'CAM', label: 'CAM', x: 50, y: 35, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
   ],
   '3-1-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, playerId: null },
-    { id: 'LB', label: 'LB', x: 22, y: 72, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 75, playerId: null },
-    { id: 'RB', label: 'RB', x: 78, y: 72, playerId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 45, playerId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, playerId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
+    { id: 'LB', label: 'LB', x: 22, y: 72, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 75, pupilId: null },
+    { id: 'RB', label: 'RB', x: 78, y: 72, pupilId: null },
+    { id: 'CM', label: 'CM', x: 50, y: 45, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
   ],
 }
 
 // 5-a-side default positions (4 outfield + GK)
 const defaultPositions5 = {
   '2-1-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, playerId: null },
-    { id: 'LB', label: 'LB', x: 25, y: 65, playerId: null },
-    { id: 'RB', label: 'RB', x: 75, y: 65, playerId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 42, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
+    { id: 'LB', label: 'LB', x: 25, y: 65, pupilId: null },
+    { id: 'RB', label: 'RB', x: 75, y: 65, pupilId: null },
+    { id: 'CM', label: 'CM', x: 50, y: 42, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
   ],
   '1-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 68, playerId: null },
-    { id: 'LM', label: 'LM', x: 25, y: 42, playerId: null },
-    { id: 'RM', label: 'RM', x: 75, y: 42, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 68, pupilId: null },
+    { id: 'LM', label: 'LM', x: 25, y: 42, pupilId: null },
+    { id: 'RM', label: 'RM', x: 75, y: 42, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
   ],
   '2-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, playerId: null },
-    { id: 'LB', label: 'LB', x: 28, y: 65, playerId: null },
-    { id: 'RB', label: 'RB', x: 72, y: 65, playerId: null },
-    { id: 'ST1', label: 'ST', x: 28, y: 28, playerId: null },
-    { id: 'ST2', label: 'ST', x: 72, y: 28, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
+    { id: 'LB', label: 'LB', x: 28, y: 65, pupilId: null },
+    { id: 'RB', label: 'RB', x: 72, y: 65, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 28, y: 28, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 72, y: 28, pupilId: null },
   ],
   '1-1-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 68, playerId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 45, playerId: null },
-    { id: 'ST1', label: 'ST', x: 30, y: 22, playerId: null },
-    { id: 'ST2', label: 'ST', x: 70, y: 22, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 68, pupilId: null },
+    { id: 'CM', label: 'CM', x: 50, y: 45, pupilId: null },
+    { id: 'ST1', label: 'ST', x: 30, y: 22, pupilId: null },
+    { id: 'ST2', label: 'ST', x: 70, y: 22, pupilId: null },
   ],
   '3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, playerId: null },
-    { id: 'LB', label: 'LB', x: 22, y: 62, playerId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 68, playerId: null },
-    { id: 'RB', label: 'RB', x: 78, y: 62, playerId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 22, playerId: null },
+    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
+    { id: 'LB', label: 'LB', x: 22, y: 62, pupilId: null },
+    { id: 'CB', label: 'CB', x: 50, y: 68, pupilId: null },
+    { id: 'RB', label: 'RB', x: 78, y: 62, pupilId: null },
+    { id: 'ST', label: 'ST', x: 50, y: 22, pupilId: null },
   ],
 }
 
@@ -671,7 +671,7 @@ function validatePositions(savedPositions, formationName, teamFormat = 11) {
           ...pos,
           x: safeCoord(pos.x, 50),
           y: safeCoord(pos.y, 50),
-          playerId: pos.playerId ?? null,
+          pupilId: pos.pupilId ?? null,
         }))
       }
     }
@@ -700,7 +700,7 @@ function validatePositions(savedPositions, formationName, teamFormat = 11) {
     // All positions are accounted for - check if all IDs match
     const allIdsMatch = defaults.every(d => savedMap.has(d.id))
     if (allIdsMatch) {
-      // Use saved positions with their x, y, playerId, and label values
+      // Use saved positions with their x, y, pupilId, and label values
       return defaults.map(d => {
         const saved = savedMap.get(d.id)
         return {
@@ -710,7 +710,7 @@ function validatePositions(savedPositions, formationName, teamFormat = 11) {
           // Use saved coordinates with fallback to defaults for extra safety
           x: safeCoord(saved.x, d.x),
           y: safeCoord(saved.y, d.y),
-          playerId: saved.playerId ?? null,
+          pupilId: saved.pupilId ?? null,
         }
       })
     }
@@ -726,7 +726,7 @@ function validatePositions(savedPositions, formationName, teamFormat = 11) {
         label: saved.label || d.label,
         x: safeCoord(saved.x, d.x),
         y: safeCoord(saved.y, d.y),
-        playerId: saved.playerId ?? null,
+        pupilId: saved.pupilId ?? null,
       }
     }
     return { ...d }
@@ -734,7 +734,7 @@ function validatePositions(savedPositions, formationName, teamFormat = 11) {
 }
 
 export default function Tactics() {
-  const { team, updateTeam, players } = useTeam()
+  const { team, updateTeam, pupils } = useTeam()
 
   // Determine available formations based on team format
   const teamFormat = team?.team_format || 11
@@ -804,7 +804,7 @@ export default function Tactics() {
     const offsets = getPhaseOffsets(formation, positions)
     const phaseOffset = offsets[tacticalPhase] || {}
 
-    // Smart ball-reactive positioning — players shift realistically based on ball position
+    // Smart ball-reactive positioning — pupils shift realistically based on ball position
     // Uses role-specific intelligence: near-side FB overlaps, far-side tucks in, etc.
     const getBallInfluence = (posId, posLabel, baseX, baseY) => {
       // Ball position normalized: -1 (far left) to 1 (far right), -1 (attacking end) to 1 (defensive end)
@@ -990,7 +990,7 @@ export default function Tactics() {
     label: pos.label,
     x: typeof pos.x === 'number' && !isNaN(pos.x) ? Math.max(0, Math.min(100, pos.x)) : 50,
     y: typeof pos.y === 'number' && !isNaN(pos.y) ? Math.max(0, Math.min(100, pos.y)) : 50,
-    playerId: pos.playerId ?? null,
+    pupilId: pos.pupilId ?? null,
   }))
 
   // Auto-save on unmount (tab change/navigation)
@@ -1172,31 +1172,31 @@ export default function Tactics() {
     }
   }
 
-  function assignPlayerToPosition(playerId) {
+  function assignPlayerToPosition(pupilId) {
     if (!selectedPosition) return
 
     localChangesRef.current = true
 
     const newPositions = positions.map(pos => ({
       ...pos,
-      playerId: pos.playerId === playerId ? null : pos.playerId,
+      pupilId: pos.pupilId === pupilId ? null : pos.pupilId,
     }))
 
     const posIndex = newPositions.findIndex(p => p.id === selectedPosition)
     if (posIndex !== -1) {
-      newPositions[posIndex] = { ...newPositions[posIndex], playerId }
+      newPositions[posIndex] = { ...newPositions[posIndex], pupilId }
     }
 
     setPositions(newPositions)
     setSelectedPosition(null)
     // Remove from bench if they were a sub — they're now starting
-    setBenchPlayerIds(prev => prev.filter(id => id !== playerId))
+    setBenchPlayerIds(prev => prev.filter(id => id !== pupilId))
   }
 
   function removePlayerFromPosition(positionId) {
     localChangesRef.current = true
     setPositions(prevPositions => prevPositions.map(pos =>
-      pos.id === positionId ? { ...pos, playerId: null } : pos
+      pos.id === positionId ? { ...pos, pupilId: null } : pos
     ))
   }
 
@@ -1209,7 +1209,7 @@ export default function Tactics() {
       return
     }
 
-    // If we're in swap mode (first position with player was selected)
+    // If we're in swap mode (first position with pupil was selected)
     if (swapMode && selectedPosition) {
       const fromPositionId = selectedPosition
       localChangesRef.current = true
@@ -1217,33 +1217,33 @@ export default function Tactics() {
       setPositions(prevPositions => {
         const clickedPos = prevPositions.find(p => p.id === positionId)
         const selectedPos = prevPositions.find(p => p.id === fromPositionId)
-        const clickedHasPlayer = clickedPos?.playerId != null
+        const clickedHasPlayer = clickedPos?.pupilId != null
 
         if (clickedHasPlayer) {
-          // Swap players between positions
+          // Swap pupils between positions
           if (!selectedPos) return prevPositions
           // Show toast after state update
           setTimeout(() => toast.success('Players swapped!'), 0)
           return prevPositions.map(pos => {
             if (pos.id === fromPositionId) {
-              return { ...pos, playerId: clickedPos.playerId }
+              return { ...pos, pupilId: clickedPos.pupilId }
             }
             if (pos.id === positionId) {
-              return { ...pos, playerId: selectedPos.playerId }
+              return { ...pos, pupilId: selectedPos.pupilId }
             }
             return pos
           })
         } else {
-          // Move player to empty position
+          // Move pupil to empty position
           if (!selectedPos) return prevPositions
           // Show toast after state update
-          setTimeout(() => toast.success('Player moved!'), 0)
+          setTimeout(() => toast.success('Pupil moved!'), 0)
           return prevPositions.map(pos => {
             if (pos.id === positionId) {
-              return { ...pos, playerId: selectedPos.playerId }
+              return { ...pos, pupilId: selectedPos.pupilId }
             }
             if (pos.id === fromPositionId) {
-              return { ...pos, playerId: null }
+              return { ...pos, pupilId: null }
             }
             return pos
           })
@@ -1256,50 +1256,50 @@ export default function Tactics() {
 
     // Start new selection
     const clickedPos = positions.find(p => p.id === positionId)
-    const clickedHasPlayer = clickedPos?.playerId != null
+    const clickedHasPlayer = clickedPos?.pupilId != null
     setSelectedPosition(positionId)
-    // Enable swap mode if clicked position has a player
+    // Enable swap mode if clicked position has a pupil
     setSwapMode(clickedHasPlayer)
   }
 
   function getPlayerForPosition(positionId) {
     const pos = positions.find(p => p.id === positionId)
-    if (!pos?.playerId) return null
-    return players.find(p => p.id === pos.playerId)
+    if (!pos?.pupilId) return null
+    return pupils.find(p => p.id === pos.pupilId)
   }
 
   function getAssignedPlayerIds() {
-    return positions.filter(p => p.playerId).map(p => p.playerId)
+    return positions.filter(p => p.pupilId).map(p => p.pupilId)
   }
 
   function getPlayerById(id) {
-    return players.find(p => p.id === id)
+    return pupils.find(p => p.id === id)
   }
 
-  // Get players on the bench (explicitly selected as subs)
+  // Get pupils on the bench (explicitly selected as subs)
   function getBenchPlayers() {
-    return players.filter(p => benchPlayerIds.includes(p.id))
+    return pupils.filter(p => benchPlayerIds.includes(p.id))
   }
 
-  function toggleBenchPlayer(playerId) {
+  function toggleBenchPlayer(pupilId) {
     setBenchPlayerIds(prev => {
-      const updated = prev.includes(playerId)
-        ? prev.filter(id => id !== playerId)
-        : [...prev, playerId]
+      const updated = prev.includes(pupilId)
+        ? prev.filter(id => id !== pupilId)
+        : [...prev, pupilId]
       setHasUnsavedChanges(true)
       return updated
     })
   }
 
-  // Get players currently on pitch (starting XI)
+  // Get pupils currently on pitch (starting XI)
   function getStartingPlayers() {
     const assignedIds = getAssignedPlayerIds()
-    return players.filter(p => assignedIds.includes(p.id))
+    return pupils.filter(p => assignedIds.includes(p.id))
   }
 
   function addPlannedSub() {
     if (!newSub.minute || !newSub.playerOffId || !newSub.playerOnId) {
-      toast.error('Please fill in minute, player off, and player on')
+      toast.error('Please fill in minute, pupil off, and pupil on')
       return
     }
     const sub = {
@@ -1612,7 +1612,7 @@ export default function Tactics() {
                     </button>
                     <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-navy-800 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-navy-700">
                       <div className="text-xs font-semibold text-white">Movement Arrows</div>
-                      <div className="text-[10px] text-navy-400 mt-0.5">Show player movement patterns for the current phase</div>
+                      <div className="text-[10px] text-navy-400 mt-0.5">Show pupil movement patterns for the current phase</div>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-navy-800" />
                     </div>
                   </div>
@@ -2056,7 +2056,7 @@ export default function Tactics() {
                   )}
                 </AnimatePresence>
 
-                {/* Player positions */}
+                {/* Pupil positions */}
                 {displayedPositions.map((pos, index) => {
                   const assignedPlayer = getPlayerForPosition(pos.id)
                   const isSelected = selectedPosition === pos.id
@@ -2109,13 +2109,13 @@ export default function Tactics() {
                             ? `Click to swap with ${assignedPlayer.name}`
                             : assignedPlayer
                               ? `${assignedPlayer.name} - Click to swap/move`
-                              : `Assign player to ${pos.label}`
+                              : `Assign pupil to ${pos.label}`
                         }
                       >
                         {assignedPlayer?.squad_number || ''}
                       </button>
 
-                      {/* Player name below circle */}
+                      {/* Pupil name below circle */}
                       <span
                         className="mt-1 text-[10px] font-medium text-white text-center px-1.5 py-0.5 rounded bg-black/50 backdrop-blur-sm whitespace-nowrap max-w-[70px] truncate select-none"
                       >
@@ -2131,10 +2131,10 @@ export default function Tactics() {
                 {tacticalPhase
                   ? `Viewing ${tacticalPhase === PHASES.IN_POSSESSION ? 'attacking' : tacticalPhase === PHASES.OUT_OF_POSSESSION ? 'defensive' : 'transition'} shape. Drag ball to see position shifts.`
                   : swapMode && selectedPosition
-                    ? 'Click another player to swap positions, or an empty position to move them'
+                    ? 'Click another pupil to swap positions, or an empty position to move them'
                     : selectedPosition
-                      ? 'Select a player from the list to assign them'
-                      : 'Click a position to assign/swap players, drag to reposition'
+                      ? 'Select a pupil from the list to assign them'
+                      : 'Click a position to assign/swap pupils, drag to reposition'
                 }
               </p>
             </div>
@@ -2150,15 +2150,15 @@ export default function Tactics() {
               </h2>
 
               <div className="space-y-1 max-h-72 overflow-y-auto">
-                {players.length > 0 ? players.map(player => {
-                  const isAssigned = assignedPlayerIds.includes(player.id)
-                  const isBench = benchPlayerIds.includes(player.id)
-                  const assignedPosition = positions.find(p => p.playerId === player.id)
+                {pupils.length > 0 ? pupils.map(pupil => {
+                  const isAssigned = assignedPlayerIds.includes(pupil.id)
+                  const isBench = benchPlayerIds.includes(pupil.id)
+                  const assignedPosition = positions.find(p => p.pupilId === pupil.id)
 
                   return (
                     <div
-                      key={player.id}
-                      onClick={() => !isAssigned && selectedPosition && assignPlayerToPosition(player.id)}
+                      key={pupil.id}
+                      onClick={() => !isAssigned && selectedPosition && assignPlayerToPosition(pupil.id)}
                       className={`
                         flex items-center gap-3 p-2 rounded-lg text-sm transition-all
                         ${isAssigned
@@ -2175,11 +2175,11 @@ export default function Tactics() {
                         w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
                         ${isAssigned ? 'bg-pitch-500 text-white' : isBench ? 'bg-energy-500 text-white' : 'bg-navy-700 text-navy-300'}
                       `}>
-                        {player.squad_number || '-'}
+                        {pupil.squad_number || '-'}
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className={isAssigned ? 'text-white' : isBench ? 'text-white' : 'text-navy-300'}>
-                          {player.name}
+                          {pupil.name}
                         </span>
                         {isAssigned && assignedPosition && (
                           <span className="ml-2 text-xs text-pitch-400">
@@ -2207,7 +2207,7 @@ export default function Tactics() {
                         <button
                           onClick={(e) => {
                             e.stopPropagation()
-                            toggleBenchPlayer(player.id)
+                            toggleBenchPlayer(pupil.id)
                           }}
                           className={`p-1 transition-colors ${isBench ? 'text-energy-400 hover:text-energy-300' : 'text-navy-500 hover:text-energy-400'}`}
                           title={isBench ? 'Remove from bench' : 'Add to bench'}
@@ -2218,11 +2218,11 @@ export default function Tactics() {
                     </div>
                   )
                 }) : (
-                  <p className="text-navy-500 text-sm">No players added yet</p>
+                  <p className="text-navy-500 text-sm">No pupils added yet</p>
                 )}
               </div>
 
-              {players.length > 0 && (
+              {pupils.length > 0 && (
                 <div className="mt-3 space-y-1">
                   <p className="text-xs text-navy-500">
                     {assignedPlayerIds.length} of {positions.length} starting &middot; {benchPlayerIds.filter(id => !assignedPlayerIds.includes(id)).length} on bench
@@ -2303,7 +2303,7 @@ export default function Tactics() {
                         className={`input input-sm ${hasFoot ? 'flex-1' : 'w-full'}`}
                       >
                         <option value="">Not assigned</option>
-                        {players.map(p => (
+                        {pupils.map(p => (
                           <option key={p.id} value={p.id}>{p.name}</option>
                         ))}
                       </select>
@@ -2475,9 +2475,9 @@ export default function Tactics() {
             </div>
 
             {/* Playing Time Calculator */}
-            {players.length > 0 && (
+            {pupils.length > 0 && (
               <PlayingTimeCalculator
-                squad={players.map(p => ({ ...p, selected: true }))}
+                squad={pupils.map(p => ({ ...p, selected: true }))}
                 teamFormat={teamFormat}
                 formation={formation}
                 formationPositions={positions}
@@ -2668,32 +2668,32 @@ export default function Tactics() {
                     </div>
 
                     <div>
-                      <label className="label">Player Off</label>
+                      <label className="label">Pupil Off</label>
                       <select
                         value={newSub.playerOffId}
                         onChange={(e) => setNewSub({ ...newSub, playerOffId: e.target.value })}
                         className="input"
                       >
                         <option value="">Select...</option>
-                        {getStartingPlayers().map(player => (
-                          <option key={player.id} value={player.id}>
-                            {player.squad_number} - {formatPlayerName(player.name)}
+                        {getStartingPlayers().map(pupil => (
+                          <option key={pupil.id} value={pupil.id}>
+                            {pupil.squad_number} - {formatPlayerName(pupil.name)}
                           </option>
                         ))}
                       </select>
                     </div>
 
                     <div>
-                      <label className="label">Player On</label>
+                      <label className="label">Pupil On</label>
                       <select
                         value={newSub.playerOnId}
                         onChange={(e) => setNewSub({ ...newSub, playerOnId: e.target.value })}
                         className="input"
                       >
                         <option value="">Select...</option>
-                        {getBenchPlayers().map(player => (
-                          <option key={player.id} value={player.id}>
-                            {player.squad_number} - {formatPlayerName(player.name)}
+                        {getBenchPlayers().map(pupil => (
+                          <option key={pupil.id} value={pupil.id}>
+                            {pupil.squad_number} - {formatPlayerName(pupil.name)}
                           </option>
                         ))}
                       </select>
@@ -2763,13 +2763,13 @@ export default function Tactics() {
                   </div>
                 )}
 
-                {/* Bench players info */}
+                {/* Bench pupils info */}
                 <div className="space-y-2">
                   <h3 className="text-sm font-semibold text-white">Bench</h3>
                   <div className="flex flex-wrap gap-2">
-                    {getBenchPlayers().length > 0 ? getBenchPlayers().map(player => (
-                      <span key={player.id} className="px-2 py-1 bg-energy-500/20 text-energy-400 rounded text-xs">
-                        {player.squad_number} {formatPlayerName(player.name)}
+                    {getBenchPlayers().length > 0 ? getBenchPlayers().map(pupil => (
+                      <span key={pupil.id} className="px-2 py-1 bg-energy-500/20 text-energy-400 rounded text-xs">
+                        {pupil.squad_number} {formatPlayerName(pupil.name)}
                       </span>
                     )) : (
                       <span className="text-navy-500 text-sm">No subs selected. Use the <ArrowRightLeft className="w-3 h-3 inline" /> button in Available Players to add subs.</span>
@@ -2831,7 +2831,7 @@ export default function Tactics() {
 
               <div className="p-6 space-y-4">
                 <p className="text-sm text-navy-400">
-                  Save the current player positions as a custom formation you can reuse later.
+                  Save the current pupil positions as a custom formation you can reuse later.
                 </p>
 
                 <div>
@@ -2889,7 +2889,7 @@ export default function Tactics() {
         <TacticsPrintView
           onClose={() => setShowPrintView(false)}
           positions={positions}
-          players={players}
+          pupils={pupils}
           formation={formation}
           teamFormat={teamFormat}
           teamName={team?.name}

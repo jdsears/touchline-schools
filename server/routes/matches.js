@@ -4,7 +4,7 @@ import { authenticateToken } from '../middleware/auth.js'
 import { generateMatchPrep, generateMatchReport, generatePepTalk } from '../services/claudeService.js'
 import { sendPotmEmail, sendSquadAnnouncementEmail, sendAvailabilityRequestEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
 import { sendPushToUser } from '../services/pushService.js'
-import { normalizePositions } from '../utils/playerUtils.js'
+import { normalizePositions } from '../utils/pupilUtils.js'
 import { getFrontendUrl } from '../utils/urlUtils.js'
 import { uploadFile, deleteFile } from '../services/storageService.js'
 import multer from 'multer'
@@ -152,7 +152,7 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
   }
 })
 
-// Share match prep with players (dedicated endpoint)
+// Share match prep with pupils (dedicated endpoint)
 router.post('/:id/prep/share', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -467,7 +467,7 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
          ORDER BY lt.points DESC, (lt.goals_for - lt.goals_against) DESC`,
         [match.team_id]
       ),
-      // Squad players with recent observations
+      // Squad pupils with recent observations
       pool.query(
         `SELECT p.id, p.name, p.positions,
                 COALESCE(
@@ -477,8 +477,8 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
                   ) FILTER (WHERE o.id IS NOT NULL),
                   '[]'
                 ) as observations
-         FROM players p
-         LEFT JOIN observations o ON o.player_id = p.id AND o.created_at > NOW() - INTERVAL '60 days'
+         FROM pupils p
+         LEFT JOIN observations o ON o.pupil_id = p.id AND o.created_at > NOW() - INTERVAL '60 days'
          WHERE p.team_id = $1 AND p.is_active = true
          GROUP BY p.id, p.name, p.positions
          HAVING COUNT(o.id) > 0
@@ -490,85 +490,85 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
         `SELECT p.name, p.positions as registered_positions, ms.position as match_position,
                 ms.is_starting, ms.notes
          FROM match_squads ms
-         JOIN players p ON ms.player_id = p.id
+         JOIN pupils p ON ms.pupil_id = p.id
          WHERE ms.match_id = $1
          ORDER BY ms.is_starting DESC, ms.position`,
         [id]
       ),
     ])
 
-    // Resolve tactics board player-position assignments to names
+    // Resolve tactics board pupil-position assignments to names
     let tacticsPositions = null
     const teamPositions = typeof team.positions === 'string' ? JSON.parse(team.positions) : team.positions
     const teamBenchPlayers = typeof team.bench_players === 'string' ? JSON.parse(team.bench_players) : (team.bench_players || [])
 
-    // Collect all available player IDs (starting XI + bench) so we can filter observations
+    // Collect all available pupil IDs (starting XI + bench) so we can filter observations
     let availablePlayerIds = []
 
     if (teamPositions && Array.isArray(teamPositions)) {
-      const assignedPositions = teamPositions.filter(p => p.playerId)
+      const assignedPositions = teamPositions.filter(p => p.pupilId)
       if (assignedPositions.length > 0) {
-        const playerIds = assignedPositions.map(p => String(p.playerId))
-        availablePlayerIds.push(...playerIds)
+        const pupilIds = assignedPositions.map(p => String(p.pupilId))
+        availablePlayerIds.push(...pupilIds)
         const playerNamesRes = await pool.query(
-          'SELECT id, name FROM players WHERE id::text = ANY($1)',
-          [playerIds]
+          'SELECT id, name FROM pupils WHERE id::text = ANY($1)',
+          [pupilIds]
         )
         const nameMap = Object.fromEntries(playerNamesRes.rows.map(p => [String(p.id), p.name]))
         tacticsPositions = assignedPositions.map(p => ({
           position: p.label,
-          playerName: nameMap[String(p.playerId)] || 'Unknown',
+          playerName: nameMap[String(p.pupilId)] || 'Unknown',
         }))
       }
     }
 
-    // Add bench player IDs to available list and resolve their names
+    // Add bench pupil IDs to available list and resolve their names
     let benchPlayerNames = []
     if (teamBenchPlayers.length > 0) {
       const benchIds = teamBenchPlayers.map(id => String(id))
       availablePlayerIds.push(...benchIds)
       const benchNamesRes = await pool.query(
-        'SELECT id, name, positions FROM players WHERE id::text = ANY($1)',
+        'SELECT id, name, positions FROM pupils WHERE id::text = ANY($1)',
         [benchIds]
       )
       benchPlayerNames = benchNamesRes.rows
     }
 
-    // Also include match squad player IDs if present
+    // Also include match squad pupil IDs if present
     if (matchSquadRes.rows.length > 0) {
       // match_squads are definitive — override tactics-based available list
       availablePlayerIds = []
       const squadPlayerRes = await pool.query(
-        'SELECT p.id FROM match_squads ms JOIN players p ON ms.player_id = p.id WHERE ms.match_id = $1',
+        'SELECT p.id FROM match_squads ms JOIN pupils p ON ms.pupil_id = p.id WHERE ms.match_id = $1',
         [id]
       )
       availablePlayerIds = squadPlayerRes.rows.map(r => String(r.id))
     }
 
-    // Filter squad observations to only available players (starting XI + bench)
+    // Filter squad observations to only available pupils (starting XI + bench)
     let filteredObservations = squadObsRes.rows
     if (availablePlayerIds.length > 0) {
       filteredObservations = squadObsRes.rows.filter(p => availablePlayerIds.includes(String(p.id)))
     }
 
-    // Resolve set piece taker IDs to player names (stored inside game_model)
+    // Resolve set piece taker IDs to pupil names (stored inside game_model)
     let setPieceTakers = null
     const teamGameModel = typeof team.game_model === 'string' ? JSON.parse(team.game_model) : team.game_model
     const rawTakers = teamGameModel?.setPieceTakers
     if (rawTakers && Object.values(rawTakers).some(v => v)) {
-      // Separate player ID fields from metadata fields (like _foot preferences)
+      // Separate pupil ID fields from metadata fields (like _foot preferences)
       const footFields = ['corners_left_foot', 'corners_right_foot']
       const playerEntries = Object.entries(rawTakers).filter(([key, val]) => val && !footFields.includes(key))
       const takerIds = [...new Set(playerEntries.map(([, val]) => String(val)))]
       if (takerIds.length > 0) {
         const takerNamesRes = await pool.query(
-          'SELECT id, name FROM players WHERE id::text = ANY($1)',
+          'SELECT id, name FROM pupils WHERE id::text = ANY($1)',
           [takerIds]
         )
         const takerNameMap = Object.fromEntries(takerNamesRes.rows.map(p => [String(p.id), p.name]))
         setPieceTakers = {}
-        for (const [role, playerId] of playerEntries) {
-          if (playerId) setPieceTakers[role] = takerNameMap[String(playerId)] || null
+        for (const [role, pupilId] of playerEntries) {
+          if (pupilId) setPieceTakers[role] = takerNameMap[String(pupilId)] || null
         }
         // Pass through foot preferences directly
         for (const field of footFields) {
@@ -639,7 +639,7 @@ router.get('/:id/report', authenticateToken, async (req, res, next) => {
   }
 })
 
-// Generate AI match report for parents/players
+// Generate AI match report for parents/pupils
 router.post('/:id/report/generate', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -673,11 +673,11 @@ router.post('/:id/report/generate', authenticateToken, async (req, res, next) =>
       }
     }
 
-    // Load player of the match
+    // Load pupil of the match
     let playerOfMatch = null
     if (match.player_of_match_id) {
       const pomResult = await pool.query(
-        'SELECT name FROM players WHERE id = $1',
+        'SELECT name FROM pupils WHERE id = $1',
         [match.player_of_match_id]
       )
       if (pomResult.rows.length > 0) {
@@ -695,8 +695,8 @@ router.post('/:id/report/generate', authenticateToken, async (req, res, next) =>
         `SELECT mg.minute, mg.goal_type, mg.notes,
                 sp.name as scorer_name, ap.name as assist_name
          FROM match_goals mg
-         LEFT JOIN players sp ON mg.scorer_player_id = sp.id
-         LEFT JOIN players ap ON mg.assist_player_id = ap.id
+         LEFT JOIN pupils sp ON mg.scorer_pupil_id = sp.id
+         LEFT JOIN pupils ap ON mg.assist_pupil_id = ap.id
          WHERE mg.match_id = $1
          ORDER BY mg.minute ASC NULLS LAST`,
         [id]
@@ -721,7 +721,7 @@ router.post('/:id/report/generate', authenticateToken, async (req, res, next) =>
   }
 })
 
-// Publish/unpublish match report to Player Zone
+// Publish/unpublish match report to Pupil Zone
 router.post('/:id/report/publish', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -753,7 +753,7 @@ router.post('/:id/report/publish', authenticateToken, async (req, res, next) => 
     res.json({
       success: true,
       published: updatedReport.published,
-      message: updatedReport.published ? 'Report shared to Player Zone' : 'Report hidden from Player Zone'
+      message: updatedReport.published ? 'Report shared to Pupil Zone' : 'Report hidden from Pupil Zone'
     })
   } catch (error) {
     next(error)
@@ -793,10 +793,10 @@ router.put('/:id/report', authenticateToken, async (req, res, next) => {
   }
 })
 
-// Generate pre-match pep talk for a player
-router.post('/:id/pep-talk/:playerId', authenticateToken, async (req, res, next) => {
+// Generate pre-match pep talk for a pupil
+router.post('/:id/pep-talk/:pupilId', authenticateToken, async (req, res, next) => {
   try {
-    const { id, playerId } = req.params
+    const { id, pupilId } = req.params
 
     // Get match details
     const matchResult = await pool.query('SELECT * FROM matches WHERE id = $1', [id])
@@ -805,25 +805,25 @@ router.post('/:id/pep-talk/:playerId', authenticateToken, async (req, res, next)
     }
     const match = matchResult.rows[0]
 
-    // Get player details
-    const playerResult = await pool.query('SELECT * FROM players WHERE id = $1', [playerId])
+    // Get pupil details
+    const playerResult = await pool.query('SELECT * FROM pupils WHERE id = $1', [pupilId])
     if (playerResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Player not found' })
+      return res.status(404).json({ message: 'Pupil not found' })
     }
-    const player = playerResult.rows[0]
+    const pupil = playerResult.rows[0]
 
     // Get team details
     const teamResult = await pool.query('SELECT * FROM teams WHERE id = $1', [match.team_id])
     const team = teamResult.rows[0]
 
-    // Get match-day position if player is in the match squad
+    // Get match-day position if pupil is in the match squad
     const squadResult = await pool.query(
-      'SELECT position FROM match_squads WHERE match_id = $1 AND player_id = $2',
-      [id, playerId]
+      'SELECT position FROM match_squads WHERE match_id = $1 AND pupil_id = $2',
+      [id, pupilId]
     )
     const matchPosition = squadResult.rows[0]?.position || null
 
-    // Fetch recent video analysis insights for this player
+    // Fetch recent video analysis insights for this pupil
     let videoInsights = []
     try {
       const videoAnalysisResult = await pool.query(
@@ -838,8 +838,8 @@ router.post('/:id/pep-talk/:playerId', authenticateToken, async (req, res, next)
         const feedback = analysis.player_feedback
         if (Array.isArray(feedback)) {
           const playerNotes = feedback.filter(f =>
-            f.name?.toLowerCase() === player.name?.toLowerCase() ||
-            (player.squad_number && f.squad_number === player.squad_number)
+            f.name?.toLowerCase() === pupil.name?.toLowerCase() ||
+            (pupil.squad_number && f.squad_number === pupil.squad_number)
           )
           if (playerNotes.length > 0) {
             videoInsights.push(...playerNotes)
@@ -852,7 +852,7 @@ router.post('/:id/pep-talk/:playerId', authenticateToken, async (req, res, next)
     }
 
     // Generate pep talk
-    const pepTalk = await generatePepTalk(match, player, team, matchPosition, videoInsights)
+    const pepTalk = await generatePepTalk(match, pupil, team, matchPosition, videoInsights)
 
     res.json({ pepTalk })
   } catch (error) {
@@ -870,8 +870,8 @@ router.get('/:id/goals', authenticateToken, async (req, res, next) => {
               sp.name AS scorer_name, sp.squad_number AS scorer_number,
               ap.name AS assist_name, ap.squad_number AS assist_number
        FROM match_goals mg
-       LEFT JOIN players sp ON mg.scorer_player_id = sp.id
-       LEFT JOIN players ap ON mg.assist_player_id = ap.id
+       LEFT JOIN pupils sp ON mg.scorer_pupil_id = sp.id
+       LEFT JOIN pupils ap ON mg.assist_pupil_id = ap.id
        WHERE mg.match_id = $1
        ORDER BY mg.minute ASC NULLS LAST, mg.created_at ASC`,
       [req.params.id]
@@ -892,8 +892,8 @@ async function ensureMatchGoalsTable() {
     CREATE TABLE IF NOT EXISTS match_goals (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
-      scorer_player_id UUID REFERENCES players(id) ON DELETE SET NULL,
-      assist_player_id UUID REFERENCES players(id) ON DELETE SET NULL,
+      scorer_pupil_id UUID REFERENCES pupils(id) ON DELETE SET NULL,
+      assist_pupil_id UUID REFERENCES pupils(id) ON DELETE SET NULL,
       minute INTEGER,
       goal_type VARCHAR(20) DEFAULT 'open_play',
       notes TEXT,
@@ -908,20 +908,20 @@ async function ensureMatchGoalsTable() {
 router.post('/:id/goals', authenticateToken, async (req, res, next) => {
   try {
     await ensureMatchGoalsTable()
-    const { scorer_player_id, assist_player_id, minute, goal_type, notes } = req.body
+    const { scorer_pupil_id, assist_pupil_id, minute, goal_type, notes } = req.body
     const result = await pool.query(
-      `INSERT INTO match_goals (match_id, scorer_player_id, assist_player_id, minute, goal_type, notes)
+      `INSERT INTO match_goals (match_id, scorer_pupil_id, assist_pupil_id, minute, goal_type, notes)
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-      [req.params.id, scorer_player_id || null, assist_player_id || null, minute || null, goal_type || 'open_play', notes || null]
+      [req.params.id, scorer_pupil_id || null, assist_pupil_id || null, minute || null, goal_type || 'open_play', notes || null]
     )
-    // Join player names for the response
+    // Join pupil names for the response
     const goal = result.rows[0]
-    if (goal.scorer_player_id) {
-      const sp = await pool.query('SELECT name, squad_number FROM players WHERE id = $1', [goal.scorer_player_id])
+    if (goal.scorer_pupil_id) {
+      const sp = await pool.query('SELECT name, squad_number FROM pupils WHERE id = $1', [goal.scorer_pupil_id])
       if (sp.rows[0]) { goal.scorer_name = sp.rows[0].name; goal.scorer_number = sp.rows[0].squad_number }
     }
-    if (goal.assist_player_id) {
-      const ap = await pool.query('SELECT name, squad_number FROM players WHERE id = $1', [goal.assist_player_id])
+    if (goal.assist_pupil_id) {
+      const ap = await pool.query('SELECT name, squad_number FROM pupils WHERE id = $1', [goal.assist_pupil_id])
       if (ap.rows[0]) { goal.assist_name = ap.rows[0].name; goal.assist_number = ap.rows[0].squad_number }
     }
     res.status(201).json(goal)
@@ -950,8 +950,8 @@ router.get('/:id/substitutions', authenticateToken, async (req, res, next) => {
               poff.name AS player_off_name, poff.squad_number AS player_off_number,
               pon.name AS player_on_name, pon.squad_number AS player_on_number
        FROM match_substitutions ms
-       LEFT JOIN players poff ON ms.player_off_id = poff.id
-       LEFT JOIN players pon ON ms.player_on_id = pon.id
+       LEFT JOIN pupils poff ON ms.pupil_off_id = poff.id
+       LEFT JOIN pupils pon ON ms.pupil_on_id = pon.id
        WHERE ms.match_id = $1
        ORDER BY ms.minute ASC NULLS LAST, ms.created_at ASC`,
       [req.params.id]
@@ -966,22 +966,22 @@ router.get('/:id/substitutions', authenticateToken, async (req, res, next) => {
 // POST /matches/:id/substitutions — add a substitution
 router.post('/:id/substitutions', authenticateToken, async (req, res, next) => {
   try {
-    const { player_off_id, player_on_id, minute, notes } = req.body
-    if (!player_off_id && !player_on_id) {
-      return res.status(400).json({ message: 'At least one player is required' })
+    const { pupil_off_id, pupil_on_id, minute, notes } = req.body
+    if (!pupil_off_id && !pupil_on_id) {
+      return res.status(400).json({ message: 'At least one pupil is required' })
     }
     const result = await pool.query(
-      `INSERT INTO match_substitutions (match_id, player_off_id, player_on_id, minute, notes)
+      `INSERT INTO match_substitutions (match_id, pupil_off_id, pupil_on_id, minute, notes)
        VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-      [req.params.id, player_off_id || null, player_on_id || null, minute || null, notes || null]
+      [req.params.id, pupil_off_id || null, pupil_on_id || null, minute || null, notes || null]
     )
     const sub = result.rows[0]
-    if (sub.player_off_id) {
-      const p = await pool.query('SELECT name, squad_number FROM players WHERE id = $1', [sub.player_off_id])
+    if (sub.pupil_off_id) {
+      const p = await pool.query('SELECT name, squad_number FROM pupils WHERE id = $1', [sub.pupil_off_id])
       if (p.rows[0]) { sub.player_off_name = p.rows[0].name; sub.player_off_number = p.rows[0].squad_number }
     }
-    if (sub.player_on_id) {
-      const p = await pool.query('SELECT name, squad_number FROM players WHERE id = $1', [sub.player_on_id])
+    if (sub.pupil_on_id) {
+      const p = await pool.query('SELECT name, squad_number FROM pupils WHERE id = $1', [sub.pupil_on_id])
       if (p.rows[0]) { sub.player_on_name = p.rows[0].name; sub.player_on_number = p.rows[0].squad_number }
     }
     res.status(201).json(sub)
@@ -1002,29 +1002,29 @@ router.delete('/:id/substitutions/:subId', authenticateToken, async (req, res, n
 
 // ============== PLAYER OF THE MATCH ==============
 
-// Set player of the match
-router.post('/:id/player-of-match', authenticateToken, async (req, res, next) => {
+// Set pupil of the match
+router.post('/:id/pupil-of-match', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { player_id, reason } = req.body
+    const { pupil_id, reason } = req.body
 
     // Check manager role
     if (!['manager', 'assistant'].includes(req.user.role)) {
-      return res.status(403).json({ message: 'Only managers can set player of the match' })
+      return res.status(403).json({ message: 'Only managers can set pupil of the match' })
     }
 
-    if (!player_id) {
-      return res.status(400).json({ message: 'player_id is required' })
+    if (!pupil_id) {
+      return res.status(400).json({ message: 'pupil_id is required' })
     }
 
-    // Update match with player of the match
+    // Update match with pupil of the match
     const result = await pool.query(
       `UPDATE matches SET
         player_of_match_id = $1,
         player_of_match_reason = $2,
         updated_at = NOW()
        WHERE id = $3 RETURNING *`,
-      [player_id, reason || null, id]
+      [pupil_id, reason || null, id]
     )
 
     if (result.rows.length === 0) {
@@ -1033,26 +1033,26 @@ router.post('/:id/player-of-match', authenticateToken, async (req, res, next) =>
 
     const match = result.rows[0]
 
-    // Get player info for response and notifications
+    // Get pupil info for response and notifications
     const playerResult = await pool.query(
-      'SELECT p.*, t.name as team_name FROM players p JOIN teams t ON p.team_id = t.id WHERE p.id = $1',
-      [player_id]
+      'SELECT p.*, t.name as team_name FROM pupils p JOIN teams t ON p.team_id = t.id WHERE p.id = $1',
+      [pupil_id]
     )
-    const player = playerResult.rows[0]
+    const pupil = playerResult.rows[0]
 
-    // Create notification for player (if they have a user account)
-    if (player?.user_id) {
+    // Create notification for pupil (if they have a user account)
+    if (pupil?.user_id) {
       await pool.query(
         `INSERT INTO notifications (user_id, team_id, type, title, message, data)
          VALUES ($1, $2, $3, $4, $5, $6)`,
         [
-          player.user_id,
-          player.team_id,
+          pupil.user_id,
+          pupil.team_id,
           'potm',
-          `⭐ Player of the Match!`,
+          `⭐ Pupil of the Match!`,
           reason
-            ? `You were named Player of the Match vs ${match.opponent}! "${reason}"`
-            : `You were named Player of the Match vs ${match.opponent}!`,
+            ? `You were named Pupil of the Match vs ${match.opponent}! "${reason}"`
+            : `You were named Pupil of the Match vs ${match.opponent}!`,
           JSON.stringify({
             match_id: id,
             opponent: match.opponent,
@@ -1065,11 +1065,11 @@ router.post('/:id/player-of-match', authenticateToken, async (req, res, next) =>
 
     // Also notify parent if they have a linked account
     const parentContacts = []
-    if (player?.parent_contact) {
+    if (pupil?.parent_contact) {
       try {
-        const contacts = typeof player.parent_contact === 'string'
-          ? JSON.parse(player.parent_contact)
-          : player.parent_contact
+        const contacts = typeof pupil.parent_contact === 'string'
+          ? JSON.parse(pupil.parent_contact)
+          : pupil.parent_contact
         if (Array.isArray(contacts)) {
           parentContacts.push(...contacts.filter(c => c.email))
         }
@@ -1097,18 +1097,18 @@ router.post('/:id/player-of-match', authenticateToken, async (req, res, next) =>
           notifValues.push(`($${paramIdx}, $${paramIdx+1}, $${paramIdx+2}, $${paramIdx+3}, $${paramIdx+4}, $${paramIdx+5})`)
           notifParams.push(
             userId,
-            player.team_id,
+            pupil.team_id,
             'potm',
-            `⭐ ${player.name} - Player of the Match!`,
+            `⭐ ${pupil.name} - Pupil of the Match!`,
             reason
-              ? `${player.name} was named Player of the Match vs ${match.opponent}! "${reason}"`
-              : `${player.name} was named Player of the Match vs ${match.opponent}!`,
+              ? `${pupil.name} was named Pupil of the Match vs ${match.opponent}! "${reason}"`
+              : `${pupil.name} was named Pupil of the Match vs ${match.opponent}!`,
             JSON.stringify({
               match_id: id,
               opponent: match.opponent,
               match_date: match.date,
-              player_id,
-              player_name: player.name,
+              pupil_id,
+              player_name: pupil.name,
               reason
             })
           )
@@ -1126,8 +1126,8 @@ router.post('/:id/player-of-match', authenticateToken, async (req, res, next) =>
       // Send POTM emails in parallel
       await Promise.allSettled(parentContacts.map(contact =>
         sendPotmEmail(contact.email, {
-          teamName: player.team_name,
-          playerName: player.name,
+          teamName: pupil.team_name,
+          playerName: pupil.name,
           matchInfo,
           reason,
           awardedBy: req.user.name,
@@ -1137,17 +1137,17 @@ router.post('/:id/player-of-match', authenticateToken, async (req, res, next) =>
 
     res.json({
       match,
-      player_name: player?.name
+      player_name: pupil?.name
     })
   } catch (error) {
     next(error)
   }
 })
 
-// Get player of the match stats for a player
-router.get('/potm-stats/:playerId', authenticateToken, async (req, res, next) => {
+// Get pupil of the match stats for a pupil
+router.get('/potm-stats/:pupilId', authenticateToken, async (req, res, next) => {
   try {
-    const { playerId } = req.params
+    const { pupilId } = req.params
 
     const result = await pool.query(
       `SELECT
@@ -1161,7 +1161,7 @@ router.get('/potm-stats/:playerId', authenticateToken, async (req, res, next) =>
         ) ORDER BY m.date DESC) as awards
        FROM matches m
        WHERE m.player_of_match_id = $1`,
-      [playerId]
+      [pupilId]
     )
 
     res.json(result.rows[0])
@@ -1186,7 +1186,7 @@ router.delete('/:id', authenticateToken, async (req, res, next) => {
 
 // ============== AVAILABILITY ENDPOINTS ==============
 
-// Get match availability for all players
+// Get match availability for all pupils
 router.get('/:id/availability', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -1198,10 +1198,10 @@ router.get('/:id/availability', authenticateToken, async (req, res, next) => {
     }
     const { team_id } = matchResult.rows[0]
 
-    // Get all players with their availability status
+    // Get all pupils with their availability status
     const result = await pool.query(
       `SELECT
-        p.id as player_id,
+        p.id as pupil_id,
         p.name as player_name,
         p.squad_number,
         p.positions,
@@ -1209,8 +1209,8 @@ router.get('/:id/availability', authenticateToken, async (req, res, next) => {
         ma.notes,
         ma.responded_at,
         ma.user_id
-       FROM players p
-       LEFT JOIN match_availability ma ON ma.player_id = p.id AND ma.match_id = $1
+       FROM pupils p
+       LEFT JOIN match_availability ma ON ma.pupil_id = p.id AND ma.match_id = $1
        WHERE p.team_id = $2 AND p.is_active = true
        ORDER BY p.name`,
       [id, team_id]
@@ -1228,14 +1228,14 @@ router.get('/:id/availability', authenticateToken, async (req, res, next) => {
   }
 })
 
-// Update availability for a player (can be called by parent/player or manager)
+// Update availability for a pupil (can be called by parent/pupil or manager)
 router.post('/:id/availability', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { player_id, status, notes } = req.body
+    const { pupil_id, status, notes } = req.body
 
-    if (!player_id || !status) {
-      return res.status(400).json({ message: 'player_id and status are required' })
+    if (!pupil_id || !status) {
+      return res.status(400).json({ message: 'pupil_id and status are required' })
     }
 
     if (!['available', 'unavailable', 'maybe', 'pending'].includes(status)) {
@@ -1244,12 +1244,12 @@ router.post('/:id/availability', authenticateToken, async (req, res, next) => {
 
     // Upsert availability
     const result = await pool.query(
-      `INSERT INTO match_availability (match_id, player_id, user_id, status, notes, responded_at)
+      `INSERT INTO match_availability (match_id, pupil_id, user_id, status, notes, responded_at)
        VALUES ($1, $2, $3, $4, $5, NOW())
-       ON CONFLICT (match_id, player_id)
+       ON CONFLICT (match_id, pupil_id)
        DO UPDATE SET status = $4, notes = $5, user_id = $3, responded_at = NOW(), updated_at = NOW()
        RETURNING *`,
-      [id, player_id, req.user.id, status, notes || null]
+      [id, pupil_id, req.user.id, status, notes || null]
     )
 
     res.json(result.rows[0])
@@ -1262,7 +1262,7 @@ router.post('/:id/availability', authenticateToken, async (req, res, next) => {
 router.post('/:id/availability/bulk', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { availabilities } = req.body // Array of { player_id, status, notes }
+    const { availabilities } = req.body // Array of { pupil_id, status, notes }
 
     if (!Array.isArray(availabilities)) {
       return res.status(400).json({ message: 'availabilities must be an array' })
@@ -1270,14 +1270,14 @@ router.post('/:id/availability/bulk', authenticateToken, async (req, res, next) 
 
     const results = []
     for (const avail of availabilities) {
-      const { player_id, status, notes } = avail
+      const { pupil_id, status, notes } = avail
       const result = await pool.query(
-        `INSERT INTO match_availability (match_id, player_id, user_id, status, notes, responded_at)
+        `INSERT INTO match_availability (match_id, pupil_id, user_id, status, notes, responded_at)
          VALUES ($1, $2, $3, $4, $5, NOW())
-         ON CONFLICT (match_id, player_id)
+         ON CONFLICT (match_id, pupil_id)
          DO UPDATE SET status = $4, notes = $5, user_id = $3, responded_at = NOW(), updated_at = NOW()
          RETURNING *`,
-        [id, player_id, req.user.id, status, notes || null]
+        [id, pupil_id, req.user.id, status, notes || null]
       )
       results.push(result.rows[0])
     }
@@ -1302,7 +1302,7 @@ router.get('/:id/squad', authenticateToken, async (req, res, next) => {
         p.squad_number,
         p.positions as player_positions
        FROM match_squads ms
-       JOIN players p ON ms.player_id = p.id
+       JOIN pupils p ON ms.pupil_id = p.id
        WHERE ms.match_id = $1
        ORDER BY ms.is_starting DESC, p.name`,
       [id]
@@ -1324,7 +1324,7 @@ router.get('/:id/squad', authenticateToken, async (req, res, next) => {
 router.post('/:id/squad', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { squad } = req.body // Array of { player_id, position, is_starting }
+    const { squad } = req.body // Array of { pupil_id, position, is_starting }
 
     if (!Array.isArray(squad)) {
       return res.status(400).json({ message: 'squad must be an array' })
@@ -1340,12 +1340,12 @@ router.post('/:id/squad', authenticateToken, async (req, res, next) => {
 
     // Insert new squad
     const results = []
-    for (const player of squad) {
-      const { player_id, position, is_starting, notes } = player
+    for (const pupil of squad) {
+      const { pupil_id, position, is_starting, notes } = pupil
       const result = await pool.query(
-        `INSERT INTO match_squads (match_id, player_id, position, is_starting, notes)
+        `INSERT INTO match_squads (match_id, pupil_id, position, is_starting, notes)
          VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [id, player_id, position || null, is_starting || false, notes || null]
+        [id, pupil_id, position || null, is_starting || false, notes || null]
       )
       results.push(result.rows[0])
     }
@@ -1402,14 +1402,14 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
     const teamName = teamResult.rows[0]?.name || 'Your Team'
     const teamTz = teamResult.rows[0]?.timezone || 'Europe/London'
 
-    // Get squad with player details and linked Player Lounge accounts
+    // Get squad with pupil details and linked Pupil Lounge accounts
     const squadResult = await client.query(
       `SELECT ms.*, p.name as player_name,
               COALESCE(p.user_id, u.id) as user_id,
               u.email as user_email
        FROM match_squads ms
-       JOIN players p ON ms.player_id = p.id
-       LEFT JOIN users u ON u.player_id = p.id
+       JOIN pupils p ON ms.pupil_id = p.id
+       LEFT JOIN users u ON u.pupil_id = p.id
        WHERE ms.match_id = $1`,
       [id]
     )
@@ -1425,17 +1425,17 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
     })
 
     const batchEmails = []
-    for (const player of squadResult.rows) {
-      if (!player.user_email) continue
+    for (const pupil of squadResult.rows) {
+      if (!pupil.user_email) continue
       batchEmails.push({
-        to: player.user_email,
+        to: pupil.user_email,
         template: 'squadAnnouncement',
         data: {
           teamName,
           matchInfo,
-          playerName: player.player_name,
-          position: player.position || 'TBD',
-          isStarting: player.is_starting,
+          playerName: pupil.player_name,
+          position: pupil.position || 'TBD',
+          isStarting: pupil.is_starting,
           matchDate,
           meetupTime: meetup_time ? new Date(meetup_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: teamTz }) : null,
           meetupLocation: meetup_location || null,
@@ -1456,7 +1456,7 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
       [id, meetup_time || null, meetup_location || null]
     )
 
-    // Batch insert notifications for all squad players with accounts
+    // Batch insert notifications for all squad pupils with accounts
     const squadWithAccounts = squadResult.rows.filter(p => p.user_id)
     if (squadWithAccounts.length > 0) {
       try {
@@ -1464,18 +1464,18 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
         const notifParams = []
         let paramIdx = 1
         const matchDateStr = new Date(match.date || match.match_date).toLocaleDateString('en-GB', { timeZone: teamTz })
-        for (const player of squadWithAccounts) {
-          const message = `You have been selected for the match against ${match.opponent} on ${matchDateStr}. ${player.is_starting ? 'You are in the starting lineup!' : 'You are on the bench.'}`
+        for (const pupil of squadWithAccounts) {
+          const message = `You have been selected for the match against ${match.opponent} on ${matchDateStr}. ${pupil.is_starting ? 'You are in the starting lineup!' : 'You are on the bench.'}`
           notifValues.push(`($${paramIdx}, $${paramIdx+1}, 'squad_announcement', $${paramIdx+2}, $${paramIdx+3}, $${paramIdx+4})`)
           notifParams.push(
-            player.user_id,
+            pupil.user_id,
             match.team_id,
             `Squad Announcement: ${match.opponent}`,
             message,
             JSON.stringify({
               match_id: id,
-              position: player.position,
-              is_starting: player.is_starting,
+              position: pupil.position,
+              is_starting: pupil.is_starting,
               meetup_time,
               meetup_location
             })
@@ -1492,11 +1492,11 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
       }
 
       // Send push notifications (fire-and-forget)
-      for (const player of squadWithAccounts) {
-        sendPushToUser(player.user_id, {
+      for (const pupil of squadWithAccounts) {
+        sendPushToUser(pupil.user_id, {
           title: `Squad: ${match.opponent}`,
-          body: player.is_starting
-            ? `You're starting! Position: ${player.position || 'TBD'}`
+          body: pupil.is_starting
+            ? `You're starting! Position: ${pupil.position || 'TBD'}`
             : `You're in the squad for ${match.opponent}`,
           tag: `squad-${id}`,
           url: `/matches/${id}`,
@@ -1506,7 +1506,7 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
 
     await client.query('COMMIT')
 
-    console.log(`Squad announced for match ${id}: ${squadResult.rows.length} players, ${emailsSent}/${batchEmails.length} emails sent to linked accounts`)
+    console.log(`Squad announced for match ${id}: ${squadResult.rows.length} pupils, ${emailsSent}/${batchEmails.length} emails sent to linked accounts`)
 
     res.json({
       message: 'Squad announced',
@@ -1524,7 +1524,7 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
   }
 })
 
-// Request availability (send notifications to all players)
+// Request availability (send notifications to all pupils)
 router.post('/:id/availability/request', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -1555,18 +1555,18 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
     const teamName = teamResult.rows[0]?.name || 'Your Team'
     const teamTz = teamResult.rows[0]?.timezone || 'Europe/London'
 
-    // Get players — optionally filter to only those who haven't responded
+    // Get pupils — optionally filter to only those who haven't responded
     const playersResult = await pool.query(
       `SELECT p.*, u.id as user_id, u.email as user_email
-       FROM players p
-       LEFT JOIN users u ON u.player_id = p.id
-       ${pendingOnly ? 'LEFT JOIN match_availability ma ON ma.player_id = p.id AND ma.match_id = $2' : ''}
+       FROM pupils p
+       LEFT JOIN users u ON u.pupil_id = p.id
+       ${pendingOnly ? 'LEFT JOIN match_availability ma ON ma.pupil_id = p.id AND ma.match_id = $2' : ''}
        WHERE p.team_id = $1 AND (p.is_active IS NULL OR p.is_active = true)
        ${pendingOnly ? 'AND ma.id IS NULL' : ''}`,
       pendingOnly ? [match.team_id, id] : [match.team_id]
     )
 
-    // Batch insert notifications for all players with linked accounts
+    // Batch insert notifications for all pupils with linked accounts
     const playersWithAccounts = playersResult.rows.filter(p => p.user_id)
     let notified = playersWithAccounts.length
     if (playersWithAccounts.length > 0) {
@@ -1577,9 +1577,9 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
       const notifMessage = `Please confirm your availability for the match against ${match.opponent} on ${new Date(match.date).toLocaleDateString('en-GB', { timeZone: teamTz })}.${deadline ? ` Respond by ${new Date(deadline).toLocaleDateString('en-GB', { timeZone: teamTz })}.` : ''}`
       const notifData = JSON.stringify({ match_id: id, deadline })
 
-      for (const player of playersWithAccounts) {
+      for (const pupil of playersWithAccounts) {
         notifValues.push(`($${paramIdx}, $${paramIdx+1}, 'availability_request', $${paramIdx+2}, $${paramIdx+3}, $${paramIdx+4})`)
-        notifParams.push(player.user_id, match.team_id, notifTitle, notifMessage, notifData)
+        notifParams.push(pupil.user_id, match.team_id, notifTitle, notifMessage, notifData)
         paramIdx += 5
       }
       await pool.query(
@@ -1600,33 +1600,33 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
     })
     const responseLink = `${getFrontendUrl()}/matches/${id}/availability`
 
-    // 1. Collect all email recipients (player accounts + guardians), deduplicated
+    // 1. Collect all email recipients (pupil accounts + guardians), deduplicated
     const batchEmails = []
     const emailledAddresses = new Set()
-    for (const player of playersWithAccounts) {
-      if (!player.user_email) continue
-      emailledAddresses.add(player.user_email.toLowerCase())
+    for (const pupil of playersWithAccounts) {
+      if (!pupil.user_email) continue
+      emailledAddresses.add(pupil.user_email.toLowerCase())
       batchEmails.push({
-        to: player.user_email,
+        to: pupil.user_email,
         template: 'availabilityRequest',
-        data: { teamName, playerName: player.name, matchInfo, matchDate, responseLink }
+        data: { teamName, playerName: pupil.name, matchInfo, matchDate, responseLink }
       })
     }
 
     // 2. Add linked guardians/parents via the guardians table
-    const teamResult2 = await pool.query('SELECT club_id FROM teams WHERE id = $1', [match.team_id])
-    const clubId = teamResult2.rows[0]?.club_id
-    if (clubId) {
+    const teamResult2 = await pool.query('SELECT school_id FROM teams WHERE id = $1', [match.team_id])
+    const schoolId = teamResult2.rows[0]?.school_id
+    if (schoolId) {
       const guardiansResult = await pool.query(
         `SELECT DISTINCT g.email, g.first_name, g.notification_preferences, p.name as player_name
          FROM guardians g
-         JOIN player_guardians pg ON pg.guardian_id = g.id
-         JOIN players p ON pg.player_id = p.id
-         ${pendingOnly ? 'LEFT JOIN match_availability ma ON ma.player_id = p.id AND ma.match_id = $3' : ''}
-         WHERE g.club_id = $1 AND p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
+         JOIN pupil_guardians pg ON pg.guardian_id = g.id
+         JOIN pupils p ON pg.pupil_id = p.id
+         ${pendingOnly ? 'LEFT JOIN match_availability ma ON ma.pupil_id = p.id AND ma.match_id = $3' : ''}
+         WHERE g.school_id = $1 AND p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
          AND g.email IS NOT NULL
          ${pendingOnly ? 'AND ma.id IS NULL' : ''}`,
-        pendingOnly ? [clubId, match.team_id, id] : [clubId, match.team_id]
+        pendingOnly ? [schoolId, match.team_id, id] : [schoolId, match.team_id]
       )
       for (const guardian of guardiansResult.rows) {
         const prefs = guardian.notification_preferences || {}
@@ -1644,9 +1644,9 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
     // Send all emails in a single batch API call (avoids Resend rate limits)
     const { sent: emailsSent } = await sendBatchEmails(batchEmails)
 
-    // 3. Send push notifications to linked player accounts
-    for (const player of playersWithAccounts) {
-      sendPushToUser(player.user_id, {
+    // 3. Send push notifications to linked pupil accounts
+    for (const pupil of playersWithAccounts) {
+      sendPushToUser(pupil.user_id, {
         title: `📋 Availability: ${match.opponent}`,
         body: `Please confirm availability for ${matchDate}`,
         tag: `availability-${id}`,
@@ -1654,7 +1654,7 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
       })
     }
 
-    console.log(`Availability requested for match ${id}: ${notified} players notified, ${emailsSent}/${batchEmails.length} emails sent (incl. guardians)`)
+    console.log(`Availability requested for match ${id}: ${notified} pupils notified, ${emailsSent}/${batchEmails.length} emails sent (incl. guardians)`)
 
     res.json({
       message: 'Availability request sent',
@@ -1668,7 +1668,7 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
   }
 })
 
-// ============== MATCH MEDIA (Parent/Player uploads) ==============
+// ============== MATCH MEDIA (Parent/Pupil uploads) ==============
 
 // Configure multer for media uploads (photos and videos)
 const mediaStorage = multer.diskStorage({
@@ -1706,7 +1706,7 @@ router.get('/:id/media', authenticateToken, async (req, res, next) => {
       `SELECT mm.*, u.name as uploaded_by_name, p.name as player_name
        FROM match_media mm
        LEFT JOIN users u ON mm.uploaded_by = u.id
-       LEFT JOIN players p ON mm.player_id = p.id
+       LEFT JOIN pupils p ON mm.pupil_id = p.id
        WHERE mm.match_id = $1
        ORDER BY mm.created_at DESC`,
       [id]
@@ -1717,11 +1717,11 @@ router.get('/:id/media', authenticateToken, async (req, res, next) => {
   }
 })
 
-// Upload media for match (parents, players, and coaches can upload)
+// Upload media for match (parents, pupils, and coaches can upload)
 router.post('/:id/media', authenticateToken, mediaUpload.array('media', 10), async (req, res, next) => {
   try {
     const { id } = req.params
-    const { caption, player_id } = req.body
+    const { caption, pupil_id } = req.body
 
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({ message: 'No media files provided' })
@@ -1748,13 +1748,13 @@ router.post('/:id/media', authenticateToken, mediaUpload.array('media', 10), asy
 
       const result = await pool.query(
         `INSERT INTO match_media
-          (match_id, uploaded_by, player_id, filename, original_name, file_type, file_size, file_path, media_type, caption)
+          (match_id, uploaded_by, pupil_id, filename, original_name, file_type, file_size, file_path, media_type, caption)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
          RETURNING *`,
         [
           id,
           req.user.id,
-          player_id || req.user.player_id || null,
+          pupil_id || req.user.pupil_id || null,
           file.filename,
           file.originalname,
           file.mimetype,
@@ -1845,11 +1845,11 @@ router.delete('/:id/media/:mediaId', authenticateToken, async (req, res, next) =
 router.post('/:id/parent-potm-vote', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { player_id } = req.body
+    const { pupil_id } = req.body
     const userId = req.user.id
 
-    if (!player_id) {
-      return res.status(400).json({ message: 'player_id is required' })
+    if (!pupil_id) {
+      return res.status(400).json({ message: 'pupil_id is required' })
     }
 
     // Verify match exists and is a past match
@@ -1861,36 +1861,36 @@ router.post('/:id/parent-potm-vote', authenticateToken, async (req, res, next) =
       return res.status(404).json({ message: 'Match not found' })
     }
 
-    // Verify player belongs to this team
+    // Verify pupil belongs to this team
     const playerResult = await pool.query(
-      'SELECT id, name FROM players WHERE id = $1 AND team_id = $2',
-      [player_id, matchResult.rows[0].team_id]
+      'SELECT id, name FROM pupils WHERE id = $1 AND team_id = $2',
+      [pupil_id, matchResult.rows[0].team_id]
     )
     if (playerResult.rows.length === 0) {
-      return res.status(400).json({ message: 'Player not found in this team' })
+      return res.status(400).json({ message: 'Pupil not found in this team' })
     }
 
     // Upsert vote (one vote per user per match)
     const result = await pool.query(
-      `INSERT INTO parent_potm_votes (match_id, user_id, player_id)
+      `INSERT INTO parent_potm_votes (match_id, user_id, pupil_id)
        VALUES ($1, $2, $3)
-       ON CONFLICT (match_id, user_id) DO UPDATE SET player_id = $3, created_at = NOW()
+       ON CONFLICT (match_id, user_id) DO UPDATE SET pupil_id = $3, created_at = NOW()
        RETURNING *`,
-      [id, userId, player_id]
+      [id, userId, pupil_id]
     )
 
-    // Check if this player now has the most votes - auto-award badge
+    // Check if this pupil now has the most votes - auto-award badge
     const voteCountResult = await pool.query(
-      `SELECT player_id, COUNT(*) as vote_count
+      `SELECT pupil_id, COUNT(*) as vote_count
        FROM parent_potm_votes WHERE match_id = $1
-       GROUP BY player_id ORDER BY vote_count DESC LIMIT 1`,
+       GROUP BY pupil_id ORDER BY vote_count DESC LIMIT 1`,
       [id]
     )
 
     res.json({
       vote: result.rows[0],
       player_name: playerResult.rows[0].name,
-      leading_player_id: voteCountResult.rows[0]?.player_id,
+      leading_pupil_id: voteCountResult.rows[0]?.pupil_id,
       leading_vote_count: parseInt(voteCountResult.rows[0]?.vote_count || 0),
     })
   } catch (error) {
@@ -1899,7 +1899,7 @@ router.post('/:id/parent-potm-vote', authenticateToken, async (req, res, next) =
 })
 
 // GET /matches/:id/parent-potm-votes - Get voting results for a match
-// Managers see full vote tallies; parents/players only see their own vote + total count
+// Managers see full vote tallies; parents/pupils only see their own vote + total count
 router.get('/:id/parent-potm-votes', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -1908,7 +1908,7 @@ router.get('/:id/parent-potm-votes', authenticateToken, async (req, res, next) =
 
     // Get this user's vote
     const myVoteResult = await pool.query(
-      'SELECT player_id FROM parent_potm_votes WHERE match_id = $1 AND user_id = $2',
+      'SELECT pupil_id FROM parent_potm_votes WHERE match_id = $1 AND user_id = $2',
       [id, userId]
     )
 
@@ -1919,18 +1919,18 @@ router.get('/:id/parent-potm-votes', authenticateToken, async (req, res, next) =
     )
 
     const response = {
-      my_vote: myVoteResult.rows[0]?.player_id || null,
+      my_vote: myVoteResult.rows[0]?.pupil_id || null,
       total_votes: parseInt(totalResult.rows[0]?.total || 0),
     }
 
     // Only managers/assistants see the full vote breakdown
     if (isManager) {
       const votesResult = await pool.query(
-        `SELECT ppv.player_id, p.name as player_name, p.squad_number, COUNT(*) as vote_count
+        `SELECT ppv.pupil_id, p.name as player_name, p.squad_number, COUNT(*) as vote_count
          FROM parent_potm_votes ppv
-         JOIN players p ON ppv.player_id = p.id
+         JOIN pupils p ON ppv.pupil_id = p.id
          WHERE ppv.match_id = $1
-         GROUP BY ppv.player_id, p.name, p.squad_number
+         GROUP BY ppv.pupil_id, p.name, p.squad_number
          ORDER BY vote_count DESC`,
         [id]
       )
@@ -1961,13 +1961,13 @@ router.post('/:id/parent-potm-award', authenticateToken, async (req, res, next) 
     }
     const match = matchResult.rows[0]
 
-    // Get the player with the most votes
+    // Get the pupil with the most votes
     const winnerResult = await pool.query(
-      `SELECT ppv.player_id, p.name as player_name, COUNT(*) as vote_count
+      `SELECT ppv.pupil_id, p.name as player_name, COUNT(*) as vote_count
        FROM parent_potm_votes ppv
-       JOIN players p ON ppv.player_id = p.id
+       JOIN pupils p ON ppv.pupil_id = p.id
        WHERE ppv.match_id = $1
-       GROUP BY ppv.player_id, p.name
+       GROUP BY ppv.pupil_id, p.name
        ORDER BY vote_count DESC LIMIT 1`,
       [id]
     )
@@ -1980,19 +1980,19 @@ router.post('/:id/parent-potm-award', authenticateToken, async (req, res, next) 
 
     // Award the Parents' Pick badge
     await pool.query(
-      `INSERT INTO player_achievements (player_id, achievement_type, title, description, icon, match_id, awarded_by)
+      `INSERT INTO pupil_achievements (pupil_id, achievement_type, title, description, icon, match_id, awarded_by)
        VALUES ($1, 'parents_pick', $2, $3, '❤️', $4, $5)`,
       [
-        winner.player_id,
+        winner.pupil_id,
         `Parents' Pick vs ${match.opponent}`,
-        `Voted Parents' Player of the Match with ${winner.vote_count} vote${winner.vote_count > 1 ? 's' : ''}`,
+        `Voted Parents' Pupil of the Match with ${winner.vote_count} vote${winner.vote_count > 1 ? 's' : ''}`,
         id,
         req.user.id,
       ]
     )
 
     res.json({
-      winner_player_id: winner.player_id,
+      winner_pupil_id: winner.pupil_id,
       winner_name: winner.player_name,
       vote_count: parseInt(winner.vote_count),
     })

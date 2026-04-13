@@ -1,4 +1,4 @@
-import '@mux/mux-player'
+import '@mux/mux-pupil'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -56,7 +56,7 @@ function formatTime(seconds) {
 
 export default function VideoAnalysis() {
   const { id, videoId: videoIdParam } = useParams()
-  const { team, players } = useTeam()
+  const { team, pupils } = useTeam()
 
   const [match, setMatch] = useState(null)
   const [video, setVideo] = useState(null)
@@ -91,7 +91,7 @@ export default function VideoAnalysis() {
   const [clips, setClips] = useState([])
   const [showClipModal, setShowClipModal] = useState(false)
   const [newClip, setNewClip] = useState({
-    title: '', description: '', clipType: 'general', players: [],
+    title: '', description: '', clipType: 'general', pupils: [],
   })
   const [clipStart, setClipStart] = useState(null)
   const [clipEnd, setClipEnd] = useState(null)
@@ -100,7 +100,7 @@ export default function VideoAnalysis() {
   const [activeTab, setActiveTab] = useState('video')
   const [teamColour, setTeamColour] = useState(team?.kit_colour || '')
 
-  // Mux player ref
+  // Mux pupil ref
   const playerRef = useRef(null)
   const [currentTime, setCurrentTime] = useState(0)
 
@@ -110,7 +110,7 @@ export default function VideoAnalysis() {
     loadData()
   }, [id, videoIdParam])
 
-  // Listen for timeupdate on mux-player
+  // Listen for timeupdate on mux-pupil
   useEffect(() => {
     const el = playerRef.current
     if (!el) return
@@ -400,7 +400,7 @@ export default function VideoAnalysis() {
     try {
       await videoService.approveAnalysis(analysisId, { includeRatings })
       setAnalyses(prev => prev.map(a => a.id === analysisId ? { ...a, approved: true } : a))
-      toast.success('Analysis approved — player notes saved to profiles')
+      toast.success('Analysis approved — pupil notes saved to profiles')
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to approve analysis')
     }
@@ -505,11 +505,11 @@ export default function VideoAnalysis() {
         startTime: clipStart,
         endTime: clipEnd,
         clipType: newClip.clipType,
-        playerTags: newClip.players.map(pid => ({ playerId: pid })),
+        playerTags: newClip.pupils.map(pid => ({ pupilId: pid })),
       })
-      setClips(prev => [...prev, { ...res.data, player_tags: newClip.players.map(pid => ({ playerId: pid })) }])
+      setClips(prev => [...prev, { ...res.data, player_tags: newClip.pupils.map(pid => ({ pupilId: pid })) }])
       setShowClipModal(false)
-      setNewClip({ title: '', description: '', clipType: 'general', players: [] })
+      setNewClip({ title: '', description: '', clipType: 'general', pupils: [] })
       setClipStart(null)
       setClipEnd(null)
       toast.success('Clip saved!')
@@ -537,12 +537,12 @@ export default function VideoAnalysis() {
     setActiveTab('video')
   }
 
-  function togglePlayer(playerId) {
+  function togglePlayer(pupilId) {
     setNewClip(prev => ({
       ...prev,
-      players: prev.players.includes(playerId)
-        ? prev.players.filter(p => p !== playerId)
-        : [...prev.players, playerId]
+      pupils: prev.pupils.includes(pupilId)
+        ? prev.pupils.filter(p => p !== pupilId)
+        : [...prev.pupils, pupilId]
     }))
   }
 
@@ -706,7 +706,7 @@ export default function VideoAnalysis() {
                       {video?.mux_playback_id ? (
                         <div className="space-y-4">
                           <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
-                            <mux-player
+                            <mux-pupil
                               ref={playerRef}
                               playback-id={video.mux_playback_id}
                               stream-type="on-demand"
@@ -845,7 +845,7 @@ export default function VideoAnalysis() {
                   <div className="rounded-xl border border-energy-500/30 bg-energy-500/5 p-4 text-center">
                     <Crown className="w-8 h-8 text-energy-400 mx-auto mb-2" />
                     <h3 className="font-display font-semibold text-white mb-1">Pro Feature</h3>
-                    <p className="text-sm text-navy-300 mb-4">AI video analysis is available on the Grassroots Pro plan. Upgrade to get tactical breakdowns, individual player feedback, and training recommendations from your match footage.</p>
+                    <p className="text-sm text-navy-300 mb-4">AI video analysis is available on the Grassroots Pro plan. Upgrade to get tactical breakdowns, individual pupil feedback, and training recommendations from your match footage.</p>
                     <Link to="/settings" className="btn-primary w-full inline-flex items-center justify-center gap-2">
                       <Crown className="w-4 h-4" /> Upgrade to Pro
                     </Link>
@@ -1110,11 +1110,11 @@ export default function VideoAnalysis() {
                       </div>
                     )}
 
-                    {/* Player Notes */}
+                    {/* Pupil Notes */}
                     {editing ? (
                       <div>
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <Users className="w-4 h-4 text-blue-400" /> Player Notes
+                          <Users className="w-4 h-4 text-blue-400" /> Pupil Notes
                         </h3>
                         <div className="space-y-3">
                           {editData.player_feedback.map((pf, i) => (
@@ -1155,7 +1155,7 @@ export default function VideoAnalysis() {
                     ) : latestAnalysis.player_feedback?.length > 0 && (
                       <div>
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <Users className="w-4 h-4 text-blue-400" /> Player Notes
+                          <Users className="w-4 h-4 text-blue-400" /> Pupil Notes
                         </h3>
                         <div className="space-y-2">
                           {latestAnalysis.player_feedback.map((pf, i) => (
@@ -1184,11 +1184,11 @@ export default function VideoAnalysis() {
                         {latestAnalysis.approved ? (
                           <div className="flex items-center gap-2 text-pitch-400">
                             <CheckCircle className="w-4 h-4" />
-                            <span className="text-sm font-medium">Approved — player notes saved to profiles</span>
+                            <span className="text-sm font-medium">Approved — pupil notes saved to profiles</span>
                           </div>
                         ) : (
                           <div className="space-y-3">
-                            <p className="text-sm text-navy-300">Review the analysis above. Edit anything you'd like to change, then approve to save to player profiles.</p>
+                            <p className="text-sm text-navy-300">Review the analysis above. Edit anything you'd like to change, then approve to save to pupil profiles.</p>
                             <label className="flex items-center gap-3 p-2 rounded-lg bg-navy-800/50 cursor-pointer">
                               <input
                                 type="checkbox"
@@ -1197,8 +1197,8 @@ export default function VideoAnalysis() {
                                 className="rounded border-navy-600 bg-navy-700 text-pitch-500 focus:ring-pitch-500"
                               />
                               <div>
-                                <p className="text-sm text-white font-medium">Include player ratings</p>
-                                <p className="text-xs text-navy-400">Save the /10 scores to player profiles (can be sensitive for younger age groups)</p>
+                                <p className="text-sm text-white font-medium">Include pupil ratings</p>
+                                <p className="text-xs text-navy-400">Save the /10 scores to pupil profiles (can be sensitive for younger age groups)</p>
                               </div>
                             </label>
                             <div className="flex gap-2">
@@ -1347,7 +1347,7 @@ export default function VideoAnalysis() {
                         <div className="flex items-center gap-2">
                           <span className={`badge-${category?.color || 'navy'} text-xs`}>{category?.label || clip.clip_type}</span>
                           {clip.player_tags?.length > 0 && (
-                            <span className="text-xs text-navy-400">{clip.player_tags.length} player{clip.player_tags.length > 1 ? 's' : ''}</span>
+                            <span className="text-xs text-navy-400">{clip.player_tags.length} pupil{clip.player_tags.length > 1 ? 's' : ''}</span>
                           )}
                         </div>
                         {clip.description && <p className="text-sm text-navy-400 line-clamp-2 mt-2">{clip.description}</p>}
@@ -1383,7 +1383,7 @@ export default function VideoAnalysis() {
               </div>
 
               <form onSubmit={handleSaveClip} className="p-6 space-y-4">
-                <p className="text-sm text-navy-400">Navigate the video player, then mark start/end times.</p>
+                <p className="text-sm text-navy-400">Navigate the video pupil, then mark start/end times.</p>
 
                 <div className="flex gap-3">
                   <button type="button" onClick={markClipStart} className="btn-primary flex-1 text-sm">
@@ -1419,17 +1419,17 @@ export default function VideoAnalysis() {
                   </div>
                 </div>
 
-                {players.length > 0 && (
+                {pupils.length > 0 && (
                   <div>
                     <label className="label">Tag Players</label>
                     <div className="flex flex-wrap gap-2 max-h-32 overflow-y-auto">
-                      {players.slice(0, 20).map(player => (
-                        <button key={player.id} type="button" onClick={() => togglePlayer(player.id)}
+                      {pupils.slice(0, 20).map(pupil => (
+                        <button key={pupil.id} type="button" onClick={() => togglePlayer(pupil.id)}
                           className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
-                            newClip.players.includes(player.id) ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+                            newClip.pupils.includes(pupil.id) ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
                           }`}
                         >
-                          {player.name}
+                          {pupil.name}
                         </button>
                       ))}
                     </div>

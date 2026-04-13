@@ -18,7 +18,7 @@ const steps = [
     color: 'pitch',
     title: 'Welcome to Touchline!',
     description:
-      "You've got your very own AI coaching assistant called Pep. Ask Pep for help with training plans, match preparation, tactics, and player development — anytime you need a hand.",
+      "You've got your very own AI coaching assistant called Pep. Ask Pep for help with training plans, match preparation, tactics, and pupil development — anytime you need a hand.",
     cta: 'Meet Pep',
     href: '/chat',
   },
@@ -27,9 +27,9 @@ const steps = [
     color: 'blue',
     title: 'Build Your Squad',
     description:
-      'Add your players with their positions, squad numbers, and age details. Once they are in, you can track their development, add observations, and build individual development plans.',
+      'Add your pupils with their positions, squad numbers, and age details. Once they are in, you can track their development, add observations, and build individual development plans.',
     cta: 'Add Players',
-    href: '/players',
+    href: '/pupils',
   },
   {
     icon: Trophy,
@@ -45,9 +45,9 @@ const steps = [
     color: 'purple',
     title: 'Invite Parents',
     description:
-      "Open any player's profile and share their parent invite link. Once connected, parents can see schedules, availability, match reports, live streams, and their child's progress in the Player Lounge.",
+      "Open any pupil's profile and share their parent invite link. Once connected, parents can see schedules, availability, match reports, live streams, and their child's progress in the Pupil Lounge.",
     cta: 'View Players',
-    href: '/players',
+    href: '/pupils',
   },
 ]
 

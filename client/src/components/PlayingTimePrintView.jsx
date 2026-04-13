@@ -2,13 +2,13 @@ import { useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { X, Printer } from 'lucide-react'
 
-// Generate unique short initials for each player
-function generateInitials(players) {
+// Generate unique short initials for each pupil
+function generateInitials(pupils) {
   const initials = new Map()
 
   // First pass: try first letter of first name
   const firstLetters = new Map()
-  for (const p of players) {
+  for (const p of pupils) {
     const name = p.player_name || p.name || 'P'
     const first = name.charAt(0).toUpperCase()
     if (!firstLetters.has(first)) firstLetters.set(first, [])
@@ -17,7 +17,7 @@ function generateInitials(players) {
 
   for (const [letter, group] of firstLetters) {
     if (group.length === 1) {
-      initials.set(group[0].player_id, letter)
+      initials.set(group[0].pupil_id, letter)
     } else {
       // Collision: use first letter + second letter of name (or surname initial)
       const secondPass = new Map()
@@ -35,11 +35,11 @@ function generateInitials(players) {
       }
       for (const [init, subGroup] of secondPass) {
         if (subGroup.length === 1) {
-          initials.set(subGroup[0].player_id, init)
+          initials.set(subGroup[0].pupil_id, init)
         } else {
           // Still colliding, add index
           subGroup.forEach((p, idx) => {
-            initials.set(p.player_id, init + (idx + 1))
+            initials.set(p.pupil_id, init + (idx + 1))
           })
         }
       }
@@ -49,7 +49,7 @@ function generateInitials(players) {
   return initials
 }
 
-// Get which players are on field for each period
+// Get which pupils are on field for each period
 function getPerPeriodLineups(result, numPeriods, matchDuration) {
   const periodLength = matchDuration / numPeriods
   const periods = []
@@ -79,24 +79,24 @@ function getPerPeriodLineups(result, numPeriods, matchDuration) {
   return periods
 }
 
-// Mini pitch SVG with player initials
-function MiniPitch({ players, formation, formationPositions, initials, playersOnField }) {
+// Mini pitch SVG with pupil initials
+function MiniPitch({ pupils, formation, formationPositions, initials, playersOnField }) {
   const positions = formationPositions || []
 
-  // Match players to formation positions by their match-day position
+  // Match pupils to formation positions by their match-day position
   const assigned = new Map()
-  const unassignedPlayers = [...players]
+  const unassignedPlayers = [...pupils]
   const unassignedPositions = [...positions]
 
   // First: match by position label
   for (let i = unassignedPlayers.length - 1; i >= 0; i--) {
-    const player = unassignedPlayers[i]
-    if (!player.player?.position) continue
+    const pupil = unassignedPlayers[i]
+    if (!pupil.pupil?.position) continue
     const posIdx = unassignedPositions.findIndex(
-      pos => pos.label === player.player.position
+      pos => pos.label === pupil.pupil.position
     )
     if (posIdx !== -1) {
-      assigned.set(unassignedPositions[posIdx].id, player)
+      assigned.set(unassignedPositions[posIdx].id, pupil)
       unassignedPositions.splice(posIdx, 1)
       unassignedPlayers.splice(i, 1)
     }
@@ -148,11 +148,11 @@ function MiniPitch({ players, formation, formationPositions, initials, playersOn
         </>
       )}
 
-      {/* Player dots with initials */}
+      {/* Pupil dots with initials */}
       {positions.map(pos => {
-        const player = assigned.get(pos.id)
-        if (!player) return null
-        const initial = initials.get(player.player?.player_id || player.player?.id) || '?'
+        const pupil = assigned.get(pos.id)
+        if (!pupil) return null
+        const initial = initials.get(pupil.pupil?.pupil_id || pupil.pupil?.id) || '?'
         const cx = pos.x * 1.76 + 12 // Scale 0-100% to 12-188 (pitch area)
         const cy = pos.y * 2.56 + 12 // Scale 0-100% to 12-268
 
@@ -193,9 +193,9 @@ export default function PlayingTimePrintView({
 }) {
   const printRef = useRef()
 
-  // Generate unique initials for all squad players
+  // Generate unique initials for all squad pupils
   const allPlayers = squad.map(s => ({
-    player_id: s.player_id || s.id,
+    pupil_id: s.pupil_id || s.id,
     player_name: s.player_name || s.name,
     ...s,
   }))
@@ -218,8 +218,8 @@ export default function PlayingTimePrintView({
 
   // Build the legend key
   const legendItems = allPlayers.map(p => ({
-    initial: initials.get(p.player_id) || '?',
-    name: p.player_name || p.name || 'Player',
+    initial: initials.get(p.pupil_id) || '?',
+    name: p.player_name || p.name || 'Pupil',
   }))
 
   const content = (
@@ -257,7 +257,7 @@ export default function PlayingTimePrintView({
             )}
           </div>
 
-          {/* Player key */}
+          {/* Pupil key */}
           <div className="print-key">
             <span className="print-key-label">Key:</span>
             {legendItems.map((item, i) => (
@@ -281,7 +281,7 @@ export default function PlayingTimePrintView({
                 {/* Mini pitch */}
                 <div className="print-period-pitch">
                   <MiniPitch
-                    players={period.onField}
+                    pupils={period.onField}
                     formation={formation}
                     formationPositions={formationPositions}
                     initials={initials}
@@ -300,7 +300,7 @@ export default function PlayingTimePrintView({
                     <span className="print-subs-label">Subs:</span>
                     {period.offField.map((s, i) => (
                       <span key={i} className="print-sub-dot">
-                        {initials.get(s.player?.player_id || s.player?.id) || '?'}
+                        {initials.get(s.pupil?.pupil_id || s.pupil?.id) || '?'}
                       </span>
                     ))}
                   </div>
@@ -314,7 +314,7 @@ export default function PlayingTimePrintView({
             <p>
               {result.allEqual
                 ? `Equal playing time: ~${result.idealMinutesPerPlayer} min each`
-                : `Range: ${result.minMinutes}–${result.maxMinutes} min per player (target: ~${result.idealMinutesPerPlayer} min)`
+                : `Range: ${result.minMinutes}–${result.maxMinutes} min per pupil (target: ~${result.idealMinutesPerPlayer} min)`
               }
             </p>
             {result.subTimes.length > 0 && (

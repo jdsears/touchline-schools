@@ -200,7 +200,7 @@ const formationPositions = {
   ],
 }
 
-// 9-a-side formations (8 outfield + GK = 9 players)
+// 9-a-side formations (8 outfield + GK = 9 pupils)
 const formationPositions9 = {
   '3-3-2': [
     { id: 'GK', label: 'GK', x: 50, y: 90 },
@@ -270,7 +270,7 @@ const formationPositions9 = {
   ],
 }
 
-// 7-a-side formations (6 outfield + GK = 7 players)
+// 7-a-side formations (6 outfield + GK = 7 pupils)
 const formationPositions7 = {
   '2-3-1': [
     { id: 'GK', label: 'GK', x: 50, y: 90 },
@@ -319,7 +319,7 @@ const formationPositions7 = {
   ],
 }
 
-// 5-a-side formations (4 outfield + GK = 5 players)
+// 5-a-side formations (4 outfield + GK = 5 pupils)
 const formationPositions5 = {
   '2-1-1': [
     { id: 'GK', label: 'GK', x: 50, y: 88 },
@@ -494,7 +494,7 @@ export default function FormationPitch({
           )}
         </div>
 
-        {/* Player positions */}
+        {/* Pupil positions */}
         {positions.map((pos, index) => (
           <motion.div
             key={pos.id}

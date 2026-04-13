@@ -7,17 +7,17 @@ const CRITICAL_THRESHOLD_DAYS = 14
 /**
  * Daily compliance scanner.
  *
- * Scans every club with an active subscription for:
+ * Scans every school with an active subscription for:
  *   - DBS checks expiring / expired
  *   - First aid certs expiring
  *   - Safeguarding training expiring
  *   - Coaching badges expiring
  *   - Coaches / team-managers without any DBS on file
- *   - Missing club welfare officer role
+ *   - Missing school welfare officer role
  *
  * Deduplicates alerts and auto-resolves stale ones.
- * Sends a daily digest email to club owners and welfare officers
- * for any club that has critical-severity alerts.
+ * Sends a daily digest email to school owners and welfare officers
+ * for any school that has critical-severity alerts.
  */
 export async function scanCompliance() {
   const startTime = Date.now()
@@ -32,30 +32,30 @@ export async function scanCompliance() {
 
   try {
     // -------------------------------------------------------
-    // 1. Fetch all clubs with active subscriptions
+    // 1. Fetch all schools with active subscriptions
     // -------------------------------------------------------
     const clubsResult = await pool.query(
       `SELECT id, name, slug, contact_email
-       FROM clubs
+       FROM schools
        WHERE subscription_status IN ('active', 'trial')`
     )
-    const clubs = clubsResult.rows
+    const schools = clubsResult.rows
 
-    console.log(`[ComplianceScanner] Found ${clubs.length} active clubs to scan`)
+    console.log(`[ComplianceScanner] Found ${schools.length} active schools to scan`)
 
-    for (const club of clubs) {
+    for (const school of schools) {
       try {
-        await scanClub(club, stats)
+        await scanClub(school, stats)
         stats.clubsScanned++
       } catch (err) {
-        console.error(`[ComplianceScanner] Error scanning club ${club.id} (${club.name}):`, err)
+        console.error(`[ComplianceScanner] Error scanning school ${school.id} (${school.name}):`, err)
       }
     }
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2)
     console.log(
       `[ComplianceScanner] Scan complete in ${elapsed}s — ` +
-      `${stats.clubsScanned} clubs scanned, ` +
+      `${stats.clubsScanned} schools scanned, ` +
       `${stats.alertsCreated} alerts created, ` +
       `${stats.alertsResolved} alerts resolved, ` +
       `${stats.emailsSent} emails sent`
@@ -69,20 +69,20 @@ export async function scanCompliance() {
 }
 
 // ----------------------------------------------------------
-// Per-club scanning logic
+// Per-school scanning logic
 // ----------------------------------------------------------
 
-async function scanClub(club, stats) {
-  const clubId = club.id
+async function scanClub(school, stats) {
+  const schoolId = school.id
   const newAlerts = []
 
-  // Fetch compliance records for the club
+  // Fetch compliance records for the school
   const recordsResult = await pool.query(
     `SELECT cr.*, u.name AS user_name, u.email AS user_email
      FROM compliance_records cr
      JOIN users u ON u.id = cr.user_id
-     WHERE cr.club_id = $1`,
-    [clubId]
+     WHERE cr.school_id = $1`,
+    [schoolId]
   )
   const records = recordsResult.rows
 
@@ -103,7 +103,7 @@ async function scanClub(club, stats) {
       if (expiryDate < today) {
         // Already expired
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'dbs_expired',
           target_user_id: rec.user_id,
           severity: 'critical',
@@ -115,7 +115,7 @@ async function scanClub(club, stats) {
         const daysUntil = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24))
         const severity = daysUntil < CRITICAL_THRESHOLD_DAYS ? 'critical' : 'warning'
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'dbs_expiring',
           target_user_id: rec.user_id,
           severity,
@@ -132,7 +132,7 @@ async function scanClub(club, stats) {
 
       if (expiryDate < today) {
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'first_aid_expiring',
           target_user_id: rec.user_id,
           severity: 'critical',
@@ -142,7 +142,7 @@ async function scanClub(club, stats) {
       } else if (expiryDate <= windowDate) {
         const daysUntil = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24))
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'first_aid_expiring',
           target_user_id: rec.user_id,
           severity: daysUntil < CRITICAL_THRESHOLD_DAYS ? 'critical' : 'warning',
@@ -159,7 +159,7 @@ async function scanClub(club, stats) {
 
       if (expiryDate < today) {
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'safeguarding_expiring',
           target_user_id: rec.user_id,
           severity: 'critical',
@@ -169,7 +169,7 @@ async function scanClub(club, stats) {
       } else if (expiryDate <= windowDate) {
         const daysUntil = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24))
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'safeguarding_expiring',
           target_user_id: rec.user_id,
           severity: daysUntil < CRITICAL_THRESHOLD_DAYS ? 'critical' : 'warning',
@@ -188,7 +188,7 @@ async function scanClub(club, stats) {
 
       if (expiryDate < today) {
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'coaching_badge_expiring',
           target_user_id: rec.user_id,
           severity: 'critical',
@@ -198,7 +198,7 @@ async function scanClub(club, stats) {
       } else if (expiryDate <= windowDate) {
         const daysUntil = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24))
         newAlerts.push({
-          club_id: clubId,
+          school_id: schoolId,
           alert_type: 'coaching_badge_expiring',
           target_user_id: rec.user_id,
           severity: daysUntil < CRITICAL_THRESHOLD_DAYS ? 'critical' : 'warning',
@@ -216,7 +216,7 @@ async function scanClub(club, stats) {
       !rec.dbs_expiry_date
     ) {
       newAlerts.push({
-        club_id: clubId,
+        school_id: schoolId,
         alert_type: 'missing_dbs',
         target_user_id: rec.user_id,
         severity: 'critical',
@@ -231,17 +231,17 @@ async function scanClub(club, stats) {
   // --------------------------------------------------
   const welfareResult = await pool.query(
     `SELECT id FROM safeguarding_roles
-     WHERE club_id = $1 AND safeguarding_role = 'club_welfare_officer'`,
-    [clubId]
+     WHERE school_id = $1 AND safeguarding_role = 'club_welfare_officer'`,
+    [schoolId]
   )
 
   if (welfareResult.rows.length === 0) {
     newAlerts.push({
-      club_id: clubId,
+      school_id: schoolId,
       alert_type: 'no_welfare_officer',
       target_user_id: null,
       severity: 'critical',
-      message: 'No club welfare officer has been assigned. This is a mandatory safeguarding requirement.',
+      message: 'No school welfare officer has been assigned. This is a mandatory safeguarding requirement.',
       due_date: null,
     })
   }
@@ -253,11 +253,11 @@ async function scanClub(club, stats) {
   for (const alert of newAlerts) {
     const existing = await pool.query(
       `SELECT id FROM compliance_alerts
-       WHERE club_id = $1
+       WHERE school_id = $1
          AND alert_type = $2
          AND status = 'active'
          AND (target_user_id = $3 OR (target_user_id IS NULL AND $3::uuid IS NULL))`,
-      [alert.club_id, alert.alert_type, alert.target_user_id]
+      [alert.school_id, alert.alert_type, alert.target_user_id]
     )
     if (existing.rows.length === 0) {
       alertsToCreate.push(alert)
@@ -274,8 +274,8 @@ async function scanClub(club, stats) {
 
   const existingActiveResult = await pool.query(
     `SELECT id, alert_type, target_user_id FROM compliance_alerts
-     WHERE club_id = $1 AND status = 'active'`,
-    [clubId]
+     WHERE school_id = $1 AND status = 'active'`,
+    [schoolId]
   )
 
   for (const existing of existingActiveResult.rows) {
@@ -296,9 +296,9 @@ async function scanClub(club, stats) {
   // --------------------------------------------------
   for (const alert of alertsToCreate) {
     await pool.query(
-      `INSERT INTO compliance_alerts (club_id, alert_type, target_user_id, message, severity, status, due_date)
+      `INSERT INTO compliance_alerts (school_id, alert_type, target_user_id, message, severity, status, due_date)
        VALUES ($1, $2, $3, $4, $5, 'active', $6)`,
-      [alert.club_id, alert.alert_type, alert.target_user_id, alert.message, alert.severity, alert.due_date]
+      [alert.school_id, alert.alert_type, alert.target_user_id, alert.message, alert.severity, alert.due_date]
     )
     stats.alertsCreated++
   }
@@ -308,35 +308,35 @@ async function scanClub(club, stats) {
   // --------------------------------------------------
   const criticalAlerts = await pool.query(
     `SELECT * FROM compliance_alerts
-     WHERE club_id = $1 AND status = 'active' AND severity = 'critical'
+     WHERE school_id = $1 AND status = 'active' AND severity = 'critical'
      ORDER BY created_at DESC`,
-    [clubId]
+    [schoolId]
   )
 
   if (criticalAlerts.rows.length > 0 && isEmailEnabled()) {
-    await sendClubDigestEmail(club, criticalAlerts.rows, stats)
+    await sendSchoolDigestEmail(school, criticalAlerts.rows, stats)
   }
 }
 
 // ----------------------------------------------------------
-// Digest email to club owners & welfare officers
+// Digest email to school owners & welfare officers
 // ----------------------------------------------------------
 
-async function sendClubDigestEmail(club, criticalAlerts, stats) {
-  // Find club owners
+async function sendSchoolDigestEmail(school, criticalAlerts, stats) {
+  // Find school owners
   const ownersResult = await pool.query(
     `SELECT u.email FROM club_members cm
      JOIN users u ON u.id = cm.user_id
-     WHERE cm.club_id = $1 AND cm.role = 'owner' AND cm.status = 'active'`,
-    [club.id]
+     WHERE cm.school_id = $1 AND cm.role = 'owner' AND cm.status = 'active'`,
+    [school.id]
   )
 
   // Find welfare officers
   const welfareResult = await pool.query(
     `SELECT u.email FROM safeguarding_roles sr
      JOIN users u ON u.id = sr.user_id
-     WHERE sr.club_id = $1 AND sr.safeguarding_role = 'club_welfare_officer'`,
-    [club.id]
+     WHERE sr.school_id = $1 AND sr.safeguarding_role = 'club_welfare_officer'`,
+    [school.id]
   )
 
   // Collect unique recipients
@@ -348,9 +348,9 @@ async function sendClubDigestEmail(club, criticalAlerts, stats) {
     if (row.email) recipients.add(row.email)
   }
 
-  // Fallback to club contact email
-  if (recipients.size === 0 && club.contact_email) {
-    recipients.add(club.contact_email)
+  // Fallback to school contact email
+  if (recipients.size === 0 && school.contact_email) {
+    recipients.add(school.contact_email)
   }
 
   if (recipients.size === 0) return
@@ -365,7 +365,7 @@ async function sendClubDigestEmail(club, criticalAlerts, stats) {
   }
 
   const digestData = {
-    clubName: club.name,
+    clubName: school.name,
     alertCount: criticalAlerts.length,
     alertsByType,
     alerts: criticalAlerts,

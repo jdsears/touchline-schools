@@ -18,7 +18,7 @@ export default function MagicLinkVerify() {
         setTimeout(() => {
           const role = result.user?.role
           if (role === 'player' || role === 'parent') {
-            navigate('/player-lounge', { replace: true })
+            navigate('/pupil-lounge', { replace: true })
           } else {
             navigate('/dashboard', { replace: true })
           }

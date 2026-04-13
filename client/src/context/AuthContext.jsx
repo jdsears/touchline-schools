@@ -71,7 +71,7 @@ export function AuthProvider({ children }) {
       localStorage.setItem('fam_token', response.data.token)
       setUser(response.data.user)
       toast.success('Account created successfully!')
-      return { success: true, club: response.data.club || null }
+      return { success: true, school: response.data.school || null }
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed'
       toast.error(message)

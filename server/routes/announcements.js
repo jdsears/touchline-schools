@@ -36,7 +36,7 @@ router.get('/:teamId', authenticateToken, async (req, res, next) => {
 router.post('/:teamId', authenticateToken, async (req, res, next) => {
   try {
     const { teamId } = req.params
-    const { title, content, priority, is_pinned, expires_at, send_email, email_recipients, selected_player_ids } = req.body
+    const { title, content, priority, is_pinned, expires_at, send_email, email_recipients, selected_pupil_ids } = req.body
 
     // Check manager role
     if (!['manager', 'assistant'].includes(req.user.role)) {
@@ -70,7 +70,7 @@ router.post('/:teamId', authenticateToken, async (req, res, next) => {
     const announcement = result.rows[0]
     announcement.created_by_name = req.user.name
 
-    // Create notifications for all team members (players and parents)
+    // Create notifications for all team members (pupils and parents)
     const usersResult = await pool.query(
       'SELECT id FROM users WHERE team_id = $1 AND id != $2',
       [teamId, req.user.id]
@@ -118,7 +118,7 @@ router.post('/:teamId', authenticateToken, async (req, res, next) => {
           upgradeRequired: true,
         })
       }
-      // Determine which players to send emails to based on email_recipients
+      // Determine which pupils to send emails to based on email_recipients
       let playersToEmail = []
       const recipientType = email_recipients || 'all'
 
@@ -133,54 +133,54 @@ router.post('/:teamId', authenticateToken, async (req, res, next) => {
 
         if (nextMatchResult.rows.length > 0) {
           const matchId = nextMatchResult.rows[0].id
-          // Get squad players with linked accounts
+          // Get squad pupils with linked accounts
           const squadResult = await pool.query(
-            `SELECT ms.player_id, p.name, u.email as user_email
+            `SELECT ms.pupil_id, p.name, u.email as user_email
              FROM match_squad ms
-             JOIN players p ON ms.player_id = p.id
-             LEFT JOIN users u ON u.player_id = p.id
+             JOIN pupils p ON ms.pupil_id = p.id
+             LEFT JOIN users u ON u.pupil_id = p.id
              WHERE ms.match_id = $1`,
             [matchId]
           )
           playersToEmail = squadResult.rows
         } else {
-          // No upcoming match, fall back to all players
+          // No upcoming match, fall back to all pupils
           const playersResult = await pool.query(
             `SELECT p.id, p.name, u.email as user_email
-             FROM players p
-             LEFT JOIN users u ON u.player_id = p.id
+             FROM pupils p
+             LEFT JOIN users u ON u.pupil_id = p.id
              WHERE p.team_id = $1 AND (p.is_active IS NULL OR p.is_active = true)`,
             [teamId]
           )
           playersToEmail = playersResult.rows
         }
-      } else if (recipientType === 'selected' && selected_player_ids?.length > 0) {
-        // Get only the selected players with linked accounts
+      } else if (recipientType === 'selected' && selected_pupil_ids?.length > 0) {
+        // Get only the selected pupils with linked accounts
         const playersResult = await pool.query(
           `SELECT p.id, p.name, u.email as user_email
-           FROM players p
-           LEFT JOIN users u ON u.player_id = p.id
+           FROM pupils p
+           LEFT JOIN users u ON u.pupil_id = p.id
            WHERE p.id = ANY($1) AND p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)`,
-          [selected_player_ids, teamId]
+          [selected_pupil_ids, teamId]
         )
         playersToEmail = playersResult.rows
       } else {
-        // Default: all active players with linked accounts
+        // Default: all active pupils with linked accounts
         const playersResult = await pool.query(
           `SELECT p.id, p.name, u.email as user_email
-           FROM players p
-           LEFT JOIN users u ON u.player_id = p.id
+           FROM pupils p
+           LEFT JOIN users u ON u.pupil_id = p.id
            WHERE p.team_id = $1 AND (p.is_active IS NULL OR p.is_active = true)`,
           [teamId]
         )
         playersToEmail = playersResult.rows
       }
 
-      // Collect unique emails from linked Player Lounge accounts
+      // Collect unique emails from linked Pupil Lounge accounts
       const allParentEmails = new Set()
-      for (const player of playersToEmail) {
-        if (player.user_email) {
-          allParentEmails.add(player.user_email)
+      for (const pupil of playersToEmail) {
+        if (pupil.user_email) {
+          allParentEmails.add(pupil.user_email)
         }
       }
 
@@ -198,7 +198,7 @@ router.post('/:teamId', authenticateToken, async (req, res, next) => {
             teamName,
             title,
             message: content,
-            actionLink: `${frontendUrl}/player`,
+            actionLink: `${frontendUrl}/pupil`,
             actionText: 'View in Touchline'
           }
         }))

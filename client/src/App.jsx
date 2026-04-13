@@ -32,17 +32,17 @@ const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Chat = lazy(() => import('./pages/Chat'))
 const Tactics = lazy(() => import('./pages/Tactics'))
 const Training = lazy(() => import('./pages/Training'))
-const Players = lazy(() => import('./pages/Players'))
-const PlayerDetail = lazy(() => import('./pages/PlayerDetail'))
-const PlayerAssistant = lazy(() => import('./pages/PlayerAssistant'))
+const Pupils = lazy(() => import('./pages/Pupils'))
+const PupilDetail = lazy(() => import('./pages/PupilDetail'))
+const PupilAssistant = lazy(() => import('./pages/PupilAssistant'))
 const Matches = lazy(() => import('./pages/Matches'))
 const MatchDetail = lazy(() => import('./pages/MatchDetail'))
 const LeagueTable = lazy(() => import('./pages/LeagueTable'))
 const VideoAnalysis = lazy(() => import('./pages/VideoAnalysis'))
 const VideoLibrary = lazy(() => import('./pages/VideoLibrary'))
-const CoachLounge = lazy(() => import('./pages/CoachLounge'))
+const TeacherLounge = lazy(() => import('./pages/TeacherLounge'))
 const FilmRoom = lazy(() => import('./pages/FilmRoom'))
-const PlayerLounge = lazy(() => import('./pages/PlayerLounge'))
+const PupilLounge = lazy(() => import('./pages/PupilLounge'))
 const Settings = lazy(() => import('./pages/Settings'))
 const InviteAccept = lazy(() => import('./pages/InviteAccept'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
@@ -58,27 +58,26 @@ const TrainingPlans = lazy(() => import('./pages/TrainingPlans'))
 const FeaturePage = lazy(() => import('./pages/features/FeaturePage'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
 
-// Club pages
-const ClubLayout = lazy(() => import('./pages/club/ClubLayout'))
-const ClubDashboard = lazy(() => import('./pages/club/ClubDashboard'))
-const ClubTeams = lazy(() => import('./pages/club/ClubTeams'))
-const ClubPlayers = lazy(() => import('./pages/club/ClubPlayers'))
-const ClubMembers = lazy(() => import('./pages/club/ClubMembers'))
-const ClubSettings = lazy(() => import('./pages/club/ClubSettings'))
-const ClubBilling = lazy(() => import('./pages/club/ClubBilling'))
-const ClubSubscriptions = lazy(() => import('./pages/club/ClubSubscriptions'))
-const ClubAnnouncements = lazy(() => import('./pages/club/ClubAnnouncements'))
-const CreateClub = lazy(() => import('./pages/club/CreateClub'))
-const ClubSafeguarding = lazy(() => import('./pages/club/ClubSafeguarding'))
-const ClubSafeguardingPeople = lazy(() => import('./pages/club/ClubSafeguardingPeople'))
-const ClubSafeguardingRoles = lazy(() => import('./pages/club/ClubSafeguardingRoles'))
-const ClubSafeguardingIncidents = lazy(() => import('./pages/club/ClubSafeguardingIncidents'))
-const ClubEvents = lazy(() => import('./pages/club/ClubEvents'))
-const ClubSchedule = lazy(() => import('./pages/club/ClubSchedule'))
-const ClubInsights = lazy(() => import('./pages/club/ClubInsights'))
-const ClubReports = lazy(() => import('./pages/club/ClubReports'))
+// School pages
+const SchoolLayout = lazy(() => import('./pages/school/SchoolLayout'))
+const SchoolDashboard = lazy(() => import('./pages/school/SchoolDashboard'))
+const SchoolTeams = lazy(() => import('./pages/school/SchoolTeams'))
+const SchoolPlayers = lazy(() => import('./pages/school/SchoolPlayers'))
+const SchoolMembers = lazy(() => import('./pages/school/SchoolMembers'))
+const SchoolSettings = lazy(() => import('./pages/school/SchoolSettings'))
+const SchoolBilling = lazy(() => import('./pages/school/SchoolBilling'))
+const SchoolSubscriptions = lazy(() => import('./pages/school/SchoolSubscriptions'))
+const SchoolAnnouncements = lazy(() => import('./pages/school/SchoolAnnouncements'))
+const CreateSchool = lazy(() => import('./pages/school/CreateSchool'))
+const SchoolSafeguarding = lazy(() => import('./pages/school/SchoolSafeguarding'))
+const SchoolSafeguardingPeople = lazy(() => import('./pages/school/SchoolSafeguardingPeople'))
+const SchoolSafeguardingRoles = lazy(() => import('./pages/school/SchoolSafeguardingRoles'))
+const SchoolSafeguardingIncidents = lazy(() => import('./pages/school/SchoolSafeguardingIncidents'))
+const SchoolEvents = lazy(() => import('./pages/school/SchoolEvents'))
+const SchoolSchedule = lazy(() => import('./pages/school/SchoolSchedule'))
+const SchoolInsights = lazy(() => import('./pages/school/SchoolInsights'))
+const SchoolReports = lazy(() => import('./pages/school/SchoolReports'))
 const SeasonDevelopment = lazy(() => import('./pages/SeasonDevelopment'))
-
 
 // Protected route wrapper
 function ProtectedRoute({ children, allowedRoles = [] }) {
@@ -93,8 +92,8 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
-    if (user.role === 'player' || user.role === 'parent') {
-      return <Navigate to="/player-lounge" replace />
+    if (user.role === 'player') {
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/dashboard" replace />
   }
@@ -111,8 +110,8 @@ function PublicRoute({ children }) {
   }
 
   if (user) {
-    if (user.role === 'player' || user.role === 'parent') {
-      return <Navigate to="/player-lounge" replace />
+    if (user.role === 'player') {
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/dashboard" replace />
   }
@@ -129,8 +128,8 @@ function CatchAllRedirect() {
   }
 
   if (user) {
-    if (user.role === 'player' || user.role === 'parent') {
-      return <Navigate to="/player-lounge" replace />
+    if (user.role === 'player') {
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/dashboard" replace />
   }
@@ -170,41 +169,40 @@ export default function App() {
         <Route path="/features/:slug" element={<FeaturePage />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
 
-
-        {/* Protected route - Create club (must be above /club/:slug to avoid conflict) */}
-        <Route path="/club/create" element={
+        {/* Protected route - Create school (must be above /school/:slug to avoid conflict) */}
+        <Route path="/school/create" element={
           <ProtectedRoute allowedRoles={['manager', 'assistant', 'scout']}>
             <AppLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<CreateClub />} />
+          <Route index element={<CreateSchool />} />
         </Route>
 
-        {/* Protected routes - Club management */}
-        <Route path="/club/:slug" element={
+        {/* Protected routes - School management */}
+        <Route path="/school/:slug" element={
           <ProtectedRoute allowedRoles={['manager', 'assistant', 'scout']}>
-            <ClubLayout />
+            <SchoolLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<ClubDashboard />} />
-          <Route path="teams" element={<ClubTeams />} />
-          <Route path="players" element={<ClubPlayers />} />
-          <Route path="members" element={<ClubMembers />} />
-          <Route path="subscriptions" element={<ClubSubscriptions />} />
-          <Route path="announcements" element={<ClubAnnouncements />} />
-          <Route path="billing" element={<ClubBilling />} />
-          <Route path="settings" element={<ClubSettings />} />
-          <Route path="safeguarding" element={<ClubSafeguarding />} />
-          <Route path="safeguarding/people" element={<ClubSafeguardingPeople />} />
-          <Route path="safeguarding/roles" element={<ClubSafeguardingRoles />} />
-          <Route path="safeguarding/incidents" element={<ClubSafeguardingIncidents />} />
-          <Route path="events" element={<ClubEvents />} />
-          <Route path="schedule" element={<ClubSchedule />} />
-          <Route path="insights" element={<ClubInsights />} />
-          <Route path="reports" element={<ClubReports />} />
+          <Route index element={<SchoolDashboard />} />
+          <Route path="teams" element={<SchoolTeams />} />
+          <Route path="pupils" element={<SchoolPlayers />} />
+          <Route path="members" element={<SchoolMembers />} />
+          <Route path="subscriptions" element={<SchoolSubscriptions />} />
+          <Route path="announcements" element={<SchoolAnnouncements />} />
+          <Route path="billing" element={<SchoolBilling />} />
+          <Route path="settings" element={<SchoolSettings />} />
+          <Route path="safeguarding" element={<SchoolSafeguarding />} />
+          <Route path="safeguarding/people" element={<SchoolSafeguardingPeople />} />
+          <Route path="safeguarding/roles" element={<SchoolSafeguardingRoles />} />
+          <Route path="safeguarding/incidents" element={<SchoolSafeguardingIncidents />} />
+          <Route path="events" element={<SchoolEvents />} />
+          <Route path="schedule" element={<SchoolSchedule />} />
+          <Route path="insights" element={<SchoolInsights />} />
+          <Route path="reports" element={<SchoolReports />} />
         </Route>
 
-        {/* Protected routes - Coaches */}
+        {/* Protected routes - Teachers */}
         <Route path="/" element={
           <ProtectedRoute allowedRoles={['manager', 'assistant', 'scout']}>
             <AppLayout />
@@ -214,9 +212,9 @@ export default function App() {
           <Route path="chat" element={<Chat />} />
           <Route path="tactics" element={<Tactics />} />
           <Route path="training" element={<Training />} />
-          <Route path="players" element={<Players />} />
-          <Route path="players/:id" element={<PlayerDetail />} />
-          <Route path="players/:playerId/assistant" element={<PlayerAssistant />} />
+          <Route path="pupils" element={<Pupils />} />
+          <Route path="pupils/:id" element={<PupilDetail />} />
+          <Route path="pupils/:pupilId/assistant" element={<PupilAssistant />} />
           <Route path="matches" element={<Matches />} />
           <Route path="matches/:id" element={<MatchDetail />} />
           <Route path="matches/:id/analysis" element={<VideoAnalysis />} />
@@ -226,18 +224,17 @@ export default function App() {
           <Route path="fixtures" element={<Navigate to="/matches" replace />} />
           <Route path="league" element={<LeagueTable />} />
           <Route path="season-development" element={<SeasonDevelopment />} />
-          <Route path="lounge" element={<CoachLounge />} />
+          <Route path="lounge" element={<TeacherLounge />} />
           <Route path="settings" element={<Settings />} />
           <Route path="admin" element={<Admin />} />
         </Route>
 
-        {/* Protected routes - Players/Parents */}
-        <Route path="/player-lounge" element={
-          <ProtectedRoute allowedRoles={['player', 'parent']}>
-            <PlayerLounge />
+        {/* Protected routes - Pupils */}
+        <Route path="/pupil-lounge" element={
+          <ProtectedRoute allowedRoles={['player']}>
+            <PupilLounge />
           </ProtectedRoute>
         } />
-
 
         {/* Catch all - redirect based on auth status */}
         <Route path="*" element={<CatchAllRedirect />} />

@@ -112,23 +112,23 @@ router.post('/help/message', authenticateToken, async (req, res, next) => {
 // The Gaffer - Parent Control Routes
 // ==========================================
 
-// Get Gaffer status for a player (for parents)
-router.get('/player/:playerId/gaffer-status', authenticateToken, async (req, res, next) => {
+// Get Gaffer status for a pupil (for parents)
+router.get('/pupil/:pupilId/gaffer-status', authenticateToken, async (req, res, next) => {
   try {
-    const { playerId } = req.params
+    const { pupilId } = req.params
 
-    // Verify user is a parent of this player
-    if (req.user.role === 'parent' && req.user.player_id !== playerId) {
-      return res.status(403).json({ message: 'Not authorized for this player' })
+    // Verify user is a parent of this pupil
+    if (req.user.role === 'parent' && req.user.pupil_id !== pupilId) {
+      return res.status(403).json({ message: 'Not authorized for this pupil' })
     }
 
     const result = await pool.query(
-      'SELECT gaffer_disabled FROM players WHERE id = $1',
-      [playerId]
+      'SELECT gaffer_disabled FROM pupils WHERE id = $1',
+      [pupilId]
     )
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Player not found' })
+      return res.status(404).json({ message: 'Pupil not found' })
     }
 
     res.json({
@@ -139,20 +139,20 @@ router.get('/player/:playerId/gaffer-status', authenticateToken, async (req, res
   }
 })
 
-// Toggle Gaffer on/off for a player (parent only)
-router.put('/player/:playerId/gaffer-status', authenticateToken, async (req, res, next) => {
+// Toggle Gaffer on/off for a pupil (parent only)
+router.put('/pupil/:pupilId/gaffer-status', authenticateToken, async (req, res, next) => {
   try {
-    const { playerId } = req.params
+    const { pupilId } = req.params
     const { disabled } = req.body
 
-    // Verify user is a parent of this player
-    if (req.user.role !== 'parent' || req.user.player_id !== playerId) {
+    // Verify user is a parent of this pupil
+    if (req.user.role !== 'parent' || req.user.pupil_id !== pupilId) {
       return res.status(403).json({ message: 'Only parents can control The Gaffer for their child' })
     }
 
     await pool.query(
-      'UPDATE players SET gaffer_disabled = $1 WHERE id = $2',
-      [disabled, playerId]
+      'UPDATE pupils SET gaffer_disabled = $1 WHERE id = $2',
+      [disabled, pupilId]
     )
 
     res.json({
@@ -197,9 +197,9 @@ router.post('/:teamId/message', authenticateToken, async (req, res, next) => {
     
     const team = teamResult.rows[0]
     
-    // Get player count
+    // Get pupil count
     const playerResult = await pool.query(
-      'SELECT COUNT(*) as count FROM players WHERE team_id = $1',
+      'SELECT COUNT(*) as count FROM pupils WHERE team_id = $1',
       [teamId]
     )
     
@@ -345,42 +345,42 @@ router.delete('/:teamId/history', authenticateToken, async (req, res, next) => {
 })
 
 // ==========================================
-// Player Assistant Chat (for players/parents)
+// Pupil Assistant Chat (for pupils/parents)
 // ==========================================
 
-// Send message to player assistant
-router.post('/player/:playerId/message', authenticateToken, async (req, res, next) => {
+// Send message to pupil assistant
+router.post('/pupil/:pupilId/message', authenticateToken, async (req, res, next) => {
   try {
-    const { playerId } = req.params
+    const { pupilId } = req.params
     const { message } = req.body
 
     if (!message) {
       return res.status(400).json({ message: 'Message is required' })
     }
 
-    // Get player info with age calculation
+    // Get pupil info with age calculation
     const playerResult = await pool.query(
       `SELECT p.*, t.name as team_name, t.age_group, t.formation, t.team_format
-       FROM players p
+       FROM pupils p
        JOIN teams t ON p.team_id = t.id
        WHERE p.id = $1`,
-      [playerId]
+      [pupilId]
     )
 
     if (playerResult.rows.length === 0) {
-      return res.status(404).json({ message: 'Player not found' })
+      return res.status(404).json({ message: 'Pupil not found' })
     }
 
-    // Check if The Gaffer is disabled for this player
+    // Check if The Gaffer is disabled for this pupil
     if (playerResult.rows[0].gaffer_disabled) {
-      return res.status(403).json({ message: 'The Gaffer has been disabled by a parent for this player' })
+      return res.status(403).json({ message: 'The Gaffer has been disabled by a parent for this pupil' })
     }
 
-    const player = playerResult.rows[0]
+    const pupil = playerResult.rows[0]
 
     // Check AI chat usage limit against team's plan
-    const entitlements = await getEntitlements({ userId: req.user.id, teamId: player.team_id, userEmail: req.user.email })
-    const chatUsageCheck = await checkAndIncrementUsage(player.team_id, 'chat', entitlements)
+    const entitlements = await getEntitlements({ userId: req.user.id, teamId: pupil.team_id, userEmail: req.user.email })
+    const chatUsageCheck = await checkAndIncrementUsage(pupil.team_id, 'chat', entitlements)
     if (!chatUsageCheck.allowed) {
       return res.status(429).json({
         message: chatUsageCheck.limit === 0
@@ -393,15 +393,15 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
     }
 
     // Calculate age
-    if (player.dob) {
+    if (pupil.dob) {
       const today = new Date()
-      const birth = new Date(player.dob)
+      const birth = new Date(pupil.dob)
       let age = today.getFullYear() - birth.getFullYear()
       const monthDiff = today.getMonth() - birth.getMonth()
       if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
         age--
       }
-      player.age = age
+      pupil.age = age
     }
 
     // Helper to run context queries without failing the whole request
@@ -409,7 +409,7 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
       try {
         return await pool.query(query, params)
       } catch (err) {
-        console.error(`Player chat context query failed (${label}):`, err.message)
+        console.error(`Pupil chat context query failed (${label}):`, err.message)
         return { rows: [] }
       }
     }
@@ -423,17 +423,17 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
          FROM observations o
          LEFT JOIN matches m ON o.match_id = m.id
          LEFT JOIN training_sessions ts ON o.training_session_id = ts.id
-         WHERE o.player_id = $1
+         WHERE o.pupil_id = $1
          ORDER BY o.created_at DESC
          LIMIT 20`,
-        [playerId]
+        [pupilId]
       ),
       safeQuery('idp',
         `SELECT * FROM development_plans
-         WHERE player_id = $1
+         WHERE pupil_id = $1
          ORDER BY created_at DESC
          LIMIT 1`,
-        [playerId]
+        [pupilId]
       ),
       safeQuery('upcoming_matches',
         `SELECT opponent, date, is_home
@@ -441,7 +441,7 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
          WHERE team_id = $1 AND date > NOW()
          ORDER BY date
          LIMIT 5`,
-        [player.team_id]
+        [pupil.team_id]
       ),
       safeQuery('recent_matches',
         `SELECT opponent, date, result, team_notes
@@ -449,7 +449,7 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
          WHERE team_id = $1 AND date < NOW() AND (result IS NOT NULL OR team_notes IS NOT NULL)
          ORDER BY date DESC
          LIMIT 5`,
-        [player.team_id]
+        [pupil.team_id]
       ),
       safeQuery('training',
         `SELECT date, time, location, session_type, focus_areas, notes
@@ -457,7 +457,7 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
          WHERE team_id = $1 AND date >= CURRENT_DATE
          ORDER BY date, time
          LIMIT 5`,
-        [player.team_id]
+        [pupil.team_id]
       ),
       safeQuery('player_video_analysis',
         `SELECT va.player_feedback, va.summary, va.created_at,
@@ -467,23 +467,23 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
          LEFT JOIN matches m ON v.match_id = m.id
          WHERE v.team_id = $1 AND va.approved = true AND va.player_feedback IS NOT NULL
          ORDER BY va.created_at DESC LIMIT 5`,
-        [player.team_id]
+        [pupil.team_id]
       ),
     ])
 
-    // Build player context with enhanced observation data
+    // Build pupil context with enhanced observation data
     const playerContext = {
-      player: {
-        name: player.name,
-        age: player.age,
-        positions: player.positions,
-        squad_number: player.squad_number,
+      pupil: {
+        name: pupil.name,
+        age: pupil.age,
+        positions: pupil.positions,
+        squad_number: pupil.squad_number,
       },
       team: {
-        name: player.team_name,
-        age_group: player.age_group,
-        formation: player.formation,
-        team_format: player.team_format || 11,
+        name: pupil.team_name,
+        age_group: pupil.age_group,
+        formation: pupil.formation,
+        team_format: pupil.team_format || 11,
       },
       observations: obsResult.rows.map(obs => ({
         type: obs.type,
@@ -524,8 +524,8 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
         for (const va of playerVideoResult.rows) {
           if (Array.isArray(va.player_feedback)) {
             const playerNotes = va.player_feedback.filter(f =>
-              f.name?.toLowerCase() === player.name?.toLowerCase() ||
-              (player.squad_number && Number(f.squad_number) === Number(player.squad_number))
+              f.name?.toLowerCase() === pupil.name?.toLowerCase() ||
+              (pupil.squad_number && Number(f.squad_number) === Number(pupil.squad_number))
             )
             for (const note of playerNotes) {
               feedback.push({
@@ -542,13 +542,13 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
       })()
     }
 
-    // Get conversation history for this player
+    // Get conversation history for this pupil
     const historyResult = await pool.query(
-      `SELECT role, content FROM player_messages
-       WHERE player_id = $1
+      `SELECT role, content FROM pupil_messages
+       WHERE pupil_id = $1
        ORDER BY created_at DESC
        LIMIT 10`,
-      [playerId]
+      [pupilId]
     )
 
     const conversationHistory = historyResult.rows.reverse()
@@ -558,15 +558,15 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
 
     // Save messages
     await pool.query(
-      `INSERT INTO player_messages (player_id, user_id, role, content)
+      `INSERT INTO pupil_messages (pupil_id, user_id, role, content)
        VALUES ($1, $2, 'user', $3)`,
-      [playerId, req.user.id, message]
+      [pupilId, req.user.id, message]
     )
 
     await pool.query(
-      `INSERT INTO player_messages (player_id, user_id, role, content)
+      `INSERT INTO pupil_messages (pupil_id, user_id, role, content)
        VALUES ($1, $2, 'assistant', $3)`,
-      [playerId, req.user.id, response.message]
+      [pupilId, req.user.id, response.message]
     )
 
     res.json({
@@ -574,24 +574,24 @@ router.post('/player/:playerId/message', authenticateToken, async (req, res, nex
       usage: response.usage,
     })
   } catch (error) {
-    console.error('Player chat error:', error.message, error.stack)
+    console.error('Pupil chat error:', error.message, error.stack)
     next(error)
   }
 })
 
-// Get player chat history
-router.get('/player/:playerId/history', authenticateToken, async (req, res, next) => {
+// Get pupil chat history
+router.get('/pupil/:pupilId/history', authenticateToken, async (req, res, next) => {
   try {
-    const { playerId } = req.params
+    const { pupilId } = req.params
     const { limit = 50 } = req.query
 
     const result = await pool.query(
       `SELECT id, role, content, created_at
-       FROM player_messages
-       WHERE player_id = $1
+       FROM pupil_messages
+       WHERE pupil_id = $1
        ORDER BY created_at DESC
        LIMIT $2`,
-      [playerId, limit]
+      [pupilId, limit]
     )
 
     res.json(result.rows.reverse())
@@ -600,14 +600,14 @@ router.get('/player/:playerId/history', authenticateToken, async (req, res, next
   }
 })
 
-// Clear player chat history
-router.delete('/player/:playerId/history', authenticateToken, async (req, res, next) => {
+// Clear pupil chat history
+router.delete('/pupil/:pupilId/history', authenticateToken, async (req, res, next) => {
   try {
-    const { playerId } = req.params
+    const { pupilId } = req.params
 
     await pool.query(
-      'DELETE FROM player_messages WHERE player_id = $1',
-      [playerId]
+      'DELETE FROM pupil_messages WHERE pupil_id = $1',
+      [pupilId]
     )
 
     res.json({ success: true, message: 'Chat history cleared' })

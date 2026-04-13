@@ -127,7 +127,7 @@ export default function Matches() {
       const response = await teamService.getMatchAvailability(matchId)
       const availMap = {}
       response.data.forEach(a => {
-        availMap[a.player_id] = a
+        availMap[a.pupil_id] = a
       })
       setAvailability(availMap)
     } catch (error) {
@@ -137,16 +137,16 @@ export default function Matches() {
     }
   }
 
-  async function handleAvailabilityUpdate(playerId, status, notes = null) {
+  async function handleAvailabilityUpdate(pupilId, status, notes = null) {
     try {
       await teamService.updateAvailability(selectedMatch.id, {
-        player_id: playerId,
+        pupil_id: pupilId,
         status,
         notes
       })
       setAvailability(prev => ({
         ...prev,
-        [playerId]: { ...prev[playerId], status, notes }
+        [pupilId]: { ...prev[pupilId], status, notes }
       }))
       toast.success('Availability updated')
     } catch (error) {
@@ -159,7 +159,7 @@ export default function Matches() {
       const deadline = new Date(selectedMatch.date)
       deadline.setDate(deadline.getDate() - 2)
       await teamService.requestAvailability(selectedMatch.id, deadline.toISOString())
-      toast.success('Availability request sent to all players')
+      toast.success('Availability request sent to all pupils')
     } catch (error) {
       toast.error('Failed to send availability request')
     }
@@ -1020,18 +1020,18 @@ export default function Matches() {
           </div>
         )}
 
-        {/* Player List */}
+        {/* Pupil List */}
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {loadingAvailability ? (
             <div className="flex justify-center py-8">
               <Loader2 className="w-6 h-6 animate-spin text-pitch-500" />
             </div>
           ) : (
-            Object.entries(availability).map(([playerId, data]) => {
+            Object.entries(availability).map(([pupilId, data]) => {
               const StatusIcon = statusIcons[data.status]
               return (
                 <div
-                  key={playerId}
+                  key={pupilId}
                   className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 border border-navy-700"
                 >
                   <div className="flex items-center gap-3">
@@ -1053,7 +1053,7 @@ export default function Matches() {
                         return (
                           <button
                             key={status}
-                            onClick={() => handleAvailabilityUpdate(playerId, status)}
+                            onClick={() => handleAvailabilityUpdate(pupilId, status)}
                             className={`p-1.5 rounded transition ${
                               data.status === status
                                 ? statusColors[status]

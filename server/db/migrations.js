@@ -2787,7 +2787,252 @@ export async function runMigrations() {
       console.warn('Library sections seeding warning:', e.message)
     }
 
-    console.log('✅ Migrations completed')
+    // ==========================================
+    // PHASE 8: TOUCHLINE FOR SCHOOLS TRANSFORMATION
+    // ==========================================
+    // Rename core entities, add multi-sport support, drop stripped features.
+    // This is a fresh product database so no data preservation is needed.
+
+    console.log('Running Phase 8: Schools transformation...')
+
+    // --- 8a: Drop stripped tables (gift aid, parent payments, guardians) ---
+    await pool.query(`DROP TABLE IF EXISTS gift_aid_records CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS gift_aid_receipt_sequences CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS parent_gift_aid_declarations CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS club_charity_settings CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS club_transactions CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS player_subscriptions CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS payment_plans CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS guardian_invites CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS player_guardians CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS guardians CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS parent_potm_votes CASCADE`)
+
+    // --- 8b: Rename core tables ---
+    // clubs -> schools
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'clubs') THEN
+        ALTER TABLE clubs RENAME TO schools;
+      END IF;
+    END $$`)
+
+    // club_members -> school_members
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_members') THEN
+        ALTER TABLE club_members RENAME TO school_members;
+      END IF;
+    END $$`)
+
+    // club_announcements -> school_announcements
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_announcements') THEN
+        ALTER TABLE club_announcements RENAME TO school_announcements;
+      END IF;
+    END $$`)
+
+    // club_comms_log -> school_comms_log
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_comms_log') THEN
+        ALTER TABLE club_comms_log RENAME TO school_comms_log;
+      END IF;
+    END $$`)
+
+    // club_events -> school_events
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_events') THEN
+        ALTER TABLE club_events RENAME TO school_events;
+      END IF;
+    END $$`)
+
+    // players -> pupils
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'players') THEN
+        ALTER TABLE players RENAME TO pupils;
+      END IF;
+    END $$`)
+
+    // player_achievements -> pupil_achievements
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_achievements') THEN
+        ALTER TABLE player_achievements RENAME TO pupil_achievements;
+      END IF;
+    END $$`)
+
+    // player_messages -> pupil_messages
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_messages') THEN
+        ALTER TABLE player_messages RENAME TO pupil_messages;
+      END IF;
+    END $$`)
+
+    // --- 8c: Rename club_id -> school_id in surviving tables ---
+    const clubIdRenames = [
+      'school_members', 'teams', 'school_announcements', 'school_comms_log',
+      'compliance_records', 'safeguarding_roles', 'safeguarding_incidents',
+      'compliance_alerts', 'school_events', 'event_registrations',
+      'session_schedule', 'match_reports', 'ai_insights', 'ai_usage', 'grant_drafts'
+    ]
+    for (const table of clubIdRenames) {
+      await pool.query(`DO $$ BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = '${table}' AND column_name = 'club_id'
+        ) THEN
+          ALTER TABLE ${table} RENAME COLUMN club_id TO school_id;
+        END IF;
+      END $$`)
+    }
+
+    // --- 8d: Rename player_id -> pupil_id in surviving tables ---
+    const playerIdRenames = [
+      'users', 'training_attendance', 'training_availability', 'invites',
+      'pupil_messages', 'match_media', 'pupil_achievements', 'team_suggestions',
+      'team_memberships', 'clip_player_tags', 'video_ai_analysis',
+      'event_registrations', 'availability_responses', 'match_availability',
+      'match_squads', 'observations', 'development_plans', 'attribute_snapshots'
+    ]
+    for (const table of playerIdRenames) {
+      await pool.query(`DO $$ BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = '${table}' AND column_name = 'player_id'
+        ) THEN
+          ALTER TABLE ${table} RENAME COLUMN player_id TO pupil_id;
+        END IF;
+      END $$`)
+    }
+
+    // Rename player-related columns in match tables
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_goals' AND column_name = 'scorer_player_id') THEN
+        ALTER TABLE match_goals RENAME COLUMN scorer_player_id TO scorer_pupil_id;
+      END IF;
+    END $$`)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_goals' AND column_name = 'assist_player_id') THEN
+        ALTER TABLE match_goals RENAME COLUMN assist_player_id TO assist_pupil_id;
+      END IF;
+    END $$`)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_substitutions' AND column_name = 'player_off_id') THEN
+        ALTER TABLE match_substitutions RENAME COLUMN player_off_id TO pupil_off_id;
+      END IF;
+    END $$`)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_substitutions' AND column_name = 'player_on_id') THEN
+        ALTER TABLE match_substitutions RENAME COLUMN player_on_id TO pupil_on_id;
+      END IF;
+    END $$`)
+
+    // Also rename guardian_id -> drop it from event_registrations (guardians table is gone)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'event_registrations' AND column_name = 'guardian_id') THEN
+        ALTER TABLE event_registrations DROP COLUMN guardian_id;
+      END IF;
+    END $$`)
+
+    // --- 8e: Add new columns to schools table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS school_type TEXT DEFAULT 'state'
+        CHECK (school_type IN ('state', 'independent', 'academy', 'grammar', 'sixth_form_college'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS urn TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS sso_provider TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS sso_config JSONB;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // Index on URN for school lookups
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_schools_urn ON schools(urn) WHERE urn IS NOT NULL`)
+
+    // --- 8f: Add sport and schools-specific columns to teams ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teams ADD COLUMN IF NOT EXISTS sport TEXT DEFAULT 'football'
+        CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teams ADD COLUMN IF NOT EXISTS gender TEXT DEFAULT 'mixed'
+        CHECK (gender IN ('boys', 'girls', 'mixed'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teams ADD COLUMN IF NOT EXISTS season_type TEXT DEFAULT 'year_round'
+        CHECK (season_type IN ('autumn', 'spring', 'summer', 'year_round'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teams_sport ON teams(sport)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teams_school ON teams(school_id) WHERE school_id IS NOT NULL`)
+
+    // --- 8g: Add pupil-specific columns to pupils table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils ADD COLUMN IF NOT EXISTS year_group INTEGER CHECK (year_group BETWEEN 7 AND 13);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils ADD COLUMN IF NOT EXISTS house TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 8h: Create pupil_sports join table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS pupil_sports (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball')),
+      active BOOLEAN DEFAULT true,
+      joined_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(pupil_id, sport)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_sports_pupil ON pupil_sports(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_sports_sport ON pupil_sports(sport)`)
+
+    // --- 8i: Create teacher_sports join table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS teacher_sports (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball')),
+      role TEXT DEFAULT 'coach' CHECK (role IN ('head_of_sport', 'coach', 'assistant')),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(teacher_id, sport)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teacher_sports_teacher ON teacher_sports(teacher_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teacher_sports_sport ON teacher_sports(sport)`)
+
+    // --- 8j: Create audit_log table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS audit_log (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID REFERENCES schools(id) ON DELETE SET NULL,
+      user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      action TEXT NOT NULL,
+      entity_type TEXT,
+      entity_id UUID,
+      details JSONB,
+      ip_address TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_school ON audit_log(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_entity ON audit_log(entity_type, entity_id)`)
+
+    console.log('Phase 8: Schools transformation complete')
+
+    console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
   }

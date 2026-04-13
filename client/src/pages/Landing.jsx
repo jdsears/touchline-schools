@@ -174,7 +174,7 @@ function ChatMockup() {
   )
 }
 
-// Mockup: Player Card
+// Mockup: Pupil Card
 function PlayerCardMockup() {
   return (
     <div className="bg-navy-900 rounded-xl shadow-xl overflow-hidden">
@@ -246,7 +246,7 @@ function MatchPrepMockup() {
           </div>
           <div className="bg-navy-800 rounded-lg p-3">
             <p className="text-navy-400 text-xs mb-1">Squad Size</p>
-            <p className="text-white font-medium">14 players</p>
+            <p className="text-white font-medium">14 pupils</p>
           </div>
         </div>
         <div>
@@ -275,7 +275,7 @@ function ParentViewMockup() {
             <Users className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-white font-medium">Player Hub</p>
+            <p className="text-white font-medium">Pupil Hub</p>
             <p className="text-white/80 text-sm">Tom's Dashboard</p>
           </div>
         </div>
@@ -294,7 +294,7 @@ function ParentViewMockup() {
           <div className="flex items-center gap-3">
             <Trophy className="w-5 h-5 text-caution-400" />
             <div>
-              <p className="text-white text-sm font-medium">Player of the Match!</p>
+              <p className="text-white text-sm font-medium">Pupil of the Match!</p>
               <p className="text-navy-400 text-xs">Outstanding performance vs Rovers</p>
             </div>
           </div>
@@ -313,7 +313,7 @@ function ParentViewMockup() {
   )
 }
 
-// Mockup: Club Management
+// Mockup: School Management
 function ClubManagementMockup() {
   return (
     <div className="bg-navy-900 rounded-xl shadow-xl overflow-hidden">
@@ -323,7 +323,7 @@ function ClubManagementMockup() {
             <Building2 className="w-5 h-5 text-white" />
           </div>
           <div>
-            <p className="text-white font-medium">Club Hub</p>
+            <p className="text-white font-medium">School Hub</p>
             <p className="text-white/80 text-sm">Riverside FC</p>
           </div>
         </div>
@@ -378,9 +378,9 @@ function HeroCarousel() {
     { component: TacticsMockup, title: 'Visual Tactics Board', subtitle: 'Plan formations and movements' },
     { component: ChatMockup, title: 'AI Coaching Assistant', subtitle: 'Get instant tactical advice' },
     { component: MatchPrepMockup, title: 'Match Preparation', subtitle: 'Never go in unprepared' },
-    { component: PlayerCardMockup, title: 'Player Development', subtitle: 'Track progress over time' },
-    { component: ParentViewMockup, title: 'Parent & Player Portal', subtitle: 'Keep everyone connected' },
-    { component: ClubManagementMockup, title: 'Club Management', subtitle: 'Safeguarding, events & AI intelligence' },
+    { component: PlayerCardMockup, title: 'Pupil Development', subtitle: 'Track progress over time' },
+    { component: ParentViewMockup, title: 'Parent & Pupil Portal', subtitle: 'Keep everyone connected' },
+    { component: ClubManagementMockup, title: 'School Management', subtitle: 'Safeguarding, events & AI intelligence' },
   ]
 
   useEffect(() => {
@@ -474,7 +474,7 @@ const featureTabs = [
     color: 'pitch',       // tailwind token used for accent colours
     subtitle: 'AI-powered session planning trained on FA frameworks',
     description:
-      'Everything you need to plan sessions, prepare for matches, and develop your players. AI that extends your coaching, grounded in FA and UEFA methodology, never replacing your judgement.',
+      'Everything you need to plan sessions, prepare for matches, and develop your pupils. AI that extends your coaching, grounded in FA and UEFA methodology, never replacing your judgement.',
   },
   {
     key: 'parents',
@@ -486,7 +486,7 @@ const featureTabs = [
       "Parents get full visibility into schedules and their child's development. Players get their own space with a purpose-built AI coach that's bounded by design. No open-ended chat, every conversation logged, parent-controlled.",
   },
   {
-    key: 'clubs',
+    key: 'schools',
     label: 'For Clubs',
     icon: Building2,
     color: 'amber',
@@ -624,10 +624,10 @@ function FeatureTabs() {
               })}
             </div>
 
-            {activeTab === 'clubs' && (
+            {activeTab === 'schools' && (
               <div className="mt-10 text-center">
                 <Link to="/pricing" className="btn-secondary btn-lg inline-flex items-center gap-2">
-                  View Club Plans
+                  View School Plans
                   <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
@@ -644,7 +644,7 @@ const coachFeatures = [
   {
     icon: Brain,
     title: 'AI Tactical Advisor',
-    description: 'Chat with an AI that understands formations, player roles, and match situations. Get advice tailored to your team.',
+    description: 'Chat with an AI that understands formations, pupil roles, and match situations. Get advice tailored to your team.',
     color: 'pitch',
     slug: 'tactical-advisor',
   },
@@ -658,7 +658,7 @@ const coachFeatures = [
   {
     icon: ClipboardList,
     title: 'Training Session Generator',
-    description: 'Generate complete training plans based on time, players available, and areas you want to develop.',
+    description: 'Generate complete training plans based on time, pupils available, and areas you want to develop.',
     color: 'pitch',
     slug: 'session-planner',
   },
@@ -671,10 +671,10 @@ const coachFeatures = [
   },
   {
     icon: Users,
-    title: 'Player Profiles & IDP',
-    description: 'Track every player\'s development with observations, skills tracking, and AI-generated individual development plans.',
+    title: 'Pupil Profiles & IDP',
+    description: 'Track every pupil\'s development with observations, skills tracking, and AI-generated individual development plans.',
     color: 'pitch',
-    slug: 'player-development',
+    slug: 'pupil-development',
   },
   {
     icon: Video,
@@ -685,7 +685,7 @@ const coachFeatures = [
   },
 ]
 
-// Parent/Player features
+// Parent/Pupil features
 const parentFeatures = [
   {
     icon: Calendar,
@@ -714,13 +714,13 @@ const parentFeatures = [
   {
     icon: CalendarDays,
     title: 'Events & Camp Registration',
-    description: 'Browse and register for holiday camps, tournaments, and club events. Pay online in one step.',
+    description: 'Browse and register for holiday camps, tournaments, and school events. Pay online in one step.',
     color: 'energy',
   },
   {
     icon: Star,
     title: 'Achievements & Awards',
-    description: 'Celebrate milestones, Player of the Match awards, and personal bests.',
+    description: 'Celebrate milestones, Pupil of the Match awards, and personal bests.',
     color: 'energy',
   },
   {
@@ -737,16 +737,16 @@ const parentFeatures = [
   },
 ]
 
-// Club features
+// School features
 const clubFeatures = [
   {
     icon: Building2,
-    title: 'Club Dashboard',
-    description: 'Bird\'s-eye view of all your teams, players, staff, and registrations. One dashboard for the whole club.',
+    title: 'School Dashboard',
+    description: 'Bird\'s-eye view of all your teams, pupils, staff, and registrations. One dashboard for the whole school.',
   },
   {
     icon: UserCheck,
-    title: 'Guardian & Player CRM',
+    title: 'Guardian & Pupil CRM',
     description: 'Complete contact directory for parents and guardians. Track consent, medical info, and emergency contacts.',
   },
   {
@@ -772,16 +772,16 @@ const clubFeatures = [
   {
     icon: CalendarDays,
     title: 'Events & Camps',
-    description: 'Run holiday camps, tournaments, and club events. Online registration with integrated payments — parents sign up and pay in one step.',
+    description: 'Run holiday camps, tournaments, and school events. Online registration with integrated payments — parents sign up and pay in one step.',
   },
   {
     icon: CalendarClock,
     title: 'Training Schedule & Attendance',
-    description: 'Manage training sessions across all teams. Parents RSVP availability, coaches mark attendance, and you see club-wide trends.',
+    description: 'Manage training sessions across all teams. Parents RSVP availability, coaches mark attendance, and you see school-wide trends.',
   },
   {
     icon: Sparkles,
-    title: 'AI Club Intelligence',
+    title: 'AI School Intelligence',
     description: 'AI-generated match reports for parents, attendance insights, season summaries for your AGM, and even grant application drafts.',
   },
   {
@@ -812,7 +812,7 @@ const stats = [
 const faqs = [
   {
     question: 'What is Touchline?',
-    answer: 'Touchline is a platform your team uses to organise matches, training, and communication, and to support player development in a clear and positive way.',
+    answer: 'Touchline is a platform your team uses to organise matches, training, and communication, and to support pupil development in a clear and positive way.',
   },
   {
     question: 'Why is my team using it?',
@@ -824,7 +824,7 @@ const faqs = [
   },
   {
     question: 'How is AI used?',
-    answer: 'AI is used to help explain coaching feedback clearly, generate training and match summaries, and support players with age-appropriate guidance. AI does not make decisions and does not replace coaches.',
+    answer: 'AI is used to help explain coaching feedback clearly, generate training and match summaries, and support pupils with age-appropriate guidance. AI does not make decisions and does not replace coaches.',
   },
   {
     question: "Who can see my child's information?",
@@ -832,7 +832,7 @@ const faqs = [
   },
   {
     question: 'Questions or concerns?',
-    answer: 'Your first point of contact should always be your coach or club. For platform-specific concerns, contact Touchline support.',
+    answer: 'Your first point of contact should always be your coach or school. For platform-specific concerns, contact Touchline support.',
   },
 ]
 
@@ -956,7 +956,7 @@ export default function Landing() {
     <div className="min-h-screen bg-navy-950">
       <SEO
         path="/"
-        description="Touchline gives grassroots football coaches AI-powered tools for tactics, training sessions, player development, and club management. Free plan available."
+        description="Touchline gives grassroots football coaches AI-powered tools for tactics, training sessions, pupil development, and school management. Free plan available."
       />
 
       {/* Homepage-only structured data (SoftwareApplication, Organization, FAQPage) */}
@@ -966,14 +966,14 @@ export default function Landing() {
         "name": "Touchline",
         "applicationCategory": "SportsApplication",
         "operatingSystem": "Web",
-        "description": "AI-powered coaching platform for grassroots football. Generate training sessions, plan tactics, and track player development.",
+        "description": "AI-powered coaching platform for grassroots football. Generate training sessions, plan tactics, and track pupil development.",
         "url": "https://touchline.xyz",
         "image": "https://touchline.xyz/touchline-og-image.png",
         "author": { "@type": "Organization", "name": "Touchline" },
         "offers": { "@type": "Offer", "price": "9.99", "priceCurrency": "GBP" },
         "featureList": [
           "AI Coaching Assistant", "Visual Tactics Board", "Training Session Generator",
-          "Player Development Plans", "Match Preparation", "Parent & Player Portal", "Video Analysis"
+          "Pupil Development Plans", "Match Preparation", "Parent & Pupil Portal", "Video Analysis"
         ]
       }) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
@@ -990,11 +990,11 @@ export default function Landing() {
         "@context": "https://schema.org",
         "@type": "FAQPage",
         "mainEntity": [
-          { "@type": "Question", "name": "What is Touchline?", "acceptedAnswer": { "@type": "Answer", "text": "Touchline is an AI-powered coaching platform designed for grassroots football coaches. It provides tools for generating training sessions, planning tactics, preparing for matches, and tracking player development." } },
-          { "@type": "Question", "name": "Why is my team using it?", "acceptedAnswer": { "@type": "Answer", "text": "Your coach has chosen Touchline to help plan better training sessions, prepare for matches, and track each player's development. Parents can stay connected through schedules and progress updates." } },
-          { "@type": "Question", "name": "What information is stored?", "acceptedAnswer": { "@type": "Answer", "text": "Touchline stores basic player information (name, position, age group), development observations, and match/training schedules. All data is kept secure and only visible to your team." } },
+          { "@type": "Question", "name": "What is Touchline?", "acceptedAnswer": { "@type": "Answer", "text": "Touchline is an AI-powered coaching platform designed for grassroots football coaches. It provides tools for generating training sessions, planning tactics, preparing for matches, and tracking pupil development." } },
+          { "@type": "Question", "name": "Why is my team using it?", "acceptedAnswer": { "@type": "Answer", "text": "Your coach has chosen Touchline to help plan better training sessions, prepare for matches, and track each pupil's development. Parents can stay connected through schedules and progress updates." } },
+          { "@type": "Question", "name": "What information is stored?", "acceptedAnswer": { "@type": "Answer", "text": "Touchline stores basic pupil information (name, position, age group), development observations, and match/training schedules. All data is kept secure and only visible to your team." } },
           { "@type": "Question", "name": "How is AI used?", "acceptedAnswer": { "@type": "Answer", "text": "AI powers features like the training session generator, tactical advisor, match preparation briefings, and individual development plan suggestions." } },
-          { "@type": "Question", "name": "Who can see my child's information?", "acceptedAnswer": { "@type": "Answer", "text": "Only your team's coaches and linked parents can see player information. Parent portal access is invite-only. Data is never shared outside your team." } }
+          { "@type": "Question", "name": "Who can see my child's information?", "acceptedAnswer": { "@type": "Answer", "text": "Only your team's coaches and linked parents can see pupil information. Parent portal access is invite-only. Data is never shared outside your team." } }
         ]
       }) }} />
 
@@ -1040,7 +1040,7 @@ export default function Landing() {
                 <span className="sr-only">AI Coaching for Grassroots Football - </span>
                 Coach smarter.
                 <br />
-                <span className="text-gradient">Develop players.</span>
+                <span className="text-gradient">Develop pupils.</span>
                 <br />
                 Build something special.
               </h1>
@@ -1048,7 +1048,7 @@ export default function Landing() {
               <p className="text-lg text-navy-300 mb-8 max-w-xl">
                 The only grassroots football platform with AI at its core. Purpose-built
                 agents trained on FA and UEFA coaching frameworks help you plan sessions,
-                track development, run your club, and give every player the attention
+                track development, run your school, and give every pupil the attention
                 they deserve.
               </p>
 
@@ -1114,7 +1114,7 @@ export default function Landing() {
               {
                 icon: Brain,
                 title: 'AI-Native, Not Bolted On',
-                description: 'Purpose-built AI agents for every part of your club. Not a database with a chatbot added later.',
+                description: 'Purpose-built AI agents for every part of your school. Not a database with a chatbot added later.',
               },
               {
                 icon: GraduationCap,
@@ -1124,7 +1124,7 @@ export default function Landing() {
               {
                 icon: CreditCard,
                 title: 'Lowest Payment Fees in Grassroots',
-                description: '2% + 20p per transaction. No annual subscription. No hidden fees. Your money stays in your club.',
+                description: '2% + 20p per transaction. No annual subscription. No hidden fees. Your money stays in your school.',
               },
             ].map((item, i) => (
               <motion.div
@@ -1164,7 +1164,7 @@ export default function Landing() {
                 AI your family can trust
               </h2>
               <p className="text-lg text-navy-300 mb-6 leading-relaxed">
-                The Gaffer, our player-facing AI coach, is purpose-built for youth football.
+                The Gaffer, our pupil-facing AI coach, is purpose-built for youth football.
                 It can't go off-topic, can't access the internet, and every conversation is
                 logged. Parents have full visibility and control.
               </p>
@@ -1282,7 +1282,7 @@ export default function Landing() {
               {
                 icon: Heart,
                 title: '10% of profits pledged',
-                description: 'We give back 10% of profits to Morley YFC, the club where it all started.',
+                description: 'We give back 10% of profits to Morley YFC, the school where it all started.',
               },
               {
                 icon: ShieldCheck,
@@ -1329,7 +1329,7 @@ export default function Landing() {
             </h2>
             <p className="text-lg text-navy-300 max-w-3xl mx-auto">
               Other platforms bury their fees in fine print or take a cut of every payment
-              that adds up fast. We believe your club's money should go to your club.
+              that adds up fast. We believe your school's money should go to your school.
             </p>
           </motion.div>
 
@@ -1342,7 +1342,7 @@ export default function Landing() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="card p-6 border-alert-600/20"
             >
-              <h3 className="font-display text-lg font-semibold text-navy-300 mb-4">Typical Club Platforms</h3>
+              <h3 className="font-display text-lg font-semibold text-navy-300 mb-4">Typical School Platforms</h3>
               <div className="space-y-3">
                 {[
                   '2-5% platform fee on every payment',
@@ -1401,7 +1401,7 @@ export default function Landing() {
           >
             <p className="text-sm text-navy-400 mb-2">On £10,000 in annual parent payments, you save</p>
             <p className="text-5xl sm:text-6xl font-display font-bold text-gradient mb-2">£150 – £450</p>
-            <p className="text-navy-400">compared to platforms charging 2-5%. That's money back in your club's pocket.</p>
+            <p className="text-navy-400">compared to platforms charging 2-5%. That's money back in your school's pocket.</p>
           </motion.div>
         </div>
       </section>
@@ -1420,7 +1420,7 @@ export default function Landing() {
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { step: '1', title: 'Create your team', description: 'Sign up, name your team, and add your players. Takes less than 5 minutes.' },
+              { step: '1', title: 'Create your team', description: 'Sign up, name your team, and add your pupils. Takes less than 5 minutes.' },
               { step: '2', title: 'Invite parents', description: 'Send invite links so parents can access schedules and their child\'s progress.' },
               { step: '3', title: 'Start coaching', description: 'Use the AI assistant, plan training, and prepare for matches. All in one place.' },
             ].map((item, i) => (
@@ -1463,7 +1463,7 @@ export default function Landing() {
               Start Free. Upgrade Anytime.
             </h2>
             <p className="text-xl text-navy-300 mb-8">
-              No credit card required. Paid plans from £9.99/month. Club plans from £99/month.
+              No credit card required. Paid plans from £9.99/month. School plans from £99/month.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
@@ -1473,7 +1473,7 @@ export default function Landing() {
                   <span className="font-semibold text-white">Free</span>
                 </div>
                 <p className="text-2xl font-bold text-white mb-1">£0<span className="text-sm text-navy-400 font-normal">/forever</span></p>
-                <p className="text-sm text-navy-400">1 team, 16 players</p>
+                <p className="text-sm text-navy-400">1 team, 16 pupils</p>
               </div>
               <div className="bg-pitch-900/30 border border-pitch-500/30 rounded-xl p-5 text-left relative">
                 <div className="absolute -top-2 right-3 px-2 py-0.5 bg-pitch-500 text-navy-950 text-xs font-bold rounded-full">
@@ -1484,7 +1484,7 @@ export default function Landing() {
                   <span className="font-semibold text-white">Core</span>
                 </div>
                 <p className="text-2xl font-bold text-white mb-1">£9.99<span className="text-sm text-navy-400 font-normal">/mo</span></p>
-                <p className="text-sm text-navy-400">1 team, 25 players</p>
+                <p className="text-sm text-navy-400">1 team, 25 pupils</p>
               </div>
               <div className="bg-navy-800/50 rounded-xl p-5 text-left">
                 <div className="flex items-center gap-2 mb-3">
@@ -1502,7 +1502,7 @@ export default function Landing() {
                 'Visual tactics board',
                 'Training generator',
                 'Match prep & reports',
-                'Player development',
+                'Pupil development',
                 'Parent portal access',
                 'Safeguarding & DBS tracking',
                 'Events & camp management',
@@ -1543,7 +1543,7 @@ export default function Landing() {
               Ready to Transform Your Coaching?
             </h2>
             <p className="text-lg text-navy-300 mb-8 max-w-2xl mx-auto">
-              Join coaches already using {APP_NAME} to develop their players,
+              Join coaches already using {APP_NAME} to develop their pupils,
               plan better sessions, and keep their team connected.
             </p>
             <Link to="/register" className="btn-primary btn-lg">
@@ -1565,7 +1565,7 @@ export default function Landing() {
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-white">
                 Frequently Asked Questions
               </h2>
-              <p className="text-navy-400">For parents and players</p>
+              <p className="text-navy-400">For parents and pupils</p>
             </div>
           </div>
 
@@ -1588,7 +1588,7 @@ export default function Landing() {
           {/* Final note */}
           <div className="mt-8 p-6 bg-pitch-500/10 rounded-xl border border-pitch-500/20">
             <p className="text-pitch-300 text-sm leading-relaxed">
-              <strong className="text-pitch-200">Important:</strong> Touchline is designed to support coaches, empower players, reassure parents, and operate responsibly within youth football. If something does not feel appropriate, we want to know.
+              <strong className="text-pitch-200">Important:</strong> Touchline is designed to support coaches, empower pupils, reassure parents, and operate responsibly within youth football. If something does not feel appropriate, we want to know.
             </p>
           </div>
         </div>

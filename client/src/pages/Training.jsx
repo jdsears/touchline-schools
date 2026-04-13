@@ -72,7 +72,7 @@ const durationOptions = [
 
 export default function Training() {
   const { user } = useAuth()
-  const { players } = useTeam()
+  const { pupils } = useTeam()
   const isManager = user?.role === 'manager' || user?.role === 'assistant'
 
   const [sessions, setSessions] = useState([])
@@ -89,7 +89,7 @@ export default function Training() {
     time: '',
     duration: 60,
     focusAreas: [],
-    playerCount: players.length || 14,
+    playerCount: pupils.length || 14,
     constraints: '',
     coachDrills: '',
     location: '',
@@ -286,7 +286,7 @@ export default function Training() {
         time: createForm.time || undefined,
         duration: createForm.duration,
         focusAreas: createForm.focusAreas,
-        players: createForm.playerCount,
+        pupils: createForm.playerCount,
         constraints: createForm.constraints || undefined,
         coachDrills: createForm.coachDrills || undefined,
         location: createForm.location || undefined,
@@ -311,7 +311,7 @@ export default function Training() {
       time: '',
       duration: 60,
       focusAreas: [],
-      playerCount: players.length || 14,
+      playerCount: pupils.length || 14,
       constraints: '',
       coachDrills: '',
       location: '',
@@ -360,7 +360,7 @@ export default function Training() {
       const updatedSession = { ...session, summary: response.data.summary }
       setSelectedSession(updatedSession)
       setSessions(prev => prev.map(s => s.id === session.id ? updatedSession : s))
-      toast.success('Summary generated! Parents can now see this in their Player Zone.')
+      toast.success('Summary generated! Parents can now see this in their Pupil Zone.')
     } catch (error) {
       console.error('Failed to generate summary:', error)
       toast.error('Failed to generate summary')
@@ -378,8 +378,8 @@ export default function Training() {
       setSelectedSession(updatedSession)
       setSessions(prev => prev.map(s => s.id === session.id ? updatedSession : s))
       toast.success(newShareValue
-        ? 'Training plan is now visible to players in their Player Zone!'
-        : 'Training plan hidden from players.')
+        ? 'Training plan is now visible to pupils in their Pupil Zone!'
+        : 'Training plan hidden from pupils.')
     } catch (error) {
       console.error('Failed to toggle share setting:', error)
       toast.error('Failed to update sharing setting')
@@ -399,7 +399,7 @@ export default function Training() {
         time: session.time || undefined,
         duration: session.duration,
         focusAreas,
-        players: players.length || 14,
+        pupils: pupils.length || 14,
         constraints: session.notes || undefined,
         location: session.location || undefined,
         session_type: session.session_type || 'training',
@@ -513,15 +513,15 @@ export default function Training() {
     setLoadingAttendance(false)
   }
 
-  function togglePlayerAttendance(playerId) {
+  function togglePlayerAttendance(pupilId) {
     setAttendance(prev => prev.map(p =>
-      p.player_id === playerId ? { ...p, attended: !p.attended } : p
+      p.pupil_id === pupilId ? { ...p, attended: !p.attended } : p
     ))
   }
 
-  function setPlayerEffort(playerId, rating) {
+  function setPlayerEffort(pupilId, rating) {
     setAttendance(prev => prev.map(p =>
-      p.player_id === playerId ? { ...p, effort_rating: rating } : p
+      p.pupil_id === pupilId ? { ...p, effort_rating: rating } : p
     ))
   }
 
@@ -533,7 +533,7 @@ export default function Training() {
     setSavingAttendance(true)
     try {
       const records = attendance.map(p => ({
-        player_id: p.player_id,
+        pupil_id: p.pupil_id,
         attended: p.attended,
         effort_rating: p.effort_rating || null,
       }))
@@ -559,14 +559,14 @@ export default function Training() {
     setLoadingAvailability(false)
   }
 
-  async function handleAvailabilityUpdate(sessionId, playerId, status) {
+  async function handleAvailabilityUpdate(sessionId, pupilId, status) {
     try {
       await trainingService.updateAvailability(user.team_id, sessionId, {
-        player_id: playerId,
+        pupil_id: pupilId,
         status,
       })
       setAvailability(prev => prev.map(p =>
-        p.player_id === playerId ? { ...p, status } : p
+        p.pupil_id === pupilId ? { ...p, status } : p
       ))
     } catch (error) {
       toast.error('Failed to update availability')
@@ -576,7 +576,7 @@ export default function Training() {
   async function handleRequestAvailability(sessionId, pendingOnly = false) {
     try {
       await trainingService.requestAvailability(user.team_id, sessionId, { pendingOnly })
-      const msg = pendingOnly ? 'Reminder sent to pending players' : 'Availability request sent to all players'
+      const msg = pendingOnly ? 'Reminder sent to pending pupils' : 'Availability request sent to all pupils'
       toast.success(msg)
     } catch (error) {
       toast.error('Failed to send availability request')
@@ -660,7 +660,7 @@ export default function Training() {
             <h2 className="font-display text-lg font-semibold text-white">AI Session Generator</h2>
           </div>
           <p className="text-navy-400 mb-4">
-            Describe your time, players, and focus areas - get a complete session plan with drills, coaching points, and progressions.
+            Describe your time, pupils, and focus areas - get a complete session plan with drills, coaching points, and progressions.
           </p>
           <button onClick={() => setShowCreateModal(true)} className="btn-primary w-full">
             <Sparkles className="w-4 h-4" />
@@ -1058,7 +1058,7 @@ export default function Training() {
                           className="input"
                           placeholder="17:45"
                         />
-                        <p className="text-xs text-navy-500 mt-1">When players arrive</p>
+                        <p className="text-xs text-navy-500 mt-1">When pupils arrive</p>
                       </div>
                       <div>
                         <label className="label">Session Start</label>
@@ -1184,7 +1184,7 @@ export default function Training() {
                     {/* Training-specific fields */}
                     {createForm.session_type === 'training' && (
                       <>
-                        {/* Player Count */}
+                        {/* Pupil Count */}
                         <div>
                           <label className="label">Expected Players</label>
                           <input
@@ -1826,8 +1826,8 @@ export default function Training() {
                           </h3>
                           <p className="text-sm text-navy-400">
                             {selectedSession.share_plan_with_players
-                              ? 'Players can see this training plan in their Player Zone'
-                              : 'Training plan is hidden from players'}
+                              ? 'Players can see this training plan in their Pupil Zone'
+                              : 'Training plan is hidden from pupils'}
                           </p>
                         </div>
                       </div>
@@ -1887,7 +1887,7 @@ export default function Training() {
                       <AIMarkdown>{selectedSession.summary}</AIMarkdown>
                       <p className="text-xs text-navy-500 mt-3 flex items-center gap-1">
                         <CheckCircle className="w-3 h-3 text-pitch-400" />
-                        This summary is visible to parents in the Player Zone
+                        This summary is visible to parents in the Pupil Zone
                       </p>
                     </div>
                   ) : (
@@ -1985,18 +1985,18 @@ export default function Training() {
                           )
                         })()}
 
-                        {/* Player list */}
+                        {/* Pupil list */}
                         <div className="space-y-1">
-                          {availability.map(player => (
+                          {availability.map(pupil => (
                             <div
-                              key={player.player_id}
+                              key={pupil.pupil_id}
                               className="flex items-center justify-between px-3 py-2 rounded-lg bg-navy-800/50 border border-navy-700"
                             >
                               <div className="flex items-center gap-3">
                                 <div className="w-7 h-7 rounded-full bg-navy-700 flex items-center justify-center text-xs font-medium text-white">
-                                  {player.squad_number || player.player_name?.charAt(0)}
+                                  {pupil.squad_number || pupil.player_name?.charAt(0)}
                                 </div>
-                                <span className="text-sm text-white">{player.player_name}</span>
+                                <span className="text-sm text-white">{pupil.player_name}</span>
                               </div>
 
                               {isManager ? (
@@ -2011,9 +2011,9 @@ export default function Training() {
                                     return (
                                       <button
                                         key={status}
-                                        onClick={() => handleAvailabilityUpdate(selectedSession.id, player.player_id, status)}
+                                        onClick={() => handleAvailabilityUpdate(selectedSession.id, pupil.pupil_id, status)}
                                         className={`p-1.5 rounded transition ${
-                                          player.status === status ? colors : 'text-navy-500 hover:text-navy-300'
+                                          pupil.status === status ? colors : 'text-navy-500 hover:text-navy-300'
                                         }`}
                                       >
                                         <Icon className="w-4 h-4" />
@@ -2023,12 +2023,12 @@ export default function Training() {
                                 </div>
                               ) : (
                                 <span className={`px-2 py-1 rounded text-xs border ${
-                                  player.status === 'available' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-                                  player.status === 'maybe' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
-                                  player.status === 'unavailable' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                                  pupil.status === 'available' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
+                                  pupil.status === 'maybe' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
+                                  pupil.status === 'unavailable' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
                                   'bg-navy-700 text-navy-400 border-navy-600'
                                 }`}>
-                                  {player.status}
+                                  {pupil.status}
                                 </span>
                               )}
                             </div>
@@ -2086,37 +2086,37 @@ export default function Training() {
                         <div className="text-xs text-navy-500 mb-2">
                           {attendance.filter(p => p.attended).length} / {attendance.length} present
                         </div>
-                        {attendance.map(player => (
-                          <div key={player.player_id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition text-sm ${
-                            player.attended
+                        {attendance.map(pupil => (
+                          <div key={pupil.pupil_id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition text-sm ${
+                            pupil.attended
                               ? 'bg-pitch-500/10 border-pitch-500/30 text-white'
                               : 'bg-navy-800/50 border-navy-700 text-navy-400'
                           }`}>
                             <button
-                              onClick={() => togglePlayerAttendance(player.player_id)}
+                              onClick={() => togglePlayerAttendance(pupil.pupil_id)}
                               className="flex items-center justify-between flex-1 min-w-0"
                             >
-                              <span className="truncate">{player.player_name}</span>
-                              {player.attended ? (
+                              <span className="truncate">{pupil.player_name}</span>
+                              {pupil.attended ? (
                                 <CheckCircle className="w-4 h-4 text-pitch-400 shrink-0" />
                               ) : (
                                 <X className="w-4 h-4 text-navy-600 shrink-0" />
                               )}
                             </button>
-                            {player.attended && (
+                            {pupil.attended && (
                               <div className="flex gap-0.5 shrink-0" title="Effort rating">
                                 {[1,2,3,4,5].map(star => (
                                   <button
                                     key={star}
                                     type="button"
-                                    onClick={() => setPlayerEffort(player.player_id, star)}
+                                    onClick={() => setPlayerEffort(pupil.pupil_id, star)}
                                     className={`w-5 h-5 text-xs rounded transition ${
-                                      player.effort_rating >= star
+                                      pupil.effort_rating >= star
                                         ? 'bg-energy-500/20 text-energy-400'
                                         : 'bg-navy-800 text-navy-600 hover:text-navy-400'
                                     }`}
                                   >
-                                    {player.effort_rating >= star ? '\u2605' : '\u2606'}
+                                    {pupil.effort_rating >= star ? '\u2605' : '\u2606'}
                                   </button>
                                 ))}
                               </div>
@@ -2218,7 +2218,7 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
       )}
 
       {/* Drill Diagram */}
-      {content.diagram && (content.diagram.players?.length > 0 || content.diagram.cones?.length > 0) && (
+      {content.diagram && (content.diagram.pupils?.length > 0 || content.diagram.cones?.length > 0) && (
         <div className="mb-3">
           <p className="text-xs text-navy-500 uppercase mb-2">Drill Setup</p>
           <DrillDiagram diagram={content.diagram} />

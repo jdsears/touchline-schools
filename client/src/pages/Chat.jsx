@@ -42,8 +42,8 @@ const suggestedPrompts = [
     icon: Users,
     category: 'Players',
     prompts: [
-      'How do I develop a player who is technically good but lacks confidence?',
-      'What positions suit a quick but small player?',
+      'How do I develop a pupil who is technically good but lacks confidence?',
+      'What positions suit a quick but small pupil?',
       'Give me development goals for a central midfielder',
     ],
   },
@@ -53,14 +53,14 @@ const suggestedPrompts = [
     prompts: [
       'Write a pre-match team talk for an important game',
       'What should I say at half-time when we are 2-0 down?',
-      'How do I handle a player who is disappointed not to start?',
+      'How do I handle a pupil who is disappointed not to start?',
     ],
   },
 ]
 
 export default function Chat() {
   const { user } = useAuth()
-  const { team, players, upcomingMatches } = useTeam()
+  const { team, pupils, upcomingMatches } = useTeam()
   const [searchParams] = useSearchParams()
 
   const [messages, setMessages] = useState([])
@@ -121,7 +121,7 @@ export default function Chat() {
         formation: team.formation,
         gameModel: team.game_model,
       } : null,
-      squadSize: players.length,
+      squadSize: pupils.length,
       upcomingMatch: upcomingMatches[0] ? {
         opponent: upcomingMatches[0].opponent,
         date: upcomingMatches[0].date,
@@ -238,7 +238,7 @@ export default function Chat() {
                   How can I help you today?
                 </h2>
                 <p className="text-navy-400 max-w-md mx-auto">
-                  Ask me anything about tactics, training, player development, or match preparation.
+                  Ask me anything about tactics, training, pupil development, or match preparation.
                 </p>
               </div>
               

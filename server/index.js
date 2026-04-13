@@ -17,7 +17,7 @@ import pool from './config/database.js'
 // Routes
 import authRoutes from './routes/auth.js'
 import teamRoutes from './routes/teams.js'
-import playerRoutes from './routes/players.js'
+import pupilRoutes from './routes/pupils.js'
 import matchRoutes from './routes/matches.js'
 import chatRoutes from './routes/chat.js'
 import trainingRoutes from './routes/training.js'
@@ -33,12 +33,12 @@ import adminRoutes from './routes/admin.js'
 import blogRoutes from './routes/blog.js'
 import supportRoutes from './routes/support.js'
 import streamingRoutes from './routes/streaming.js'
-import clubRoutes from './routes/clubs.js'
-import clubCommsRoutes from './routes/clubComms.js'
-import clubSafeguardingRoutes from './routes/clubSafeguarding.js'
-import clubEventsRoutes from './routes/clubEvents.js'
-import clubScheduleRoutes from './routes/clubSchedule.js'
-import clubIntelligenceRoutes from './routes/clubIntelligence.js'
+import schoolRoutes from './routes/schools.js'
+import schoolCommsRoutes from './routes/schoolComms.js'
+import schoolSafeguardingRoutes from './routes/schoolSafeguarding.js'
+import schoolEventsRoutes from './routes/schoolEvents.js'
+import schoolScheduleRoutes from './routes/schoolSchedule.js'
+import schoolIntelligenceRoutes from './routes/schoolIntelligence.js'
 import knowledgeBaseRoutes from './routes/knowledgeBase.js'
 import seasonDevelopmentRoutes from './routes/seasonDevelopment.js'
 import videoLibraryRoutes from './routes/videoLibrary.js'
@@ -118,8 +118,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads/logos')))
 app.use('/uploads/videos', express.static(path.join(__dirname, 'uploads/videos')))
 
-// Protected: club documents (registrations, compliance, etc.) require valid JWT
-app.use('/uploads/clubs', (req, res, next) => {
+// Protected: school documents (compliance, etc.) require valid JWT
+app.use('/uploads/schools', (req, res, next) => {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
   if (!token) {
@@ -131,7 +131,7 @@ app.use('/uploads/clubs', (req, res, next) => {
   } catch {
     return res.status(401).json({ error: 'Invalid or expired token' })
   }
-}, express.static(path.join(__dirname, 'uploads/clubs')))
+}, express.static(path.join(__dirname, 'uploads/schools')))
 
 // Fallback for any other uploads (match media, documents, etc.)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
@@ -172,7 +172,7 @@ app.use('/api/', apiLimiter)
 // API Routes
 app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/teams', teamRoutes)
-app.use('/api/players', playerRoutes)
+app.use('/api/pupils', pupilRoutes)
 app.use('/api/matches', matchRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/training', trainingRoutes)
@@ -188,12 +188,12 @@ app.use('/api/admin', adminRoutes)
 app.use('/api/blog', blogRoutes)
 app.use('/api/support', supportRoutes)
 app.use('/api/streaming', streamingRoutes)
-app.use('/api/clubs', clubRoutes)
-app.use('/api/club-comms', clubCommsRoutes)
-app.use('/api/club-safeguarding', clubSafeguardingRoutes)
-app.use('/api/club-events', clubEventsRoutes)
-app.use('/api/teams', clubScheduleRoutes)
-app.use('/api/club-intelligence', clubIntelligenceRoutes)
+app.use('/api/schools', schoolRoutes)
+app.use('/api/school-comms', schoolCommsRoutes)
+app.use('/api/school-safeguarding', schoolSafeguardingRoutes)
+app.use('/api/school-events', schoolEventsRoutes)
+app.use('/api/teams', schoolScheduleRoutes)
+app.use('/api/school-intelligence', schoolIntelligenceRoutes)
 app.use('/api/knowledge-base', knowledgeBaseRoutes)
 app.use('/api/teams', seasonDevelopmentRoutes)
 app.use('/api/video-library', videoLibraryRoutes)

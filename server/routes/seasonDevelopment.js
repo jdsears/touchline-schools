@@ -30,22 +30,22 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
     const teamCheck = await pool.query('SELECT id, name FROM teams WHERE id = $1', [teamId])
     if (teamCheck.rows.length === 0) return res.status(404).json({ error: 'Team not found' })
 
-    // Get all active players for this team
+    // Get all active pupils for this team
     const playersResult = await pool.query(
       `SELECT *
-       FROM players
+       FROM pupils
        WHERE team_id = $1 AND (is_active IS NULL OR is_active = true)
        ORDER BY name`,
       [teamId]
     )
-    const players = playersResult.rows
-    const playerIds = players.map(p => p.id)
+    const pupils = playersResult.rows
+    const pupilIds = pupils.map(p => p.id)
 
-    if (playerIds.length === 0) {
+    if (pupilIds.length === 0) {
       return res.json({
         team: teamCheck.rows[0],
         season_start: seasonStart,
-        players: [],
+        pupils: [],
         squad_summary: { total: 0 },
       })
     }
@@ -63,56 +63,56 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
       matchAppearancesResult,
     ] = await Promise.all([
 
-      // 1. Training attendance + effort per player this season
+      // 1. Training attendance + effort per pupil this season
       safeQuery(
         `SELECT
-           ta.player_id,
+           ta.pupil_id,
            COUNT(*) FILTER (WHERE ta.attended = true) as sessions_attended,
            COUNT(*) as sessions_total,
            ROUND(AVG(ta.effort_rating) FILTER (WHERE ta.effort_rating IS NOT NULL), 1) as avg_effort,
            COUNT(ta.effort_rating) FILTER (WHERE ta.effort_rating IS NOT NULL) as effort_ratings_count
          FROM training_attendance ta
          JOIN training_sessions ts ON ts.id = ta.session_id
-         WHERE ta.player_id = ANY($1)
+         WHERE ta.pupil_id = ANY($1)
            AND ts.team_id = $2
            AND ts.date >= $3
-         GROUP BY ta.player_id`,
-        [playerIds, teamId, seasonStart]
+         GROUP BY ta.pupil_id`,
+        [pupilIds, teamId, seasonStart]
       ),
 
-      // 2. Observation counts by type per player this season
+      // 2. Observation counts by type per pupil this season
       safeQuery(
         `SELECT
-           player_id,
+           pupil_id,
            COUNT(*) as total_observations,
            COUNT(*) FILTER (WHERE type = 'technical') as technical_count,
            COUNT(*) FILTER (WHERE type = 'tactical') as tactical_count,
            COUNT(*) FILTER (WHERE type = 'physical') as physical_count,
            COUNT(*) FILTER (WHERE type = 'mental') as mental_count
          FROM observations
-         WHERE player_id = ANY($1) AND created_at >= $2
-         GROUP BY player_id`,
-        [playerIds, seasonStart]
+         WHERE pupil_id = ANY($1) AND created_at >= $2
+         GROUP BY pupil_id`,
+        [pupilIds, seasonStart]
       ),
 
-      // 3. Achievements per player this season
+      // 3. Achievements per pupil this season
       safeQuery(
         `SELECT
-           player_id,
+           pupil_id,
            COUNT(*) as total_achievements,
            jsonb_agg(jsonb_build_object(
              'type', achievement_type, 'title', title, 'icon', icon, 'earned_at', earned_at
            ) ORDER BY earned_at DESC) as achievements
-         FROM player_achievements
-         WHERE player_id = ANY($1) AND earned_at >= $2
-         GROUP BY player_id`,
-        [playerIds, seasonStart]
+         FROM pupil_achievements
+         WHERE pupil_id = ANY($1) AND earned_at >= $2
+         GROUP BY pupil_id`,
+        [pupilIds, seasonStart]
       ),
 
-      // 4. Player of the Match awards this season
+      // 4. Pupil of the Match awards this season
       safeQuery(
         `SELECT
-           player_of_match_id as player_id,
+           player_of_match_id as pupil_id,
            COUNT(*) as potm_count
          FROM matches
          WHERE team_id = $1
@@ -122,68 +122,68 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
         [teamId, seasonStart]
       ),
 
-      // 5. Attribute snapshots this season (earliest + latest per player for comparison)
+      // 5. Attribute snapshots this season (earliest + latest per pupil for comparison)
       safeQuery(
-        `SELECT DISTINCT ON (player_id, rank_order)
-           player_id,
+        `SELECT DISTINCT ON (pupil_id, rank_order)
+           pupil_id,
            physical_attributes, technical_skills, tactical_understanding,
            mental_traits, core_capabilities,
            created_at,
            rank_order
          FROM (
            SELECT *,
-             ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY created_at ASC) as asc_rank,
-             ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY created_at DESC) as desc_rank,
+             ROW_NUMBER() OVER (PARTITION BY pupil_id ORDER BY created_at ASC) as asc_rank,
+             ROW_NUMBER() OVER (PARTITION BY pupil_id ORDER BY created_at DESC) as desc_rank,
              CASE
-               WHEN ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY created_at ASC) = 1 THEN 'earliest'
-               WHEN ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY created_at DESC) = 1 THEN 'latest'
+               WHEN ROW_NUMBER() OVER (PARTITION BY pupil_id ORDER BY created_at ASC) = 1 THEN 'earliest'
+               WHEN ROW_NUMBER() OVER (PARTITION BY pupil_id ORDER BY created_at DESC) = 1 THEN 'latest'
              END as rank_order
            FROM attribute_snapshots
-           WHERE player_id = ANY($1) AND team_id = $2 AND created_at >= $3
+           WHERE pupil_id = ANY($1) AND team_id = $2 AND created_at >= $3
          ) sub
          WHERE rank_order IS NOT NULL
-         ORDER BY player_id, rank_order`,
-        [playerIds, teamId, seasonStart]
+         ORDER BY pupil_id, rank_order`,
+        [pupilIds, teamId, seasonStart]
       ),
 
       // 6. Match appearances (squad selections) this season
       safeQuery(
         `SELECT
-           ms.player_id,
+           ms.pupil_id,
            COUNT(*) as appearances,
            COUNT(*) FILTER (WHERE ms.is_starting = true) as starts
          FROM match_squads ms
          JOIN matches m ON m.id = ms.match_id
-         WHERE ms.player_id = ANY($1)
+         WHERE ms.pupil_id = ANY($1)
            AND m.team_id = $2
            AND m.match_date >= $3
-         GROUP BY ms.player_id`,
-        [playerIds, teamId, seasonStart]
+         GROUP BY ms.pupil_id`,
+        [pupilIds, teamId, seasonStart]
       ),
     ])
 
-    // Index results by player_id for fast lookup
-    const trainingByPlayer = Object.fromEntries(trainingStatsResult.rows.map(r => [r.player_id, r]))
-    const obsByPlayer = Object.fromEntries(observationStatsResult.rows.map(r => [r.player_id, r]))
-    const achieveByPlayer = Object.fromEntries(achievementStatsResult.rows.map(r => [r.player_id, r]))
-    const potmByPlayer = Object.fromEntries(potmResult.rows.map(r => [r.player_id, r]))
-    const matchesByPlayer = Object.fromEntries(matchAppearancesResult.rows.map(r => [r.player_id, r]))
+    // Index results by pupil_id for fast lookup
+    const trainingByPlayer = Object.fromEntries(trainingStatsResult.rows.map(r => [r.pupil_id, r]))
+    const obsByPlayer = Object.fromEntries(observationStatsResult.rows.map(r => [r.pupil_id, r]))
+    const achieveByPlayer = Object.fromEntries(achievementStatsResult.rows.map(r => [r.pupil_id, r]))
+    const potmByPlayer = Object.fromEntries(potmResult.rows.map(r => [r.pupil_id, r]))
+    const matchesByPlayer = Object.fromEntries(matchAppearancesResult.rows.map(r => [r.pupil_id, r]))
 
-    // Group snapshots by player
+    // Group snapshots by pupil
     const snapshotsByPlayer = {}
     for (const snap of snapshotsResult.rows) {
-      if (!snapshotsByPlayer[snap.player_id]) snapshotsByPlayer[snap.player_id] = {}
-      snapshotsByPlayer[snap.player_id][snap.rank_order] = snap
+      if (!snapshotsByPlayer[snap.pupil_id]) snapshotsByPlayer[snap.pupil_id] = {}
+      snapshotsByPlayer[snap.pupil_id][snap.rank_order] = snap
     }
 
-    // Build per-player development data
-    const playerDevelopment = players.map(player => {
-      const training = trainingByPlayer[player.id]
-      const obs = obsByPlayer[player.id]
-      const achieve = achieveByPlayer[player.id]
-      const potm = potmByPlayer[player.id]
-      const matches = matchesByPlayer[player.id]
-      const snapshots = snapshotsByPlayer[player.id] || {}
+    // Build per-pupil development data
+    const playerDevelopment = pupils.map(pupil => {
+      const training = trainingByPlayer[pupil.id]
+      const obs = obsByPlayer[pupil.id]
+      const achieve = achieveByPlayer[pupil.id]
+      const potm = potmByPlayer[pupil.id]
+      const matches = matchesByPlayer[pupil.id]
+      const snapshots = snapshotsByPlayer[pupil.id] || {}
 
       // Calculate attribute improvement score
       const improvementScore = calculateImprovementScore(snapshots.earliest, snapshots.latest)
@@ -193,12 +193,12 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
         : null
 
       return {
-        id: player.id,
-        name: player.name,
-        position: player.position,
-        positions: player.positions,
-        squad_number: player.squad_number,
-        date_of_birth: player.date_of_birth,
+        id: pupil.id,
+        name: pupil.name,
+        position: pupil.position,
+        positions: pupil.positions,
+        squad_number: pupil.squad_number,
+        date_of_birth: pupil.date_of_birth,
 
         // Training
         training: {
@@ -239,10 +239,10 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
           earliest_snapshot_at: snapshots.earliest?.created_at || null,
           latest_snapshot_at: snapshots.latest?.created_at || null,
           current_attributes: {
-            physical: player.physical_attributes,
-            technical: player.technical_skills,
-            tactical: player.tactical_understanding,
-            mental: player.mental_traits,
+            physical: pupil.physical_attributes,
+            technical: pupil.technical_skills,
+            tactical: pupil.tactical_understanding,
+            mental: pupil.mental_traits,
           },
         },
       }
@@ -254,7 +254,7 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
     const withEffort = playerDevelopment.filter(p => p.training.avg_effort != null)
 
     const squadSummary = {
-      total: players.length,
+      total: pupils.length,
       with_training_data: withTraining.length,
       with_observations: withObservations.length,
       with_snapshots: playerDevelopment.filter(p => p.development.has_snapshots).length,
@@ -273,7 +273,7 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
     res.json({
       team: teamCheck.rows[0],
       season_start: seasonStart,
-      players: playerDevelopment,
+      pupils: playerDevelopment,
       squad_summary: squadSummary,
     })
   } catch (error) {
@@ -281,18 +281,18 @@ router.get('/:teamId/season-development', authenticateToken, async (req, res, ne
   }
 })
 
-// Get attribute snapshot history for a single player
-router.get('/:teamId/players/:playerId/snapshots', authenticateToken, async (req, res, next) => {
+// Get attribute snapshot history for a single pupil
+router.get('/:teamId/pupils/:pupilId/snapshots', authenticateToken, async (req, res, next) => {
   try {
-    const { teamId, playerId } = req.params
+    const { teamId, pupilId } = req.params
 
     const result = await pool.query(
       `SELECT id, physical_attributes, technical_skills, tactical_understanding,
               mental_traits, core_capabilities, snapshot_type, observation_count, created_at
        FROM attribute_snapshots
-       WHERE player_id = $1 AND team_id = $2
+       WHERE pupil_id = $1 AND team_id = $2
        ORDER BY created_at ASC`,
-      [playerId, teamId]
+      [pupilId, teamId]
     )
 
     res.json(result.rows)
@@ -327,57 +327,57 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
 
     const playersResult = await pool.query(
       `SELECT id, name, position, positions, date_of_birth
-       FROM players
+       FROM pupils
        WHERE team_id = $1 AND (is_active IS NULL OR is_active = true)
        ORDER BY name`,
       [teamId]
     )
-    const players = playersResult.rows
-    const playerIds = players.map(p => p.id)
+    const pupils = playersResult.rows
+    const pupilIds = pupils.map(p => p.id)
 
-    if (playerIds.length === 0) {
-      return res.json({ review: 'No active players found for this team.' })
+    if (pupilIds.length === 0) {
+      return res.json({ review: 'No active pupils found for this team.' })
     }
 
     // Gather summary data
     const [trainingResult, obsResult, achieveResult, potmResult] = await Promise.all([
       pool.query(
-        `SELECT ta.player_id, p.name,
+        `SELECT ta.pupil_id, p.name,
            COUNT(*) FILTER (WHERE ta.attended) as attended,
            COUNT(*) as total,
            ROUND(AVG(ta.effort_rating) FILTER (WHERE ta.effort_rating IS NOT NULL), 1) as avg_effort
          FROM training_attendance ta
          JOIN training_sessions ts ON ts.id = ta.session_id
-         JOIN players p ON p.id = ta.player_id
-         WHERE ta.player_id = ANY($1) AND ts.team_id = $2 AND ts.date >= $3
-         GROUP BY ta.player_id, p.name
+         JOIN pupils p ON p.id = ta.pupil_id
+         WHERE ta.pupil_id = ANY($1) AND ts.team_id = $2 AND ts.date >= $3
+         GROUP BY ta.pupil_id, p.name
          ORDER BY p.name`,
-        [playerIds, teamId, seasonStart]
+        [pupilIds, teamId, seasonStart]
       ),
       pool.query(
-        `SELECT o.player_id, p.name, COUNT(*) as count,
+        `SELECT o.pupil_id, p.name, COUNT(*) as count,
            string_agg(DISTINCT o.type, ', ') as types,
            (array_agg(o.content ORDER BY o.created_at DESC))[1:3] as recent_observations
          FROM observations o
-         JOIN players p ON p.id = o.player_id
-         WHERE o.player_id = ANY($1) AND o.created_at >= $2
-         GROUP BY o.player_id, p.name`,
-        [playerIds, seasonStart]
+         JOIN pupils p ON p.id = o.pupil_id
+         WHERE o.pupil_id = ANY($1) AND o.created_at >= $2
+         GROUP BY o.pupil_id, p.name`,
+        [pupilIds, seasonStart]
       ),
       pool.query(
-        `SELECT player_id, p.name,
+        `SELECT pupil_id, p.name,
            COUNT(*) as count,
            array_agg(DISTINCT achievement_type) as types
-         FROM player_achievements
-         JOIN players p ON p.id = player_id
-         WHERE player_id = ANY($1) AND earned_at >= $2
-         GROUP BY player_id, p.name`,
-        [playerIds, seasonStart]
+         FROM pupil_achievements
+         JOIN pupils p ON p.id = pupil_id
+         WHERE pupil_id = ANY($1) AND earned_at >= $2
+         GROUP BY pupil_id, p.name`,
+        [pupilIds, seasonStart]
       ),
       pool.query(
-        `SELECT player_of_match_id as player_id, p.name, COUNT(*) as count
+        `SELECT player_of_match_id as pupil_id, p.name, COUNT(*) as count
          FROM matches
-         JOIN players p ON p.id = player_of_match_id
+         JOIN pupils p ON p.id = player_of_match_id
          WHERE team_id = $1 AND match_date >= $2 AND player_of_match_id IS NOT NULL
          GROUP BY player_of_match_id, p.name`,
         [teamId, seasonStart]
@@ -386,15 +386,15 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
 
     // Also get attribute snapshots for improvement tracking
     const snapshotsResult = await pool.query(
-      `SELECT player_id, p.name,
+      `SELECT pupil_id, p.name,
          MIN(created_at) as first_snapshot,
          MAX(created_at) as last_snapshot,
          COUNT(*) as snapshot_count
        FROM attribute_snapshots
-       JOIN players p ON p.id = player_id
-       WHERE player_id = ANY($1) AND team_id = $2 AND created_at >= $3
-       GROUP BY player_id, p.name`,
-      [playerIds, teamId, seasonStart]
+       JOIN pupils p ON p.id = pupil_id
+       WHERE pupil_id = ANY($1) AND team_id = $2 AND created_at >= $3
+       GROUP BY pupil_id, p.name`,
+      [pupilIds, teamId, seasonStart]
     )
 
     // Build context for Claude
@@ -414,7 +414,7 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
       `${r.name}: ${r.count} POTM awards`
     ).join('\n')
 
-    const playerList = players.map(p =>
+    const playerList = pupils.map(p =>
       `${p.name} (${p.position || 'position not set'}${p.date_of_birth ? `, DOB: ${p.date_of_birth}` : ''})`
     ).join('\n')
 
@@ -429,7 +429,7 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
         role: 'user',
         content: `You are a grassroots football development analyst for ${team.name} (${team.age_group || 'youth'} team).
 
-Analyse the following season data and write a Season Development Review answering these 4 questions with specific player names:
+Analyse the following season data and write a Season Development Review answering these 4 questions with specific pupil names:
 
 1. **Most Improved Players** — Who has shown the most growth this season? Consider observation trends, attribute snapshots, and awards.
 2. **Hardest Trainers** — Who consistently shows up and puts in effort? Use attendance rates and effort ratings.
@@ -451,10 +451,10 @@ ${observationData || 'No observations recorded yet'}
 ## Achievements & Badges
 ${achievementData || 'No achievements awarded yet'}
 
-## Player of the Match Awards
+## Pupil of the Match Awards
 ${potmData || 'No POTM awards yet'}
 
-Keep it practical and encouraging — this is grassroots youth football. Use player first names where possible. Be specific (cite data points) not vague. If data is limited for a category, say so honestly and suggest what the coach should start tracking. Format with markdown headers matching the 5 sections above.`
+Keep it practical and encouraging — this is grassroots youth football. Use pupil first names where possible. Be specific (cite data points) not vague. If data is limited for a category, say so honestly and suggest what the coach should start tracking. Format with markdown headers matching the 5 sections above.`
       }],
     })
 
@@ -464,7 +464,7 @@ Keep it practical and encouraging — this is grassroots youth football. Use pla
       review: reviewText,
       generated_at: new Date().toISOString(),
       season_start: seasonStart.toISOString(),
-      player_count: players.length,
+      player_count: pupils.length,
     })
   } catch (error) {
     next(error)

@@ -21,7 +21,7 @@ export async function authenticateToken(req, res, next) {
 
     // Get base user data
     const result = await pool.query(
-      `SELECT u.id, u.email, u.name, u.role, u.team_id, u.player_id, u.is_admin, u.has_completed_onboarding
+      `SELECT u.id, u.email, u.name, u.role, u.team_id, u.pupil_id, u.is_admin, u.has_completed_onboarding
        FROM users u
        WHERE u.id = $1`,
       [decoded.userId]
@@ -37,7 +37,7 @@ export async function authenticateToken(req, res, next) {
     if (decoded.teamId) {
       // Look up the user's membership for this specific team
       const membershipResult = await pool.query(
-        `SELECT tm.role, tm.player_id, t.subscription_tier, t.trial_ends_at
+        `SELECT tm.role, tm.pupil_id, t.subscription_tier, t.trial_ends_at
          FROM team_memberships tm
          JOIN teams t ON tm.team_id = t.id
          WHERE tm.user_id = $1 AND tm.team_id = $2`,
@@ -48,7 +48,7 @@ export async function authenticateToken(req, res, next) {
         const membership = membershipResult.rows[0]
         user.team_id = decoded.teamId
         user.role = membership.role
-        user.player_id = membership.player_id
+        user.pupil_id = membership.pupil_id
         user.subscription_tier = membership.subscription_tier
         user.trial_ends_at = membership.trial_ends_at
       } else {
@@ -169,7 +169,7 @@ export function requireAdmin(req, res, next) {
  *
  * Usage:
  *   app.get('/api/video-analysis', authenticateToken, requireTier('team_core_monthly'), handler)
- *   app.get('/api/club/payments', authenticateToken, requireTier('club_starter_monthly'), handler)
+ *   app.get('/api/school/payments', authenticateToken, requireTier('club_starter_monthly'), handler)
  */
 const TIER_HIERARCHY = [
   'free',

@@ -158,7 +158,7 @@ router.post('/admin/generate', authenticateToken, requireAdmin, async (req, res,
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 3000,
-      system: `You are a blog writer for Touchline, an AI-powered coaching platform for grassroots youth football in the UK. Write engaging, informative blog posts that help coaches, parents, and players. Use British English. Be practical and actionable.
+      system: `You are a blog writer for Touchline, an AI-powered coaching platform for grassroots youth football in the UK. Write engaging, informative blog posts that help coaches, parents, and pupils. Use British English. Be practical and actionable.
 
 CRITICAL: You must respond with ONLY valid JSON. No text before or after the JSON object. No markdown code fences. The "content" field must use \\n for newlines and properly escape any quotes within the markdown.`,
       messages: [{

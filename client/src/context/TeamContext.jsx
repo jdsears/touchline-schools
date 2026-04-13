@@ -19,7 +19,7 @@ function isLightColor(hexColor) {
 export function TeamProvider({ children }) {
   const { user } = useAuth()
   const [team, setTeam] = useState(null)
-  const [players, setPlayers] = useState([])
+  const [pupils, setPlayers] = useState([])
   const [matches, setMatches] = useState([])
   const [loading, setLoading] = useState(false)
 
@@ -84,26 +84,26 @@ export function TeamProvider({ children }) {
     try {
       const response = await teamService.addPlayer(user.team_id, data)
       setPlayers(prev => [...prev, response.data])
-      return { success: true, player: response.data }
+      return { success: true, pupil: response.data }
     } catch (error) {
       return { success: false, error: error.response?.data?.message }
     }
   }
   
-  async function updatePlayer(playerId, data) {
+  async function updatePlayer(pupilId, data) {
     try {
-      const response = await teamService.updatePlayer(playerId, data)
-      setPlayers(prev => prev.map(p => p.id === playerId ? response.data : p))
-      return { success: true, player: response.data }
+      const response = await teamService.updatePlayer(pupilId, data)
+      setPlayers(prev => prev.map(p => p.id === pupilId ? response.data : p))
+      return { success: true, pupil: response.data }
     } catch (error) {
       return { success: false, error: error.response?.data?.message }
     }
   }
 
-  async function deletePlayer(playerId) {
+  async function deletePlayer(pupilId) {
     try {
-      await teamService.deletePlayer(playerId)
-      setPlayers(prev => prev.filter(p => p.id !== playerId))
+      await teamService.deletePlayer(pupilId)
+      setPlayers(prev => prev.filter(p => p.id !== pupilId))
       return { success: true }
     } catch (error) {
       return { success: false, error: error.response?.data?.message }
@@ -180,7 +180,7 @@ export function TeamProvider({ children }) {
 
   const value = useMemo(() => ({
     team,
-    players,
+    pupils,
     matches,
     upcomingMatches,
     recentResults,
@@ -194,7 +194,7 @@ export function TeamProvider({ children }) {
     addMatch,
     updateMatch,
     deleteMatch,
-  }), [team, players, matches, upcomingMatches, recentResults, loading, branding])
+  }), [team, pupils, matches, upcomingMatches, recentResults, loading, branding])
 
   return (
     <TeamContext.Provider value={value}>
