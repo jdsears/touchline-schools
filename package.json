@@ -1,7 +1,7 @@
 {
-  "name": "football-assistant-manager",
+  "name": "touchline-schools",
   "version": "1.0.0",
-  "description": "AI-powered assistant manager for grassroots football coaches - v1.1",
+  "description": "Multi-sport platform for UK secondary school PE departments",
   "private": true,
   "workspaces": [
     "client",

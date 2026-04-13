@@ -49,7 +49,6 @@ const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const MagicLinkVerify = lazy(() => import('./pages/MagicLinkVerify'))
 const Terms = lazy(() => import('./pages/Terms'))
-const Pricing = lazy(() => import('./pages/Pricing'))
 const Admin = lazy(() => import('./pages/Admin'))
 const Blog = lazy(() => import('./pages/Blog'))
 const BlogPost = lazy(() => import('./pages/BlogPost'))
@@ -57,7 +56,6 @@ const GrassrootsCoaching = lazy(() => import('./pages/GrassrootsCoaching'))
 const YouthCoaches = lazy(() => import('./pages/YouthCoaches'))
 const TrainingPlans = lazy(() => import('./pages/TrainingPlans'))
 const FeaturePage = lazy(() => import('./pages/features/FeaturePage'))
-const ClubPaymentFees = lazy(() => import('./pages/ClubPaymentFees'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
 
 // Club pages
@@ -65,17 +63,10 @@ const ClubLayout = lazy(() => import('./pages/club/ClubLayout'))
 const ClubDashboard = lazy(() => import('./pages/club/ClubDashboard'))
 const ClubTeams = lazy(() => import('./pages/club/ClubTeams'))
 const ClubPlayers = lazy(() => import('./pages/club/ClubPlayers'))
-const ClubGuardians = lazy(() => import('./pages/club/ClubGuardians'))
 const ClubMembers = lazy(() => import('./pages/club/ClubMembers'))
-const ClubRegistrations = lazy(() => import('./pages/club/ClubRegistrations'))
 const ClubSettings = lazy(() => import('./pages/club/ClubSettings'))
-const ClubRegister = lazy(() => import('./pages/club/ClubRegister'))
-const ClubPayments = lazy(() => import('./pages/club/ClubPayments'))
 const ClubBilling = lazy(() => import('./pages/club/ClubBilling'))
-const ClubPaymentPlans = lazy(() => import('./pages/club/ClubPaymentPlans'))
 const ClubSubscriptions = lazy(() => import('./pages/club/ClubSubscriptions'))
-const ClubFinance = lazy(() => import('./pages/club/ClubFinance'))
-const PaymentPortal = lazy(() => import('./pages/club/PaymentPortal'))
 const ClubAnnouncements = lazy(() => import('./pages/club/ClubAnnouncements'))
 const CreateClub = lazy(() => import('./pages/club/CreateClub'))
 const ClubSafeguarding = lazy(() => import('./pages/club/ClubSafeguarding'))
@@ -84,16 +75,10 @@ const ClubSafeguardingRoles = lazy(() => import('./pages/club/ClubSafeguardingRo
 const ClubSafeguardingIncidents = lazy(() => import('./pages/club/ClubSafeguardingIncidents'))
 const ClubEvents = lazy(() => import('./pages/club/ClubEvents'))
 const ClubSchedule = lazy(() => import('./pages/club/ClubSchedule'))
-const PublicEventPage = lazy(() => import('./pages/club/PublicEventPage'))
 const ClubInsights = lazy(() => import('./pages/club/ClubInsights'))
 const ClubReports = lazy(() => import('./pages/club/ClubReports'))
-const ClubGiftAid = lazy(() => import('./pages/club/ClubGiftAid'))
 const SeasonDevelopment = lazy(() => import('./pages/SeasonDevelopment'))
 
-// Parent pages
-const ParentDashboard = lazy(() => import('./pages/ParentDashboard'))
-const ParentGiftAid = lazy(() => import('./pages/ParentGiftAid'))
-const GuardianInvite = lazy(() => import('./pages/GuardianInvite'))
 
 // Protected route wrapper
 function ProtectedRoute({ children, allowedRoles = [] }) {
@@ -177,27 +162,14 @@ export default function App() {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/magic/:token" element={<MagicLinkVerify />} />
         <Route path="/terms" element={<Terms />} />
-        <Route path="/pricing" element={<Pricing />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/grassroots-football-coaching" element={<GrassrootsCoaching />} />
         <Route path="/youth-football-coaches" element={<YouthCoaches />} />
         <Route path="/football-training-plans" element={<TrainingPlans />} />
         <Route path="/features/:slug" element={<FeaturePage />} />
-        <Route path="/club-payments" element={<ClubPaymentFees />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
 
-        {/* Public club registration (no auth) */}
-        <Route path="/club/:slug/register" element={<ClubRegister />} />
-
-        {/* Public event registration (no auth) */}
-        <Route path="/event/:eventId" element={<PublicEventPage />} />
-
-        {/* Public payment portal (no auth, token-based) */}
-        <Route path="/pay/:token" element={<PaymentPortal />} />
-
-        {/* Guardian invite (public or auth) */}
-        <Route path="/guardian-invite/:token" element={<GuardianInvite />} />
 
         {/* Protected route - Create club (must be above /club/:slug to avoid conflict) */}
         <Route path="/club/create" element={
@@ -217,17 +189,11 @@ export default function App() {
           <Route index element={<ClubDashboard />} />
           <Route path="teams" element={<ClubTeams />} />
           <Route path="players" element={<ClubPlayers />} />
-          <Route path="guardians" element={<ClubGuardians />} />
           <Route path="members" element={<ClubMembers />} />
-          <Route path="registrations" element={<ClubRegistrations />} />
-          <Route path="payments" element={<ClubPayments />} />
-          <Route path="payment-plans" element={<ClubPaymentPlans />} />
           <Route path="subscriptions" element={<ClubSubscriptions />} />
-          <Route path="finance" element={<ClubFinance />} />
           <Route path="announcements" element={<ClubAnnouncements />} />
           <Route path="billing" element={<ClubBilling />} />
           <Route path="settings" element={<ClubSettings />} />
-          <Route path="settings/stripe" element={<ClubPayments />} />
           <Route path="safeguarding" element={<ClubSafeguarding />} />
           <Route path="safeguarding/people" element={<ClubSafeguardingPeople />} />
           <Route path="safeguarding/roles" element={<ClubSafeguardingRoles />} />
@@ -236,7 +202,6 @@ export default function App() {
           <Route path="schedule" element={<ClubSchedule />} />
           <Route path="insights" element={<ClubInsights />} />
           <Route path="reports" element={<ClubReports />} />
-          <Route path="gift-aid" element={<ClubGiftAid />} />
         </Route>
 
         {/* Protected routes - Coaches */}
@@ -273,18 +238,6 @@ export default function App() {
           </ProtectedRoute>
         } />
 
-        {/* Protected routes - Parent Portal (club-linked parents) */}
-        <Route path="/parent-portal" element={
-          <ProtectedRoute allowedRoles={['parent', 'player', 'manager', 'assistant', 'scout']}>
-            <ParentDashboard />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/parent/gift-aid" element={
-          <ProtectedRoute allowedRoles={['parent', 'player', 'manager', 'assistant', 'scout']}>
-            <ParentGiftAid />
-          </ProtectedRoute>
-        } />
 
         {/* Catch all - redirect based on auth status */}
         <Route path="*" element={<CatchAllRedirect />} />
