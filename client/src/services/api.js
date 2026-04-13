@@ -632,4 +632,30 @@ export const knowledgeBaseService = {
   deleteDocument: (teamId, docId) => api.delete(`/knowledge-base/${teamId}/${docId}`),
 }
 
+// Teaching Groups service (curriculum PE classes)
+export const teachingGroupService = {
+  list: () => api.get('/teaching-groups'),
+  get: (id) => api.get(`/teaching-groups/${id}`),
+  create: (data) => api.post('/teaching-groups', data),
+  update: (id, data) => api.put(`/teaching-groups/${id}`, data),
+  remove: (id) => api.delete(`/teaching-groups/${id}`),
+  addPupils: (id, pupilIds) => api.post(`/teaching-groups/${id}/pupils`, { pupil_ids: pupilIds }),
+  removePupil: (id, pupilId) => api.delete(`/teaching-groups/${id}/pupils/${pupilId}`),
+  addUnit: (id, data) => api.post(`/teaching-groups/${id}/units`, data),
+  updateUnit: (id, unitId, data) => api.put(`/teaching-groups/${id}/units/${unitId}`, data),
+  removeUnit: (id, unitId) => api.delete(`/teaching-groups/${id}/units/${unitId}`),
+}
+
+// Assessment service (curriculum PE assessment)
+export const assessmentService = {
+  getStrands: (keyStage) => api.get('/assessments/strands', { params: { key_stage: keyStage } }),
+  getCriteria: (strandId, sport) => api.get(`/assessments/criteria/${strandId}`, { params: { sport } }),
+  getUnitAssessments: (unitId) => api.get(`/assessments/unit/${unitId}`),
+  record: (data) => api.post('/assessments', data),
+  recordBatch: (assessments) => api.post('/assessments/batch', { assessments }),
+  update: (id, data) => api.put(`/assessments/${id}`, data),
+  getPupilAssessments: (pupilId) => api.get(`/assessments/pupil/${pupilId}`),
+  getDashboard: () => api.get('/assessments/dashboard'),
+}
+
 export default api

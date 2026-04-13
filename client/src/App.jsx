@@ -91,6 +91,7 @@ const TeacherTeams = lazy(() => import('./pages/teacher/TeacherTeams'))
 const TeacherFixtures = lazy(() => import('./pages/teacher/TeacherFixtures'))
 const TeacherSessions = lazy(() => import('./pages/teacher/TeacherSessions'))
 const TeacherDevelopment = lazy(() => import('./pages/teacher/TeacherDevelopment'))
+const TeacherClassDetail = lazy(() => import('./pages/teacher/TeacherClassDetail'))
 
 // Pupil Portal pages
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -260,6 +261,7 @@ export default function App() {
         }>
           <Route index element={<TeacherDashboard />} />
           <Route path="classes" element={<TeacherClasses />} />
+          <Route path="classes/:id" element={<TeacherClassDetail />} />
           <Route path="lessons" element={<TeacherLessons />} />
           <Route path="assessment" element={<TeacherAssessment />} />
           <Route path="reports" element={<TeacherReports />} />
