@@ -71,6 +71,75 @@ const trainingImgUpload = multer({
   }
 })
 
+// Get all teams the current user coaches (for Teacher Hub cross-team views)
+router.get('/mine', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id
+
+    // Teams where user is owner OR has a team_membership with a coaching role
+    const result = await pool.query(
+      `SELECT DISTINCT t.*,
+        (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count,
+        (SELECT COUNT(*) FROM matches m WHERE m.team_id = t.id) AS match_count
+       FROM teams t
+       LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+       WHERE t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))
+       ORDER BY t.sport ASC, t.name ASC`,
+      [userId]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get upcoming fixtures across all teams the current user coaches
+router.get('/mine/fixtures', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id
+
+    const result = await pool.query(
+      `SELECT m.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+              t.primary_color AS team_color
+       FROM matches m
+       JOIN teams t ON m.team_id = t.id
+       LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+       WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
+       ORDER BY m.date DESC
+       LIMIT 50`,
+      [userId]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get upcoming training sessions across all teams the current user coaches
+router.get('/mine/sessions', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id
+
+    const result = await pool.query(
+      `SELECT ts.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+              t.primary_color AS team_color
+       FROM training_sessions ts
+       JOIN teams t ON ts.team_id = t.id
+       LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+       WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
+       ORDER BY ts.session_date DESC
+       LIMIT 50`,
+      [userId]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
 // Get team
 router.get('/:id', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {

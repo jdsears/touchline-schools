@@ -632,6 +632,13 @@ export const knowledgeBaseService = {
   deleteDocument: (teamId, docId) => api.delete(`/knowledge-base/${teamId}/${docId}`),
 }
 
+// Teacher Hub cross-team service (extra-curricular)
+export const teacherService = {
+  getMyTeams: () => api.get('/teams/mine'),
+  getMyFixtures: () => api.get('/teams/mine/fixtures'),
+  getMySessions: () => api.get('/teams/mine/sessions'),
+}
+
 // Teaching Groups service (curriculum PE classes)
 export const teachingGroupService = {
   list: () => api.get('/teaching-groups'),
