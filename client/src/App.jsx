@@ -102,6 +102,7 @@ const HoDClasses = lazy(() => import('./pages/teacher/HoDClasses'))
 const HoDPupils = lazy(() => import('./pages/teacher/HoDPupils'))
 const HoDPupilProfile = lazy(() => import('./pages/teacher/HoDPupilProfile'))
 const HoDReporting = lazy(() => import('./pages/teacher/HoDReporting'))
+const TeacherSafeguarding = lazy(() => import('./pages/teacher/TeacherSafeguarding'))
 
 // Pupil Portal pages
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -291,7 +292,7 @@ export default function App() {
           <Route path="video" element={<VideoLibrary />} />
           <Route path="film-room" element={<FilmRoom />} />
           <Route path="assistant" element={<Chat />} />
-          <Route path="safeguarding" element={<Settings />} />
+          <Route path="safeguarding" element={<TeacherSafeguarding />} />
           <Route path="settings" element={<Settings />} />
           <Route path="hod" element={<HoDOverview />} />
           <Route path="hod/teachers" element={<HoDTeachers />} />
