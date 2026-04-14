@@ -37,6 +37,7 @@ const hodNav = [
   { name: 'Pupils', href: '/hod/pupils', icon: Users },
   { name: 'All Teams', href: '/hod/teams', icon: Shield },
   { name: 'All Classes', href: '/hod/classes', icon: GraduationCap },
+  { name: 'Reporting', href: '/hod/reporting', icon: BarChart3 },
 ]
 
 const curriculumNav = [

@@ -665,6 +665,17 @@ export const assessmentService = {
   getDashboard: () => api.get('/assessments/dashboard'),
 }
 
+// Reporting service
+export const reportingService = {
+  getWindows: () => api.get('/reporting/windows'),
+  createWindow: (data) => api.post('/reporting/windows', data),
+  updateWindow: (id, data) => api.put(`/reporting/windows/${id}`, data),
+  getWindowReports: (windowId) => api.get(`/reporting/windows/${windowId}/reports`),
+  getMyReports: () => api.get('/reporting/my-reports'),
+  saveReport: (data) => api.post('/reporting/reports', data),
+  generateAIDraft: (data) => api.post('/reporting/reports/ai-draft', data),
+}
+
 // Pupil Management service
 export const pupilManagementService = {
   list: (params) => api.get('/pupil-management', { params }),
