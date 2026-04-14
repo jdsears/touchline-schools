@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import { hodService } from '../../services/api'
+import { hodService, voiceObservationService } from '../../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
 import {
@@ -29,6 +29,7 @@ import {
   Building2,
   BarChart3,
   UserCog,
+  Mic,
 } from 'lucide-react'
 
 const hodNav = [
@@ -193,12 +194,23 @@ export default function TeacherLayout() {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isHoD, setIsHoD] = useState(false)
+  const [voiceEnabled, setVoiceEnabled] = useState(false)
+  const [voicePendingCount, setVoicePendingCount] = useState(0)
+  const [showRecorder, setShowRecorder] = useState(false)
 
   useEffect(() => {
     hodService.check()
       .then(res => setIsHoD(res.data.isHoD))
       .catch(() => setIsHoD(false))
-  }, [])
+
+    // Check voice observations feature flag and pending count
+    voiceObservationService.listPending()
+      .then(res => {
+        setVoiceEnabled(true)
+        setVoicePendingCount(res.data.filter(v => v.pending_count > 0).length)
+      })
+      .catch(() => setVoiceEnabled(false))
+  }, [location.pathname])
 
   return (
     <div className="min-h-screen bg-navy-950">
@@ -261,6 +273,38 @@ export default function TeacherLayout() {
           </ErrorBoundary>
         </main>
       </div>
+
+      {/* Voice Observation FAB (mobile-first, bottom-right) */}
+      {voiceEnabled && !showRecorder && (
+        <button
+          onClick={() => setShowRecorder(true)}
+          className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-pitch-600 hover:bg-pitch-700 shadow-lg shadow-pitch-600/30 flex items-center justify-center transition-all hover:scale-105"
+          title="Voice observation"
+        >
+          <Mic className="w-6 h-6 text-white" />
+          {voicePendingCount > 0 && (
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-alert-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+              {voicePendingCount}
+            </span>
+          )}
+        </button>
+      )}
+
+      {/* Voice Recorder Modal */}
+      {showRecorder && (
+        <VoiceRecorderLazy onClose={() => setShowRecorder(false)} />
+      )}
     </div>
+  )
+}
+
+// Lazy load the recorder component to avoid loading MediaRecorder code unnecessarily
+import { lazy, Suspense } from 'react'
+const VoiceRecorderComponent = lazy(() => import('../../components/voice/VoiceObservationRecorder'))
+function VoiceRecorderLazy({ onClose }) {
+  return (
+    <Suspense fallback={null}>
+      <VoiceRecorderComponent onClose={onClose} />
+    </Suspense>
   )
 }

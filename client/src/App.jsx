@@ -104,6 +104,7 @@ const HoDPupils = lazy(() => import('./pages/teacher/HoDPupils'))
 const HoDPupilProfile = lazy(() => import('./pages/teacher/HoDPupilProfile'))
 const HoDReporting = lazy(() => import('./pages/teacher/HoDReporting'))
 const TeacherSafeguarding = lazy(() => import('./pages/teacher/TeacherSafeguarding'))
+const VoiceObservationReview = lazy(() => import('./pages/teacher/VoiceObservationReview'))
 
 // Pupil Portal pages
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -305,6 +306,7 @@ export default function App() {
           <Route path="hod/pupils" element={<HoDPupils />} />
           <Route path="hod/pupils/:id" element={<HoDPupilProfile />} />
           <Route path="hod/reporting" element={<HoDReporting />} />
+          <Route path="voice-review/:audioSourceId" element={<VoiceObservationReview />} />
         </Route>
 
         {/* Pupil Portal */}
