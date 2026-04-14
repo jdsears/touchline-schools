@@ -663,6 +663,7 @@ export const assessmentService = {
   update: (id, data) => api.put(`/assessments/${id}`, data),
   getPupilAssessments: (pupilId) => api.get(`/assessments/pupil/${pupilId}`),
   getDashboard: () => api.get('/assessments/dashboard'),
+  getPupilDictionary: () => api.get('/assessments/pupil-dictionary'),
 }
 
 // Reporting service

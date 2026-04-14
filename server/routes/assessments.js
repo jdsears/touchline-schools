@@ -276,4 +276,63 @@ router.get('/dashboard', async (req, res) => {
   }
 })
 
+// GET /pupil-dictionary - Teacher-scoped pupil name dictionary for AI context
+// Returns all pupils the teacher has access to (via teaching groups and teams)
+// with first name, last name, and nicknames for name matching.
+router.get('/pupil-dictionary', async (req, res) => {
+  try {
+    const teacherId = req.user.id
+
+    // Pupils from teaching groups
+    const classResult = await pool.query(
+      `SELECT DISTINCT p.id, p.first_name, p.last_name, p.nicknames, p.year_group,
+              tg.name AS group_name
+       FROM teaching_group_pupils tgp
+       JOIN pupils p ON tgp.pupil_id = p.id
+       JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
+       WHERE tg.teacher_id = $1 AND p.is_active = true`,
+      [teacherId]
+    )
+
+    // Pupils from teams the teacher coaches
+    const teamResult = await pool.query(
+      `SELECT DISTINCT p.id, p.first_name, p.last_name, p.nicknames, p.year_group,
+              t.name AS team_name
+       FROM pupils p
+       JOIN teams t ON p.team_id = t.id
+       LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+       WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
+         AND p.is_active = true`,
+      [teacherId]
+    )
+
+    // Merge and deduplicate by pupil ID
+    const pupilMap = new Map()
+    for (const p of [...classResult.rows, ...teamResult.rows]) {
+      if (!pupilMap.has(p.id)) {
+        pupilMap.set(p.id, {
+          id: p.id,
+          first_name: p.first_name,
+          last_name: p.last_name,
+          nicknames: p.nicknames || [],
+          year_group: p.year_group,
+          contexts: [],
+        })
+      }
+      const entry = pupilMap.get(p.id)
+      if (p.group_name && !entry.contexts.includes(p.group_name)) entry.contexts.push(p.group_name)
+      if (p.team_name && !entry.contexts.includes(p.team_name)) entry.contexts.push(p.team_name)
+    }
+
+    res.json({
+      teacher_id: teacherId,
+      pupil_count: pupilMap.size,
+      pupils: Array.from(pupilMap.values()),
+    })
+  } catch (error) {
+    console.error('Error loading pupil dictionary:', error)
+    res.status(500).json({ error: 'Failed to load pupil dictionary' })
+  }
+})
+
 export default router

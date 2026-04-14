@@ -3353,6 +3353,97 @@ export async function runMigrations() {
 
     console.log('Phase 10: Extended age range and sport knowledge base complete')
 
+    // ==========================================
+    // PHASE 11: VOICE OBSERVATIONS GROUNDWORK
+    // ==========================================
+    // Schema foundations for voice observations feature (future build).
+    // Adds observation source tracking, audio_sources table, pupil
+    // nicknames, and retention fields. No UI or pipeline yet.
+
+    console.log('Running Phase 11: Voice observations groundwork...')
+
+    // --- 11a: Add source and voice-related fields to observations table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'typed'
+        CHECK (source IN ('typed', 'voice', 'assessment_import', 'video_tag', 'ai_suggested'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS audio_source_id UUID;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS transcript_fragment TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS confidence REAL;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT DEFAULT 'confirmed'
+        CHECK (review_state IN ('pending_review', 'confirmed', 'edited', 'rejected'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 11b: Create audio_sources table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS audio_sources (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      context_type TEXT NOT NULL DEFAULT 'general'
+        CHECK (context_type IN ('session', 'match', 'half_time', 'post_fixture', 'lesson', 'general')),
+      context_id UUID,
+      duration_seconds INTEGER,
+      storage_url TEXT,
+      transcript TEXT,
+      transcript_generated_at TIMESTAMPTZ,
+      extraction_completed_at TIMESTAMPTZ,
+      retention_expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_teacher ON audio_sources(teacher_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_school ON audio_sources(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_retention ON audio_sources(retention_expires_at)`)
+
+    // Add foreign key from observations to audio_sources
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD CONSTRAINT observations_audio_source_fkey
+        FOREIGN KEY (audio_source_id) REFERENCES audio_sources(id) ON DELETE SET NULL;
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$`)
+
+    // --- 11c: Add pupil nicknames field ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT[];
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 11d: Add school-level voice observations configuration ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS voice_observations_enabled BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS audio_retention_days INTEGER DEFAULT 7
+        CHECK (audio_retention_days BETWEEN 1 AND 30);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS transcript_retention_days INTEGER DEFAULT 30
+        CHECK (transcript_retention_days BETWEEN 7 AND 90);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    console.log('Phase 11: Voice observations groundwork complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)

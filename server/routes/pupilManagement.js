@@ -196,7 +196,7 @@ router.get('/:id/profile', async (req, res) => {
 // PUT /:id - Update a pupil's details
 router.put('/:id', async (req, res) => {
   try {
-    const { first_name, last_name, year_group, house, date_of_birth } = req.body
+    const { first_name, last_name, year_group, house, date_of_birth, nicknames } = req.body
 
     const result = await pool.query(
       `UPDATE pupils SET
@@ -204,10 +204,11 @@ router.put('/:id', async (req, res) => {
         last_name = COALESCE($2, last_name),
         year_group = COALESCE($3, year_group),
         house = COALESCE($4, house),
-        date_of_birth = COALESCE($5, date_of_birth)
-       WHERE id = $6
+        date_of_birth = COALESCE($5, date_of_birth),
+        nicknames = COALESCE($6, nicknames)
+       WHERE id = $7
        RETURNING *`,
-      [first_name, last_name, year_group, house, date_of_birth, req.params.id]
+      [first_name, last_name, year_group, house, date_of_birth, nicknames || null, req.params.id]
     )
 
     if (result.rows.length === 0) {
