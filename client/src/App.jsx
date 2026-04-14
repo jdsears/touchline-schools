@@ -57,6 +57,7 @@ const YouthCoaches = lazy(() => import('./pages/YouthCoaches'))
 const TrainingPlans = lazy(() => import('./pages/TrainingPlans'))
 const FeaturePage = lazy(() => import('./pages/features/FeaturePage'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
+const Onboarding = lazy(() => import('./pages/Onboarding'))
 
 // School pages
 const SchoolLayout = lazy(() => import('./pages/school/SchoolLayout'))
@@ -198,6 +199,13 @@ export default function App() {
         <Route path="/football-training-plans" element={<TrainingPlans />} />
         <Route path="/features/:slug" element={<FeaturePage />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
+
+        {/* Onboarding wizard */}
+        <Route path="/onboarding" element={
+          <ProtectedRoute allowedRoles={['manager', 'assistant', 'scout']}>
+            <Onboarding />
+          </ProtectedRoute>
+        } />
 
         {/* Protected route - Create school (must be above /school/:slug to avoid conflict) */}
         <Route path="/school/create" element={

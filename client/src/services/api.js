@@ -665,6 +665,22 @@ export const assessmentService = {
   getDashboard: () => api.get('/assessments/dashboard'),
 }
 
+// Onboarding service
+export const onboardingService = {
+  getStatus: () => api.get('/onboarding/status'),
+  createSchool: (data) => api.post('/onboarding/school', data),
+  inviteTeachers: (schoolId, teachers) => api.post('/onboarding/teachers', { school_id: schoolId, teachers }),
+  importPupilsCSV: (schoolId, file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('school_id', schoolId)
+    return api.post('/onboarding/pupils/csv', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  createTeam: (data) => api.post('/onboarding/teams', data),
+}
+
 // Head of Department service (whole-school views)
 export const hodService = {
   check: () => api.get('/hod/check'),
