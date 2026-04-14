@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { hodService } from '../../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
 import {
@@ -25,7 +26,17 @@ import {
   Target,
   Swords,
   MonitorPlay,
+  Building2,
+  BarChart3,
+  UserCog,
 } from 'lucide-react'
+
+const hodNav = [
+  { name: 'School Overview', href: '/hod', icon: Building2, end: true },
+  { name: 'Teachers', href: '/hod/teachers', icon: UserCog },
+  { name: 'All Teams', href: '/hod/teams', icon: Shield },
+  { name: 'All Classes', href: '/hod/classes', icon: GraduationCap },
+]
 
 const curriculumNav = [
   { name: 'Dashboard', href: '', icon: LayoutDashboard, end: true },
@@ -52,7 +63,7 @@ const sharedNav = [
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
-function SidebarContent({ user, logout, setSidebarOpen, pathname }) {
+function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD }) {
   const basePath = '/teacher'
 
   function NavItem({ item }) {
@@ -101,8 +112,24 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname }) {
         </button>
       </div>
 
-      {/* Curriculum PE */}
       <nav className="flex-1 overflow-y-auto px-3 py-4">
+        {/* Head of Department (role-gated) */}
+        {isHoD && (
+          <>
+            <div className="mb-1 px-3">
+              <span className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+                Head of Department
+              </span>
+            </div>
+            <div className="space-y-1 mb-6">
+              {hodNav.map(item => (
+                <NavItem key={item.href} item={item} />
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* Curriculum PE */}
         <div className="mb-1 px-3">
           <span className="text-xs font-semibold uppercase tracking-wider text-navy-500">
             Curriculum PE
@@ -163,6 +190,13 @@ export default function TeacherLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [isHoD, setIsHoD] = useState(false)
+
+  useEffect(() => {
+    hodService.check()
+      .then(res => setIsHoD(res.data.isHoD))
+      .catch(() => setIsHoD(false))
+  }, [])
 
   return (
     <div className="min-h-screen bg-navy-950">
@@ -193,6 +227,7 @@ export default function TeacherLayout() {
           logout={logout}
           setSidebarOpen={setSidebarOpen}
           pathname={location.pathname}
+          isHoD={isHoD}
         />
       </aside>
 

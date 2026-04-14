@@ -665,6 +665,17 @@ export const assessmentService = {
   getDashboard: () => api.get('/assessments/dashboard'),
 }
 
+// Head of Department service (whole-school views)
+export const hodService = {
+  check: () => api.get('/hod/check'),
+  getOverview: () => api.get('/hod/overview'),
+  getTeachers: () => api.get('/hod/teachers'),
+  getTeams: (sport) => api.get('/hod/teams', { params: { sport } }),
+  getClasses: () => api.get('/hod/classes'),
+  assignTeacherSport: (userId, sport, role) => api.post(`/hod/teachers/${userId}/sports`, { sport, role }),
+  removeTeacherSport: (userId, sport) => api.delete(`/hod/teachers/${userId}/sports/${sport}`),
+}
+
 // Sport Knowledge Base service
 export const sportKnowledgeService = {
   list: (params) => api.get('/sport-knowledge', { params }),

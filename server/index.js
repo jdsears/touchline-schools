@@ -45,6 +45,7 @@ import videoLibraryRoutes from './routes/videoLibrary.js'
 import teachingGroupRoutes from './routes/teachingGroups.js'
 import assessmentRoutes from './routes/assessments.js'
 import sportKnowledgeBaseRoutes from './routes/sportKnowledgeBase.js'
+import hodRoutes from './routes/headOfDepartment.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
@@ -203,6 +204,7 @@ app.use('/api/video-library', videoLibraryRoutes)
 app.use('/api/teaching-groups', teachingGroupRoutes)
 app.use('/api/assessments', assessmentRoutes)
 app.use('/api/sport-knowledge', sportKnowledgeBaseRoutes)
+app.use('/api/hod', hodRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
