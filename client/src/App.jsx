@@ -58,6 +58,7 @@ const TrainingPlans = lazy(() => import('./pages/TrainingPlans'))
 const FeaturePage = lazy(() => import('./pages/features/FeaturePage'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
 const Onboarding = lazy(() => import('./pages/Onboarding'))
+const EnterpriseBilling = lazy(() => import('./pages/EnterpriseBilling'))
 
 // School pages
 const SchoolLayout = lazy(() => import('./pages/school/SchoolLayout'))
@@ -203,6 +204,9 @@ export default function App() {
         <Route path="/football-training-plans" element={<TrainingPlans />} />
         <Route path="/features/:slug" element={<FeaturePage />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
+
+        {/* Enterprise billing (Touchline staff only) */}
+        <Route path="/enterprise-billing" element={<EnterpriseBilling />} />
 
         {/* Onboarding wizard */}
         <Route path="/onboarding" element={
