@@ -713,6 +713,28 @@ export const hodService = {
   removeTeacherSport: (userId, sport) => api.delete(`/hod/teachers/${userId}/sports/${sport}`),
 }
 
+// Voice Observations service
+export const voiceObservationService = {
+  upload: (audioFile, contextType, contextId) => {
+    const formData = new FormData()
+    formData.append('audio', audioFile)
+    formData.append('context_type', contextType)
+    if (contextId) formData.append('context_id', contextId)
+    return api.post('/voice-observations/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  getStatus: (audioSourceId) => api.get(`/voice-observations/status/${audioSourceId}`),
+  getReview: (audioSourceId) => api.get(`/voice-observations/${audioSourceId}`),
+  editObservation: (audioSourceId, observationId, data) =>
+    api.patch(`/voice-observations/${audioSourceId}/observations/${observationId}`, data),
+  confirmAll: (audioSourceId) => api.post(`/voice-observations/${audioSourceId}/confirm`),
+  rejectObservation: (audioSourceId, observationId) =>
+    api.post(`/voice-observations/${audioSourceId}/observations/${observationId}/reject`),
+  discard: (audioSourceId) => api.delete(`/voice-observations/${audioSourceId}`),
+  listPending: () => api.get('/voice-observations'),
+}
+
 // Sport Knowledge Base service
 export const sportKnowledgeService = {
   list: (params) => api.get('/sport-knowledge', { params }),

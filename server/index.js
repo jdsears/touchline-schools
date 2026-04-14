@@ -50,6 +50,7 @@ import onboardingRoutes from './routes/onboarding.js'
 import pupilManagementRoutes from './routes/pupilManagement.js'
 import reportingRoutes from './routes/reporting.js'
 import enterpriseBillingRoutes from './routes/enterpriseBilling.js'
+import voiceObservationRoutes from './routes/voiceObservations.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
@@ -213,6 +214,7 @@ app.use('/api/onboarding', onboardingRoutes)
 app.use('/api/pupil-management', pupilManagementRoutes)
 app.use('/api/reporting', reportingRoutes)
 app.use('/api/enterprise-billing', enterpriseBillingRoutes)
+app.use('/api/voice-observations', voiceObservationRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
