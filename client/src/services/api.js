@@ -665,6 +665,15 @@ export const assessmentService = {
   getDashboard: () => api.get('/assessments/dashboard'),
 }
 
+// Pupil Management service
+export const pupilManagementService = {
+  list: (params) => api.get('/pupil-management', { params }),
+  getStats: () => api.get('/pupil-management/stats'),
+  getProfile: (id) => api.get(`/pupil-management/${id}/profile`),
+  update: (id, data) => api.put(`/pupil-management/${id}`, data),
+  create: (data) => api.post('/pupil-management', data),
+}
+
 // Onboarding service
 export const onboardingService = {
   getStatus: () => api.get('/onboarding/status'),

@@ -34,6 +34,7 @@ import {
 const hodNav = [
   { name: 'School Overview', href: '/hod', icon: Building2, end: true },
   { name: 'Teachers', href: '/hod/teachers', icon: UserCog },
+  { name: 'Pupils', href: '/hod/pupils', icon: Users },
   { name: 'All Teams', href: '/hod/teams', icon: Shield },
   { name: 'All Classes', href: '/hod/classes', icon: GraduationCap },
 ]

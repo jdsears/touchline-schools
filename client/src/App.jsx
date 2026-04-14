@@ -99,6 +99,8 @@ const HoDOverview = lazy(() => import('./pages/teacher/HoDOverview'))
 const HoDTeachers = lazy(() => import('./pages/teacher/HoDTeachers'))
 const HoDTeams = lazy(() => import('./pages/teacher/HoDTeams'))
 const HoDClasses = lazy(() => import('./pages/teacher/HoDClasses'))
+const HoDPupils = lazy(() => import('./pages/teacher/HoDPupils'))
+const HoDPupilProfile = lazy(() => import('./pages/teacher/HoDPupilProfile'))
 
 // Pupil Portal pages
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -294,6 +296,8 @@ export default function App() {
           <Route path="hod/teachers" element={<HoDTeachers />} />
           <Route path="hod/teams" element={<HoDTeams />} />
           <Route path="hod/classes" element={<HoDClasses />} />
+          <Route path="hod/pupils" element={<HoDPupils />} />
+          <Route path="hod/pupils/:id" element={<HoDPupilProfile />} />
         </Route>
 
         {/* Pupil Portal */}
