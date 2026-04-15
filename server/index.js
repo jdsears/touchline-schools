@@ -304,6 +304,78 @@ app.get('/api/health', async (req, res) => {
   }
 })
 
+// Debug endpoint - shows DB state to diagnose demo seed issues
+app.get('/api/debug-db', async (req, res) => {
+  try {
+    const tables = await pool.query(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name`)
+    const tableNames = tables.rows.map(r => r.table_name)
+
+    const checks = {}
+
+    // Check schools
+    if (tableNames.includes('schools')) {
+      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'schools' ORDER BY ordinal_position`)
+      checks.schools_columns = cols.rows.map(r => r.column_name)
+      const count = await pool.query('SELECT COUNT(*) FROM schools')
+      checks.schools_count = parseInt(count.rows[0].count)
+      const demo = await pool.query(`SELECT id, name, slug FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+      checks.demo_school = demo.rows[0] || null
+    }
+
+    // Check users
+    if (tableNames.includes('users')) {
+      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'users' ORDER BY ordinal_position`)
+      checks.users_columns = cols.rows.map(r => r.column_name)
+      const count = await pool.query('SELECT COUNT(*) FROM users')
+      checks.users_count = parseInt(count.rows[0].count)
+      const admins = await pool.query(`SELECT id, name, email, is_admin, team_id FROM users WHERE is_admin = true`)
+      checks.admin_users = admins.rows
+    }
+
+    // Check school_members
+    if (tableNames.includes('school_members')) {
+      const count = await pool.query('SELECT COUNT(*) FROM school_members')
+      checks.school_members_count = parseInt(count.rows[0].count)
+    }
+
+    // Check teams
+    if (tableNames.includes('teams')) {
+      const count = await pool.query('SELECT COUNT(*) FROM teams')
+      checks.teams_count = parseInt(count.rows[0].count)
+      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'teams' AND column_name IN ('school_id', 'sport', 'gender')`)
+      checks.teams_has_columns = cols.rows.map(r => r.column_name)
+    }
+
+    // Check pupils
+    if (tableNames.includes('pupils')) {
+      const count = await pool.query('SELECT COUNT(*) FROM pupils')
+      checks.pupils_count = parseInt(count.rows[0].count)
+    } else if (tableNames.includes('players')) {
+      checks.pupils_table = 'MISSING (still named players)'
+      const count = await pool.query('SELECT COUNT(*) FROM players')
+      checks.players_count = parseInt(count.rows[0].count)
+    }
+
+    // Check team_memberships
+    checks.has_team_memberships = tableNames.includes('team_memberships')
+
+    // Try the seed and capture error
+    checks.seed_test = 'not attempted'
+    if (!checks.demo_school) {
+      try {
+        await ensureDemoPrerequisites()
+        checks.prerequisites = 'OK'
+      } catch (e) {
+        checks.prerequisites = e.message
+      }
+    }
+
+    res.json({ tables: tableNames, checks, timestamp: new Date().toISOString() })
+  } catch (err) {
+    res.status(500).json({ error: err.message, stack: err.stack?.split('\n').slice(0, 5) })
+  }
+})
+
 // Sitemap
 app.get('/sitemap.xml', async (req, res) => {
   try {
