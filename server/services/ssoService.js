@@ -50,7 +50,7 @@ async function getGoogleIssuer() {
 // ---------------------------------------------------------------------------
 
 export async function buildClient(provider, schoolSsoConfig = {}) {
-  const redirectUri = `${process.env.BACKEND_URL || 'https://schools.touchline.xyz'}/api/sso/${provider}/callback`
+  const redirectUri = `${process.env.BACKEND_URL || 'https://app.moonbootssports.com'}/api/sso/${provider}/callback`
 
   if (provider === 'microsoft') {
     const tenantId = schoolSsoConfig.tenant_id || process.env.MICROSOFT_TENANT_ID || 'common'
@@ -168,7 +168,7 @@ export async function handleCallback(provider, callbackParams) {
   const client = await buildClient(provider, schoolSsoConfig)
 
   // Exchange code for tokens
-  const redirectUri = `${process.env.BACKEND_URL || 'https://schools.touchline.xyz'}/api/sso/${provider}/callback`
+  const redirectUri = `${process.env.BACKEND_URL || 'https://app.moonbootssports.com'}/api/sso/${provider}/callback`
   const tokenSet = await client.callback(
     redirectUri,
     { code: callbackParams.code, state: callbackParams.state },
@@ -198,7 +198,7 @@ export async function handleCallback(provider, callbackParams) {
   }
 
   // ---------------------------------------------------------------------------
-  // Find or create the Touchline user account
+  // Find or create the user account
   // ---------------------------------------------------------------------------
 
   // 1. Look for existing user with this SSO identity
@@ -251,8 +251,8 @@ export async function handleCallback(provider, callbackParams) {
 
   if (!user) {
     throw new Error(
-      `No Touchline account found for ${ssoEmail}. ` +
-      'Ask your school admin to add you to Touchline for Schools first, then sign in again.'
+      `No MoonBoots Sports account found for ${ssoEmail}. ` +
+      'Ask your school admin to add you to MoonBoots Sports first, then sign in again.'
     )
   }
 

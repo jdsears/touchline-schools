@@ -1,24 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://touchline.xyz/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
-  <url><loc>https://touchline.xyz/login</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/register</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://touchline.xyz/pricing</loc><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://touchline.xyz/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/grassroots-football-coaching</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://touchline.xyz/youth-football-coaches</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://touchline.xyz/football-training-plans</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://touchline.xyz/club-payments</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://touchline.xyz/terms</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://touchline.xyz/features/session-planner</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/player-development</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/video-analysis</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/tactical-advisor</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/tactics-board</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/match-prep</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/live-streaming</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/parent-portal</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/safeguarding</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/events-camps</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://touchline.xyz/features/ai-intelligence</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://app.moonbootssports.com/</loc><changefreq>weekly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://app.moonbootssports.com/login</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://app.moonbootssports.com/register</loc><changefreq>monthly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://app.moonbootssports.com/about</loc><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://app.moonbootssports.com/blog</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://app.moonbootssports.com/terms</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
 </urlset>

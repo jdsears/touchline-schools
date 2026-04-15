@@ -1,7 +1,7 @@
 import pool from '../config/database.js'
 import { sendEmail, isEmailEnabled } from '../services/emailService.js'
 
-const APP_URL = process.env.FRONTEND_URL || 'https://touchline.xyz'
+const APP_URL = process.env.FRONTEND_URL || 'https://app.moonbootssports.com'
 
 /**
  * Daily trial lifecycle scanner.

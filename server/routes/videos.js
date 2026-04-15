@@ -30,7 +30,7 @@ router.post('/upload', authenticateToken, async (req, res, next) => {
     // Derive CORS origin from the actual browser request — this ensures the Mux
     // upload URL CORS policy matches the exact origin the browser will send,
     // regardless of trailing slashes, www subdomain, or env var mismatches.
-    let corsOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'https://touchline.xyz'
+    let corsOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'https://app.moonbootssports.com'
     if (req.headers.origin) {
       corsOrigin = req.headers.origin
     } else if (req.headers.referer) {

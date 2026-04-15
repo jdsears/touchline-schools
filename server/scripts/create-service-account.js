@@ -11,7 +11,7 @@ async function createServiceAccount() {
   try {
     // Check if service account already exists
     const existing = await pool.query(
-      "SELECT id FROM users WHERE email = 'agent@touchline.xyz'"
+      "SELECT id FROM users WHERE email = 'agent@moonbootssports.com'"
     )
 
     let userId
@@ -21,7 +21,7 @@ async function createServiceAccount() {
     } else {
       const result = await pool.query(
         `INSERT INTO users (name, email, password_hash, role, is_admin)
-         VALUES ('Executive Agent', 'agent@touchline.xyz', 'service-account-no-login', 'manager', true)
+         VALUES ('Executive Agent', 'agent@moonbootssports.com', 'service-account-no-login', 'manager', true)
          RETURNING id`
       )
       userId = result.rows[0].id
@@ -32,7 +32,7 @@ async function createServiceAccount() {
     const token = jwt.sign({ userId }, JWT_SECRET, { expiresIn: '10y' })
 
     console.log('\n========================================')
-    console.log('TOUCHLINE_API_TOKEN=' + token)
+    console.log('MOONBOOTS_API_TOKEN=' + token)
     console.log('========================================\n')
     console.log('Add this as an environment variable in the executive team Railway service.')
 

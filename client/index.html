@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <!-- Primary Meta Tags (React Helmet manages title, description, OG, Twitter per page) -->
-    <title>AI Coaching for Grassroots Football | Touchline</title>
-    <meta name="keywords" content="grassroots football app, AI football coaching, football training session generator, youth football coaching app, football tactics app, player development, team management" />
-    <meta name="author" content="Touchline" />
+    <title>MoonBoots Sports — School sport, all in one place</title>
+    <meta name="keywords" content="school sport platform, PE management software, school sports app, AI coaching, curriculum PE, extra-curricular sport, school football, school rugby, school netball" />
+    <meta name="author" content="MoonBoots Sports" />
 
     <!-- Theme & Appearance -->
-    <meta name="theme-color" content="#0B1C2D" />
+    <meta name="theme-color" content="#0F1E3D" />
     <meta name="color-scheme" content="dark" />
-    <meta name="msapplication-TileColor" content="#0B1C2D" />
+    <meta name="msapplication-TileColor" content="#0F1E3D" />
 
     <!-- OG site_name and locale are static; all other OG/Twitter tags managed by React Helmet per page -->
-    <meta property="og:site_name" content="Touchline" />
+    <meta property="og:site_name" content="MoonBoots Sports" />
     <meta property="og:locale" content="en_GB" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
@@ -38,16 +38,16 @@
     <!-- iOS PWA -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Touchline" />
+    <meta name="apple-mobile-web-app-title" content="MoonBoots" />
 
-    <!-- Fonts: preconnect + non-blocking load -->
+    <!-- Fonts: preconnect + non-blocking load (Inter body, Outfit headings, Poppins brand wordmark) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&family=Poppins:wght@600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
 
-    <!-- JSON-LD structured data is rendered per-page by React components (Landing.jsx, FeaturePage.jsx, etc.) -->
+    <!-- JSON-LD structured data is rendered per-page by React components -->
   </head>
   <body class="bg-navy-950 text-white antialiased">
     <div id="root"></div>
@@ -68,7 +68,7 @@
         'wait_for_update': 500
       });
       (function() {
-        var consent = localStorage.getItem('touchline_cookie_consent');
+        var consent = localStorage.getItem('mb_cookie_consent');
         if (consent) {
           try {
             var parsed = JSON.parse(consent);

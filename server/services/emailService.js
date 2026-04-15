@@ -15,7 +15,7 @@ function getResendClient() {
 }
 
 // Default from address
-const FROM_ADDRESS = process.env.EMAIL_FROM || 'Touchline <noreply@send.touchline.xyz>'
+const FROM_ADDRESS = process.env.EMAIL_FROM || 'MoonBoots Sports <noreply@moonbootssports.com>'
 
 // Helper to check if email is enabled
 function isEmailEnabled() {
@@ -62,7 +62,7 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">This invitation will expire in 7 days.</p>
           </div>
           <div class="footer">
-            <p>Touchline - Football Intelligence</p>
+            <p>MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -119,7 +119,7 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">This invitation will expire in 30 days.</p>
           </div>
           <div class="footer">
-            <p>Touchline - Football Intelligence</p>
+            <p>MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -181,7 +181,7 @@ const templates = {
             <p>Make sure you arrive on time and come prepared. Good luck!</p>
           </div>
           <div class="footer">
-            <p>${teamName} - via Touchline</p>
+            <p>${teamName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -233,7 +233,7 @@ const templates = {
             </div>
           </div>
           <div class="footer">
-            <p>${teamName} - via Touchline</p>
+            <p>${teamName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -284,7 +284,7 @@ const templates = {
             <p class="meta">Awarded by ${awardedBy} on ${awardDate}</p>
           </div>
           <div class="footer">
-            <p>${teamName} - via Touchline</p>
+            <p>${teamName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -333,7 +333,7 @@ const templates = {
             <p class="meta">Selected by ${awardedBy}</p>
           </div>
           <div class="footer">
-            <p>${teamName} - via Touchline</p>
+            <p>${teamName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -375,7 +375,7 @@ const templates = {
             ` : ''}
           </div>
           <div class="footer">
-            <p>${teamName} - via Touchline</p>
+            <p>${teamName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -425,16 +425,16 @@ const templates = {
               </div>
             `).join('')}
             <p class="scan-date">Scanned on ${scanDate}</p>
-            <p style="font-size: 14px; color: #64748b;">Please log in to the Touchline dashboard to review and resolve these alerts.</p>
+            <p style="font-size: 14px; color: #64748b;">Please log in to the MoonBoots Sports dashboard to review and resolve these alerts.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `Compliance Alert for ${clubName}\n\n${alertCount} critical compliance issue${alertCount === 1 ? '' : 's'} require${alertCount === 1 ? 's' : ''} attention:\n\n${alerts.map(a => `- ${a.message}`).join('\n')}\n\nScanned on ${scanDate}\n\nPlease log in to the Touchline dashboard to review and resolve these alerts.`
+    text: `Compliance Alert for ${clubName}\n\n${alertCount} critical compliance issue${alertCount === 1 ? '' : 's'} require${alertCount === 1 ? 's' : ''} attention:\n\n${alerts.map(a => `- ${a.message}`).join('\n')}\n\nScanned on ${scanDate}\n\nPlease log in to the MoonBoots Sports dashboard to review and resolve these alerts.`
   }),
 
   // Compliance expiry warning — sent to individual volunteer
@@ -487,16 +487,16 @@ const templates = {
                 <span class="detail-value">${clubName}</span>
               </div>
             </div>
-            <p>Please arrange to renew this certificate before it expires. Once renewed, update your details in the Touchline dashboard.</p>
+            <p>Please arrange to renew this certificate before it expires. Once renewed, update your details in the MoonBoots Sports dashboard.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `Certificate Expiry Warning\n\nHi ${volunteerName},\n\nYour ${certType} expires in ${daysRemaining} days (${expiryDate}).\n\nPlease arrange to renew this certificate before it expires. Once renewed, update your details in the Touchline dashboard.\n\n${clubName}`
+    text: `Certificate Expiry Warning\n\nHi ${volunteerName},\n\nYour ${certType} expires in ${daysRemaining} days (${expiryDate}).\n\nPlease arrange to renew this certificate before it expires. Once renewed, update your details in the MoonBoots Sports dashboard.\n\n${clubName}`
   }),
 
   // Compliance expired — sent to volunteer + admin
@@ -554,16 +554,16 @@ const templates = {
               </div>
             </div>
             <p>This certificate must be renewed immediately. Until it is updated, the volunteer may not be able to carry out their role.</p>
-            <p style="font-size: 14px; color: #94a3b8;">Please update the compliance record in Touchline once the certificate has been renewed.</p>
+            <p style="font-size: 14px; color: #94a3b8;">Please update the compliance record in MoonBoots Sports once the certificate has been renewed.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `EXPIRED: ${certType} for ${volunteerName}\n\n${certType} expired on ${expiryDate}.\n\nVolunteer: ${volunteerName}\nClub: ${clubName}\n\nThis certificate must be renewed immediately. Until it is updated, the volunteer may not be able to carry out their role.\n\nPlease update the compliance record in Touchline once the certificate has been renewed.`
+    text: `EXPIRED: ${certType} for ${volunteerName}\n\n${certType} expired on ${expiryDate}.\n\nVolunteer: ${volunteerName}\nClub: ${clubName}\n\nThis certificate must be renewed immediately. Until it is updated, the volunteer may not be able to carry out their role.\n\nPlease update the compliance record in MoonBoots Sports once the certificate has been renewed.`
   }),
 
   // Incident reported — notification to welfare officer
@@ -635,7 +635,7 @@ const templates = {
             <p style="font-size: 12px; color: #94a3b8;">This email contains confidential safeguarding information. Do not forward this email to anyone who is not authorised to view it.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -713,7 +713,7 @@ const templates = {
             <p style="font-size: 12px; color: #94a3b8;">This email contains confidential safeguarding information. Do not forward this email to anyone who is not authorised to view it.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -776,7 +776,7 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">If you need to make any changes to your registration, please contact the school directly.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -823,7 +823,7 @@ const templates = {
             <p>If you made a payment for this event, the school will arrange a refund. Please contact the school directly if you have any questions.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -878,7 +878,7 @@ const templates = {
             <p>Please respond with your availability as soon as possible to help with planning.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -932,7 +932,7 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">Please check the team schedule for any rescheduled sessions.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -990,7 +990,7 @@ const templates = {
             ` : ''}
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -1001,7 +1001,7 @@ const templates = {
 
   // Trial ending warning — sent 3 days before trial expires
   trialEndingWarning: ({ teamName, ownerName, daysRemaining, trialEndDate, pricingLink }) => ({
-    subject: `Your Touchline trial ends in ${daysRemaining} days`,
+    subject: `Your MoonBoots Sports trial ends in ${daysRemaining} days`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -1036,7 +1036,7 @@ const templates = {
               <p class="warning-days">${daysRemaining}</p>
               <p class="warning-label">days left on your free trial</p>
             </div>
-            <p>Your free trial of Touchline for <span class="highlight">${teamName}</span> ends on <strong>${trialEndDate}</strong>.</p>
+            <p>Your free trial of MoonBoots Sports for <span class="highlight">${teamName}</span> ends on <strong>${trialEndDate}</strong>.</p>
             <div class="feature-list">
               <p style="margin: 0 0 12px 0; font-weight: 600; color: #0f172a;">Don't lose access to:</p>
               <ul style="margin: 0; padding-left: 20px;">
@@ -1052,18 +1052,18 @@ const templates = {
             </div>
           </div>
           <div class="footer">
-            <p>Touchline - Football Intelligence</p>
+            <p>MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `Your Touchline trial ends in ${daysRemaining} days\n\nHi ${ownerName},\n\nYour free trial of Touchline for ${teamName} ends on ${trialEndDate}.\n\nDon't lose access to:\n- AI-powered session planning\n- Video analysis and highlights\n- Pupil development tracking\n- Match preparation tools\n\nChoose a plan now: ${pricingLink}`
+    text: `Your MoonBoots Sports trial ends in ${daysRemaining} days\n\nHi ${ownerName},\n\nYour free trial of MoonBoots Sports for ${teamName} ends on ${trialEndDate}.\n\nDon't lose access to:\n- AI-powered session planning\n- Video analysis and highlights\n- Pupil development tracking\n- Match preparation tools\n\nChoose a plan now: ${pricingLink}`
   }),
 
   // Trial ending tomorrow — sent 1 day before trial expires
   trialEndingSoon: ({ teamName, ownerName, trialEndDate, pricingLink }) => ({
-    subject: `Last day: Your Touchline trial ends tomorrow`,
+    subject: `Last day: Your MoonBoots Sports trial ends tomorrow`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -1096,7 +1096,7 @@ const templates = {
               <p class="urgent-text">Trial expires tomorrow</p>
               <p class="urgent-sub">${trialEndDate}</p>
             </div>
-            <p>Your free trial of Touchline for <span class="highlight">${teamName}</span> ends tomorrow. After that, you'll lose access to premium features.</p>
+            <p>Your free trial of MoonBoots Sports for <span class="highlight">${teamName}</span> ends tomorrow. After that, you'll lose access to premium features.</p>
             <p>Subscribe now to keep your team's data, sessions, and tools exactly where you left off.</p>
             <div style="text-align: center;">
               <a href="${pricingLink}" class="button">Subscribe Now</a>
@@ -1104,18 +1104,18 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">Your team data won't be deleted — you can subscribe anytime to regain access.</p>
           </div>
           <div class="footer">
-            <p>Touchline - Football Intelligence</p>
+            <p>MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `Your Touchline trial ends tomorrow\n\nHi ${ownerName},\n\nYour free trial for ${teamName} ends on ${trialEndDate}. After that, you'll lose access to premium features.\n\nSubscribe now to keep everything running: ${pricingLink}\n\nYour team data won't be deleted — you can subscribe anytime to regain access.`
+    text: `Your MoonBoots Sports trial ends tomorrow\n\nHi ${ownerName},\n\nYour free trial of MoonBoots Sports for ${teamName} ends on ${trialEndDate}. After that, you'll lose access to premium features.\n\nSubscribe now to keep everything running: ${pricingLink}\n\nYour team data won't be deleted — you can subscribe anytime to regain access.`
   }),
 
   // Trial ended — sent on the day the trial expires
   trialEnded: ({ teamName, ownerName, pricingLink }) => ({
-    subject: `Your Touchline trial has ended — subscribe to continue`,
+    subject: `Your MoonBoots Sports trial has ended — subscribe to continue`,
     html: `
       <!DOCTYPE html>
       <html>
@@ -1145,10 +1145,10 @@ const templates = {
             <h1>Your trial has ended</h1>
             <p>Hi ${ownerName},</p>
             <div class="expired-banner">
-              <p class="expired-text">Your free trial for ${teamName} has ended</p>
+              <p class="expired-text">Your free trial of MoonBoots Sports for ${teamName} has ended</p>
               <p class="expired-sub">Premium features are now disabled</p>
             </div>
-            <p>Thanks for trying Touchline! Your team data is safe and waiting for you — subscribe to pick up right where you left off.</p>
+            <p>Thanks for trying MoonBoots Sports! Your team data is safe and waiting for you — subscribe to pick up right where you left off.</p>
             <p>Plans start from just a few pounds a month, and you can cancel anytime.</p>
             <div style="text-align: center;">
               <a href="${pricingLink}" class="button">Choose a Plan</a>
@@ -1156,18 +1156,18 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">Questions? Reply to this email and we'll help you find the right plan.</p>
           </div>
           <div class="footer">
-            <p>Touchline - Football Intelligence</p>
+            <p>MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `Your Touchline trial has ended\n\nHi ${ownerName},\n\nYour free trial for ${teamName} has ended. Premium features are now disabled.\n\nYour team data is safe — subscribe to pick up where you left off: ${pricingLink}\n\nPlans start from just a few pounds a month, and you can cancel anytime.`
+    text: `Your MoonBoots Sports trial has ended\n\nHi ${ownerName},\n\nYour free trial of MoonBoots Sports for ${teamName} has ended. Premium features are now disabled.\n\nYour team data is safe — subscribe to pick up where you left off: ${pricingLink}\n\nPlans start from just a few pounds a month, and you can cancel anytime.`
   }),
 
   // Magic link for passwordless login
   magicLink: ({ magicLinkUrl }) => ({
-    subject: 'Sign in to Touchline',
+    subject: 'Sign in to MoonBoots Sports',
     html: `
       <!DOCTYPE html>
       <html>
@@ -1192,7 +1192,7 @@ const templates = {
         <div class="container">
           <div class="card">
             <div class="logo">⚽️</div>
-            <h1>Sign in to Touchline</h1>
+            <h1>Sign in to MoonBoots Sports</h1>
             <p>Click the button below to sign in to your account. This link will expire in 15 minutes.</p>
             <div style="text-align: center;">
               <a href="${magicLinkUrl}" class="button">Sign In</a>
@@ -1201,13 +1201,13 @@ const templates = {
             <p class="warning">If you didn't request this email, you can safely ignore it.</p>
           </div>
           <div class="footer">
-            <p>Touchline - Football Intelligence</p>
+            <p>MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `Sign in to Touchline\n\nClick this link to sign in: ${magicLinkUrl}\n\nThis link will expire in 15 minutes.\n\nIf you didn't request this email, you can safely ignore it.`
+    text: `Sign in to MoonBoots Sports\n\nClick this link to sign in: ${magicLinkUrl}\n\nThis link will expire in 15 minutes.\n\nIf you didn't request this email, you can safely ignore it.`
   }),
 
   // Payment reminder — sent to parents before a subscription payment is due
@@ -1264,7 +1264,7 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">If you've already made this payment, please disregard this email.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -1332,7 +1332,7 @@ const templates = {
             <p style="font-size: 14px; color: #94a3b8;">If you're having difficulty with payments, please contact the school directly.</p>
           </div>
           <div class="footer">
-            <p>${clubName} - via Touchline</p>
+            <p>${clubName} - via MoonBoots Sports</p>
           </div>
         </div>
       </body>
@@ -1342,7 +1342,7 @@ const templates = {
   }),
 
   passwordReset: ({ resetUrl }) => ({
-    subject: 'Reset your Touchline password',
+    subject: 'Reset your MoonBoots Sports password',
     html: `
       <!DOCTYPE html>
       <html>
@@ -1367,7 +1367,7 @@ const templates = {
           <div class="card">
             <div class="logo">⚽️</div>
             <h1>Reset your password</h1>
-            <p>We received a request to reset your Touchline password. Click the button below to choose a new password.</p>
+            <p>We received a request to reset your MoonBoots Sports password. Click the button below to choose a new password.</p>
             <div style="text-align: center;">
               <a href="${resetUrl}" class="button">Reset Password</a>
             </div>
@@ -1375,13 +1375,13 @@ const templates = {
             <p class="warning">This link will expire in 1 hour. If you didn't request this, you can safely ignore this email — your password won't change.</p>
           </div>
           <div class="footer">
-            <p>Touchline - Football Intelligence</p>
+            <p>MoonBoots Sports</p>
           </div>
         </div>
       </body>
       </html>
     `,
-    text: `Reset your Touchline password\n\nClick this link to reset your password: ${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, you can safely ignore this email.`
+    text: `Reset your MoonBoots Sports password\n\nClick this link to reset your password: ${resetUrl}\n\nThis link will expire in 1 hour.\n\nIf you didn't request this, you can safely ignore this email.`
   }),
 }
 

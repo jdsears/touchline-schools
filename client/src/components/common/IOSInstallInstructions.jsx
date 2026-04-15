@@ -7,7 +7,7 @@ export default function IOSInstallInstructions() {
   useEffect(() => {
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
     const isStandalone = window.navigator.standalone === true
-    const dismissed = localStorage.getItem('touchline-ios-install-dismissed')
+    const dismissed = localStorage.getItem('mb-ios-install-dismissed')
 
     if (isIOS && !isStandalone && !dismissed) {
       setShow(true)
@@ -15,7 +15,7 @@ export default function IOSInstallInstructions() {
   }, [])
 
   const dismiss = () => {
-    localStorage.setItem('touchline-ios-install-dismissed', 'true')
+    localStorage.setItem('mb-ios-install-dismissed', 'true')
     setShow(false)
   }
 

@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Touchline brand color CSS variables - defaults, can be overridden by TeamContext */
+/* MoonBoots Sports brand CSS variables */
 :root {
+  /* MoonBoots brand palette */
+  --mb-navy: #0F1E3D;
+  --mb-gold: #C9A961;
+  --mb-warm-white: #FAFAF7;
+  --mb-gold-light: #E2C97A;
+  --mb-navy-light: #1a2f55;
+
+  /* Team/sport colours - overridden per team by TeamContext */
   --team-primary: #2ED573;      /* Pitch Green - guidance, confirmation */
   --team-secondary: #0B1C2D;    /* Background primary */
   --team-accent: #F5A623;       /* Amber - attention, emphasis */

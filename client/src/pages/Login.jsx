@@ -1,4 +1,4 @@
-import { useState, useId, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
@@ -6,30 +6,11 @@ import { Mail, Lock, ArrowRight, Loader2, Brain, Users, TrendingUp, Target, Eye,
 import SEO from '../components/common/SEO'
 import api from '../services/api'
 
-// Touchline logo mark component
-function TouchlineMark({ className = "w-10 h-8" }) {
-  const id = useId()
-  const gradId = `tl-arc-${id}`
+function MoonBootsMark() {
   return (
-    <svg viewBox="0 10 64 38" className={className} xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#2ED573"/>
-          <stop offset="100%" stopColor="#F5A623"/>
-        </linearGradient>
-      </defs>
-      <g fill="none">
-        <path d="M12 44 C18 12, 46 12, 52 44"
-              stroke={`url(#${gradId})`}
-              strokeWidth="4.5"
-              strokeLinecap="round"/>
-        <line x1="8" y1="44" x2="56" y2="44"
-              stroke="#2ED573"
-              strokeWidth="3.5"
-              strokeLinecap="round"/>
-        <circle cx="32" cy="44" r="5" fill="#2ED573"/>
-      </g>
-    </svg>
+    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--mb-gold)' }}>
+      <span style={{ color: 'var(--mb-navy)', fontFamily: 'Poppins, system-ui, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>M</span>
+    </div>
   )
 }
 
@@ -58,7 +39,7 @@ export default function Login() {
     if (err) {
       const messages = {
         sso_denied: 'You declined the sign-in request.',
-        sso_failed: detail || 'No Touchline account found for that identity. Ask your admin to add you first.',
+        sso_failed: detail || 'No MoonBoots Sports account found for that identity. Ask your admin to add you first.',
         sso_init_failed: 'Could not connect to the identity provider. Try again.',
         sso_missing_params: 'The SSO response was incomplete. Try again.',
       }
@@ -108,7 +89,7 @@ export default function Login() {
       <SEO
         title="Login"
         path="/login"
-        description="Sign in to Touchline to access your coaching dashboard, tactics board, and pupil management tools."
+        description="Sign in to MoonBoots Sports to access your coaching dashboard, tactics board, and pupil management tools."
         noIndex={true}
       />
       <div className="flex-1 flex items-center justify-center p-8">
@@ -118,8 +99,8 @@ export default function Login() {
           className="w-full max-w-md"
         >
           <Link to="/" className="inline-flex items-center gap-2 mb-8">
-            <TouchlineMark className="w-10 h-6" />
-            <span className="font-display font-semibold text-navy-50 text-xl">Touchline</span>
+            <MoonBootsMark />
+            <span className="font-bold text-navy-50 text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
           </Link>
           
           <h1 className="font-display text-3xl font-bold text-white mb-2">Welcome back</h1>

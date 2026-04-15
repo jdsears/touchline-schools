@@ -75,11 +75,11 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Canonical domain redirect: non-canonical hosts -> schools.touchline.xyz
+// Canonical domain redirect: non-canonical hosts -> app.moonbootssports.com
 // Handles: railway.app preview domain, www subdomain, any other alias.
 // HTTP -> HTTPS is handled by Railway's edge proxy, but if a request
 // somehow arrives as HTTP, the redirect below covers it too.
-const CANONICAL_HOST = 'schools.touchline.xyz'
+const CANONICAL_HOST = process.env.CANONICAL_HOST || 'app.moonbootssports.com'
 app.use((req, res, next) => {
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').replace(/:\d+$/, '')
   if (host && host !== CANONICAL_HOST) {
@@ -94,7 +94,7 @@ app.use((req, res, next) => {
 app.use(helmet({
   contentSecurityPolicy: false, // CSP can break inline scripts; enable and configure when ready
   crossOriginEmbedderPolicy: false, // Required for Mux video embeds
-  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow frontend (touchline.xyz) to load images/assets from Railway
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow frontend (moonbootssports.com) to load images/assets from Railway
 }))
 
 // CORS configuration
@@ -335,8 +335,9 @@ app.get('/sitemap.xml', async (req, res) => {
     ...blogPages,
   ]
 
+  const SITE_URL = process.env.FRONTEND_URL || 'https://app.moonbootssports.com'
   const urls = allPages.map(p => `  <url>
-    <loc>https://schools.touchline.xyz${p.loc}</loc>
+    <loc>${SITE_URL}${p.loc}</loc>
     <lastmod>${p.lastmod}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
@@ -355,9 +356,9 @@ ${urls}
     console.error('Sitemap generation error:', err.message)
     const fallback = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://schools.touchline.xyz/</loc></url>
-  <url><loc>https://schools.touchline.xyz/pricing</loc></url>
-  <url><loc>https://schools.touchline.xyz/blog</loc></url>
+  <url><loc>https://app.moonbootssports.com/</loc></url>
+  <url><loc>https://app.moonbootssports.com/blog</loc></url>
+  <url><loc>https://app.moonbootssports.com/about</loc></url>
 </urlset>`
     res.set('Content-Type', 'text/xml; charset=utf-8')
     res.status(200).send(fallback)
@@ -366,15 +367,15 @@ ${urls}
 
 // Robots.txt - dynamic
 app.get('/robots.txt', (req, res) => {
-  const robotsTxt = `# Touchline for Schools - Robots.txt
-# https://schools.touchline.xyz
+  const robotsTxt = `# MoonBoots Sports - Robots.txt
+# https://app.moonbootssports.com
 
 User-agent: *
 Allow: /
 Allow: /login
 Allow: /blog
 Allow: /terms
-Allow: /features/
+Allow: /about
 Allow: /watch/
 
 # Disallow authenticated app routes
@@ -397,7 +398,7 @@ Disallow: /club/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://schools.touchline.xyz/sitemap.xml
+Sitemap: https://app.moonbootssports.com/sitemap.xml
 `
 
   res.set('Content-Type', 'text/plain; charset=utf-8')

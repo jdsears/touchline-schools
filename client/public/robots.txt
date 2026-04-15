@@ -1,18 +1,13 @@
-# Touchline - Robots.txt
-# https://touchline.xyz
+# MoonBoots Sports - Robots.txt
+# https://app.moonbootssports.com
 
 User-agent: *
 Allow: /
 Allow: /login
 Allow: /register
-Allow: /pricing
 Allow: /blog
 Allow: /terms
-Allow: /grassroots-football-coaching
-Allow: /youth-football-coaches
-Allow: /football-training-plans
-Allow: /features/
-Allow: /club-payments
+Allow: /about
 Allow: /watch/
 
 # Disallow authenticated app routes
@@ -35,4 +30,4 @@ Disallow: /club/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://touchline.xyz/sitemap.xml
+Sitemap: https://app.moonbootssports.com/sitemap.xml

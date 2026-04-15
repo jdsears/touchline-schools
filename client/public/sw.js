@@ -1,4 +1,4 @@
-const CACHE_NAME = 'touchline-v2';
+const CACHE_NAME = 'moonboots-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -38,13 +38,13 @@ self.addEventListener('push', (event) => {
     body: data.body || '',
     icon: data.icon || '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
-    tag: data.tag || 'touchline-notification',
+    tag: data.tag || 'moonboots-notification',
     data: { url: data.url || '/' },
     vibrate: [200, 100, 200],
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Touchline', options)
+    self.registration.showNotification(data.title || 'MoonBoots Sports', options)
   );
 });
 

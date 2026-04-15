@@ -1,4 +1,4 @@
-import { useState, useRef, useId } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
@@ -6,36 +6,10 @@ import { Mail, Lock, User, Users, ArrowRight, Loader2, ArrowLeft, ExternalLink, 
 import api from '../services/api'
 import SEO from '../components/common/SEO'
 
-// Touchline logo mark component
-function TouchlineMark({ className = "w-10 h-8" }) {
-  const id = useId()
-  const gradId = `tl-arc-${id}`
-  return (
-    <svg viewBox="0 10 64 38" className={className} xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#2ED573"/>
-          <stop offset="100%" stopColor="#F5A623"/>
-        </linearGradient>
-      </defs>
-      <g fill="none">
-        <path d="M12 44 C18 12, 46 12, 52 44"
-              stroke={`url(#${gradId})`}
-              strokeWidth="4.5"
-              strokeLinecap="round"/>
-        <line x1="8" y1="44" x2="56" y2="44"
-              stroke="#2ED573"
-              strokeWidth="3.5"
-              strokeLinecap="round"/>
-        <circle cx="32" cy="44" r="5" fill="#2ED573"/>
-      </g>
-    </svg>
-  )
-}
 
 // Preset color schemes for teams
 const colorPresets = [
-  { name: 'Touchline', primary: '#2ED573', secondary: '#0B1C2D', accent: '#F5A623' },
+  { name: 'Pitch Green', primary: '#2ED573', secondary: '#0B1C2D', accent: '#F5A623' },
   { name: 'Royal Blue', primary: '#3B82F6', secondary: '#1E293B', accent: '#FBBF24' },
   { name: 'Classic Red', primary: '#EF4444', secondary: '#18181B', accent: '#FFFFFF' },
   { name: 'Purple Pride', primary: '#8B5CF6', secondary: '#1E1B4B', accent: '#F472B6' },
@@ -177,23 +151,23 @@ TERMS OF SERVICE
 Last updated: 17 February 2026
 =====================================
 
-These Terms of Service ("Terms") govern your access to and use of Touchline (touchline.xyz), operated by MoonBoots Consultancy UK Ltd ("we", "us", "our"), a company registered in England and Wales.
+These Terms of Service ("Terms") govern your access to and use of MoonBoots Sports(app.moonbootssports.com), operated by MoonBoots Consultancy UK Ltd ("we", "us", "our"), a company registered in England and Wales.
 
-By accessing or using Touchline, you agree to be bound by these Terms. If you are accepting these Terms on behalf of a football school or organisation, you represent that you have the authority to bind that organisation.
+By accessing or using MoonBoots Sports, you agree to be bound by these Terms. If you are accepting these Terms on behalf of a football school or organisation, you represent that you have the authority to bind that organisation.
 
-1. About Touchline
+1. About MoonBoots Sports
 
-Touchline is an AI-powered coaching platform designed for grassroots football. It provides session planning, pupil development insights, video analysis, and communication tools for coaches, schools, and parents.
+MoonBoots Sportsis an AI-powered coaching platform designed for grassroots football. It provides session planning, pupil development insights, video analysis, and communication tools for coaches, schools, and parents.
 
-Touchline is a coaching support tool. It does not replace qualified coaching, medical advice, or safeguarding procedures. All coaching decisions remain the responsibility of the coach and school.
+MoonBoots Sportsis a coaching support tool. It does not replace qualified coaching, medical advice, or safeguarding procedures. All coaching decisions remain the responsibility of the coach and school.
 
 2. Account Types
 
 Individual Coach Accounts
-Individual coaches may create a personal account to access Touchline features for their own coaching activities. Coaches are responsible for ensuring they hold appropriate coaching qualifications and DBS checks as required by their school and governing body.
+Individual coaches may create a personal account to access MoonBoots Sportsfeatures for their own coaching activities. Coaches are responsible for ensuring they hold appropriate coaching qualifications and DBS checks as required by their school and governing body.
 
 School Accounts
-Clubs may register for a school account, which enables multiple coaches and administrators to use Touchline under a single organisation. Before a school account is activated:
+Clubs may register for a school account, which enables multiple coaches and administrators to use MoonBoots Sportsunder a single organisation. Before a school account is activated:
 - The school must designate a School Administrator with authority to accept these Terms
 - The school must review and accept our Privacy Policy and Safeguarding Policy
 - The school must confirm they hold a current safeguarding policy of their own
@@ -206,7 +180,7 @@ Where a school enables parent communication features, parents and guardians may 
 
 3. Acceptable Use
 
-You agree to use Touchline only for lawful purposes related to grassroots football coaching and school management. You must not:
+You agree to use MoonBoots Sportsonly for lawful purposes related to grassroots football coaching and school management. You must not:
 - Use the platform in any way that could harm, endanger, or negatively impact any child or young person
 - Upload, share, or transmit any content that is abusive, offensive, discriminatory, or inappropriate
 - Share login credentials or allow unauthorised individuals to access the platform
@@ -217,7 +191,7 @@ You agree to use Touchline only for lawful purposes related to grassroots footba
 
 4. Content and Data
 
-Your Content: You retain ownership of any content you upload to Touchline. By uploading content, you grant us a limited licence to store, process, and display it within the platform.
+Your Content: You retain ownership of any content you upload to MoonBoots Sports. By uploading content, you grant us a limited licence to store, process, and display it within the platform.
 
 AI-Generated Content: AI-generated content is provided as guidance only. You are responsible for reviewing all AI output before use and ensuring it is appropriate for your pupils' age, ability, and needs.
 
@@ -225,11 +199,11 @@ Data Processing: We process personal data in accordance with our Privacy Policy 
 
 5. Subscriptions and Payment
 
-Touchline operates on a subscription basis. Subscriptions renew automatically unless cancelled before the renewal date. You may cancel at any time through your account settings. Refunds are handled on a case-by-case basis within 14 days of initial subscription.
+MoonBoots Sportsoperates on a subscription basis. Subscriptions renew automatically unless cancelled before the renewal date. You may cancel at any time through your account settings. Refunds are handled on a case-by-case basis within 14 days of initial subscription.
 
 6. School Responsibilities
 
-Clubs using Touchline are responsible for:
+Clubs using MoonBoots Sportsare responsible for:
 - Ensuring all coaches and staff are appropriately vetted (DBS checked) and qualified
 - Maintaining their own safeguarding policy in accordance with FA and local authority guidelines
 - Obtaining appropriate consent from parents/guardians before any child's data is entered
@@ -247,11 +221,11 @@ We are responsible for:
 
 8. Safeguarding
 
-Safeguarding children and young people is central to everything we do. Our full Safeguarding Policy forms part of these Terms. If you become aware of any safeguarding concern related to the use of Touchline, contact us immediately at safeguarding@touchline.xyz.
+Safeguarding children and young people is central to everything we do. Our full Safeguarding Policy forms part of these Terms. If you become aware of any safeguarding concern related to the use of MoonBoots Sports, contact us immediately at safeguarding@moonbootssports.com.
 
 9. Limitation of Liability
 
-Touchline is provided "as is" without warranties of any kind. We are not liable for any decisions made based on AI-generated content, coaching outcomes, injuries, or incidents arising from use of the platform. Our total liability shall not exceed the fees paid by you in the 12 months preceding the claim. Nothing in these Terms excludes liability for death or personal injury caused by negligence, fraud, or any liability that cannot be excluded by law.
+MoonBoots Sportsis provided "as is" without warranties of any kind. We are not liable for any decisions made based on AI-generated content, coaching outcomes, injuries, or incidents arising from use of the platform. Our total liability shall not exceed the fees paid by you in the 12 months preceding the claim. Nothing in these Terms excludes liability for death or personal injury caused by negligence, fraud, or any liability that cannot be excluded by law.
 
 10. Termination
 
@@ -264,8 +238,8 @@ These Terms are governed by the laws of England and Wales.
 12. Contact
 
 MoonBoots Consultancy UK Ltd
-Email: hello@touchline.xyz
-Safeguarding concerns: safeguarding@touchline.xyz
+Email: hello@moonbootssports.com
+Safeguarding concerns: safeguarding@moonbootssports.com
 
 
 =====================================
@@ -273,9 +247,9 @@ PRIVACY POLICY
 Last updated: 17 February 2026
 =====================================
 
-This Privacy Policy explains how MoonBoots Consultancy UK Ltd collects, uses, stores, and protects personal data through Touchline (touchline.xyz).
+This Privacy Policy explains how MoonBoots Consultancy UK Ltd collects, uses, stores, and protects personal data through MoonBoots Sports(app.moonbootssports.com).
 
-We are the data controller for personal data processed through Touchline. We comply with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.
+We are the data controller for personal data processed through MoonBoots Sports. We comply with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.
 
 1. Data We Collect
 
@@ -312,7 +286,7 @@ Technical logs: 12 months
 
 6. Your Rights
 
-Under UK GDPR: access, rectification, erasure, restriction, portability, objection, and withdrawal of consent. Contact: privacy@touchline.xyz. Response within 30 days. Complaints to the ICO at ico.org.uk.
+Under UK GDPR: access, rectification, erasure, restriction, portability, objection, and withdrawal of consent. Contact: privacy@moonbootssports.com. Response within 30 days. Complaints to the ICO at ico.org.uk.
 
 7. AI and Automated Processing
 
@@ -320,9 +294,9 @@ AI-generated content is always presented as suggestions. No decisions about a pu
 
 8. Contact
 
-Privacy enquiries: privacy@touchline.xyz
-Safeguarding concerns: safeguarding@touchline.xyz
-General: hello@touchline.xyz
+Privacy enquiries: privacy@moonbootssports.com
+Safeguarding concerns: safeguarding@moonbootssports.com
+General: hello@moonbootssports.com
 
 
 =====================================
@@ -330,9 +304,9 @@ SAFEGUARDING POLICY
 Last updated: 17 February 2026
 =====================================
 
-The safety and wellbeing of children and young people is the highest priority at Touchline.
+The safety and wellbeing of children and young people is the highest priority at MoonBoots Sports.
 
-Touchline is a coaching support platform. It does not replace a school's own safeguarding procedures, the role of the School Welfare Officer, or the responsibilities of coaches and parents.
+MoonBoots Sportsis a coaching support platform. It does not replace a school's own safeguarding procedures, the role of the School Welfare Officer, or the responsibilities of coaches and parents.
 
 1. Our Principles
 
@@ -341,7 +315,7 @@ Touchline is a coaching support platform. It does not replace a school's own saf
 - All concerns and allegations will be taken seriously and responded to promptly
 - We are guided by The FA's Safeguarding Policy, the Children Act 1989 and 2004
 
-2. How Touchline Protects Children
+2. How MoonBoots SportsProtects Children
 
 - Children never access the platform directly
 - We collect the minimum data necessary about young pupils
@@ -363,12 +337,12 @@ You can also contact:
 - NSPCC Helpline: 0808 800 5000
 - Childline: 0800 1111
 
-Touchline concerns: safeguarding@touchline.xyz
+MoonBoots Sportsconcerns: safeguarding@moonbootssports.com
 
 5. Contact
 
-Safeguarding concerns: safeguarding@touchline.xyz
-General enquiries: hello@touchline.xyz
+Safeguarding concerns: safeguarding@moonbootssports.com
+General enquiries: hello@moonbootssports.com
 
 
 =====================================
@@ -376,7 +350,7 @@ COOKIE POLICY
 Last updated: 17 February 2026
 =====================================
 
-Cookies are small text files stored on your device when you visit a website. We use the minimum cookies necessary to make Touchline work properly.
+Cookies are small text files stored on your device when you visit a website. We use the minimum cookies necessary to make MoonBoots Sportswork properly.
 
 Essential Cookies (always active):
 - Session token: Keeps you logged in
@@ -392,9 +366,9 @@ Cookies We Don't Use:
 - No social media cookies
 - No cookies that track you across other websites
 
-Managing Cookies: You can control cookies through your browser settings. Blocking essential cookies will prevent Touchline from working properly.
+Managing Cookies: You can control cookies through your browser settings. Blocking essential cookies will prevent MoonBoots Sportsfrom working properly.
 
-Contact: oliver@touchline.xyz
+Contact: hello@moonbootssports.com
 
 
 =====================================
@@ -402,9 +376,9 @@ ARTIFICIAL INTELLIGENCE POLICY
 Last updated: 17 February 2026
 =====================================
 
-Touchline uses artificial intelligence to support grassroots football coaches with session planning, pupil development insights, and video analysis.
+MoonBoots Sportsuses artificial intelligence to support grassroots football coaches with session planning, pupil development insights, and video analysis.
 
-We believe AI should enhance coaching, not replace it. Every AI feature in Touchline is designed to support the coach's judgement, never to override it.
+We believe AI should enhance coaching, not replace it. Every AI feature in MoonBoots Sportsis designed to support the coach's judgement, never to override it.
 
 1. How AI is Used
 
@@ -466,8 +440,8 @@ We believe AI should enhance coaching, not replace it. Every AI feature in Touch
 
 9. Accountability
 
-Email: hello@touchline.xyz
-Safeguarding concerns involving AI: safeguarding@touchline.xyz
+Email: hello@moonbootssports.com
+Safeguarding concerns involving AI: safeguarding@moonbootssports.com
 
 10. Review
 
@@ -477,7 +451,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'Touchline-Policies.txt'
+    a.download = 'MoonBoots-Sports-Policies.txt'
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -607,7 +581,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
       <SEO
         title="Register"
         path="/register"
-        description="Create your free Touchline account. AI-powered coaching tools for grassroots football teams - tactics, training, and pupil development."
+        description="Create your free MoonBoots Sports account. The multi-sport platform for school PE departments — curriculum PE, extra-curricular sport, and AI coaching."
       />
       <div className="flex-1 flex items-center justify-center p-8">
         <motion.div
@@ -616,8 +590,10 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
           className="w-full max-w-md"
         >
           <Link to="/" className="inline-flex items-center gap-2 mb-8">
-            <TouchlineMark className="w-10 h-6" />
-            <span className="font-display font-semibold text-navy-50 text-xl">Touchline</span>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--mb-gold)' }}>
+              <span className="text-sm font-bold" style={{ color: 'var(--mb-navy)', fontFamily: 'Poppins, system-ui, sans-serif' }}>M</span>
+            </div>
+            <span className="font-bold text-navy-50 text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
           </Link>
 
           <h1 className="font-display text-3xl font-bold text-white mb-2">
@@ -1107,14 +1083,14 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                     {showDpa && (
                       <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-60 overflow-y-auto border border-navy-700">
                         <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) — v1.0</h3>
-                        <p>This Data Processing Agreement ("DPA") forms part of the agreement between Touchline ("Processor") and the School ("Controller") for the use of the Touchline platform.</p>
+                        <p>This Data Processing Agreement ("DPA") forms part of the agreement between MoonBoots Sports ("Processor") and the School ("Controller") for the use of the MoonBoots Sportsplatform.</p>
                         <h4 className="font-medium text-navy-200">1. Roles & Responsibilities</h4>
-                        <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. Touchline acts as a <strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions.</p>
+                        <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. MoonBoots Sports acts as a<strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions.</p>
                         <h4 className="font-medium text-navy-200">2. Data Processed</h4>
                         <p>Pupil names, dates of birth, medical information, emergency contacts, photographs, identity documents, guardian contact details, payment information (via Stripe), and consent records.</p>
                         <h4 className="font-medium text-navy-200">3. School Obligations</h4>
                         <p>Ensure lawful basis for processing, respond to DSARs within 30 days, report breaches to the ICO within 72 hours, and inform guardians about data processing.</p>
-                        <h4 className="font-medium text-navy-200">4. Touchline Obligations</h4>
+                        <h4 className="font-medium text-navy-200">4. MoonBoots SportsObligations</h4>
                         <p>Process data only as instructed, implement security measures, not transfer data outside UK/EEA, assist with DSARs, and delete data upon account termination.</p>
                         <h4 className="font-medium text-navy-200">5. Security & Retention</h4>
                         <p>Data retained while account is active, deleted within 30 days of closure. HTTPS/TLS encryption, JWT authentication, role-based access controls.</p>
@@ -1215,7 +1191,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   <rect x="40" y="30" width="240" height="140" rx="12" fill="url(#cardGrad)" />
                   <rect x="40" y="30" width="240" height="140" rx="12" fill="none" stroke="#2ED573" strokeWidth="1" opacity="0.3" />
 
-                  {/* Touchline logo mark */}
+                  {/* MoonBoots Sportslogo mark */}
                   <g transform="translate(60, 55)">
                     <path d="M8 20 C16 8, 32 8, 40 20" stroke="#F5A623" strokeWidth="2" strokeLinecap="round" fill="none" />
                     <line x1="4" y1="20" x2="44" y2="20" stroke="#2ED573" strokeWidth="2" strokeLinecap="round" />

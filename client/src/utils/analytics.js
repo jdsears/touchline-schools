@@ -158,7 +158,7 @@ export function trackError(errorType, errorMessage, errorLocation) {
 // Cookie Consent Management (GDPR Compliance)
 // ============================================
 
-const CONSENT_STORAGE_KEY = 'touchline_cookie_consent'
+const CONSENT_STORAGE_KEY = 'mb_cookie_consent'
 
 /**
  * Get current consent preferences from localStorage

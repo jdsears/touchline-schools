@@ -52,10 +52,7 @@ const Terms = lazy(() => import('./pages/Terms'))
 const Admin = lazy(() => import('./pages/Admin'))
 const Blog = lazy(() => import('./pages/Blog'))
 const BlogPost = lazy(() => import('./pages/BlogPost'))
-const GrassrootsCoaching = lazy(() => import('./pages/GrassrootsCoaching'))
-const YouthCoaches = lazy(() => import('./pages/YouthCoaches'))
-const TrainingPlans = lazy(() => import('./pages/TrainingPlans'))
-const FeaturePage = lazy(() => import('./pages/features/FeaturePage'))
+const About = lazy(() => import('./pages/About'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
 const Onboarding = lazy(() => import('./pages/Onboarding'))
 const EnterpriseBilling = lazy(() => import('./pages/EnterpriseBilling'))
@@ -206,13 +203,10 @@ export default function App() {
         <Route path="/terms" element={<Terms />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
-        <Route path="/grassroots-football-coaching" element={<GrassrootsCoaching />} />
-        <Route path="/youth-football-coaches" element={<YouthCoaches />} />
-        <Route path="/football-training-plans" element={<TrainingPlans />} />
-        <Route path="/features/:slug" element={<FeaturePage />} />
+        <Route path="/about" element={<About />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
 
-        {/* Enterprise billing (Touchline staff only) */}
+        {/* Enterprise billing (MoonBoots staff only) */}
         <Route path="/enterprise-billing" element={<EnterpriseBilling />} />
 
         {/* Onboarding wizard */}

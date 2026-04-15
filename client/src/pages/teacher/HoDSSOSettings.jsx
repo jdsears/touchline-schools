@@ -18,7 +18,7 @@ const PROVIDER_INFO = {
     setupInstructions: [
       'Go to Azure Portal → Azure Active Directory → App registrations',
       'Register a new application',
-      'Set redirect URI to: https://schools.touchline.xyz/api/sso/microsoft/callback',
+      'Set redirect URI to: https://app.moonbootssports.com/api/sso/microsoft/callback',
       'Add API permissions: Microsoft Graph → openid, profile, email (Delegated)',
       'Create a client secret and paste the values below',
     ],
@@ -38,7 +38,7 @@ const PROVIDER_INFO = {
     setupInstructions: [
       'Go to Google Cloud Console → APIs & Services → Credentials',
       'Create OAuth 2.0 Client ID (Web application)',
-      'Add redirect URI: https://schools.touchline.xyz/api/sso/google/callback',
+      'Add redirect URI: https://app.moonbootssports.com/api/sso/google/callback',
       'Paste your Client ID and Secret below',
     ],
     hdHelp: 'Your Google Workspace domain (e.g. langleyprep.co.uk) — restricts sign-in to your school\'s accounts',
@@ -154,7 +154,7 @@ export default function HoDSSOSettings() {
           <Shield className="w-5 h-5 text-pitch-400 shrink-0 mt-0.5" />
           <div className="text-sm text-navy-300 space-y-1">
             <p className="font-medium text-white">How SSO works</p>
-            <p>Once configured, staff can click "Sign in with Microsoft" or "Sign in with Google" on the login page. Their school email is matched to their Touchline account automatically — no separate password needed.</p>
+            <p>Once configured, staff can click "Sign in with Microsoft" or "Sign in with Google" on the login page. Their school email is matched to their MoonBoots Sports account automatically — no separate password needed.</p>
             <p>If <strong className="text-white">domain auto-provisioning</strong> is enabled (via the allowlist below), new staff with that email domain are automatically added as Teachers when they first sign in via SSO.</p>
           </div>
         </div>
@@ -166,7 +166,7 @@ export default function HoDSSOSettings() {
           <div className="flex items-start gap-2">
             <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
             <p className="text-sm text-amber-300">
-              SSO is not yet enabled on this Touchline instance. Contact your Touchline administrator to configure platform-level OAuth credentials, then you can set school-specific details here.
+              SSO is not yet enabled on this instance. Contact your MoonBoots Sports administrator to configure platform-level OAuth credentials, then you can set school-specific details here.
             </p>
           </div>
         </div>

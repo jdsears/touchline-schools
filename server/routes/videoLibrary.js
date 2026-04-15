@@ -339,7 +339,7 @@ router.post('/videos/upload', authenticateToken, async (req, res, next) => {
     if (!sectionId) return res.status(400).json({ message: 'Section is required' })
 
     // Derive CORS origin (same pattern as match video upload)
-    let corsOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'https://touchline.xyz'
+    let corsOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'https://app.moonbootssports.com'
     if (req.headers.origin) {
       corsOrigin = req.headers.origin
     } else if (req.headers.referer) {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useId, Suspense } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { Outlet, NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useTeam } from '../../context/TeamContext'
@@ -30,30 +30,15 @@ import {
 } from 'lucide-react'
 import HelpChatWidget from '../HelpChatWidget'
 
-// Touchline logo mark component
-function TouchlineMark({ className = "w-10 h-8" }) {
-  const id = useId()
-  const gradId = `tl-arc-${id}`
+// MoonBoots Sports logo mark component
+function MoonBootsMark({ className = "w-8 h-8" }) {
   return (
-    <svg viewBox="0 10 64 38" className={className} xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#2ED573"/>
-          <stop offset="100%" stopColor="#F5A623"/>
-        </linearGradient>
-      </defs>
-      <g fill="none">
-        <path d="M12 44 C18 12, 46 12, 52 44"
-              stroke={`url(#${gradId})`}
-              strokeWidth="4.5"
-              strokeLinecap="round"/>
-        <line x1="8" y1="44" x2="56" y2="44"
-              stroke="#2ED573"
-              strokeWidth="3.5"
-              strokeLinecap="round"/>
-        <circle cx="32" cy="44" r="5" fill="#2ED573"/>
-      </g>
-    </svg>
+    <div
+      className={`rounded-lg flex items-center justify-center shrink-0 ${className}`}
+      style={{ backgroundColor: 'var(--mb-gold)', aspectRatio: '1' }}
+    >
+      <span style={{ color: 'var(--mb-navy)', fontFamily: 'Poppins, system-ui, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>M</span>
+    </div>
   )
 }
 
@@ -114,8 +99,8 @@ export default function AppLayout() {
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-4 border-b border-navy-800">
             <div className="flex items-center gap-2">
-              <TouchlineMark className="w-10 h-6" />
-              <h1 className="font-display font-semibold text-navy-50 text-lg">Touchline</h1>
+              <MoonBootsMark className="w-7 h-7" />
+              <h1 className="font-semibold text-navy-50 text-base" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots</h1>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
@@ -293,9 +278,9 @@ export default function AppLayout() {
             <Menu className="w-6 h-6" />
           </button>
           
-          <div className="flex items-center gap-1">
-            <TouchlineMark className="w-8 h-5" />
-            <span className="font-display font-semibold text-navy-50">Touchline</span>
+          <div className="flex items-center gap-1.5">
+            <MoonBootsMark className="w-6 h-6" />
+            <span className="font-semibold text-navy-50 text-sm" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots</span>
           </div>
           
           <div className="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-navy-300">
