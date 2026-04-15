@@ -116,6 +116,6 @@ async function runSeed() {
 }
 
 // Run if called directly
-if (process.argv[1].includes('demo-seed/index.js')) {
+if (process.argv[1]?.includes('demo-seed/index.js')) {
   runSeed()
 }

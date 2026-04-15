@@ -1006,9 +1006,6 @@ export default function Admin() {
     if (activeTab === 'users') {
       fetchUsers()
     }
-    if (activeTab === 'blog') {
-      fetchBlogPosts()
-    }
     if (activeTab === 'screenshots') {
       fetchScreenshots()
     }
