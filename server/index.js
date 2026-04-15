@@ -609,7 +609,7 @@ async function seedAdminUsersAndLink() {
           await pool.query(`INSERT INTO school_members (school_id, user_id, role, school_role, can_view_all_classes, can_view_all_teams, can_manage_curriculum, can_view_reports, can_manage_safeguarding, joined_at) VALUES ($1, $2, 'teacher', 'head_of_pe', true, true, true, true, true, NOW()) ON CONFLICT (school_id, user_id) DO NOTHING`, [sid, userId])
           const team = await pool.query(`SELECT id FROM teams WHERE school_id = $1 LIMIT 1`, [sid])
           if (team.rows.length > 0) {
-            await pool.query(`UPDATE users SET team_id = $1, has_completed_onboarding = true WHERE id = $2 AND team_id IS NULL`, [team.rows[0].id, userId])
+            await pool.query(`UPDATE users SET team_id = $1, has_completed_onboarding = true WHERE id = $2`, [team.rows[0].id, userId])
             await pool.query(`INSERT INTO team_memberships (team_id, user_id, role, is_primary, created_at) VALUES ($1, $2, 'manager', true, NOW()) ON CONFLICT (user_id, team_id) DO NOTHING`, [team.rows[0].id, userId])
           }
         }
