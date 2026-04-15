@@ -3444,6 +3444,66 @@ export async function runMigrations() {
 
     console.log('Phase 11: Voice observations groundwork complete')
 
+    // =========================================================================
+    // PHASE 12: GDPR Data Export & Deletion
+    // =========================================================================
+
+    // --- 12a: Data export requests table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS data_export_requests (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      requested_by UUID NOT NULL REFERENCES users(id),
+      request_type TEXT NOT NULL CHECK (request_type IN ('export', 'deletion')),
+      status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'processing', 'ready', 'downloaded', 'completed', 'failed')),
+      reason TEXT,
+      download_token UUID DEFAULT gen_random_uuid(),
+      download_expires_at TIMESTAMPTZ,
+      file_path TEXT,
+      completed_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_school ON data_export_requests(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_pupil ON data_export_requests(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_token ON data_export_requests(download_token)`)
+
+    // --- 12b: Data deletion log (permanent record that deletion occurred) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS data_deletion_log (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL,
+      pupil_reference TEXT NOT NULL,
+      deleted_by UUID NOT NULL,
+      reason TEXT,
+      tables_purged TEXT[],
+      files_deleted TEXT[],
+      summary JSONB,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+
+    // --- 12c: Consent records table (if not already created) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS gdpr_consent_records (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      pupil_id UUID REFERENCES pupils(id) ON DELETE CASCADE,
+      guardian_id UUID,
+      consent_type TEXT NOT NULL
+        CHECK (consent_type IN ('data_processing', 'photo_video', 'medical', 'ai_analysis', 'voice_recording', 'third_party_sharing')),
+      granted BOOLEAN NOT NULL DEFAULT false,
+      granted_by TEXT,
+      granted_at TIMESTAMPTZ,
+      withdrawn_at TIMESTAMPTZ,
+      ip_address TEXT,
+      notes TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_school ON gdpr_consent_records(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_pupil ON gdpr_consent_records(pupil_id)`)
+
+    console.log('Phase 12: GDPR data export & deletion complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)

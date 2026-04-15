@@ -107,6 +107,7 @@ const TeacherSafeguarding = lazy(() => import('./pages/teacher/TeacherSafeguardi
 const VoiceObservationReview = lazy(() => import('./pages/teacher/VoiceObservationReview'))
 const VoiceSafeguardingReview = lazy(() => import('./pages/teacher/VoiceSafeguardingReview'))
 const HoDVoiceSettings = lazy(() => import('./pages/teacher/HoDVoiceSettings'))
+const GDPRDashboard = lazy(() => import('./pages/teacher/GDPRDashboard'))
 
 // Pupil Portal pages
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -311,6 +312,7 @@ export default function App() {
           <Route path="voice-review/:audioSourceId" element={<VoiceObservationReview />} />
           <Route path="hod/voice-safeguarding" element={<VoiceSafeguardingReview />} />
           <Route path="hod/voice-settings" element={<HoDVoiceSettings />} />
+          <Route path="hod/gdpr" element={<GDPRDashboard />} />
         </Route>
 
         {/* Pupil Portal */}

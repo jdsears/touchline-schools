@@ -52,6 +52,7 @@ import reportingRoutes from './routes/reporting.js'
 import enterpriseBillingRoutes from './routes/enterpriseBilling.js'
 import voiceObservationRoutes from './routes/voiceObservations.js'
 import voiceSafeguardingRoutes from './routes/voiceSafeguarding.js'
+import gdprRoutes from './routes/gdpr.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
@@ -218,6 +219,7 @@ app.use('/api/reporting', reportingRoutes)
 app.use('/api/enterprise-billing', enterpriseBillingRoutes)
 app.use('/api/voice-observations', voiceObservationRoutes)
 app.use('/api/voice-safeguarding', voiceSafeguardingRoutes)
+app.use('/api/gdpr', gdprRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {

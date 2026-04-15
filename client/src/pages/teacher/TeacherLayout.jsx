@@ -41,6 +41,7 @@ const hodNav = [
   { name: 'Reporting', href: '/hod/reporting', icon: BarChart3 },
   { name: 'Voice Safeguarding', href: '/hod/voice-safeguarding', icon: Shield, voiceOnly: true },
   { name: 'Voice Settings', href: '/hod/voice-settings', icon: Mic, voiceOnly: true },
+  { name: 'Data & Privacy', href: '/hod/gdpr', icon: ShieldCheck },
 ]
 
 const curriculumNav = [

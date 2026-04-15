@@ -745,4 +745,17 @@ export const sportKnowledgeService = {
   getForAI: (sport, schoolId) => api.get(`/sport-knowledge/for-ai/${sport}`, { params: { school_id: schoolId } }),
 }
 
+export const gdprService = {
+  getOverview: () => api.get('/gdpr/overview'),
+  getPupils: (params) => api.get('/gdpr/pupils', { params }),
+  requestExport: (pupilId, reason) => api.post('/gdpr/export', { pupil_id: pupilId, reason }),
+  downloadExport: (token) => api.get(`/gdpr/export/${token}/download`, { responseType: 'blob' }),
+  getRequests: () => api.get('/gdpr/requests'),
+  requestDeletion: (pupilId, reason) => api.post('/gdpr/deletion', { pupil_id: pupilId, reason, confirm: true }),
+  getDeletionLog: () => api.get('/gdpr/deletion-log'),
+  getConsent: (pupilId) => api.get(`/gdpr/consent/${pupilId}`),
+  updateConsent: (data) => api.post('/gdpr/consent', data),
+  batchConsent: (data) => api.post('/gdpr/consent/batch', data),
+}
+
 export default api
