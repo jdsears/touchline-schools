@@ -747,6 +747,15 @@ export const sportKnowledgeService = {
   getForAI: (sport, schoolId) => api.get(`/sport-knowledge/for-ai/${sport}`, { params: { school_id: schoolId } }),
 }
 
+export const ssoService = {
+  getProviders: () => api.get('/sso/providers'),
+  getConfig: () => api.get('/sso/config'),
+  updateConfig: (data) => api.put('/sso/config', data),
+  getDomains: () => api.get('/sso/domains'),
+  addDomain: (domain) => api.post('/sso/domains', { domain }),
+  removeDomain: (domain) => api.delete(`/sso/domains/${encodeURIComponent(domain)}`),
+}
+
 export const gdprService = {
   getOverview: () => api.get('/gdpr/overview'),
   getPupils: (params) => api.get('/gdpr/pupils', { params }),

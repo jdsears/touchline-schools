@@ -1,9 +1,10 @@
-import { useState, useId } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useId, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, Loader2, Brain, Users, TrendingUp, Target, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Loader2, Brain, Users, TrendingUp, Target, Eye, EyeOff, AlertTriangle } from 'lucide-react'
 import SEO from '../components/common/SEO'
+import api from '../services/api'
 
 // Touchline logo mark component
 function TouchlineMark({ className = "w-10 h-8" }) {
@@ -34,6 +35,7 @@ function TouchlineMark({ className = "w-10 h-8" }) {
 
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { login, sendMagicLink } = useAuth()
   const [mode, setMode] = useState('password')
   const [email, setEmail] = useState('')
@@ -41,7 +43,34 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [magicLinkSent, setMagicLinkSent] = useState(false)
-  
+  const [ssoProviders, setSsoProviders] = useState([])
+  const [ssoError, setSsoError] = useState(null)
+
+  useEffect(() => {
+    // Fetch available SSO providers
+    api.get('/sso/providers').then(res => {
+      setSsoProviders(res.data.providers || [])
+    }).catch(() => {})
+
+    // Show SSO error if redirected back with ?error=
+    const err = searchParams.get('error')
+    const detail = searchParams.get('detail')
+    if (err) {
+      const messages = {
+        sso_denied: 'You declined the sign-in request.',
+        sso_failed: detail || 'No Touchline account found for that identity. Ask your admin to add you first.',
+        sso_init_failed: 'Could not connect to the identity provider. Try again.',
+        sso_missing_params: 'The SSO response was incomplete. Try again.',
+      }
+      setSsoError(messages[err] || detail || 'SSO sign-in failed.')
+    }
+  }, [searchParams])
+
+  function handleSsoLogin(provider) {
+    // Full-page redirect to backend initiation endpoint
+    window.location.href = `/api/sso/${provider}/initiate`
+  }
+
   async function handlePasswordLogin(e) {
     e.preventDefault()
     setLoading(true)
@@ -215,6 +244,55 @@ export default function Login() {
             </form>
           )}
           
+          {/* SSO error */}
+          {ssoError && (
+            <div className="mt-4 flex items-start gap-2 p-3 bg-alert-600/10 border border-alert-600/30 rounded-lg">
+              <AlertTriangle className="w-4 h-4 text-alert-400 shrink-0 mt-0.5" />
+              <p className="text-sm text-alert-300">{ssoError}</p>
+            </div>
+          )}
+
+          {/* SSO providers */}
+          {ssoProviders.length > 0 && (
+            <div className="mt-6">
+              <div className="relative mb-4">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-navy-800" />
+                </div>
+                <div className="relative flex justify-center text-xs">
+                  <span className="px-3 bg-navy-950 text-navy-500">or sign in with</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                {ssoProviders.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSsoLogin(p.id)}
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-navy-900 hover:bg-navy-800 border border-navy-700 hover:border-navy-600 rounded-xl text-sm font-medium text-white transition-colors"
+                  >
+                    {p.id === 'microsoft' && (
+                      <svg viewBox="0 0 21 21" className="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+                        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+                        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+                        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+                      </svg>
+                    )}
+                    {p.id === 'google' && (
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 shrink-0" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                      </svg>
+                    )}
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <p className="text-center text-navy-400 mt-6">
             Don't have an account?{' '}
             <Link to="/register" className="text-pitch-400 hover:text-pitch-300">Sign up</Link>

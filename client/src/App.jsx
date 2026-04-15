@@ -59,6 +59,7 @@ const FeaturePage = lazy(() => import('./pages/features/FeaturePage'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
 const Onboarding = lazy(() => import('./pages/Onboarding'))
 const EnterpriseBilling = lazy(() => import('./pages/EnterpriseBilling'))
+const SSOCallback = lazy(() => import('./pages/SSOCallback'))
 
 // School pages
 const SchoolLayout = lazy(() => import('./pages/school/SchoolLayout'))
@@ -108,6 +109,7 @@ const VoiceObservationReview = lazy(() => import('./pages/teacher/VoiceObservati
 const VoiceSafeguardingReview = lazy(() => import('./pages/teacher/VoiceSafeguardingReview'))
 const HoDVoiceSettings = lazy(() => import('./pages/teacher/HoDVoiceSettings'))
 const GDPRDashboard = lazy(() => import('./pages/teacher/GDPRDashboard'))
+const HoDSSOSettings = lazy(() => import('./pages/teacher/HoDSSOSettings'))
 
 // Pupil Portal pages
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -200,6 +202,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/magic/:token" element={<MagicLinkVerify />} />
+        <Route path="/sso-callback" element={<SSOCallback />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
@@ -313,6 +316,7 @@ export default function App() {
           <Route path="hod/voice-safeguarding" element={<VoiceSafeguardingReview />} />
           <Route path="hod/voice-settings" element={<HoDVoiceSettings />} />
           <Route path="hod/gdpr" element={<GDPRDashboard />} />
+          <Route path="hod/sso-settings" element={<HoDSSOSettings />} />
         </Route>
 
         {/* Pupil Portal */}

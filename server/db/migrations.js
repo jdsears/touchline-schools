@@ -3574,6 +3574,59 @@ export async function runMigrations() {
 
     console.log('Phase 13: RBAC schools roles complete')
 
+    // =========================================================================
+    // PHASE 14: SSO – Microsoft 365 & Google Workspace for Education
+    // =========================================================================
+
+    // --- 14a: SSO identity columns on users table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_provider TEXT
+        CHECK (sso_provider IN ('microsoft', 'google', 'saml'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_sub TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_email TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // Unique constraint: one SSO identity per provider per user
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_sso_identity
+      ON users(sso_provider, sso_sub)
+      WHERE sso_provider IS NOT NULL AND sso_sub IS NOT NULL`)
+
+    // --- 14b: SSO OAuth state table (PKCE + state tracking, short-lived) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sso_state (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      state TEXT NOT NULL UNIQUE,
+      provider TEXT NOT NULL CHECK (provider IN ('microsoft', 'google')),
+      school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+      code_verifier TEXT NOT NULL,
+      redirect_to TEXT DEFAULT '/teacher',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '10 minutes')
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_state_state ON sso_state(state)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_state_expires ON sso_state(expires_at)`)
+
+    // --- 14c: SSO domain allowlist (school-level: which email domains map to this school's SSO) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sso_domain_allowlist (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      domain TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(school_id, domain)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_domain_school ON sso_domain_allowlist(school_id)`)
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_sso_domain_domain ON sso_domain_allowlist(domain)`)
+
+    console.log('Phase 14: SSO migration complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)

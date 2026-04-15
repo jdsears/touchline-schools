@@ -30,6 +30,7 @@ import {
   BarChart3,
   UserCog,
   Mic,
+  Link2,
 } from 'lucide-react'
 
 const hodNav = [
@@ -42,6 +43,7 @@ const hodNav = [
   { name: 'Voice Safeguarding', href: '/hod/voice-safeguarding', icon: Shield, voiceOnly: true },
   { name: 'Voice Settings', href: '/hod/voice-settings', icon: Mic, voiceOnly: true },
   { name: 'Data & Privacy', href: '/hod/gdpr', icon: ShieldCheck },
+  { name: 'SSO Settings', href: '/hod/sso-settings', icon: Link2 },
 ]
 
 const curriculumNav = [
