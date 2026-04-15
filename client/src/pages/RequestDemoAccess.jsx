@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import SEO from '../components/common/SEO'
 import { MarketingFooter } from './Landing'
 
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/moonboots-sports/demo'
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/js-moonbootsconsultancy/moonboots-sports-demo'
 
 const ROLES = [
   'Head of PE',
@@ -135,7 +135,9 @@ export default function RequestDemoAccess() {
       })
       const data = await res.json()
       if (!res.ok) {
-        if (data.errors) {
+        if (Array.isArray(data.errors)) {
+          setServerError(data.errors.join('. '))
+        } else if (data.errors) {
           setErrors(data.errors)
         } else {
           setServerError(data.error || 'Something went wrong. Please try again.')

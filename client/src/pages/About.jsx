@@ -2,7 +2,7 @@ import SEO from '../components/common/SEO'
 import { Link } from 'react-router-dom'
 import { MarketingFooter } from './Landing'
 
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/moonboots-sports/demo'
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/js-moonbootsconsultancy/moonboots-sports-demo'
 
 function Header() {
   return (
@@ -110,7 +110,7 @@ export default function About() {
               institutions across the UK.
             </p>
             <p style={{ marginTop: 16 }}>
-              John Sears, the founder, has spent the past two years building agentic AI
+              John Sears, the founder, has spent the past four years building agentic AI
               systems and seven years as a volunteer grassroots football coach at
               Morley YFC. He is enrolled on the UEFA C Licence course beginning May 2026.
               His professional background spans professional motorsport management,

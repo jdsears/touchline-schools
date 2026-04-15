@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import SEO from '../components/common/SEO'
 import { GraduationCap, Trophy, Users, Check } from 'lucide-react'
 
-const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/moonboots-sports/demo'
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/js-moonbootsconsultancy/moonboots-sports-demo'
 
 function GoldDivider() {
   return <div style={{ width: 60, height: 2, background: 'var(--mb-gold)', margin: '20px 0' }} />
