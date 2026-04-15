@@ -169,7 +169,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                 </div>
                 <div>
                   <p className="text-white font-medium text-sm">{tab === 'chat' ? 'App Guide' : 'Submit a Ticket'}</p>
-                  <p className="text-white/70 text-xs">{tab === 'chat' ? 'Learn how to use Touchline' : 'Get help from our team'}</p>
+                  <p className="text-white/70 text-xs">{tab === 'chat' ? 'Learn how to use MoonBoots Sports' : 'Get help from our team'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
@@ -212,7 +212,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                     <div className="text-center py-4">
                       <BookOpen className="w-10 h-10 text-blue-400 mx-auto mb-3" />
                       <p className="text-navy-300 text-sm mb-4">
-                        Hi! I can help you learn how to use Touchline. What would you like to know?
+                        Hi! I can help you learn how to use MoonBoots Sports. What would you like to know?
                       </p>
                       <div className="space-y-2">
                         {questions.map((q) => (

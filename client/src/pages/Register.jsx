@@ -157,17 +157,17 @@ By accessing or using MoonBoots Sports, you agree to be bound by these Terms. If
 
 1. About MoonBoots Sports
 
-MoonBoots Sportsis an AI-powered coaching platform designed for grassroots football. It provides session planning, pupil development insights, video analysis, and communication tools for coaches, schools, and parents.
+MoonBoots Sports is an AI-powered coaching platform designed for school PE and sport. It provides session planning, pupil development insights, video analysis, and communication tools for coaches, schools, and parents.
 
-MoonBoots Sportsis a coaching support tool. It does not replace qualified coaching, medical advice, or safeguarding procedures. All coaching decisions remain the responsibility of the coach and school.
+MoonBoots Sports is a coaching support tool. It does not replace qualified coaching, medical advice, or safeguarding procedures. All coaching decisions remain the responsibility of the coach and school.
 
 2. Account Types
 
 Individual Coach Accounts
-Individual coaches may create a personal account to access MoonBoots Sportsfeatures for their own coaching activities. Coaches are responsible for ensuring they hold appropriate coaching qualifications and DBS checks as required by their school and governing body.
+Individual coaches may create a personal account to access MoonBoots Sports features for their own coaching activities. Coaches are responsible for ensuring they hold appropriate coaching qualifications and DBS checks as required by their school and governing body.
 
 School Accounts
-Clubs may register for a school account, which enables multiple coaches and administrators to use MoonBoots Sportsunder a single organisation. Before a school account is activated:
+Clubs may register for a school account, which enables multiple coaches and administrators to use MoonBoots Sports under a single organisation. Before a school account is activated:
 - The school must designate a School Administrator with authority to accept these Terms
 - The school must review and accept our Privacy Policy and Safeguarding Policy
 - The school must confirm they hold a current safeguarding policy of their own
@@ -180,7 +180,7 @@ Where a school enables parent communication features, parents and guardians may 
 
 3. Acceptable Use
 
-You agree to use MoonBoots Sportsonly for lawful purposes related to grassroots football coaching and school management. You must not:
+You agree to use MoonBoots Sports only for lawful purposes related to school PE and sport coaching and school management. You must not:
 - Use the platform in any way that could harm, endanger, or negatively impact any child or young person
 - Upload, share, or transmit any content that is abusive, offensive, discriminatory, or inappropriate
 - Share login credentials or allow unauthorised individuals to access the platform
@@ -199,11 +199,11 @@ Data Processing: We process personal data in accordance with our Privacy Policy 
 
 5. Subscriptions and Payment
 
-MoonBoots Sportsoperates on a subscription basis. Subscriptions renew automatically unless cancelled before the renewal date. You may cancel at any time through your account settings. Refunds are handled on a case-by-case basis within 14 days of initial subscription.
+MoonBoots Sports operates on a subscription basis. Subscriptions renew automatically unless cancelled before the renewal date. You may cancel at any time through your account settings. Refunds are handled on a case-by-case basis within 14 days of initial subscription.
 
 6. School Responsibilities
 
-Clubs using MoonBoots Sportsare responsible for:
+Clubs using MoonBoots Sports are responsible for:
 - Ensuring all coaches and staff are appropriately vetted (DBS checked) and qualified
 - Maintaining their own safeguarding policy in accordance with FA and local authority guidelines
 - Obtaining appropriate consent from parents/guardians before any child's data is entered
@@ -225,7 +225,7 @@ Safeguarding children and young people is central to everything we do. Our full 
 
 9. Limitation of Liability
 
-MoonBoots Sportsis provided "as is" without warranties of any kind. We are not liable for any decisions made based on AI-generated content, coaching outcomes, injuries, or incidents arising from use of the platform. Our total liability shall not exceed the fees paid by you in the 12 months preceding the claim. Nothing in these Terms excludes liability for death or personal injury caused by negligence, fraud, or any liability that cannot be excluded by law.
+MoonBoots Sports is provided "as is" without warranties of any kind. We are not liable for any decisions made based on AI-generated content, coaching outcomes, injuries, or incidents arising from use of the platform. Our total liability shall not exceed the fees paid by you in the 12 months preceding the claim. Nothing in these Terms excludes liability for death or personal injury caused by negligence, fraud, or any liability that cannot be excluded by law.
 
 10. Termination
 
@@ -306,7 +306,7 @@ Last updated: 17 February 2026
 
 The safety and wellbeing of children and young people is the highest priority at MoonBoots Sports.
 
-MoonBoots Sportsis a coaching support platform. It does not replace a school's own safeguarding procedures, the role of the School Welfare Officer, or the responsibilities of coaches and parents.
+MoonBoots Sports is a coaching support platform. It does not replace a school's own safeguarding procedures, the role of the School Welfare Officer, or the responsibilities of coaches and parents.
 
 1. Our Principles
 
@@ -337,7 +337,7 @@ You can also contact:
 - NSPCC Helpline: 0808 800 5000
 - Childline: 0800 1111
 
-MoonBoots Sportsconcerns: safeguarding@moonbootssports.com
+MoonBoots Sports concerns: safeguarding@moonbootssports.com
 
 5. Contact
 
@@ -350,7 +350,7 @@ COOKIE POLICY
 Last updated: 17 February 2026
 =====================================
 
-Cookies are small text files stored on your device when you visit a website. We use the minimum cookies necessary to make MoonBoots Sportswork properly.
+Cookies are small text files stored on your device when you visit a website. We use the minimum cookies necessary to make MoonBoots Sports work properly.
 
 Essential Cookies (always active):
 - Session token: Keeps you logged in
@@ -366,7 +366,7 @@ Cookies We Don't Use:
 - No social media cookies
 - No cookies that track you across other websites
 
-Managing Cookies: You can control cookies through your browser settings. Blocking essential cookies will prevent MoonBoots Sportsfrom working properly.
+Managing Cookies: You can control cookies through your browser settings. Blocking essential cookies will prevent MoonBoots Sports from working properly.
 
 Contact: hello@moonbootssports.com
 
@@ -376,9 +376,9 @@ ARTIFICIAL INTELLIGENCE POLICY
 Last updated: 17 February 2026
 =====================================
 
-MoonBoots Sportsuses artificial intelligence to support grassroots football coaches with session planning, pupil development insights, and video analysis.
+MoonBoots Sports uses artificial intelligence to support school PE and sport coaches with session planning, pupil development insights, and video analysis.
 
-We believe AI should enhance coaching, not replace it. Every AI feature in MoonBoots Sportsis designed to support the coach's judgement, never to override it.
+We believe AI should enhance coaching, not replace it. Every AI feature in MoonBoots Sports is designed to support the coach's judgement, never to override it.
 
 1. How AI is Used
 
@@ -1083,7 +1083,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                     {showDpa && (
                       <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-60 overflow-y-auto border border-navy-700">
                         <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) - v1.0</h3>
-                        <p>This Data Processing Agreement ("DPA") forms part of the agreement between MoonBoots Sports ("Processor") and the School ("Controller") for the use of the MoonBoots Sportsplatform.</p>
+                        <p>This Data Processing Agreement ("DPA") forms part of the agreement between MoonBoots Sports ("Processor") and the School ("Controller") for the use of the MoonBoots Sports platform.</p>
                         <h4 className="font-medium text-navy-200">1. Roles & Responsibilities</h4>
                         <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. MoonBoots Sports acts as a<strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions.</p>
                         <h4 className="font-medium text-navy-200">2. Data Processed</h4>
@@ -1191,7 +1191,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   <rect x="40" y="30" width="240" height="140" rx="12" fill="url(#cardGrad)" />
                   <rect x="40" y="30" width="240" height="140" rx="12" fill="none" stroke="#2ED573" strokeWidth="1" opacity="0.3" />
 
-                  {/* MoonBoots Sportslogo mark */}
+                  {/* MoonBoots Sports logo mark */}
                   <g transform="translate(60, 55)">
                     <path d="M8 20 C16 8, 32 8, 40 20" stroke="#F5A623" strokeWidth="2" strokeLinecap="round" fill="none" />
                     <line x1="4" y1="20" x2="44" y2="20" stroke="#2ED573" strokeWidth="2" strokeLinecap="round" />

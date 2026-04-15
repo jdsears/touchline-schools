@@ -5,7 +5,7 @@ import AIMarkdown from './AIMarkdown'
 import { publicChatService } from '../services/api'
 
 const suggestedQuestions = [
-  "What is Touchline?",
+  "What is MoonBoots Sports?",
   "How does the AI help coaches?",
   "Is it really free?",
   "How is my child's data protected?",
@@ -111,7 +111,7 @@ export default function LandingChatWidget() {
                   <Sparkles className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <p className="text-white font-medium text-sm">Ask about Touchline</p>
+                  <p className="text-white font-medium text-sm">Ask about MoonBoots Sports</p>
                   <p className="text-white/70 text-xs">We're here to help</p>
                 </div>
               </div>
@@ -137,7 +137,7 @@ export default function LandingChatWidget() {
                 <div className="text-center py-4">
                   <Sparkles className="w-10 h-10 text-pitch-400 mx-auto mb-3" />
                   <p className="text-navy-300 text-sm mb-4">
-                    Hi! I can answer questions about Touchline. What would you like to know?
+                    Hi! I can answer questions about MoonBoots Sports. What would you like to know?
                   </p>
                   <div className="space-y-2">
                     {suggestedQuestions.map((q) => (

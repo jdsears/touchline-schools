@@ -236,7 +236,7 @@ export default function WatchStream() {
 
         {/* Footer info */}
         <p className="text-center text-navy-500 text-xs mt-6">
-          Powered by Touchline
+          Powered by MoonBoots Sports
         </p>
       </main>
     </div>
