@@ -50,6 +50,13 @@ export async function runMigrations() {
       )
     `)
 
+    // Ensure pupil_id column exists (handles existing DBs where column was named player_id)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'player_id') THEN
+        ALTER TABLE users RENAME COLUMN player_id TO pupil_id;
+      END IF;
+    END $$`)
+
     // Create players table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS players (
