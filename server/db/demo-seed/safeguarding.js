@@ -2,7 +2,7 @@
  * Seed safeguarding incidents for Ashworth Park Academy demo tenant.
  *
  * All incidents are deliberately benign / workflow-demonstration entries.
- * No real pupils are referenced — all names are from the fictional seed set.
+ * No real pupils are referenced - all names are from the fictional seed set.
  * The purpose is to show prospects how the safeguarding module works, not
  * to model real child protection scenarios.
  */

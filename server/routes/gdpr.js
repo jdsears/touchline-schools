@@ -50,7 +50,7 @@ async function requireSchoolAdmin(req, res, next) {
 }
 
 // ---------------------------------------------------------------------------
-// GET /overview – GDPR dashboard stats
+// GET /overview - GDPR dashboard stats
 // ---------------------------------------------------------------------------
 router.get('/overview', requireSchoolAdmin, async (req, res) => {
   try {
@@ -115,7 +115,7 @@ router.get('/overview', requireSchoolAdmin, async (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// POST /export – Request data export for a pupil
+// POST /export - Request data export for a pupil
 // ---------------------------------------------------------------------------
 router.post('/export', requireSchoolAdmin, async (req, res) => {
   try {
@@ -187,7 +187,7 @@ router.post('/export', requireSchoolAdmin, async (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// GET /export/:token/download – Download a data export
+// GET /export/:token/download - Download a data export
 // ---------------------------------------------------------------------------
 router.get('/export/:token/download', requireSchoolAdmin, async (req, res) => {
   try {
@@ -232,7 +232,7 @@ router.get('/export/:token/download', requireSchoolAdmin, async (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// GET /requests – List all export/deletion requests
+// GET /requests - List all export/deletion requests
 // ---------------------------------------------------------------------------
 router.get('/requests', requireSchoolAdmin, async (req, res) => {
   try {
@@ -257,7 +257,7 @@ router.get('/requests', requireSchoolAdmin, async (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// POST /deletion – Request data deletion for a pupil (Right to Erasure)
+// POST /deletion - Request data deletion for a pupil (Right to Erasure)
 // ---------------------------------------------------------------------------
 router.post('/deletion', requireSchoolAdmin, async (req, res) => {
   try {
@@ -321,7 +321,7 @@ router.post('/deletion', requireSchoolAdmin, async (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// GET /deletion-log – View the permanent deletion audit trail
+// GET /deletion-log - View the permanent deletion audit trail
 // ---------------------------------------------------------------------------
 router.get('/deletion-log', requireSchoolAdmin, async (req, res) => {
   try {
@@ -347,7 +347,7 @@ router.get('/deletion-log', requireSchoolAdmin, async (req, res) => {
 // CONSENT MANAGEMENT
 // ---------------------------------------------------------------------------
 
-// GET /consent/:pupilId – Get all consent records for a pupil
+// GET /consent/:pupilId - Get all consent records for a pupil
 router.get('/consent/:pupilId', requireSchoolAdmin, async (req, res) => {
   try {
     const result = await pool.query(
@@ -364,7 +364,7 @@ router.get('/consent/:pupilId', requireSchoolAdmin, async (req, res) => {
   }
 })
 
-// POST /consent – Record a consent grant or withdrawal
+// POST /consent - Record a consent grant or withdrawal
 router.post('/consent', requireSchoolAdmin, async (req, res) => {
   try {
     const { pupil_id, consent_type, granted, granted_by, notes } = req.body
@@ -433,7 +433,7 @@ router.post('/consent', requireSchoolAdmin, async (req, res) => {
   }
 })
 
-// POST /consent/batch – Record consent for multiple types at once
+// POST /consent/batch - Record consent for multiple types at once
 router.post('/consent/batch', requireSchoolAdmin, async (req, res) => {
   try {
     const { pupil_id, consents, granted_by } = req.body
@@ -483,7 +483,7 @@ router.post('/consent/batch', requireSchoolAdmin, async (req, res) => {
 })
 
 // ---------------------------------------------------------------------------
-// GET /pupils – List pupils with their consent status for GDPR overview
+// GET /pupils - List pupils with their consent status for GDPR overview
 // ---------------------------------------------------------------------------
 router.get('/pupils', requireSchoolAdmin, async (req, res) => {
   try {

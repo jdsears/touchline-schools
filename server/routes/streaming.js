@@ -213,7 +213,7 @@ router.post('/:teamId/regenerate-share-code', authenticateToken, async (req, res
 
 /**
  * GET /api/streaming/watch/:shareCode/meta
- * Public metadata for OG/link previews — no PIN check, no playback info
+ * Public metadata for OG/link previews - no PIN check, no playback info
  */
 router.get('/watch/:shareCode/meta', async (req, res, next) => {
   try {

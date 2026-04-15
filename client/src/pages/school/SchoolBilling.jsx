@@ -72,7 +72,7 @@ export default function ClubBilling() {
       loadSubscription()
     }
     if (searchParams.get('canceled') === 'true') {
-      toast('Checkout canceled — no charges were made.', { icon: 'ℹ️' })
+      toast('Checkout canceled - no charges were made.', { icon: 'ℹ️' })
     }
   }, [searchParams])
 
@@ -97,7 +97,7 @@ export default function ClubBilling() {
       const currentUrl = window.location.href.split('?')[0]
       const result = await createCheckoutSession(
         planId,
-        null, // teamId — backend will use the user's team
+        null, // teamId - backend will use the user's team
         `${currentUrl}?success=true`,
         `${currentUrl}?canceled=true`,
       )

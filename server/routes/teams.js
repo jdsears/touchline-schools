@@ -1255,7 +1255,7 @@ router.put('/:id/training/:sessionId/attendance', authenticateToken, requireTeam
     const results = []
     for (const record of attendance) {
       const { pupil_id, attended, notes, effort_rating } = record
-      // effort_rating is optional (1-5) — only set if provided
+      // effort_rating is optional (1-5) - only set if provided
       const effortVal = effort_rating && effort_rating >= 1 && effort_rating <= 5 ? effort_rating : null
       const result = await pool.query(
         `INSERT INTO training_attendance (session_id, pupil_id, attended, notes, recorded_by, effort_rating)
@@ -1392,7 +1392,7 @@ router.post('/:id/training/:sessionId/availability/request', authenticateToken, 
     })
     const sessionTime = session.time ? ` at ${session.time.slice(0, 5)}` : ''
 
-    // Get pupils — optionally filter to only those who haven't responded
+    // Get pupils - optionally filter to only those who haven't responded
     const playersResult = await pool.query(
       `SELECT p.*, u.id as user_id, u.email as user_email
        FROM pupils p

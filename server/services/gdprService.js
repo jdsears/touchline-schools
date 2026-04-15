@@ -2,7 +2,7 @@
  * GDPR Data Export & Deletion Service
  *
  * Handles:
- * 1. Full data export for a pupil (SAR – Subject Access Request)
+ * 1. Full data export for a pupil (SAR - Subject Access Request)
  * 2. Complete data deletion (Right to Erasure / Right to be Forgotten)
  * 3. Consent record management
  *
@@ -13,7 +13,7 @@ import pool from '../config/database.js'
 import { deleteFile } from './storageService.js'
 
 // ---------------------------------------------------------------------------
-// DATA EXPORT – collects every piece of data held on a pupil
+// DATA EXPORT - collects every piece of data held on a pupil
 // ---------------------------------------------------------------------------
 
 export async function collectPupilData(pupilId, schoolId) {
@@ -279,7 +279,7 @@ export async function collectPupilData(pupilId, schoolId) {
 }
 
 // ---------------------------------------------------------------------------
-// DATA DELETION – removes all pupil data across the database and file storage
+// DATA DELETION - removes all pupil data across the database and file storage
 // ---------------------------------------------------------------------------
 
 export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason) {
@@ -400,7 +400,7 @@ export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason
     const a18 = await client.query(`DELETE FROM match_media WHERE pupil_id = $1`, [pupilId])
     if (a18.rowCount > 0) tablesPurged.push(`match_media (${a18.rowCount})`)
 
-    // Guardian links (not the guardian record itself — may be shared with siblings)
+    // Guardian links (not the guardian record itself - may be shared with siblings)
     const a19 = await client.query(`DELETE FROM player_guardians WHERE pupil_id = $1`, [pupilId])
     if (a19.rowCount > 0) tablesPurged.push(`player_guardians (${a19.rowCount})`)
 
@@ -416,14 +416,14 @@ export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason
     const a22 = await client.query(`DELETE FROM team_memberships WHERE pupil_id = $1`, [pupilId])
     if (a22.rowCount > 0) tablesPurged.push(`team_memberships (${a22.rowCount})`)
 
-    // Unlink user account (don't delete the user row — they may have staff roles too)
+    // Unlink user account (don't delete the user row - they may have staff roles too)
     await client.query(`UPDATE users SET pupil_id = NULL WHERE pupil_id = $1`, [pupilId])
 
     // Finally, delete the pupil record itself
     await client.query(`DELETE FROM pupils WHERE id = $1`, [pupilId])
     tablesPurged.push('pupils (1)')
 
-    // Write permanent deletion log (this is NOT deleted — it's the audit record)
+    // Write permanent deletion log (this is NOT deleted - it's the audit record)
     await client.query(
       `INSERT INTO data_deletion_log (school_id, pupil_reference, deleted_by, reason, tables_purged, files_deleted, summary)
        VALUES ($1, $2, $3, $4, $5, $6, $7)`,
@@ -459,7 +459,7 @@ export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason
         filesDeleted.push(fileUrl)
       } catch (err) {
         console.error(`[GDPR] Failed to delete file ${fileUrl}:`, err.message)
-        // Log but don't fail — the DB data is already gone
+        // Log but don't fail - the DB data is already gone
       }
     }
 

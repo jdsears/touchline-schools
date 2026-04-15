@@ -138,7 +138,7 @@ export default function ClubSubscriptions() {
               >
                 <option value="">Select plan...</option>
                 {plans.map(p => (
-                  <option key={p.id} value={p.id}>{p.name} — £{(p.amount / 100).toFixed(2)}/{p.interval}</option>
+                  <option key={p.id} value={p.id}>{p.name} - £{(p.amount / 100).toFixed(2)}/{p.interval}</option>
                 ))}
               </select>
             </div>

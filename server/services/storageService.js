@@ -2,7 +2,7 @@
  * Cloud Storage Service
  *
  * S3-compatible storage that works with:
- *   - Cloudflare R2 (recommended — no egress fees)
+ *   - Cloudflare R2 (recommended - no egress fees)
  *   - AWS S3
  *   - Any S3-compatible provider (MinIO, DigitalOcean Spaces, etc.)
  *
@@ -10,12 +10,12 @@
  * so development works without any cloud setup.
  *
  * Required env vars for cloud storage:
- *   S3_BUCKET          – bucket name
- *   S3_ACCESS_KEY_ID   – access key
- *   S3_SECRET_ACCESS_KEY – secret key
- *   S3_ENDPOINT        – provider endpoint (required for R2/non-AWS)
- *   S3_REGION          – region (default: auto)
- *   S3_PUBLIC_URL      – public base URL for serving files
+ *   S3_BUCKET          - bucket name
+ *   S3_ACCESS_KEY_ID   - access key
+ *   S3_SECRET_ACCESS_KEY - secret key
+ *   S3_ENDPOINT        - provider endpoint (required for R2/non-AWS)
+ *   S3_REGION          - region (default: auto)
+ *   S3_PUBLIC_URL      - public base URL for serving files
  *                         e.g. https://pub-xxx.r2.dev  or  https://cdn.yoursite.com
  */
 
@@ -86,15 +86,15 @@ function getContentType(filePath) {
 /**
  * Upload a file to cloud storage (or keep it on disk if cloud is disabled).
  *
- * @param {string} localFilePath  – absolute path to the file on disk (from multer)
- * @param {string} key            – the storage key / path, e.g. "match-media/media-abc-123.jpg"
+ * @param {string} localFilePath  - absolute path to the file on disk (from multer)
+ * @param {string} key            - the storage key / path, e.g. "match-media/media-abc-123.jpg"
  * @param {object} [opts]
- * @param {string} [opts.contentType] – MIME type override
+ * @param {string} [opts.contentType] - MIME type override
  * @returns {Promise<string>} the public URL (cloud) or local path (/uploads/...)
  */
 export async function uploadFile(localFilePath, key, opts = {}) {
   if (!isCloudEnabled) {
-    // Local mode: file already written by multer — just return the local URL
+    // Local mode: file already written by multer - just return the local URL
     return `/uploads/${key}`
   }
 
@@ -126,7 +126,7 @@ export async function uploadFile(localFilePath, key, opts = {}) {
 /**
  * Delete a file from cloud storage (or disk).
  *
- * @param {string} filePathOrUrl – the stored path/URL (as saved in the DB)
+ * @param {string} filePathOrUrl - the stored path/URL (as saved in the DB)
  */
 export async function deleteFile(filePathOrUrl) {
   if (!filePathOrUrl) return
@@ -147,7 +147,7 @@ export async function deleteFile(filePathOrUrl) {
         }
       } catch { /* not a URL, use as-is */ }
     } else if (filePathOrUrl.startsWith('/uploads/')) {
-      // Legacy local path stored in DB — strip the /uploads/ prefix to get the key
+      // Legacy local path stored in DB - strip the /uploads/ prefix to get the key
       key = filePathOrUrl.replace(/^\/uploads\//, '')
     }
 

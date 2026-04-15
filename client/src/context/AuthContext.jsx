@@ -32,7 +32,7 @@ export function AuthProvider({ children }) {
         return
       }
 
-      // Safety timeout — if /auth/me doesn't respond within 10s, stop loading
+      // Safety timeout - if /auth/me doesn't respond within 10s, stop loading
       const timeout = new Promise((_, reject) =>
         setTimeout(() => reject(new Error('Auth check timed out')), 10000)
       )
@@ -149,7 +149,7 @@ export function AuthProvider({ children }) {
         })
         await notificationService.registerPushSubscription(subscription)
       } catch (err) {
-        // User denied permission or something else – don't block the app
+        // User denied permission or something else - don't block the app
         console.log('Push subscription failed:', err.message)
       }
     }

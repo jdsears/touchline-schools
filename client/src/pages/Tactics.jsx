@@ -662,7 +662,7 @@ function validatePositions(savedPositions, formationName, teamFormat = 11) {
   const isStandardFormation = !!positionsMap[formationName]
 
   // For custom formations (not in standard positions map), use saved positions directly
-  // Do NOT fall back to 4-3-3 template — custom formations define their own structure
+  // Do NOT fall back to 4-3-3 template - custom formations define their own structure
   if (!isStandardFormation) {
     if (savedPositions && Array.isArray(savedPositions) && savedPositions.length > 0) {
       const valid = savedPositions.filter(pos => isValidPosition(pos))
@@ -804,13 +804,13 @@ export default function Tactics() {
     const offsets = getPhaseOffsets(formation, positions)
     const phaseOffset = offsets[tacticalPhase] || {}
 
-    // Smart ball-reactive positioning — pupils shift realistically based on ball position
+    // Smart ball-reactive positioning - pupils shift realistically based on ball position
     // Uses role-specific intelligence: near-side FB overlaps, far-side tucks in, etc.
     const getBallInfluence = (posId, posLabel, baseX, baseY) => {
       // Ball position normalized: -1 (far left) to 1 (far right), -1 (attacking end) to 1 (defensive end)
       const ballLateral = (ballPosition.x - 50) / 50
       const ballVertical = (ballPosition.y - 50) / 50
-      const ballSideStrength = Math.abs(ballLateral) // 0–1, how far ball is to one side
+      const ballSideStrength = Math.abs(ballLateral) // 0-1, how far ball is to one side
 
       // Is this position on the same side as the ball?
       const posLateral = baseX - 50
@@ -832,7 +832,7 @@ export default function Tactics() {
 
       if (tacticalPhase === PHASES.IN_POSSESSION) {
         // IN POSSESSION: subtle overloads on ball side
-        // Phase offsets already define the attacking shape — ball influence adds reactive shift
+        // Phase offsets already define the attacking shape - ball influence adds reactive shift
         if (isGK) {
           xInfluence = ballLateral * 2
           yInfluence = ballVertical * 3
@@ -855,7 +855,7 @@ export default function Tactics() {
           xInfluence = ballLateral * 7
           yInfluence = ballVertical * 4
         } else if (isCM) {
-          // CMs form triangles around ball — near-side shifts more
+          // CMs form triangles around ball - near-side shifts more
           xInfluence = sameSide ? ballLateral * 9 : ballLateral * 5
           yInfluence = ballVertical * 5 - 2 * ballSideStrength
         } else if (isWM) {
@@ -1189,7 +1189,7 @@ export default function Tactics() {
 
     setPositions(newPositions)
     setSelectedPosition(null)
-    // Remove from bench if they were a sub — they're now starting
+    // Remove from bench if they were a sub - they're now starting
     setBenchPlayerIds(prev => prev.filter(id => id !== pupilId))
   }
 
@@ -1381,7 +1381,7 @@ export default function Tactics() {
   const handlePointerDown = useCallback((e, targetId, origPctX, origPctY) => {
     // Only primary button
     if (e.button !== 0) return
-    // Don't preventDefault or setPointerCapture here — doing so suppresses
+    // Don't preventDefault or setPointerCapture here - doing so suppresses
     // the subsequent click event on the inner button, breaking swap/assign.
     // We capture the pointer later in handlePointerMove once drag threshold is met.
     const el = e.currentTarget

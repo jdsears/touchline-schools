@@ -1,30 +1,21 @@
-# MoonBoots Sports - Robots.txt
+# MoonBoots Sports
 # https://app.moonbootssports.com
 
 User-agent: *
 Allow: /
-Allow: /login
-Allow: /register
-Allow: /blog
-Allow: /terms
 Allow: /about
-Allow: /watch/
+Allow: /request-demo
+Allow: /terms
+Allow: /login
 
 # Disallow authenticated app routes
 Disallow: /admin
 Disallow: /dashboard
-Disallow: /chat
-Disallow: /tactics
-Disallow: /training
-Disallow: /players
-Disallow: /matches
-Disallow: /fixtures
-Disallow: /league
-Disallow: /lounge
+Disallow: /teacher
+Disallow: /pupil
+Disallow: /school
+Disallow: /onboarding
 Disallow: /settings
-Disallow: /player-lounge
-Disallow: /invite
-Disallow: /club/
 
 # Disallow API routes
 Disallow: /api/

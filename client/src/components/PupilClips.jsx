@@ -88,7 +88,7 @@ export default function PupilClips({ pupilId }) {
                 <Play className="w-12 h-12 text-white" />
               </div>
               <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-xs text-white font-mono">
-                {formatTime(clip.start_time)} — {formatTime(clip.end_time)}
+                {formatTime(clip.start_time)} - {formatTime(clip.end_time)}
               </div>
             </div>
             <div className="p-3">

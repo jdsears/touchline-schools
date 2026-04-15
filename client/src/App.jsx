@@ -50,9 +50,8 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const MagicLinkVerify = lazy(() => import('./pages/MagicLinkVerify'))
 const Terms = lazy(() => import('./pages/Terms'))
 const Admin = lazy(() => import('./pages/Admin'))
-const Blog = lazy(() => import('./pages/Blog'))
-const BlogPost = lazy(() => import('./pages/BlogPost'))
 const About = lazy(() => import('./pages/About'))
+const RequestDemoAccess = lazy(() => import('./pages/RequestDemoAccess'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
 const Onboarding = lazy(() => import('./pages/Onboarding'))
 const EnterpriseBilling = lazy(() => import('./pages/EnterpriseBilling'))
@@ -201,9 +200,8 @@ export default function App() {
         <Route path="/magic/:token" element={<MagicLinkVerify />} />
         <Route path="/sso-callback" element={<SSOCallback />} />
         <Route path="/terms" element={<Terms />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
         <Route path="/about" element={<About />} />
+        <Route path="/request-demo" element={<RequestDemoAccess />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
 
         {/* Enterprise billing (MoonBoots staff only) */}

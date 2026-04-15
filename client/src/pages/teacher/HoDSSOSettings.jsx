@@ -41,7 +41,7 @@ const PROVIDER_INFO = {
       'Add redirect URI: https://app.moonbootssports.com/api/sso/google/callback',
       'Paste your Client ID and Secret below',
     ],
-    hdHelp: 'Your Google Workspace domain (e.g. langleyprep.co.uk) — restricts sign-in to your school\'s accounts',
+    hdHelp: 'Your Google Workspace domain (e.g. langleyprep.co.uk) - restricts sign-in to your school\'s accounts',
   },
 }
 
@@ -154,7 +154,7 @@ export default function HoDSSOSettings() {
           <Shield className="w-5 h-5 text-pitch-400 shrink-0 mt-0.5" />
           <div className="text-sm text-navy-300 space-y-1">
             <p className="font-medium text-white">How SSO works</p>
-            <p>Once configured, staff can click "Sign in with Microsoft" or "Sign in with Google" on the login page. Their school email is matched to their MoonBoots Sports account automatically — no separate password needed.</p>
+            <p>Once configured, staff can click "Sign in with Microsoft" or "Sign in with Google" on the login page. Their school email is matched to their MoonBoots Sports account automatically - no separate password needed.</p>
             <p>If <strong className="text-white">domain auto-provisioning</strong> is enabled (via the allowlist below), new staff with that email domain are automatically added as Teachers when they first sign in via SSO.</p>
           </div>
         </div>

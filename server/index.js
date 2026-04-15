@@ -30,7 +30,7 @@ import announcementRoutes from './routes/announcements.js'
 import suggestionRoutes from './routes/suggestions.js'
 import tusUploadRoutes from './routes/tusUpload.js'
 import adminRoutes from './routes/admin.js'
-import blogRoutes from './routes/blog.js'
+
 import supportRoutes from './routes/support.js'
 import streamingRoutes from './routes/streaming.js'
 import schoolRoutes from './routes/schools.js'
@@ -54,6 +54,7 @@ import voiceObservationRoutes from './routes/voiceObservations.js'
 import voiceSafeguardingRoutes from './routes/voiceSafeguarding.js'
 import gdprRoutes from './routes/gdpr.js'
 import ssoRoutes from './routes/sso.js'
+import demoRequestRoutes from './routes/demoRequests.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
@@ -127,7 +128,7 @@ app.use((req, res, next) => {
 })
 app.use(express.urlencoded({ extended: true }))
 
-// Serve uploaded files — public assets (logos, team assets) are open,
+// Serve uploaded files - public assets (logos, team assets) are open,
 // but club documents (registrations, compliance) require authentication
 app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads/logos')))
 app.use('/uploads/videos', express.static(path.join(__dirname, 'uploads/videos')))
@@ -199,7 +200,7 @@ app.use('/api/announcements', announcementRoutes)
 app.use('/api/suggestions', suggestionRoutes)
 app.use('/api/uploads/video', tusUploadRoutes)
 app.use('/api/admin', adminRoutes)
-app.use('/api/blog', blogRoutes)
+// Blog routes removed in v1.5
 app.use('/api/support', supportRoutes)
 app.use('/api/streaming', streamingRoutes)
 app.use('/api/schools', schoolRoutes)
@@ -223,6 +224,7 @@ app.use('/api/voice-observations', voiceObservationRoutes)
 app.use('/api/voice-safeguarding', voiceSafeguardingRoutes)
 app.use('/api/gdpr', gdprRoutes)
 app.use('/api/sso', ssoRoutes)
+app.use('/api/demo-requests', demoRequestRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -291,74 +293,40 @@ app.get('/api/health', async (req, res) => {
   }
 })
 
-// Sitemap - dynamic, pulls blog posts from DB
+// Sitemap
 app.get('/sitemap.xml', async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0]
+    const SITE_URL = process.env.FRONTEND_URL || 'https://app.moonbootssports.com'
 
-    // Static pages with priorities
-    const staticPages = [
+    const pages = [
       { loc: '/', changefreq: 'weekly', priority: '1.0' },
-      { loc: '/login', changefreq: 'monthly', priority: '0.8' },
-      { loc: '/blog', changefreq: 'weekly', priority: '0.8' },
+      { loc: '/about', changefreq: 'monthly', priority: '0.8' },
+      { loc: '/request-demo', changefreq: 'monthly', priority: '0.8' },
       { loc: '/terms', changefreq: 'monthly', priority: '0.5' },
+      { loc: '/login', changefreq: 'monthly', priority: '0.5' },
     ]
 
-  // All feature pages
-  const featurePages = [
-    'session-planner', 'player-development', 'video-analysis',
-    'tactical-advisor', 'tactics-board', 'match-prep',
-    'live-streaming', 'safeguarding', 'ai-intelligence',
-  ].map(slug => ({
-    loc: `/features/${slug}`, changefreq: 'monthly', priority: '0.8',
-  }))
-
-  // Fetch published blog posts from database
-  let blogPages = []
-  try {
-    const result = await pool.query(
-      `SELECT slug, updated_at, published_at FROM blog_posts
-       WHERE status = 'published' ORDER BY published_at DESC`
-    )
-    blogPages = result.rows.map(post => ({
-      loc: `/blog/${post.slug}`,
-      lastmod: (post.updated_at || post.published_at || new Date()).toISOString().split('T')[0],
-      changefreq: 'monthly',
-      priority: '0.7',
-    }))
-  } catch (err) {
-    console.error('Sitemap: failed to fetch blog posts', err.message)
-  }
-
-  const allPages = [
-    ...staticPages.map(p => ({ ...p, lastmod: today })),
-    ...featurePages.map(p => ({ ...p, lastmod: today })),
-    ...blogPages,
-  ]
-
-  const SITE_URL = process.env.FRONTEND_URL || 'https://app.moonbootssports.com'
-  const urls = allPages.map(p => `  <url>
+    const urls = pages.map(p => `  <url>
     <loc>${SITE_URL}${p.loc}</loc>
-    <lastmod>${p.lastmod}</lastmod>
+    <lastmod>${today}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
   </url>`).join('\n')
 
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>`
 
-  res.set('Content-Type', 'text/xml; charset=utf-8')
-  res.set('Cache-Control', 'public, max-age=3600')
-  res.send(sitemap)
+    res.set('Content-Type', 'text/xml; charset=utf-8')
+    res.set('Cache-Control', 'public, max-age=3600')
+    res.send(sitemap)
   } catch (err) {
-    // Always return valid XML even on error — Googlebot can't parse error JSON
     console.error('Sitemap generation error:', err.message)
     const fallback = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://app.moonbootssports.com/</loc></url>
-  <url><loc>https://app.moonbootssports.com/blog</loc></url>
   <url><loc>https://app.moonbootssports.com/about</loc></url>
 </urlset>`
     res.set('Content-Type', 'text/xml; charset=utf-8')
@@ -373,11 +341,10 @@ app.get('/robots.txt', (req, res) => {
 
 User-agent: *
 Allow: /
-Allow: /login
-Allow: /blog
-Allow: /terms
 Allow: /about
-Allow: /watch/
+Allow: /request-demo
+Allow: /terms
+Allow: /login
 
 # Disallow authenticated app routes
 Disallow: /admin
@@ -458,7 +425,7 @@ runMigrations().then(() => {
       }, TWENTY_FOUR_HOURS)
     }, 30_000)
 
-    // Demo tenant nightly reset (03:00 UK time) – only when DEMO_RESET_ENABLED=true
+    // Demo tenant nightly reset (03:00 UK time) - only when DEMO_RESET_ENABLED=true
     scheduleDemoReset()
   })
 })

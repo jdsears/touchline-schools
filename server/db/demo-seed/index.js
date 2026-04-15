@@ -2,7 +2,7 @@
  * Demo seed orchestrator for Ashworth Park Academy prospect demo instance.
  *
  * Usage:
- *   node server/db/demo-seed/index.js          # seed (idempotent – wipes first)
+ *   node server/db/demo-seed/index.js          # seed (idempotent - wipes first)
  *   node server/db/demo-seed/index.js --wipe   # wipe only, no re-seed
  *
  * IMPORTANT: Before using "Ashworth Park Academy" as the school name, verify no

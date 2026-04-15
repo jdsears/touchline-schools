@@ -1430,7 +1430,7 @@ export async function runMigrations() {
     // PAYMENT PLANS & SUBSCRIPTIONS (Phase 2)
     // ==========================================
 
-    // Payment plans — what a club charges for (subs, match fees, kit)
+    // Payment plans - what a club charges for (subs, match fees, kit)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS payment_plans (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1475,7 +1475,7 @@ export async function runMigrations() {
       console.warn('payment_plans term columns migration warning:', e.message)
     }
 
-    // Player subscriptions — links a player to a payment plan
+    // Player subscriptions - links a player to a payment plan
     await pool.query(`
       CREATE TABLE IF NOT EXISTS player_subscriptions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1513,7 +1513,7 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_token ON player_subscriptions(portal_token) WHERE portal_token IS NOT NULL`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_status ON player_subscriptions(club_id, status)`)
 
-    // Transactions — every payment recorded
+    // Transactions - every payment recorded
     await pool.query(`
       CREATE TABLE IF NOT EXISTS club_transactions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1560,7 +1560,7 @@ export async function runMigrations() {
     // PHASE 3: Parent Portal & Comms
     // ================================================
 
-    // Club announcements (separate from team_announcements — club-wide to parents/guardians)
+    // Club announcements (separate from team_announcements - club-wide to parents/guardians)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS club_announcements (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1651,7 +1651,7 @@ export async function runMigrations() {
     // Players: speed up team player listings
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_players_team_active ON players(team_id, is_active)`)
 
-    // These indexes reference tables created by config/migrate.js — wrap each in
+    // These indexes reference tables created by config/migrate.js - wrap each in
     // its own try/catch so a missing table doesn't block all subsequent migrations.
     const optionalIndexes = [
       `CREATE INDEX IF NOT EXISTS idx_observations_player_created ON observations(player_id, created_at DESC)`,
@@ -2005,7 +2005,7 @@ export async function runMigrations() {
     // PHASE 8: Consent Tracking & DPA
     // =============================================
 
-    // Consent records — audit trail for every consent given
+    // Consent records - audit trail for every consent given
     await pool.query(`
       CREATE TABLE IF NOT EXISTS consent_records (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2168,7 +2168,7 @@ export async function runMigrations() {
     `)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_parent_potm_votes_match ON parent_potm_votes(match_id)`)
 
-    // Late-stage column additions — wrapped individually so one failure doesn't block the rest
+    // Late-stage column additions - wrapped individually so one failure doesn't block the rest
     const lateAlterations = [
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS push_subscription JSONB`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{"email": true, "push": true, "availability": true, "squad": true}'`,
@@ -2191,13 +2191,13 @@ export async function runMigrations() {
           $1, $2, $3, $4, $5, 'published', 'Touchline', $6, $7, $8, NOW()
         ) ON CONFLICT (slug) DO NOTHING
       `, [
-        'Touchline Platform Update — February 2025',
+        'Touchline Platform Update - February 2025',
         'platform-update-february-2025',
         'We\'ve upgraded every AI feature in Touchline to the latest Claude Sonnet 4.6 model, added full Club Intelligence documentation, and improved all help assistants across the platform.',
-        `## Smarter AI Across the Board\n\nWe've upgraded the AI engine powering every part of Touchline to **Claude Sonnet 4.6** — the latest model from Anthropic. This means improvements across every AI feature you use, with no change in pricing.\n\n## What This Means for Coaches\n\n- **Pep is sharper** — Tactical advice, training sessions, and match preparation documents are more detailed, more consistent, and better tailored to your team's age group and format\n- **Better match reports** — Post-match reports for parents are clearer and more insightful, especially when enriched with video analysis\n- **Improved video analysis** — Individual player feedback is more specific with fewer generic observations\n- **Stronger training plans** — Session plans follow a more logical progression with better coaching points\n- **More reliable outputs** — Fewer repeated suggestions and less generic filler across all AI features\n\n## What This Means for Players and Parents\n\n- **The Gaffer is smarter** — Players get better answers about their development, coach feedback, and how to improve\n- **Clearer development plans** — AI-generated Individual Development Plans are more actionable and age-appropriate\n- **Better pep talks** — Pre-match motivation messages feel more personal and relevant\n\n## Club Intelligence — Now Fully Documented\n\nFor clubs on the **Pro plan and above**, the Club Intelligence suite is now fully integrated across the platform with improved help and guidance:\n\n- **Attendance Insights** — AI analyses attendance patterns across your club and flags players with concerning trends\n- **Season Summary Reports** — Generate comprehensive AGM-ready reports covering membership, match records, finances, and compliance at the click of a button\n- **Grant Application Drafts** — AI drafts funding applications for Football Foundation, FA National Game, and County FA grants tailored to your club\n- **Compliance Analysis** — Safeguarding gap analysis covering DBS checks, first aid coverage, and training currency with a clear compliance score\n- **Coach Development** — Personalised development suggestions for every coach based on their activity, badges, and session history\n\n## Improved Help & Support\n\nBoth our website assistant and in-app help guide have been updated with full documentation covering:\n\n- All Club Intelligence features with step-by-step guides\n- Club communications and event management\n- Player registration workflows\n- Payment and subscription management\n\nWhether you're a new user exploring Touchline or a club admin managing multiple teams, our help assistants now have the answers you need.\n\n## What's Next\n\nWe're continuing to develop new features and improvements. As always, if you have feedback or suggestions, reach out to us at **hello@touchline.xyz** or use the suggestion box in the Player Lounge.\n\n**Happy coaching!**\nThe Touchline Team`,
+        `## Smarter AI Across the Board\n\nWe've upgraded the AI engine powering every part of Touchline to **Claude Sonnet 4.6** - the latest model from Anthropic. This means improvements across every AI feature you use, with no change in pricing.\n\n## What This Means for Coaches\n\n- **Pep is sharper** - Tactical advice, training sessions, and match preparation documents are more detailed, more consistent, and better tailored to your team's age group and format\n- **Better match reports** - Post-match reports for parents are clearer and more insightful, especially when enriched with video analysis\n- **Improved video analysis** - Individual player feedback is more specific with fewer generic observations\n- **Stronger training plans** - Session plans follow a more logical progression with better coaching points\n- **More reliable outputs** - Fewer repeated suggestions and less generic filler across all AI features\n\n## What This Means for Players and Parents\n\n- **The Gaffer is smarter** - Players get better answers about their development, coach feedback, and how to improve\n- **Clearer development plans** - AI-generated Individual Development Plans are more actionable and age-appropriate\n- **Better pep talks** - Pre-match motivation messages feel more personal and relevant\n\n## Club Intelligence - Now Fully Documented\n\nFor clubs on the **Pro plan and above**, the Club Intelligence suite is now fully integrated across the platform with improved help and guidance:\n\n- **Attendance Insights** - AI analyses attendance patterns across your club and flags players with concerning trends\n- **Season Summary Reports** - Generate comprehensive AGM-ready reports covering membership, match records, finances, and compliance at the click of a button\n- **Grant Application Drafts** - AI drafts funding applications for Football Foundation, FA National Game, and County FA grants tailored to your club\n- **Compliance Analysis** - Safeguarding gap analysis covering DBS checks, first aid coverage, and training currency with a clear compliance score\n- **Coach Development** - Personalised development suggestions for every coach based on their activity, badges, and session history\n\n## Improved Help & Support\n\nBoth our website assistant and in-app help guide have been updated with full documentation covering:\n\n- All Club Intelligence features with step-by-step guides\n- Club communications and event management\n- Player registration workflows\n- Payment and subscription management\n\nWhether you're a new user exploring Touchline or a club admin managing multiple teams, our help assistants now have the answers you need.\n\n## What's Next\n\nWe're continuing to develop new features and improvements. As always, if you have feedback or suggestions, reach out to us at **hello@touchline.xyz** or use the suggestion box in the Player Lounge.\n\n**Happy coaching!**\nThe Touchline Team`,
         'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&h=675&fit=crop&crop=center&q=80',
         ['platform-update', 'ai', 'club-intelligence', 'release-notes'],
-        'Touchline Platform Update — February 2025',
+        'Touchline Platform Update - February 2025',
         'We\'ve upgraded to Claude Sonnet 4.6 across all AI features, added full Club Intelligence docs, and improved help assistants.'
       ])
       console.log('📝 Blog seed: platform update post checked')
@@ -2243,13 +2243,13 @@ export async function runMigrations() {
           $1, $2, $3, $4, $5, 'published', 'Touchline', $6, $7, $8, NOW()
         ) ON CONFLICT (slug) DO NOTHING
       `, [
-        'What Touchline Brings to Your Club — And Why Intelligence Changes Everything',
+        'What Touchline Brings to Your Club - And Why Intelligence Changes Everything',
         'what-touchline-brings-to-clubs-intelligence-layer',
-        'Most football platforms manage your club. Touchline actually understands it. Here\'s how the AI intelligence layer transforms the way grassroots clubs operate — from the training ground to the AGM.',
-        `## Every Club Deserves an Intelligence Layer\n\nRunning a grassroots football club is relentless. Spreadsheets for attendance, WhatsApp for comms, a filing cabinet for DBS checks, and a prayer that someone remembers to book the pitch. Most "club management" tools digitise those spreadsheets and call it progress.\n\nTouchline does something different. It watches, learns, and surfaces the things you\'d miss — then helps you act on them.\n\nWe call it the **Intelligence Layer**, and it sits underneath every feature in the platform.\n\n## What Does "Intelligence" Actually Mean?\n\nIt means your club doesn\'t just store data — it **uses** it.\n\nWhen a coach records attendance after training, that data doesn\'t sit in a table. Touchline spots that a player\'s attendance has dropped from 90% to 50% over six weeks and flags it — not as a disciplinary issue, but as a welfare concern. Maybe they\'ve lost confidence. Maybe something\'s happening at home. The AI nudges the coach to check in, because that\'s what good clubs do.\n\nWhen a volunteer\'s DBS is due to expire in 60 days, the platform doesn\'t wait for someone to notice. It generates a compliance alert, calculates your club\'s overall safeguarding score, and tells you exactly which gaps need closing before your next Charter Standard review.\n\nWhen the AGM rolls around, you don\'t spend a weekend pulling numbers together. One click generates a **Season Summary Report** covering membership, match results, attendance trends, financial overview, and compliance status — ready to present.\n\nThat\'s the intelligence layer. Data in, insight out.\n\n## Built for How Clubs Actually Work\n\nTouchline isn\'t built for elite academies with full-time analysts. It\'s built for the volunteer coach who works Monday to Friday and gives up their weekends for the kids.\n\nEvery feature is designed to save time:\n\n- **AI Training Sessions** — Tell Touchline what you want to work on, and it generates a complete session plan with warm-up, drills, progressions, and coaching points. Tailored to your age group, pitch size, and player count.\n- **Match Preparation** — Before every game, generate a tactical briefing with formation suggestions, focus points, and a team talk. Share it with your coaching staff or keep it in your pocket on the touchline.\n- **Player Development** — Individual Development Plans generated from session-by-session observations. Track technical, tactical, physical, and mental progress across the season without a clipboard in sight.\n- **Video Analysis** — Upload match footage and get AI-powered individual player feedback with ratings, strengths, and areas to improve. The analysis feeds into match reports for parents automatically.\n\n## The Club Intelligence Suite\n\nFor clubs managing multiple teams, the intelligence layer scales up with the **Club Intelligence** suite:\n\n### Attendance Insights\nAI analyses attendance patterns across every team. Spots declining trends before they become dropouts. Flags welfare concerns sensitively. Gives coaches and welfare officers the information they need to act early.\n\n### Compliance & Safeguarding\nA real-time view of your club\'s compliance posture. DBS tracking with automatic expiry alerts. First aid coverage analysis per team. Safeguarding role assignments. Incident reporting with confidential audit trails. AI generates a gap analysis with a clear compliance score and actionable recommendations.\n\n### Grant Applications\nNeed funding? Touchline drafts grant applications for Football Foundation, FA National Game, and County FA grants — tailored to your club\'s actual data. Membership numbers, facility needs, community impact — all pulled from the platform and structured into a compelling application.\n\n### Season Summary Reports\nOne-click AGM-ready reports. Membership breakdown by age group, match records and results, attendance averages, financial summary, compliance status, and coaching activity — all generated from your real data, not guesswork.\n\n### Coach Development\nPersonalised development suggestions for every coach based on their qualifications, sessions delivered, video analyses conducted, and observation patterns. Helps coaches grow without needing expensive external CPD.\n\n## What Makes This Different\n\nOther platforms give you forms to fill in. Touchline gives you answers.\n\nThe intelligence layer means:\n\n- **No more missed renewals** — DBS, first aid, and safeguarding expiries are tracked and flagged automatically\n- **No more invisible dropouts** — Attendance trends surface before players disappear\n- **No more blank-page AGMs** — Season reports generate themselves\n- **No more generic sessions** — Every training plan is built for your team\'s format, age group, and focus areas\n- **No more grant-writing dread** — Applications draft themselves from your club\'s real data\n\nThe technology behind it is Claude, the latest AI from Anthropic — the same technology used by leading organisations worldwide. But you don\'t need to know that. You just need to know it works.\n\n## Pricing That Makes Sense\n\nTouchline starts at **£9.99/month** for individual teams with full AI coaching tools. Club plans with the full Intelligence suite start at **£34.99/month** for up to 6 teams — less than the cost of a set of training bibs.\n\nEvery plan includes unlimited coaches, players, and parents. No per-user fees. No hidden charges.\n\n## Try It\n\nIf you\'re running a grassroots club and spending more time on admin than coaching, Touchline was built for you. The intelligence layer isn\'t a gimmick — it\'s what happens when you build a platform that actually understands football.\n\n**[Start your free trial at touchline.xyz](https://touchline.xyz/register)**\n\n---\n\n*Touchline is built in England for English grassroots football. Every AI feature follows FA guidelines and the Youth Development Review framework.*`,
+        'Most football platforms manage your club. Touchline actually understands it. Here\'s how the AI intelligence layer transforms the way grassroots clubs operate - from the training ground to the AGM.',
+        `## Every Club Deserves an Intelligence Layer\n\nRunning a grassroots football club is relentless. Spreadsheets for attendance, WhatsApp for comms, a filing cabinet for DBS checks, and a prayer that someone remembers to book the pitch. Most "club management" tools digitise those spreadsheets and call it progress.\n\nTouchline does something different. It watches, learns, and surfaces the things you\'d miss - then helps you act on them.\n\nWe call it the **Intelligence Layer**, and it sits underneath every feature in the platform.\n\n## What Does "Intelligence" Actually Mean?\n\nIt means your club doesn\'t just store data - it **uses** it.\n\nWhen a coach records attendance after training, that data doesn\'t sit in a table. Touchline spots that a player\'s attendance has dropped from 90% to 50% over six weeks and flags it - not as a disciplinary issue, but as a welfare concern. Maybe they\'ve lost confidence. Maybe something\'s happening at home. The AI nudges the coach to check in, because that\'s what good clubs do.\n\nWhen a volunteer\'s DBS is due to expire in 60 days, the platform doesn\'t wait for someone to notice. It generates a compliance alert, calculates your club\'s overall safeguarding score, and tells you exactly which gaps need closing before your next Charter Standard review.\n\nWhen the AGM rolls around, you don\'t spend a weekend pulling numbers together. One click generates a **Season Summary Report** covering membership, match results, attendance trends, financial overview, and compliance status - ready to present.\n\nThat\'s the intelligence layer. Data in, insight out.\n\n## Built for How Clubs Actually Work\n\nTouchline isn\'t built for elite academies with full-time analysts. It\'s built for the volunteer coach who works Monday to Friday and gives up their weekends for the kids.\n\nEvery feature is designed to save time:\n\n- **AI Training Sessions** - Tell Touchline what you want to work on, and it generates a complete session plan with warm-up, drills, progressions, and coaching points. Tailored to your age group, pitch size, and player count.\n- **Match Preparation** - Before every game, generate a tactical briefing with formation suggestions, focus points, and a team talk. Share it with your coaching staff or keep it in your pocket on the touchline.\n- **Player Development** - Individual Development Plans generated from session-by-session observations. Track technical, tactical, physical, and mental progress across the season without a clipboard in sight.\n- **Video Analysis** - Upload match footage and get AI-powered individual player feedback with ratings, strengths, and areas to improve. The analysis feeds into match reports for parents automatically.\n\n## The Club Intelligence Suite\n\nFor clubs managing multiple teams, the intelligence layer scales up with the **Club Intelligence** suite:\n\n### Attendance Insights\nAI analyses attendance patterns across every team. Spots declining trends before they become dropouts. Flags welfare concerns sensitively. Gives coaches and welfare officers the information they need to act early.\n\n### Compliance & Safeguarding\nA real-time view of your club\'s compliance posture. DBS tracking with automatic expiry alerts. First aid coverage analysis per team. Safeguarding role assignments. Incident reporting with confidential audit trails. AI generates a gap analysis with a clear compliance score and actionable recommendations.\n\n### Grant Applications\nNeed funding? Touchline drafts grant applications for Football Foundation, FA National Game, and County FA grants - tailored to your club\'s actual data. Membership numbers, facility needs, community impact - all pulled from the platform and structured into a compelling application.\n\n### Season Summary Reports\nOne-click AGM-ready reports. Membership breakdown by age group, match records and results, attendance averages, financial summary, compliance status, and coaching activity - all generated from your real data, not guesswork.\n\n### Coach Development\nPersonalised development suggestions for every coach based on their qualifications, sessions delivered, video analyses conducted, and observation patterns. Helps coaches grow without needing expensive external CPD.\n\n## What Makes This Different\n\nOther platforms give you forms to fill in. Touchline gives you answers.\n\nThe intelligence layer means:\n\n- **No more missed renewals** - DBS, first aid, and safeguarding expiries are tracked and flagged automatically\n- **No more invisible dropouts** - Attendance trends surface before players disappear\n- **No more blank-page AGMs** - Season reports generate themselves\n- **No more generic sessions** - Every training plan is built for your team\'s format, age group, and focus areas\n- **No more grant-writing dread** - Applications draft themselves from your club\'s real data\n\nThe technology behind it is Claude, the latest AI from Anthropic - the same technology used by leading organisations worldwide. But you don\'t need to know that. You just need to know it works.\n\n## Pricing That Makes Sense\n\nTouchline starts at **£9.99/month** for individual teams with full AI coaching tools. Club plans with the full Intelligence suite start at **£34.99/month** for up to 6 teams - less than the cost of a set of training bibs.\n\nEvery plan includes unlimited coaches, players, and parents. No per-user fees. No hidden charges.\n\n## Try It\n\nIf you\'re running a grassroots club and spending more time on admin than coaching, Touchline was built for you. The intelligence layer isn\'t a gimmick - it\'s what happens when you build a platform that actually understands football.\n\n**[Start your free trial at touchline.xyz](https://touchline.xyz/register)**\n\n---\n\n*Touchline is built in England for English grassroots football. Every AI feature follows FA guidelines and the Youth Development Review framework.*`,
         'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=675&fit=crop&crop=center&q=80',
         ['club-intelligence', 'grassroots', 'ai', 'club-management', 'safeguarding'],
-        'What Touchline Brings to Clubs — The AI Intelligence Layer',
+        'What Touchline Brings to Clubs - The AI Intelligence Layer',
         'Most football platforms manage your club. Touchline understands it. Discover how the AI intelligence layer transforms grassroots club operations.'
       ])
       console.log('📝 Blog seed: club intelligence post checked')
@@ -2264,7 +2264,7 @@ export async function runMigrations() {
       await pool.query(`ALTER TABLE development_plans ADD COLUMN IF NOT EXISTS auto_review BOOLEAN DEFAULT false`)
     } catch (e) { /* table may not exist yet */ }
 
-    // Trial lifecycle email tracking — records which reminder stage was last sent
+    // Trial lifecycle email tracking - records which reminder stage was last sent
     // Values: '3day', '1day', 'expired', or NULL (none sent)
     try {
       await pool.query(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS trial_reminder_sent VARCHAR(10)`)
@@ -2272,7 +2272,7 @@ export async function runMigrations() {
       console.warn('trial_reminder_sent migration warning:', e.message)
     }
 
-    // Payment reminder tracking — records which reminder stage was last sent
+    // Payment reminder tracking - records which reminder stage was last sent
     // Values: 'upcoming', 'overdue', or NULL (none sent). Reset on successful payment.
     try {
       await pool.query(`ALTER TABLE player_subscriptions ADD COLUMN IF NOT EXISTS payment_reminder_sent VARCHAR(10)`)
@@ -2280,7 +2280,7 @@ export async function runMigrations() {
       console.warn('payment_reminder_sent migration warning:', e.message)
     }
 
-    // Match goals — individual goalscorer and assist tracking per match
+    // Match goals - individual goalscorer and assist tracking per match
     await pool.query(`
       CREATE TABLE IF NOT EXISTS match_goals (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2658,7 +2658,7 @@ export async function runMigrations() {
     // SEASON DEVELOPMENT TRACKING
     // ================================================
 
-    // Attribute snapshots — timestamped records of player attributes for tracking improvement over time
+    // Attribute snapshots - timestamped records of player attributes for tracking improvement over time
     await pool.query(`
       CREATE TABLE IF NOT EXISTS attribute_snapshots (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2684,7 +2684,7 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_attr_snapshots_player ON attribute_snapshots(player_id, created_at DESC)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_attr_snapshots_team ON attribute_snapshots(team_id, created_at DESC)`)
 
-    // Add effort_rating column to training_attendance (additive — does not touch existing columns)
+    // Add effort_rating column to training_attendance (additive - does not touch existing columns)
     try {
       await pool.query(`ALTER TABLE training_attendance ADD COLUMN IF NOT EXISTS effort_rating SMALLINT`)
     } catch (e) {
@@ -2749,7 +2749,7 @@ export async function runMigrations() {
     try {
       await pool.query(`ALTER TABLE library_sections ADD CONSTRAINT library_sections_team_id_slug_key UNIQUE (team_id, slug)`)
     } catch (e) {
-      // Constraint already exists — ignore
+      // Constraint already exists - ignore
     }
 
     // Seed predefined sections for all existing teams that don't have them yet
@@ -3510,12 +3510,12 @@ export async function runMigrations() {
 
     // --- 13a: Add school-product roles to school_members
     //   New role vocabulary for the schools product:
-    //     owner       – the account owner (set at school creation)
-    //     school_admin – IT admin / bursar (manage billing, staff, settings)
-    //     head_of_pe  – Head of PE / Head of Sport department (full HoD view)
-    //     head_of_sport – Head of a specific sport (per-sport HoD, stored in teacher_sports)
-    //     teacher     – curriculum PE teacher or extracurricular coach
-    //     read_only   – observer / governor / visiting inspector (read, no write)
+    //     owner       - the account owner (set at school creation)
+    //     school_admin - IT admin / bursar (manage billing, staff, settings)
+    //     head_of_pe  - Head of PE / Head of Sport department (full HoD view)
+    //     head_of_sport - Head of a specific sport (per-sport HoD, stored in teacher_sports)
+    //     teacher     - curriculum PE teacher or extracurricular coach
+    //     read_only   - observer / governor / visiting inspector (read, no write)
     //   Legacy roles (owner, admin, coach) kept for backwards compatibility.
     // ---
     await pool.query(`DO $$ BEGIN
@@ -3575,7 +3575,7 @@ export async function runMigrations() {
     console.log('Phase 13: RBAC schools roles complete')
 
     // =========================================================================
-    // PHASE 14: SSO – Microsoft 365 & Google Workspace for Education
+    // PHASE 14: SSO - Microsoft 365 & Google Workspace for Education
     // =========================================================================
 
     // --- 14a: SSO identity columns on users table ---
@@ -3632,7 +3632,7 @@ export async function runMigrations() {
     // ==========================================
     console.log('Running Phase 15: Match events & pupil stats...')
 
-    // --- 15a: match_events — flexible sport-agnostic event log ---
+    // --- 15a: match_events - flexible sport-agnostic event log ---
     await pool.query(`CREATE TABLE IF NOT EXISTS match_events (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
@@ -3649,7 +3649,7 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_pupil ON match_events(pupil_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_type ON match_events(event_type)`)
 
-    // --- 15b: match_pupil_stats — per-pupil per-match flexible stats ---
+    // --- 15b: match_pupil_stats - per-pupil per-match flexible stats ---
     await pool.query(`CREATE TABLE IF NOT EXISTS match_pupil_stats (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
@@ -3686,7 +3686,7 @@ export async function runMigrations() {
       console.warn('Phase 16b users demo columns warning:', e.message)
     }
 
-    // --- 16c: Prospects table — one row per prospective customer ---
+    // --- 16c: Prospects table - one row per prospective customer ---
     await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospects (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name VARCHAR(255) NOT NULL,
@@ -3703,7 +3703,7 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_email ON demo_prospects(email)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_expires ON demo_prospects(access_expires_at)`)
 
-    // --- 16d: Prospect credentials — one row per persona per prospect ---
+    // --- 16d: Prospect credentials - one row per persona per prospect ---
     await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospect_credentials (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       prospect_id UUID NOT NULL REFERENCES demo_prospects(id) ON DELETE CASCADE,
@@ -3733,6 +3733,35 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_created ON demo_telemetry_events(created_at)`)
 
     console.log('Phase 16: Prospect demo instance migration complete')
+
+    // ============================================================
+    // PHASE 17: Demo access request form
+    // ============================================================
+
+    // --- 17a: Demo requests table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_requests (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      role_at_school TEXT NOT NULL,
+      role_at_school_other TEXT,
+      school_name TEXT NOT NULL,
+      school_type TEXT NOT NULL,
+      email TEXT NOT NULL,
+      pupil_roll_band TEXT NOT NULL,
+      hopes_to_help_with TEXT,
+      referral_source TEXT,
+      ip_address TEXT,
+      user_agent TEXT,
+      status TEXT DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'demo_issued', 'declined', 'no_response')),
+      internal_notes TEXT,
+      contacted_at TIMESTAMPTZ,
+      demo_prospect_id UUID REFERENCES demo_prospects(id) ON DELETE SET NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_requests_email ON demo_requests(email)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_requests_status ON demo_requests(status)`)
+
+    console.log('Phase 17: Demo access request migration complete')
 
     console.log('Migrations completed')
   } catch (error) {

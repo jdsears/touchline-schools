@@ -52,7 +52,7 @@ router.get('/stats', async (req, res) => {
     `)
 
     // Get subscription stats - count from teams table (source of truth for tier)
-    // free_trial is legacy default — treat as free
+    // free_trial is legacy default - treat as free
     const subscriptionStats = await pool.query(`
       SELECT
         COUNT(*) as total_teams,
@@ -834,7 +834,7 @@ router.post('/feature-screenshots/:slug/:slot', upload.single('image'), async (r
       return res.status(400).json({ error: 'Image too large. Maximum 2MB allowed.' })
     }
 
-    // Upsert — replace existing screenshot for this slug+slot
+    // Upsert - replace existing screenshot for this slug+slot
     await pool.query(
       `INSERT INTO feature_screenshots (feature_slug, slot, filename, mime_type, data)
        VALUES ($1, $2, $3, $4, $5)
@@ -863,7 +863,7 @@ router.delete('/feature-screenshots/:slug/:slot', async (req, res, next) => {
 
 // GET /api/admin/finance - Platform revenue & financial metrics
 router.get('/finance', async (req, res, next) => {
-  // Helper to run a query safely — returns fallback on error (e.g. missing table/column)
+  // Helper to run a query safely - returns fallback on error (e.g. missing table/column)
   async function safeQuery(sql, fallbackRows = []) {
     try { return (await pool.query(sql)).rows } catch (e) { console.error('[Finance]', e.message); return fallbackRows }
   }

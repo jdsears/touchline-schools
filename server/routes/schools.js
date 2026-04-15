@@ -26,7 +26,7 @@ const router = Router()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// GET /schools/my-branding — return the current user's school branding (logo, colours, name)
+// GET /schools/my-branding - return the current user's school branding (logo, colours, name)
 router.get('/my-branding', authenticateToken, async (req, res) => {
   try {
     const result = await pool.query(
@@ -833,7 +833,7 @@ router.get('/by-slug/:slug/register', loadSchoolBySlug, async (req, res, next) =
         [school.id]
       )
     } catch {
-      // available_for_registration column may not exist yet — return no plans
+      // available_for_registration column may not exist yet - return no plans
     }
 
     res.json({

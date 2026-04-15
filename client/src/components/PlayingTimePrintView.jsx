@@ -226,7 +226,7 @@ export default function PlayingTimePrintView({
     <div className="fixed inset-0 z-[9999] bg-black/80 flex flex-col print-overlay">
       {/* Screen-only toolbar */}
       <div className="print-hide flex items-center justify-between px-4 py-3 bg-navy-900 border-b border-navy-800">
-        <h2 className="text-white font-display font-semibold">Rotation Plan — Print Preview</h2>
+        <h2 className="text-white font-display font-semibold">Rotation Plan - Print Preview</h2>
         <div className="flex items-center gap-3">
           <button
             onClick={handlePrint}
@@ -252,7 +252,7 @@ export default function PlayingTimePrintView({
             {matchInfo && (
               <p className="print-subtitle">
                 {matchInfo.opponent ? `vs ${matchInfo.opponent}` : ''}
-                {matchInfo.date ? ` — ${new Date(matchInfo.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}` : ''}
+                {matchInfo.date ? ` - ${new Date(matchInfo.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}` : ''}
               </p>
             )}
           </div>
@@ -291,7 +291,7 @@ export default function PlayingTimePrintView({
 
                 {/* Formation name */}
                 <div className="print-period-formation">
-                  {formation || '—'}
+                  {formation || '-'}
                 </div>
 
                 {/* Subs for this period */}
@@ -314,7 +314,7 @@ export default function PlayingTimePrintView({
             <p>
               {result.allEqual
                 ? `Equal playing time: ~${result.idealMinutesPerPlayer} min each`
-                : `Range: ${result.minMinutes}–${result.maxMinutes} min per pupil (target: ~${result.idealMinutesPerPlayer} min)`
+                : `Range: ${result.minMinutes}-${result.maxMinutes} min per pupil (target: ~${result.idealMinutesPerPlayer} min)`
               }
             </p>
             {result.subTimes.length > 0 && (

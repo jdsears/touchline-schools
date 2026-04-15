@@ -96,12 +96,12 @@ export const CAPABILITIES = {
   football: {
     label: 'FA Core Capabilities',
     items: [
-      { key: 'scanning', label: 'Scanning', description: 'Looking around before receiving — aware of options and dangers' },
+      { key: 'scanning', label: 'Scanning', description: 'Looking around before receiving - aware of options and dangers' },
       { key: 'timing', label: 'Timing', description: 'Choosing the right moment to pass, tackle, or make a run' },
-      { key: 'movement', label: 'Movement', description: 'Movement on and off the ball — body shape, runs, shielding' },
+      { key: 'movement', label: 'Movement', description: 'Movement on and off the ball - body shape, runs, shielding' },
       { key: 'positioning', label: 'Positioning', description: 'Pitch placement and body orientation' },
       { key: 'deception', label: 'Deception', description: 'Feints, disguised passes, changes of direction' },
-      { key: 'techniques', label: 'Techniques', description: 'Core technical actions — passing, shooting, tackling, first touch' },
+      { key: 'techniques', label: 'Techniques', description: 'Core technical actions - passing, shooting, tackling, first touch' },
     ],
   },
   rugby: {
@@ -168,15 +168,15 @@ export const POSITION_GUIDANCE = {
     defenders: {
       positions: ['CB', 'LCB', 'RCB', 'LB', 'RB', 'LWB', 'RWB'],
       guidance: `DEFENDERS:
-- Defenders who rarely appear in highlights may be performing EXCELLENTLY — keeping things quiet.
+- Defenders who rarely appear in highlights may be performing EXCELLENTLY - keeping things quiet.
 - Assess: did they push forward? Contribute to build-up? Fullbacks who get forward and create chances should be rewarded.
 - A defender who is solid AND dangerous going forward deserves a higher rating.`,
     },
     midfield: {
       positions: ['CM', 'CDM', 'CAM', 'LM', 'RM', 'LW', 'RW'],
       guidance: `MIDFIELDERS & ATTACKERS:
-- Evaluate based on specific role — a holding midfielder shields the defence, an attacking midfielder creates chances.
-- Goals and assists are NOT the only way to stand out — controlling tempo or winning the ball back repeatedly is equally valuable.`,
+- Evaluate based on specific role - a holding midfielder shields the defence, an attacking midfielder creates chances.
+- Goals and assists are NOT the only way to stand out - controlling tempo or winning the ball back repeatedly is equally valuable.`,
     },
   },
   rugby: {
@@ -185,7 +185,7 @@ export const POSITION_GUIDANCE = {
       guidance: `FORWARDS:
 - Evaluate: scrummaging, lineout work, carrying in tight, tackling, breakdown work, and work rate.
 - Forwards who make lots of tackles and carry hard but don't score tries can still have excellent matches.
-- Assess contribution at the breakdown — securing or contesting rucks.`,
+- Assess contribution at the breakdown - securing or contesting rucks.`,
     },
     backs: {
       positions: ['Scrum Half', 'Fly Half', 'Centre', 'Wing', 'Full Back'],
@@ -201,7 +201,7 @@ export const POSITION_GUIDANCE = {
       positions: ['Opener', 'Top Order', 'Middle Order', 'Lower Order'],
       guidance: `BATTING:
 - Evaluate: shot selection, footwork, intent, and ability to rotate strike.
-- Assess against the match situation — blocking out a tight spell is as valuable as scoring quickly when required.
+- Assess against the match situation - blocking out a tight spell is as valuable as scoring quickly when required.
 - Note partnerships and how pupils batted as pairs.`,
     },
     bowlers: {
@@ -238,7 +238,7 @@ export const POSITION_GUIDANCE = {
       positions: ['CM', 'LM', 'RM', 'CDM', 'CAM'],
       guidance: `MIDFIELDERS:
 - Evaluate: link play, pressing, transition speed, and stamina.
-- Midfielders should connect defence to attack — assess their passing accuracy and vision.`,
+- Midfielders should connect defence to attack - assess their passing accuracy and vision.`,
     },
     forwards: {
       positions: ['CF', 'LW', 'RW', 'ST'],
@@ -253,13 +253,13 @@ export const POSITION_GUIDANCE = {
       guidance: `SHOOTERS (GS/GA):
 - Evaluate: shooting accuracy (note attempts vs goals), movement in the circle, rebounding, and holding space.
 - GA: also assess mid-court link play and feeding into the circle.
-- Note shooting technique — balance, release point, consistency.`,
+- Note shooting technique - balance, release point, consistency.`,
     },
     midcourt: {
       positions: ['WA', 'C', 'WD'],
       guidance: `MID-COURT (WA/C/WD):
 - Evaluate: centre pass execution, driving onto the ball, spacing, and transition speed.
-- C: assess both attacking and defensive contribution — this position covers the most court.
+- C: assess both attacking and defensive contribution - this position covers the most court.
 - WD: note interceptions, ability to limit the opposition's WA.`,
     },
     defenders: {

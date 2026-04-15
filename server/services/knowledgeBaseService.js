@@ -525,7 +525,7 @@ function buildFAGuidelinesContent(ageNum) {
   const commonPrinciples = `
 ## FA Coaching Principles
 
-- **70-30 ratio**: Ball-rolling time vs standing/talking time — pupils should be active for at least 70% of the session
+- **70-30 ratio**: Ball-rolling time vs standing/talking time - pupils should be active for at least 70% of the session
 - **Game-realistic practices**: No static line drills. Everything should relate to real game situations
 - **Teaching Games for Understanding (TGfU)**: Game-based learning, not drill-based
 - **Ask more than tell**: Coaches should use guided discovery and ask questions rather than dictating
@@ -533,9 +533,9 @@ function buildFAGuidelinesContent(ageNum) {
 - **Pupil-centred approach**: Empower individuals, develop the whole person
 - **The FA Four Corner Model**: Every session should consider Technical/Tactical, Physical, Psychological, and Social development
 
-## England DNA — Pupil-Centred Philosophy
+## England DNA - Pupil-Centred Philosophy
 
-- Foundation Phase: "Power of Play" — developing young pupils through enjoyment
+- Foundation Phase: "Power of Play" - developing young pupils through enjoyment
 - Athlete-centred coaching: empower pupils, develop the whole person
 - Four Corner Model: Technical/Tactical, Physical, Psychological, Social
 - Coaching methodology: more questions than answers, game-based learning, 70-30 active ratio
@@ -555,17 +555,17 @@ Five pillars: Enjoy the Game, Give Respect, Be Inclusive, Work Together, Play Sa
 
 ## FA Heading Rules (Youth Football)
 
-- No deliberate heading in matches for U7–U11 (phased introduction 2024-2027)
+- No deliberate heading in matches for U7-U11 (phased introduction 2024-2027)
 - Heading reintroduced at U12 (secondary school transition)
 - Infringement: indirect free kick at the point of the deliberate header
 `
 
   if (ageNum <= 6) {
     return {
-      title: `FA Development Guidelines — Foundation Phase (U${ageNum})`,
-      content: `# FA Development Guidelines — Foundation Phase (U${ageNum})
+      title: `FA Development Guidelines - Foundation Phase (U${ageNum})`,
+      content: `# FA Development Guidelines - Foundation Phase (U${ageNum})
 
-## Development Phase: Foundation Phase (U5–U11) — "The Play Phase"
+## Development Phase: Foundation Phase (U5-U11) - "The Play Phase"
 
 This is the most critical stage: a child's relationship with football is formed here.
 
@@ -574,26 +574,26 @@ This is the most critical stage: a child's relationship with football is formed 
 - **The FA strictly prohibits ANY competitive matches** (including friendlies and tournaments) for U6 and below (FA Rule 8(C))
 - Emphasis: FUN, participation, maximising touches on the ball
 - Development over results. Success = retention and enjoyment, NOT trophies
-- Children are NOT small adults — sessions must be age-specific, not simplified adult football
+- Children are NOT small adults - sessions must be age-specific, not simplified adult football
 
 ### Session Guidelines
 
-- Sessions: play, movement (ABC — Agility, Balance, Coordination), skills-based training games
+- Sessions: play, movement (ABC - Agility, Balance, Coordination), skills-based training games
 - Format: Fun games, 1v1, 2v1, 2v2, 3v3 in carousel/station format
-- Session length: 30–45 minutes maximum
-- Coach approach: join in, demonstrate, make it a game — zero tactical instruction
+- Session length: 30-45 minutes maximum
+- Coach approach: join in, demonstrate, make it a game - zero tactical instruction
 - NO tactical instruction, NO positional play, NO formations
-- EVERY session must be fun — if children are not smiling, change the activity
+- EVERY session must be fun - if children are not smiling, change the activity
 - No heading of any kind
 - Focus: falling in love with the ball, confidence, basic movement skills
 
 ### Working with Parents
 
 - Parents should be welcomed and encouraged to play alongside their children
-- Focus entirely on enjoyment — scores and results are irrelevant at this age
+- Focus entirely on enjoyment - scores and results are irrelevant at this age
 - Celebrate effort, smiles, and participation
 
-## FA FutureFit — Format Changes from 2026-27 Season
+## FA FutureFit - Format Changes from 2026-27 Season
 
 - U7: 3v3 (new entry format, was 5v5)
 - U8-U9: 5v5
@@ -607,24 +607,24 @@ ${commonPrinciples}`,
 
   if (ageNum <= 8) {
     return {
-      title: `FA Development Guidelines — Foundation Phase (U${ageNum})`,
-      content: `# FA Development Guidelines — Foundation Phase (U${ageNum})
+      title: `FA Development Guidelines - Foundation Phase (U${ageNum})`,
+      content: `# FA Development Guidelines - Foundation Phase (U${ageNum})
 
-## Development Phase: Foundation Phase (U5–U11) — "The Play Phase"
+## Development Phase: Foundation Phase (U5-U11) - "The Play Phase"
 
 ### Match Format for U${ageNum}: Mini Soccer (5v5, or 3v3 under FutureFit)
 
 - Pitch: 40×30 yards. Goals: 12ft×6ft. Ball: size 3. Match: 20 min halves
-- No league tables or published results — results genuinely do not matter
+- No league tables or published results - results genuinely do not matter
 - No deliberate heading (indirect free kick if infringed)
 - Pass-in/dribble-in replaces throw-in (from 2024-25 season)
-- Unlimited rolling substitutions — every pupil should get equal time
+- Unlimited rolling substitutions - every pupil should get equal time
 - Trophy events: max 2 weekends per season, 40-minute max playing duration
 
 ### Session & Coaching Focus
 
 - Coaching focus: dribbling, turning, 1v1 confidence, having fun with the ball
-- Let them play — minimal stoppages, no positional rigidity
+- Let them play - minimal stoppages, no positional rigidity
 - Training: fun games, small-sided games (1v1, 2v2, 3v3), skills challenges
 - NO complex tactics. Simple principles only: "can you dribble past them?", "where's the space?"
 
@@ -632,9 +632,9 @@ ${commonPrinciples}`,
 
 - Reassure that scores and results do not matter at this age
 - Celebrate effort and enjoyment over outcomes
-- Children play for FUN — applaud effort, not just success
+- Children play for FUN - applaud effort, not just success
 
-## FA FutureFit — Format Changes from 2026-27 Season
+## FA FutureFit - Format Changes from 2026-27 Season
 
 - U7: 3v3 (new entry format, was 5v5)
 - U8-U9: 5v5
@@ -648,10 +648,10 @@ ${commonPrinciples}`,
 
   if (ageNum <= 10) {
     return {
-      title: `FA Development Guidelines — Foundation Phase (U${ageNum})`,
-      content: `# FA Development Guidelines — Foundation Phase (U${ageNum})
+      title: `FA Development Guidelines - Foundation Phase (U${ageNum})`,
+      content: `# FA Development Guidelines - Foundation Phase (U${ageNum})
 
-## Development Phase: Foundation Phase (U5–U11) — "The Play Phase"
+## Development Phase: Foundation Phase (U5-U11) - "The Play Phase"
 
 ### Match Format for U${ageNum}: Mini Soccer (7v7, or 5v5 under FutureFit)
 
@@ -663,12 +663,12 @@ ${commonPrinciples}`,
 
 - Begin introducing: basic width, support play, simple passing combinations
 - Technical focus: passing, receiving, dribbling under light pressure, shooting
-- Let pupils explore positions — don't lock them into fixed roles yet
+- Let pupils explore positions - don't lock them into fixed roles yet
 - Training: small-sided games (3v3, 4v4, 5v5), fun technical challenges
-- Minimal tactical instruction — guide through questions, not commands
+- Minimal tactical instruction - guide through questions, not commands
 - Development is the priority, results are secondary
 
-## FA FutureFit — Format Changes from 2026-27 Season
+## FA FutureFit - Format Changes from 2026-27 Season
 
 - U7: 3v3 (new entry format, was 5v5)
 - U8-U9: 5v5
@@ -682,10 +682,10 @@ ${commonPrinciples}`,
 
   if (ageNum <= 12) {
     return {
-      title: `FA Development Guidelines — Youth Development Phase (U${ageNum})`,
-      content: `# FA Development Guidelines — Youth Development Phase (U${ageNum})
+      title: `FA Development Guidelines - Youth Development Phase (U${ageNum})`,
+      content: `# FA Development Guidelines - Youth Development Phase (U${ageNum})
 
-## Development Phase: Youth Development Phase (U12–U16)
+## Development Phase: Youth Development Phase (U12-U16)
 
 The game begins to resemble 11-a-side with tactical concepts (shape, formations, positional roles). Results and league tables may be published from U12. Greater tactical depth, but development still prioritised over winning.
 
@@ -699,12 +699,12 @@ The game begins to resemble 11-a-side with tactical concepts (shape, formations,
 ### Session & Coaching Focus
 
 - Development focus: decision-making, positional awareness, understanding space
-- Still prioritise development over results — growth spurts affect performance
+- Still prioritise development over results - growth spurts affect performance
 - Training: game-realistic practices, guided discovery, positional play introduction
 - The FA Four Corner Model: balance Technical, Physical, Psychological, Social development
 - Be aware of relative age effect and early/late developers
 
-## FA FutureFit — Format Changes from 2026-27 Season
+## FA FutureFit - Format Changes from 2026-27 Season
 
 - U7: 3v3 (new entry format, was 5v5)
 - U8-U9: 5v5
@@ -718,10 +718,10 @@ ${commonPrinciples}`,
 
   // U13+
   return {
-    title: `FA Development Guidelines — Youth Development Phase (U${ageNum})`,
-    content: `# FA Development Guidelines — Youth Development Phase (U${ageNum})
+    title: `FA Development Guidelines - Youth Development Phase (U${ageNum})`,
+    content: `# FA Development Guidelines - Youth Development Phase (U${ageNum})
 
-## Development Phase: Youth Development Phase (U12–U16)
+## Development Phase: Youth Development Phase (U12-U16)
 
 ### Match Format for U${ageNum}: 11v11
 
@@ -737,11 +737,11 @@ ${commonPrinciples}`,
 - Mental resilience: coping with pressure, competitive environment, dealing with setbacks
 - Relative age effect: some pupils may be 11 months older/younger than peers
 - The FA Four Corner Model remains central: Technical/Tactical, Physical, Psychological, Social
-- Development still matters — avoid win-at-all-costs mentality
+- Development still matters - avoid win-at-all-costs mentality
 - Encourage pupils to play multiple positions to build understanding
-- Substitution strategies — equal playing time for younger age groups (FA guidance)
+- Substitution strategies - equal playing time for younger age groups (FA guidance)
 
-## FA FutureFit — Format Changes from 2026-27 Season
+## FA FutureFit - Format Changes from 2026-27 Season
 
 - U7: 3v3 (new entry format, was 5v5)
 - U8-U9: 5v5

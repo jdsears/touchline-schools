@@ -54,7 +54,7 @@ export async function scanCompliance() {
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2)
     console.log(
-      `[ComplianceScanner] Scan complete in ${elapsed}s — ` +
+      `[ComplianceScanner] Scan complete in ${elapsed}s - ` +
       `${stats.clubsScanned} schools scanned, ` +
       `${stats.alertsCreated} alerts created, ` +
       `${stats.alertsResolved} alerts resolved, ` +
@@ -227,7 +227,7 @@ async function scanClub(school, stats) {
   }
 
   // --------------------------------------------------
-  // 3. Check safeguarding roles — welfare officer
+  // 3. Check safeguarding roles - welfare officer
   // --------------------------------------------------
   const welfareResult = await pool.query(
     `SELECT id FROM safeguarding_roles
@@ -247,7 +247,7 @@ async function scanClub(school, stats) {
   }
 
   // --------------------------------------------------
-  // 4. Deduplication — skip if matching active alert exists
+  // 4. Deduplication - skip if matching active alert exists
   // --------------------------------------------------
   const alertsToCreate = []
   for (const alert of newAlerts) {
@@ -265,7 +265,7 @@ async function scanClub(school, stats) {
   }
 
   // --------------------------------------------------
-  // 5. Auto-resolve — mark stale active alerts as resolved
+  // 5. Auto-resolve - mark stale active alerts as resolved
   // --------------------------------------------------
   // Build a lookup of (alert_type, target_user_id) from the new scan
   const activeConditionKeys = new Set(

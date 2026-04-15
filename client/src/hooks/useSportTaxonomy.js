@@ -16,7 +16,7 @@ export function useSportTaxonomy(sport) {
       cache[key] = res.data
       setTaxonomy(res.data)
     }).catch(() => {
-      // Silently fail — component falls back to defaults
+      // Silently fail - component falls back to defaults
     })
   }, [key])
 

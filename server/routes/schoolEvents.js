@@ -83,7 +83,7 @@ router.post('/:schoolId/events', authenticateToken, loadSchool, requireSchoolFea
         stripeProductId = product.id
       } catch (stripeErr) {
         console.error('Failed to create Stripe product for event:', stripeErr.message)
-        // Continue without Stripe product — not a blocking error
+        // Continue without Stripe product - not a blocking error
       }
     }
 
@@ -212,7 +212,7 @@ router.put('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchool
   }
 })
 
-// Cancel event (soft delete — set status to cancelled)
+// Cancel event (soft delete - set status to cancelled)
 router.delete('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
@@ -576,7 +576,7 @@ router.post('/public/:eventId/register', async (req, res, next) => {
       return res.status(201).json({ registration: regResult.rows[0], waitlisted: false })
     }
 
-    // Paid event — create a registration record first, then create Stripe checkout
+    // Paid event - create a registration record first, then create Stripe checkout
     const regResult = await pool.query(
       `INSERT INTO event_registrations (
         event_id, school_id, pupil_id, guardian_id,
@@ -652,7 +652,7 @@ router.post('/public/:eventId/register', async (req, res, next) => {
       }
     }
 
-    // No Stripe configured — return registration without payment link
+    // No Stripe configured - return registration without payment link
     res.status(201).json({
       registration,
       checkout_url: null,

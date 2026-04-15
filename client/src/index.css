@@ -6,10 +6,18 @@
 :root {
   /* MoonBoots brand palette */
   --mb-navy: #0F1E3D;
+  --mb-navy-deep: #0A1530;
   --mb-gold: #C9A961;
+  --mb-gold-hover: #B89651;
   --mb-warm-white: #FAFAF7;
   --mb-gold-light: #E2C97A;
   --mb-navy-light: #1a2f55;
+  --mb-light-grey: #E7E7E7;
+  --mb-dark: #1A1A1A;
+
+  /* Typography */
+  --font-serif: 'Crimson Pro', 'Times New Roman', Georgia, serif;
+  --font-sans: 'Poppins', -apple-system, sans-serif;
 
   /* Team/sport colours - overridden per team by TeamContext */
   --team-primary: #2ED573;      /* Pitch Green - guidance, confirmation */

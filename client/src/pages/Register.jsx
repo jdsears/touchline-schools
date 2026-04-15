@@ -464,7 +464,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
     e.preventDefault()
 
     if (step === 1) {
-      // Account type selection — handled by button clicks, not form submit
+      // Account type selection - handled by button clicks, not form submit
       return
     }
 
@@ -581,7 +581,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
       <SEO
         title="Register"
         path="/register"
-        description="Create your free MoonBoots Sports account. The multi-sport platform for school PE departments — curriculum PE, extra-curricular sport, and AI coaching."
+        description="Create your free MoonBoots Sports account. The multi-sport platform for school PE departments - curriculum PE, extra-curricular sport, and AI coaching."
       />
       <div className="flex-1 flex items-center justify-center p-8">
         <motion.div
@@ -811,7 +811,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                                 : promoResult.discount_type === 'percentage'
                                 ? `${promoResult.discount_value}% discount applied!`
                                 : `£${promoResult.discount_value} discount applied!`}
-                              {promoResult.description && ` — ${promoResult.description}`}
+                              {promoResult.description && ` - ${promoResult.description}`}
                             </span>
                             <button type="button" onClick={clearPromoCode} className="ml-auto text-navy-400 hover:text-white">
                               <X className="w-4 h-4" />
@@ -848,7 +848,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         required
                       />
                     </div>
-                    <p className="text-xs text-navy-500 mt-1">The name of your school — teams sit under this</p>
+                    <p className="text-xs text-navy-500 mt-1">The name of your school - teams sit under this</p>
                   </div>
                 )}
 
@@ -1082,7 +1082,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
 
                     {showDpa && (
                       <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-60 overflow-y-auto border border-navy-700">
-                        <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) — v1.0</h3>
+                        <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) - v1.0</h3>
                         <p>This Data Processing Agreement ("DPA") forms part of the agreement between MoonBoots Sports ("Processor") and the School ("Controller") for the use of the MoonBoots Sportsplatform.</p>
                         <h4 className="font-medium text-navy-200">1. Roles & Responsibilities</h4>
                         <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. MoonBoots Sports acts as a<strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions.</p>

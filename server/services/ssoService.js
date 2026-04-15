@@ -1,5 +1,5 @@
 /**
- * SSO Service – Microsoft 365 & Google Workspace for Education
+ * SSO Service - Microsoft 365 & Google Workspace for Education
  *
  * Uses openid-client v5 (OIDC Authorization Code flow with PKCE).
  *

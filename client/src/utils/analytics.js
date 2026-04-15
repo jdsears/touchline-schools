@@ -210,7 +210,7 @@ export function updateConsentPreferences(preferences) {
 }
 
 /**
- * Accept all cookies (essential + analytics — no marketing cookies are used)
+ * Accept all cookies (essential + analytics - no marketing cookies are used)
  */
 export function acceptAllCookies() {
   updateConsentPreferences({ analytics: true })

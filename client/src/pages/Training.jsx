@@ -1261,7 +1261,7 @@ export default function Training() {
                           placeholder="e.g., I want to use a 4v2 rondo for warm-up, and a crossing & finishing drill where wingers deliver into the box..."
                         />
                         <p className="text-xs text-navy-500 mt-1">
-                          Describe drills you'd like included — the AI will build on your ideas and fit them into the session structure.
+                          Describe drills you'd like included - the AI will build on your ideas and fit them into the session structure.
                         </p>
                       </div>
                     )}

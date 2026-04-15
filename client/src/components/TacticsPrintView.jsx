@@ -213,7 +213,7 @@ export default function TacticsPrintView({
           borderBottom: '1px solid rgba(255,255,255,0.1)',
         }}>
           <span style={{ color: 'white', fontWeight: 600, fontSize: '14px' }}>
-            Tactics Board — Print Preview
+            Tactics Board - Print Preview
           </span>
           <div style={{ display: 'flex', gap: '8px' }}>
             <button

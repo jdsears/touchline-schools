@@ -1,289 +1,514 @@
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import SEO from '../components/common/SEO'
-import {
-  GraduationCap, Shield, Users, Trophy, Video,
-  Sparkles, Check, BookOpen, Calendar, FileBarChart,
-  ShieldCheck, Building2, Target, TrendingUp, ArrowRight,
-  ClipboardCheck,
-} from 'lucide-react'
+import { GraduationCap, Trophy, Users, Check } from 'lucide-react'
 
-const SPORTS = [
-  { name: 'Football', icon: '\u26BD' },
-  { name: 'Rugby', icon: '\uD83C\uDFC9' },
-  { name: 'Cricket', icon: '\uD83C\uDFCF' },
-  { name: 'Hockey', icon: '\uD83C\uDFD1' },
-  { name: 'Netball', icon: '\uD83E\uDD3E' },
+const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/moonboots-sports/demo'
+
+function GoldDivider() {
+  return <div style={{ width: 60, height: 2, background: 'var(--mb-gold)', margin: '20px 0' }} />
+}
+
+function PrimaryButton({ href, to, children, className = '', fullWidth = false }) {
+  const style = {
+    background: 'var(--mb-gold)',
+    color: 'var(--mb-navy)',
+    padding: '12px 24px',
+    border: 'none',
+    borderRadius: 4,
+    fontFamily: 'var(--font-sans)',
+    fontWeight: 500,
+    fontSize: 15,
+    cursor: 'pointer',
+    textDecoration: 'none',
+    display: 'inline-block',
+    transition: 'background 0.15s ease',
+    width: fullWidth ? '100%' : 'auto',
+    textAlign: 'center',
+  }
+  if (href) return <a href={href} target="_blank" rel="noopener noreferrer" style={style} className={className}>{children}</a>
+  if (to) return <Link to={to} style={style} className={className}>{children}</Link>
+  return <button style={style} className={className}>{children}</button>
+}
+
+function SecondaryButton({ href, to, children, className = '' }) {
+  const style = {
+    background: 'transparent',
+    color: 'var(--mb-gold)',
+    padding: '12px 24px',
+    border: '1.5px solid var(--mb-gold)',
+    borderRadius: 4,
+    fontFamily: 'var(--font-sans)',
+    fontWeight: 500,
+    fontSize: 15,
+    cursor: 'pointer',
+    textDecoration: 'none',
+    display: 'inline-block',
+    transition: 'all 0.15s ease',
+    textAlign: 'center',
+  }
+  if (href) return <a href={href} target="_blank" rel="noopener noreferrer" style={style} className={className}>{children}</a>
+  if (to) return <Link to={to} style={style} className={className}>{children}</Link>
+  return <button style={style} className={className}>{children}</button>
+}
+
+function FadeInSection({ children, className = '' }) {
+  const ref = useRef(null)
+  const [visible, setVisible] = useState(false)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) { setVisible(true); observer.disconnect() } },
+      { threshold: 0.1 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [])
+  return (
+    <div
+      ref={ref}
+      className={className}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 0.4s ease-out, transform 0.4s ease-out',
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+// Section 1: Sticky Header
+function Header() {
+  const [scrolled, setScrolled] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 100)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return (
+    <header
+      style={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 50,
+        background: scrolled ? 'rgba(15, 30, 61, 0.95)' : 'var(--mb-navy)',
+        backdropFilter: scrolled ? 'blur(12px)' : 'none',
+        transition: 'background 0.2s ease, backdrop-filter 0.2s ease',
+      }}
+    >
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 32 }} />
+        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
+          <Link to="/about" style={{ color: 'var(--mb-warm-white)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 500, opacity: 0.9 }}>About</Link>
+          <PrimaryButton href={CALENDLY_URL}>Book a discovery call</PrimaryButton>
+        </div>
+      </div>
+    </header>
+  )
+}
+
+// Section 2: Hero
+function Hero() {
+  return (
+    <section style={{ background: 'var(--mb-navy)', minHeight: '100vh', display: 'flex', alignItems: 'center', paddingTop: 80 }}>
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '80px 24px' }}>
+        <p style={{ color: 'var(--mb-gold)', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 20 }}>
+          MOONBOOTS SPORTS
+        </p>
+        <GoldDivider />
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(40px, 6vw, 64px)', color: 'white', fontWeight: 700, lineHeight: 1.1, margin: '24px 0 0' }}>
+          The PE department platform<br />for UK schools.
+        </h1>
+        <p style={{ fontFamily: 'var(--font-sans)', fontSize: 'clamp(17px, 2.5vw, 22px)', color: 'rgba(250, 250, 247, 0.85)', lineHeight: 1.5, marginTop: 32, maxWidth: 700 }}>
+          Curriculum PE and school sport, in one bespoke platform per school.
+          Branded to your crest. Designed around how your PE department actually works.
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 32 }}>
+          <PrimaryButton href={CALENDLY_URL}>Book a discovery call</PrimaryButton>
+          <SecondaryButton to="/request-demo">Request demo access</SecondaryButton>
+        </div>
+        <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.6)', marginTop: 24 }}>
+          Bespoke deployments for primary, prep, secondary, all-through, and multi-academy trusts.
+        </p>
+      </div>
+    </section>
+  )
+}
+
+// Section 3: Three Pillars
+function Pillar({ icon: Icon, heading, body, bullets }) {
+  return (
+    <FadeInSection style={{ flex: '1 1 300px' }}>
+      <div style={{ padding: '32px 0' }}>
+        <Icon size={32} color="var(--mb-navy)" strokeWidth={1.5} />
+        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 28, color: 'var(--mb-navy)', fontWeight: 600, marginTop: 16 }}>
+          {heading}
+        </h3>
+        <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: '#444', lineHeight: 1.7, marginTop: 14 }}>
+          {body}
+        </p>
+        <ul style={{ listStyle: 'none', padding: 0, marginTop: 20 }}>
+          {bullets.map((b, i) => (
+            <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 10, fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--mb-navy)' }}>
+              <Check size={16} color="var(--mb-gold)" style={{ marginTop: 2, flexShrink: 0 }} />
+              <span>{b}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </FadeInSection>
+  )
+}
+
+function ThreePillars() {
+  return (
+    <section style={{ background: 'var(--mb-warm-white)', padding: '80px 24px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 48 }}>
+          <Pillar
+            icon={GraduationCap}
+            heading="Curriculum PE"
+            body="Teaching groups, sport units mapped to curriculum areas, school-defined assessment, AI-drafted reports. Every PE lesson logged, every pupil assessed, every report ready when reporting windows open."
+            bullets={[
+              'Teaching groups by year group and key stage',
+              'Assessment grid against National Curriculum strands',
+              'AI-drafted report comments from real assessment data',
+            ]}
+          />
+          <Pillar
+            icon={Trophy}
+            heading="Extra-Curricular Sport"
+            body="Every team, every fixture, every training session, in one place. AI session planning aligned to the FA, RFU, ECB, England Hockey, and England Netball published frameworks. Match preparation, video analysis, and tactics boards built in."
+            bullets={[
+              'Cross-team dashboard for Heads of Department',
+              'Sport-specific AI session generation, NGB-aligned',
+              'Video analysis with pupil tagging and tactical breakdown',
+            ]}
+          />
+          <Pillar
+            icon={Users}
+            heading="Pupil Development"
+            body="One profile per pupil, covering every sport they play and every PE strand they study. A complete development journey from Year 2 through Year 13, visible to teachers, pupils, and parents."
+            bullets={[
+              'Individual Development Plans across every sport',
+              'Pupil portal showing curriculum and team feedback together',
+              'SEND-adapted assessment and goal setting',
+            ]}
+          />
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Section 4: Whitelabel
+function Whitelabel() {
+  return (
+    <FadeInSection>
+      <section style={{ background: 'var(--mb-navy)', padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 64, alignItems: 'center' }}>
+          <div style={{ flex: '1 1 400px' }}>
+            <p style={{ color: 'var(--mb-gold)', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase' }}>
+              WHITELABEL
+            </p>
+            <GoldDivider />
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(32px, 4vw, 44px)', color: 'white', fontWeight: 700, lineHeight: 1.15, marginTop: 16 }}>
+              Branded to your school.
+            </h2>
+            <div style={{ fontFamily: 'var(--font-sans)', fontSize: 16, color: 'rgba(250, 250, 247, 0.85)', lineHeight: 1.7, marginTop: 24 }}>
+              <p>Every MoonBoots Sports deployment is yours. Your crest on the login screen. Your colours throughout the interface. Your school's name in every email and every report.</p>
+              <p style={{ marginTop: 16 }}>When pupils install the platform on their phones, they see your crest, not ours. This is not a SaaS skin. It is your school's platform, built on our engine.</p>
+            </div>
+          </div>
+          <div style={{ flex: '1 1 360px', display: 'flex', gap: 16, justifyContent: 'center' }}>
+            {/* PLACEHOLDER: replace with real per-school whitelabel mockups before v1.6 polish pass */}
+            <div style={{ width: 160, height: 280, borderRadius: 12, border: '1px solid rgba(201, 169, 97, 0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 16 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 8, background: '#1B4332', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: 'white', fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: 20 }}>A</span>
+              </div>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: 'rgba(250, 250, 247, 0.6)', textAlign: 'center' }}>Your School</span>
+              <div style={{ width: '100%', height: 4, background: '#1B4332', borderRadius: 2 }} />
+              <div style={{ width: '100%', height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }} />
+              <div style={{ width: '80%', height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }} />
+            </div>
+            <div style={{ width: 160, height: 280, borderRadius: 12, border: '1px solid rgba(201, 169, 97, 0.3)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 12, padding: 16 }}>
+              <div style={{ width: 48, height: 48, borderRadius: 8, background: '#1E3A5F', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <span style={{ color: 'white', fontFamily: 'var(--font-serif)', fontWeight: 700, fontSize: 20 }}>B</span>
+              </div>
+              <span style={{ fontFamily: 'var(--font-sans)', fontSize: 11, color: 'rgba(250, 250, 247, 0.6)', textAlign: 'center' }}>Another School</span>
+              <div style={{ width: '100%', height: 4, background: '#1E3A5F', borderRadius: 2 }} />
+              <div style={{ width: '100%', height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }} />
+              <div style={{ width: '80%', height: 4, background: 'rgba(255,255,255,0.1)', borderRadius: 2 }} />
+            </div>
+          </div>
+        </div>
+      </section>
+    </FadeInSection>
+  )
+}
+
+// Section 5: NGB Alignment
+const NGB_DATA = [
+  { name: 'FA', framework: '4 Corner Model and England DNA' },
+  { name: 'RFU', framework: 'Age-Grade Rugby Laws' },
+  { name: 'ECB', framework: 'Inspiring Generations and bowling directives' },
+  { name: 'ENGLAND HOCKEY', framework: 'Player Pathway' },
+  { name: 'ENGLAND NETBALL', framework: 'High 5 and Pathway' },
 ]
 
+function NGBAlignment() {
+  return (
+    <FadeInSection>
+      <section style={{ background: 'var(--mb-warm-white)', padding: '80px 24px' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto' }}>
+          <p style={{ color: 'var(--mb-gold)', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase' }}>
+            NGB-ALIGNED AI
+          </p>
+          <GoldDivider />
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(28px, 4vw, 36px)', color: 'var(--mb-navy)', fontWeight: 700, lineHeight: 1.2, marginTop: 16 }}>
+            Sport-aware AI, aligned to the people who set the standards.
+          </h2>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 16, color: '#444', lineHeight: 1.7, marginTop: 24 }}>
+            The AI coaching assistant in MoonBoots Sports is sport-specific, not sport-agnostic.
+            Each of the core team sports is wired with the published development framework
+            of its national governing body.
+          </p>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 16, color: '#444', lineHeight: 1.7, marginTop: 16 }}>
+            Ask for a Year 7 rugby session and you get RFU Age-Grade-aligned progression.
+            Ask for an Under-9 cricket net and you get ECB-mandated over limits.
+            Ask for an Under-11 netball drill and you get High 5 format principles
+            with mandatory position rotation.
+          </p>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, marginTop: 40 }}>
+            {NGB_DATA.map((ngb) => (
+              <div key={ngb.name} style={{ flex: '1 1 150px', minWidth: 140 }}>
+                <p style={{ fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600, color: 'var(--mb-gold)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 6 }}>
+                  {ngb.name}
+                </p>
+                <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: '#555', lineHeight: 1.5 }}>
+                  {ngb.framework}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: '#999', marginTop: 32, lineHeight: 1.5 }}>
+            Framework references are public and used here to indicate alignment of AI coaching guidance. MoonBoots Sports is not affiliated with or endorsed by these governing bodies.
+          </p>
+        </div>
+      </section>
+    </FadeInSection>
+  )
+}
+
+// Section 6: Process
+const STEPS = [
+  {
+    num: '01',
+    heading: 'Discovery Call',
+    body: 'A 30-minute conversation with John Sears, founder of MoonBoots Consultancy. We understand your school\'s PE provision, sport mix, and reporting requirements.',
+  },
+  {
+    num: '02',
+    heading: 'Bespoke Demo Access',
+    body: 'We issue you 7-day access to a fully populated demo school so you can experience the platform hands-on and share it with your colleagues.',
+  },
+  {
+    num: '03',
+    heading: 'Custom Build',
+    body: 'We design and build a deployment for your school: your crest, your colours, your sports, your assessment framework, your house system.',
+  },
+  {
+    num: '04',
+    heading: 'Launch',
+    body: 'We train your staff, configure your data, and launch your platform. Ongoing support via a named account contact.',
+  },
+]
+
+function Process() {
+  return (
+    <FadeInSection>
+      <section style={{ background: 'var(--mb-navy)', padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1200, margin: '0 auto', textAlign: 'center' }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(28px, 4vw, 36px)', color: 'white', fontWeight: 700 }}>
+            How it works
+          </h2>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 16, color: 'rgba(250, 250, 247, 0.85)', marginTop: 16 }}>
+            Six to eight weeks from first conversation to live deployment.
+          </p>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, marginTop: 48, textAlign: 'left', justifyContent: 'center' }}>
+            {STEPS.map((step, i) => (
+              <div key={step.num} style={{ flex: '1 1 240px', maxWidth: 280, position: 'relative' }}>
+                {i < STEPS.length - 1 && (
+                  <div style={{ display: 'none', position: 'absolute', top: 12, left: 'calc(100% + 4px)', width: 'calc(100% - 260px)', height: 2, background: 'var(--mb-gold)', opacity: 0.3 }} className="hidden-mobile" />
+                )}
+                <p style={{ fontFamily: 'var(--font-serif)', fontSize: 14, color: 'var(--mb-gold)', letterSpacing: 2, textTransform: 'uppercase', fontWeight: 600 }}>
+                  Step {step.num}
+                </p>
+                <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--mb-gold)', margin: '12px 0' }} />
+                <h3 style={{ fontFamily: 'var(--font-sans)', fontSize: 18, color: 'white', fontWeight: 700, marginTop: 8 }}>
+                  {step.heading}
+                </h3>
+                <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.8)', lineHeight: 1.6, marginTop: 8 }}>
+                  {step.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    </FadeInSection>
+  )
+}
+
+// Section 7: Founder
+function Founder() {
+  return (
+    <FadeInSection>
+      <section style={{ background: 'var(--mb-warm-white)', padding: '80px 24px' }}>
+        <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 48, alignItems: 'flex-start' }}>
+          <div style={{ flex: '0 0 auto', width: 'clamp(200px, 30vw, 320px)' }}>
+            {/* PLACEHOLDER: replace with John Sears founder photo before launch */}
+            <div style={{
+              width: '100%', aspectRatio: '4/5', background: 'var(--mb-navy)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              borderRadius: 4,
+            }}>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: 48, color: 'var(--mb-gold)', fontWeight: 700 }}>JS</span>
+            </div>
+          </div>
+          <div style={{ flex: '1 1 400px' }}>
+            <p style={{ color: 'var(--mb-gold)', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase' }}>
+              FOUNDER
+            </p>
+            <GoldDivider />
+            <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 32, color: 'var(--mb-navy)', fontWeight: 700, lineHeight: 1.2, marginTop: 16 }}>
+              Built in Norfolk, by someone who coaches.
+            </h2>
+            <div style={{ fontFamily: 'var(--font-sans)', fontSize: 16, color: '#444', lineHeight: 1.7, marginTop: 24 }}>
+              <p>
+                MoonBoots Sports is built by John Sears, founder of MoonBoots Consultancy UK Ltd.
+                John has spent seven years as a volunteer grassroots football coach at Morley YFC
+                and is enrolled on the UEFA C Licence course beginning May 2026.
+              </p>
+              <p style={{ marginTop: 16 }}>
+                He started building MoonBoots Sports because the tools available to school PE
+                departments did not match the responsibilities they carry. Bespoke deployments,
+                sport-aware AI, and proper data protection should not be reserved for the largest
+                independent schools.
+              </p>
+              <p style={{ marginTop: 16 }}>
+                MoonBoots Sports is a service of MoonBoots Consultancy UK Ltd, a Norfolk-based
+                technology and AI advisory studio building bespoke platforms for founders and
+                organisations who value clarity over hype.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </FadeInSection>
+  )
+}
+
+// Section 8: Final CTA
+function FinalCTA() {
+  return (
+    <section style={{ background: 'var(--mb-navy)', padding: '80px 24px' }}>
+      <div style={{ maxWidth: 700, margin: '0 auto', textAlign: 'center' }}>
+        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(32px, 4vw, 44px)', color: 'white', fontWeight: 700, lineHeight: 1.2 }}>
+          Built for your school. Designed around how your PE department actually works.
+        </h2>
+        <p style={{ fontFamily: 'var(--font-sans)', fontSize: 18, color: 'rgba(250, 250, 247, 0.85)', lineHeight: 1.6, marginTop: 24 }}>
+          Every school is different. We start with a 30-minute discovery call to understand
+          your sport mix, your assessment framework, your house system, and your reporting
+          needs. Then we build a bespoke deployment around that.
+        </p>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, marginTop: 32, justifyContent: 'center' }}>
+          <PrimaryButton href={CALENDLY_URL}>Book a discovery call</PrimaryButton>
+          <SecondaryButton to="/request-demo">Request demo access</SecondaryButton>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+// Section 9: Footer
+export function MarketingFooter() {
+  return (
+    <footer style={{ background: 'var(--mb-navy-deep, #0A1530)', padding: '48px 24px 0' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 48, paddingBottom: 32 }}>
+          {/* Left column */}
+          <div style={{ flex: '1 1 300px' }}>
+            <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 28 }} />
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'rgba(250, 250, 247, 0.7)', marginTop: 12 }}>
+              The PE department platform for UK schools.
+            </p>
+          </div>
+          {/* Middle column */}
+          <div style={{ flex: '0 1 160px' }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 700, color: 'var(--mb-gold)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Site</p>
+            {[
+              { label: 'About', to: '/about' },
+              { label: 'Terms', to: '/terms' },
+              { label: 'Privacy', to: '/terms' },
+              { label: 'Contact', href: 'mailto:hello@moonbootssports.com' },
+            ].map((link) => (
+              <div key={link.label} style={{ marginBottom: 8 }}>
+                {link.to ? (
+                  <Link to={link.to} style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.8)', textDecoration: 'none' }}>{link.label}</Link>
+                ) : (
+                  <a href={link.href} style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.8)', textDecoration: 'none' }}>{link.label}</a>
+                )}
+              </div>
+            ))}
+          </div>
+          {/* Right column */}
+          <div style={{ flex: '0 1 280px' }}>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 700, color: 'var(--mb-gold)', letterSpacing: 2, textTransform: 'uppercase', marginBottom: 16 }}>Get in touch</p>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.8)', marginBottom: 4 }}>hello@moonbootssports.com</p>
+            <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.8)', marginBottom: 12 }}>Norfolk, United Kingdom</p>
+            <a href="https://moonbootsconsultancy.net" target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'rgba(250, 250, 247, 0.6)', textDecoration: 'none' }}>
+              A service of MoonBoots Consultancy UK Ltd
+            </a>
+          </div>
+        </div>
+        {/* Bottom bar */}
+        <div style={{ borderTop: '1px solid var(--mb-gold)', padding: '20px 0', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', gap: 8 }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'rgba(250, 250, 247, 0.5)' }}>
+            &copy; 2026 MoonBoots Consultancy UK Ltd
+          </p>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'rgba(250, 250, 247, 0.5)' }}>
+            Built with care in Norfolk.
+          </p>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+// Main Landing Page
 export default function Landing() {
   return (
     <>
       <SEO
-        title="School sport, all in one place"
-        description="MoonBoots Sports gives PE departments a single platform for curriculum PE, extra-curricular sport, assessment, reporting, and AI coaching — across every sport."
+        title=""
+        description="Bespoke PE department platform for UK schools. Curriculum PE, extra-curricular sport, assessment, reporting, and NGB-aligned AI coaching across 17 sports."
+        path="/"
       />
-
-      <div className="min-h-screen bg-navy-950">
-        {/* Nav */}
-        <nav className="sticky top-0 z-50 bg-navy-950/90 backdrop-blur-md border-b border-navy-800">
-          <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--mb-gold)' }}>
-                <span className="text-sm font-bold" style={{ color: 'var(--mb-navy)', fontFamily: 'Poppins, system-ui, sans-serif' }}>M</span>
-              </div>
-              <span className="text-lg font-bold text-white" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
-                MoonBoots <span style={{ color: 'var(--mb-gold)' }}>Sports</span>
-              </span>
-            </div>
-            <div className="flex items-center gap-4">
-              <Link to="/about" className="text-sm text-navy-300 hover:text-white transition-colors hidden sm:block">About</Link>
-              <Link to="/login" className="text-sm text-navy-300 hover:text-white transition-colors">Log in</Link>
-              <Link
-                to="/register"
-                className="px-4 py-2 text-sm font-medium rounded-lg transition-colors"
-                style={{ backgroundColor: 'var(--mb-gold)', color: 'var(--mb-navy)' }}
-              >
-                Get Started
-              </Link>
-            </div>
-          </div>
-        </nav>
-
-        {/* Hero */}
-        <section className="max-w-7xl mx-auto px-4 pt-24 pb-20 text-center">
-          <div className="flex justify-center gap-3 mb-8">
-            {SPORTS.map(s => (
-              <span key={s.name} className="text-3xl" title={s.name}>{s.icon}</span>
-            ))}
-          </div>
-          <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight max-w-4xl mx-auto" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
-            School sport,{' '}
-            <span style={{ color: 'var(--mb-gold)' }}>all in one place.</span>
-          </h1>
-          <p className="text-lg text-navy-300 mt-6 max-w-2xl mx-auto leading-relaxed">
-            MoonBoots Sports gives PE departments a single platform to manage curriculum PE,
-            extra-curricular sport, assessment, reporting, and AI-assisted coaching —
-            from Year 2 to Sixth Form, across every sport you teach.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4 mt-10">
-            <Link
-              to="/register"
-              className="px-7 py-3.5 rounded-lg font-semibold transition-all flex items-center gap-2 text-base"
-              style={{ backgroundColor: 'var(--mb-gold)', color: 'var(--mb-navy)' }}
-            >
-              Start Free Trial <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a
-              href="mailto:hello@moonbootssports.com"
-              className="px-7 py-3.5 bg-navy-800 hover:bg-navy-700 text-white rounded-lg font-semibold transition-colors text-base"
-            >
-              Book a Demo
-            </a>
-          </div>
-          <p className="text-xs text-navy-500 mt-5">Enterprise licence. No per-pupil billing. No parent payment collection.</p>
-        </section>
-
-        {/* Two pillars */}
-        <section className="max-w-7xl mx-auto px-4 py-16">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-navy-900 rounded-2xl border border-navy-800 p-8">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'color-mix(in srgb, var(--mb-gold) 15%, transparent)' }}>
-                <GraduationCap className="w-6 h-6" style={{ color: 'var(--mb-gold)' }} />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-3">Curriculum PE</h2>
-              <p className="text-navy-300 text-sm mb-6 leading-relaxed">
-                Manage timetabled PE classes, plan lessons, assess pupils against the National Curriculum,
-                and generate termly reports with AI-assisted comment writing.
-              </p>
-              <ul className="space-y-3">
-                <Feature text="Teaching groups with sport units per term" />
-                <Feature text="Assessment against NC PE strands (KS1 to KS5)" />
-                <Feature text="School-defined grading scales" />
-                <Feature text="AI-drafted report comments from assessment data" />
-                <Feature text="Curriculum overview across the whole school" />
-              </ul>
-            </div>
-
-            <div className="bg-navy-900 rounded-2xl border border-navy-800 p-8">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center mb-5" style={{ backgroundColor: 'color-mix(in srgb, var(--mb-gold) 15%, transparent)' }}>
-                <Shield className="w-6 h-6" style={{ color: 'var(--mb-gold)' }} />
-              </div>
-              <h2 className="text-2xl font-bold text-white mb-3">Extra-curricular Sport</h2>
-              <p className="text-navy-300 text-sm mb-6 leading-relaxed">
-                Run every school team from one dashboard. Fixtures, results, squad selection, training sessions,
-                video analysis, and tactics boards — across all five sports.
-              </p>
-              <ul className="space-y-3">
-                <Feature text="Multi-sport team management (football, rugby, cricket, hockey, netball)" />
-                <Feature text="Fixture scheduling and result recording" />
-                <Feature text="Session planning with AI-generated drills" />
-                <Feature text="Sport-specific tactics boards and pitch components" />
-                <Feature text="Video library and match analysis" />
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* AI coaching pillar */}
-        <section className="max-w-7xl mx-auto px-4 py-16">
-          <div className="rounded-2xl border p-8 md:p-12" style={{ backgroundColor: 'color-mix(in srgb, var(--mb-navy-light) 60%, var(--mb-navy))', borderColor: 'color-mix(in srgb, var(--mb-gold) 25%, transparent)' }}>
-            <div className="flex items-start gap-4 mb-8">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0" style={{ backgroundColor: 'color-mix(in srgb, var(--mb-gold) 15%, transparent)' }}>
-                <Sparkles className="w-6 h-6" style={{ color: 'var(--mb-gold)' }} />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold text-white">AI coaching grounded in governing body frameworks</h2>
-                <p className="text-navy-300 mt-2 leading-relaxed">
-                  Not a generic chatbot. The assistant is trained on development guidelines from the FA, RFU, ECB,
-                  England Hockey, and England Netball. It gives age-appropriate, sport-specific advice based on your
-                  pupils' year group and the sport they're playing.
-                </p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <PillarCard title="Sport-aware" description="A Year 4 class asking about cricket gets ECB All Stars guidance, not senior coaching advice." />
-              <PillarCard title="Extendable" description="Heads of Sport can add their own coaching documents to extend the AI's knowledge base." />
-              <PillarCard title="Safeguarded" description="All pupil AI conversations are visible to teachers. Content is age-appropriate and logged." />
-            </div>
-          </div>
-        </section>
-
-        {/* Head of PE section */}
-        <section className="max-w-7xl mx-auto px-4 py-16">
-          <h2 className="text-3xl font-bold text-white text-center mb-4" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
-            Built for the Head of PE
-          </h2>
-          <p className="text-navy-300 text-center max-w-2xl mx-auto mb-12">
-            See every sport, every team, every year group, every teacher — from one dashboard.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FeatureCard icon={Building2} title="Whole-school overview" description="Stats across every sport, every team, every class. Know what's happening across the department at a glance." />
-            <FeatureCard icon={Users} title="Teacher management" description="Assign teachers to sports and teams. See who is coaching what, and where the gaps are." />
-            <FeatureCard icon={FileBarChart} title="Reporting" description="Create reporting windows, track completion, publish reports. AI drafts comments from assessment data." />
-            <FeatureCard icon={ClipboardCheck} title="Curriculum tracking" description="See which sport units are being taught in each year group, by which teacher, across the school." />
-            <FeatureCard icon={ShieldCheck} title="Safeguarding" description="DBS tracking, compliance alerts, incident logging, and full audit trails. Everything a DSL needs." />
-            <FeatureCard icon={TrendingUp} title="Pupil development" description="Cross-sport pupil profiles showing curriculum assessments and extra-curricular feedback in one view." />
-          </div>
-        </section>
-
-        {/* Pupil portal */}
-        <section className="max-w-7xl mx-auto px-4 py-16">
-          <div className="bg-navy-900 rounded-2xl border border-navy-800 p-8 md:p-12">
-            <h2 className="text-2xl font-bold text-white mb-3">Pupil portal</h2>
-            <p className="text-navy-300 mb-8 max-w-2xl">
-              Every pupil gets their own portal — one place to see every sport they play,
-              their weekly schedule, development progress, training plans, video clips, and achievements.
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <MiniCard icon={Target} label="My Sports" />
-              <MiniCard icon={Calendar} label="My Week" />
-              <MiniCard icon={TrendingUp} label="My Development" />
-              <MiniCard icon={Trophy} label="Achievements" />
-            </div>
-          </div>
-        </section>
-
-        {/* Enterprise grid */}
-        <section className="max-w-7xl mx-auto px-4 py-16">
-          <h2 className="text-3xl font-bold text-white text-center mb-12" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>Enterprise-grade for schools</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <SimpleCard title="GDPR compliant" description="Full audit trails, data export, and right-to-erasure on request." />
-            <SimpleCard title="SSO ready" description="Microsoft 365 and Google Workspace for Education." />
-            <SimpleCard title="No parent billing" description="Enterprise licence. The school pays. No per-pupil costs." />
-            <SimpleCard title="Works on any device" description="Progressive web app. No app store download needed." />
-          </div>
-        </section>
-
-        {/* Final CTA */}
-        <section className="max-w-7xl mx-auto px-4 py-24 text-center">
-          <h2 className="text-4xl font-bold text-white mb-4" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
-            Ready to get started?
-          </h2>
-          <p className="text-navy-300 max-w-xl mx-auto mb-10 text-lg">
-            Available for prep schools, primary schools, and secondary schools across the UK.
-            Early adopter pricing available now.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              to="/register"
-              className="px-7 py-3.5 rounded-lg font-semibold transition-all flex items-center gap-2 text-base"
-              style={{ backgroundColor: 'var(--mb-gold)', color: 'var(--mb-navy)' }}
-            >
-              Start Free Trial <ArrowRight className="w-4 h-4" />
-            </Link>
-            <a
-              href="mailto:hello@moonbootssports.com"
-              className="px-7 py-3.5 bg-navy-800 hover:bg-navy-700 text-white rounded-lg font-semibold transition-colors text-base"
-            >
-              Book a Demo
-            </a>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t border-navy-800 py-10">
-          <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-md flex items-center justify-center" style={{ backgroundColor: 'var(--mb-gold)' }}>
-                <span className="text-xs font-bold" style={{ color: 'var(--mb-navy)', fontFamily: 'Poppins, system-ui, sans-serif' }}>M</span>
-              </div>
-              <span className="text-sm font-semibold text-white" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
-            </div>
-            <div className="flex items-center gap-6 text-xs text-navy-400">
-              <Link to="/about" className="hover:text-white transition-colors">About</Link>
-              <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
-              <Link to="/blog" className="hover:text-white transition-colors">Blog</Link>
-              <span>MoonBoots Consultancy UK Ltd</span>
-            </div>
-          </div>
-        </footer>
-      </div>
+      <Header />
+      <Hero />
+      <ThreePillars />
+      <Whitelabel />
+      <NGBAlignment />
+      <Process />
+      <Founder />
+      <FinalCTA />
+      <MarketingFooter />
     </>
-  )
-}
-
-function Feature({ text }) {
-  return (
-    <li className="flex items-start gap-2">
-      <Check className="w-4 h-4 mt-0.5 shrink-0" style={{ color: 'var(--mb-gold)' }} />
-      <span className="text-sm text-navy-200">{text}</span>
-    </li>
-  )
-}
-
-function FeatureCard({ icon: Icon, title, description }) {
-  return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 p-6">
-      <Icon className="w-6 h-6 mb-3" style={{ color: 'var(--mb-gold)' }} />
-      <h3 className="text-base font-semibold text-white mb-1">{title}</h3>
-      <p className="text-xs text-navy-400 leading-relaxed">{description}</p>
-    </div>
-  )
-}
-
-function PillarCard({ title, description }) {
-  return (
-    <div className="bg-navy-800/50 rounded-xl p-5">
-      <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
-      <p className="text-xs text-navy-400 leading-relaxed">{description}</p>
-    </div>
-  )
-}
-
-function MiniCard({ icon: Icon, label }) {
-  return (
-    <div className="bg-navy-800/50 rounded-xl p-4 text-center">
-      <Icon className="w-6 h-6 mx-auto mb-2" style={{ color: 'var(--mb-gold)' }} />
-      <span className="text-xs text-navy-300">{label}</span>
-    </div>
-  )
-}
-
-function SimpleCard({ title, description }) {
-  return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-      <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
-      <p className="text-xs text-navy-400 leading-relaxed">{description}</p>
-    </div>
   )
 }

@@ -41,7 +41,7 @@ function positionStrings(positions) {
 }
 
 /**
- * Timeout wrapper — rejects if the promise doesn't settle within the given ms
+ * Timeout wrapper - rejects if the promise doesn't settle within the given ms
  */
 function withTimeout(promise, ms, label = 'operation') {
   let timer
@@ -51,13 +51,13 @@ function withTimeout(promise, ms, label = 'operation') {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer))
 }
 
-// Per-segment API call timeout (90 seconds — generous for image-heavy requests)
+// Per-segment API call timeout (90 seconds - generous for image-heavy requests)
 const CLAUDE_CALL_TIMEOUT_MS = 90_000
-// Synthesis calls generate up to 16-32K tokens of JSON — needs much longer than segment calls
+// Synthesis calls generate up to 16-32K tokens of JSON - needs much longer than segment calls
 const CLAUDE_SYNTHESIS_TIMEOUT_MS = 300_000
 
 /**
- * Retry wrapper for Claude API calls — handles 429, 500, 529 with exponential backoff.
+ * Retry wrapper for Claude API calls - handles 429, 500, 529 with exponential backoff.
  * Each attempt is subject to a timeout to prevent indefinite hangs.
  */
 async function callClaudeWithRetry(params, maxRetries = 3, timeoutMs = CLAUDE_CALL_TIMEOUT_MS) {
@@ -127,20 +127,20 @@ function buildContext(video, options) {
   const ourTeamLabel = teamName || (teamColour ? `the ${teamColour} team` : 'our team')
   const lines = []
   lines.push(`SPORT: ${term.context} (${term.teamSize})`)
-  if (teamColour) lines.push(`OUR TEAM (${teamName || 'our team'}) is wearing ${teamColour.toUpperCase()} kit — focus your analysis on THIS team`)
+  if (teamColour) lines.push(`OUR TEAM (${teamName || 'our team'}) is wearing ${teamColour.toUpperCase()} kit - focus your analysis on THIS team`)
   if (context.opponent) lines.push(`Opponent: ${context.opponent}`)
   if (context.ageGroup) lines.push(`Age group: ${context.ageGroup}`)
   if (context.goalsFor !== null && context.goalsFor !== undefined && context.goalsAgainst !== null && context.goalsAgainst !== undefined) {
     const score = `${context.goalsFor}-${context.goalsAgainst}`
     const resultLabel = context.result || (context.goalsFor > context.goalsAgainst ? 'Win' : context.goalsFor < context.goalsAgainst ? 'Loss' : 'Draw')
-    lines.push(`MATCH RESULT: ${score} (${resultLabel})${context.goalsAgainst === 0 ? ' — CLEAN SHEET' : ''}`)
+    lines.push(`MATCH RESULT: ${score} (${resultLabel})${context.goalsAgainst === 0 ? ' - CLEAN SHEET' : ''}`)
   }
   if (context.goalscorers?.length > 0) {
     const goalLines = context.goalscorers.map(g => {
       let line = `#${g.scorer_number || '?'} ${g.scorer_name}`
       if (g.minute) line += ` (${g.minute}')`
       if (g.goal_type && g.goal_type !== 'open_play') line += ` [${g.goal_type}]`
-      if (g.assist_name) line += ` — assist: #${g.assist_number || '?'} ${g.assist_name}`
+      if (g.assist_name) line += ` - assist: #${g.assist_number || '?'} ${g.assist_name}`
       return line
     })
     lines.push(`GOALSCORERS: ${goalLines.join('; ')}`)
@@ -173,7 +173,7 @@ function buildContext(video, options) {
         const pStrs = positionStrings(p.positions)
         const pos = p.match_position || (pStrs.length ? pStrs.join('/') : null)
         const isProfile = !p.match_position && pStrs.length > 0
-        return `#${p.squad_number || '?'} ${p.name}${pos ? ` (${pos}${isProfile ? ' — profile' : ''})` : ''}`
+        return `#${p.squad_number || '?'} ${p.name}${pos ? ` (${pos}${isProfile ? ' - profile' : ''})` : ''}`
       }
       lines.push(`STARTING XI: ${starters.map(formatPlayer).join(', ')}`)
       if (subs.length > 0) lines.push(`SUBS: ${subs.map(formatPlayer).join(', ')}`)
@@ -185,7 +185,7 @@ function buildContext(video, options) {
           return `${s.minute ? s.minute + "'" : '?'}: ${off} → ${on}`
         })
         lines.push(`SUBSTITUTIONS MADE: ${subLines.join('; ')}`)
-        lines.push(`Use substitution timings to improve pupil identification — after a substitution, the incoming pupil replaces the outgoing pupil's position on the pitch.`)
+        lines.push(`Use substitution timings to improve pupil identification - after a substitution, the incoming pupil replaces the outgoing pupil's position on the pitch.`)
       }
       lines.push(`ONLY these ${squadPlayers.length} pupils were in the match squad. Do NOT include any other pupils in your analysis.`)
     } else {
@@ -199,7 +199,7 @@ function buildContext(video, options) {
 }
 
 /**
- * Analyse a batch of frames — returns segment-level observations
+ * Analyse a batch of frames - returns segment-level observations
  */
 async function analyseSegment(frames, segmentIndex, totalSegments, video, options) {
   const { teamColour, sport = 'football', squadPlayers = [] } = options
@@ -226,7 +226,7 @@ async function analyseSegment(frames, segmentIndex, totalSegments, video, option
   let profileContext = ''
   const profileEntries = Object.entries(knownProfiles)
   if (profileEntries.length > 0) {
-    profileContext = `\nPLAYER VISUAL PROFILES (identified in earlier segments — use these to help identify the same pupils):
+    profileContext = `\nPLAYER VISUAL PROFILES (identified in earlier segments - use these to help identify the same pupils):
 ${profileEntries.map(([num, profile]) => `  #${num} ${profile.name}: ${profile.descriptors.join(', ')}`).join('\n')}
 `
   }
@@ -237,20 +237,20 @@ ${profileEntries.map(([num, profile]) => `  #${num} ${profile.name}: ${profile.d
 ${contextBlock}
 ${profileContext}
 For this segment, identify:
-1. Formation and team shape — ${options.context?.startingFormation ? `the team's STARTING FORMATION is ${options.context.startingFormation}. Note whether the shape matches this formation or has deviated.` : 'the squad positions listed above show the INTENDED formation.'} Note if pupils appear to be playing a different role (common in school sport when teams are short on pupils).
+1. Formation and team shape - ${options.context?.startingFormation ? `the team's STARTING FORMATION is ${options.context.startingFormation}. Note whether the shape matches this formation or has deviated.` : 'the squad positions listed above show the INTENDED formation.'} Note if pupils appear to be playing a different role (common in school sport when teams are short on pupils).
 2. Key tactical moments (attacks, defensive actions, transitions, set pieces)
-3. Individual pupil actions (good AND bad) — be specific about what you see each pupil do:${squadPlayers.length > 0 ? `
+3. Individual pupil actions (good AND bad) - be specific about what you see each pupil do:${squadPlayers.length > 0 ? `
    - FIRST try to identify pupils by reading SHIRT NUMBERS visible in the frames. Match numbers to the squad list.
-   - If shirt numbers are NOT clearly visible (common in grassroots footage), identify pupils by POSITION instead. Use the squad list positions to map observations — e.g. "the left-back" → #3 ${squadPlayers.find(p => { const ps = positionStrings(p.positions); return ps.includes('LB') || (p.match_position === 'LB') })?.name || 'Pupil'}, "the goalkeeper" → #1 ${squadPlayers.find(p => { const ps = positionStrings(p.positions); return ps.includes('GK') || (p.match_position === 'GK') })?.name || 'Pupil'}.
-   - BUILDING VISUAL PROFILES: When you CAN read a shirt number, also note any visual descriptors that will help identify that pupil in frames where the number is NOT visible — e.g. height (tall/short/average relative to teammates), build (slim/stocky/athletic), hair colour/style, sleeve length (long/short sleeves), distinctive features (headband, different coloured boots, goalkeeper gloves, captain's armband, etc). These profiles accumulate across segments to improve identification consistency.
+   - If shirt numbers are NOT clearly visible (common in grassroots footage), identify pupils by POSITION instead. Use the squad list positions to map observations - e.g. "the left-back" → #3 ${squadPlayers.find(p => { const ps = positionStrings(p.positions); return ps.includes('LB') || (p.match_position === 'LB') })?.name || 'Pupil'}, "the goalkeeper" → #1 ${squadPlayers.find(p => { const ps = positionStrings(p.positions); return ps.includes('GK') || (p.match_position === 'GK') })?.name || 'Pupil'}.
+   - BUILDING VISUAL PROFILES: When you CAN read a shirt number, also note any visual descriptors that will help identify that pupil in frames where the number is NOT visible - e.g. height (tall/short/average relative to teammates), build (slim/stocky/athletic), hair colour/style, sleeve length (long/short sleeves), distinctive features (headband, different coloured boots, goalkeeper gloves, captain's armband, etc). These profiles accumulate across segments to improve identification consistency.
    - Note SPECIFIC actions: "won a header", "lost their marker", "played a through ball", "was caught upfield leaving space behind"
-   - Include both positive AND negative observations — don't just note who touched the ball.
+   - Include both positive AND negative observations - don't just note who touched the ball.
    - If a defender is out of position when the opponent attacks, note this even if they weren't directly involved in the goal.
-   - You MUST attempt to identify actions for as many pupils as possible — even "held position well" or "was uninvolved in this segment" counts.
-   - GOALKEEPER: Pay special attention to the GK — note saves, catches, punches, distribution (goal kicks, throws), communication, sweeping, and any 1v1 situations. Grassroots GKs are usually busy — do NOT default to "quiet" unless there was genuinely zero action in their area.
-   - DEFENDERS GOING FORWARD: Note when defenders push forward, overlap, or create attacking chances — this is just as important as their defensive work.` : ''}
-4. Any notable patterns — defensive errors, gaps in the shape, good combination play, pressing triggers
-5. CAMERA PERSPECTIVE: This footage is filmed from a fixed sideline camera. You CANNOT reliably determine the pitch's left vs right side from the camera angle — "screen-left" may be either end of the pitch, and teams switch ends at half-time. Do NOT state "left channel" or "right channel" unless you can confirm the side from shirt numbers and known pupil positions (e.g. if you can identify the left-back, the channel they are in is the left channel). When uncertain, use "wide channel", "out wide", or "from the flank" instead.
+   - You MUST attempt to identify actions for as many pupils as possible - even "held position well" or "was uninvolved in this segment" counts.
+   - GOALKEEPER: Pay special attention to the GK - note saves, catches, punches, distribution (goal kicks, throws), communication, sweeping, and any 1v1 situations. Grassroots GKs are usually busy - do NOT default to "quiet" unless there was genuinely zero action in their area.
+   - DEFENDERS GOING FORWARD: Note when defenders push forward, overlap, or create attacking chances - this is just as important as their defensive work.` : ''}
+4. Any notable patterns - defensive errors, gaps in the shape, good combination play, pressing triggers
+5. CAMERA PERSPECTIVE: This footage is filmed from a fixed sideline camera. You CANNOT reliably determine the pitch's left vs right side from the camera angle - "screen-left" may be either end of the pitch, and teams switch ends at half-time. Do NOT state "left channel" or "right channel" unless you can confirm the side from shirt numbers and known pupil positions (e.g. if you can identify the left-back, the channel they are in is the left channel). When uncertain, use "wide channel", "out wide", or "from the flank" instead.
 6. POSITION TRACKING: Players should be assumed to be playing the position listed in the squad data unless you have CLEAR visual evidence across MULTIPLE frames that they are in a completely different role. Do NOT assume a pupil changed position or went in goal based on a single ambiguous frame.
 
 Return JSON:
@@ -261,7 +261,7 @@ Return JSON:
     { "category": "${taxonomy.observationCategories.join('|')}", "observation": "...", "timestamp": "Xm:XXs", "importance": "high|medium|low" }
   ],
   "playerNotes": [
-    { "squad_number": 7, "name": "Pupil Name", "action": "what they did", "quality": "positive|negative|neutral", "timestamp": "Xm:XXs", "visual": "brief visual descriptors if shirt number was confirmed — e.g. tall, dark hair, long sleeves" }
+    { "squad_number": 7, "name": "Pupil Name", "action": "what they did", "quality": "positive|negative|neutral", "timestamp": "Xm:XXs", "visual": "brief visual descriptors if shirt number was confirmed - e.g. tall, dark hair, long sleeves" }
   ]
 }`,
   })
@@ -275,7 +275,7 @@ Return JSON:
 
   try {
     const text = response.content[0].text
-    // Strip markdown code fences — handle 3+ backticks, same-line or multi-line
+    // Strip markdown code fences - handle 3+ backticks, same-line or multi-line
     let cleaned = text.replace(/^`{3,}(?:json)?\s*/i, '').replace(/\s*`{3,}\s*$/i, '').trim()
     try {
       return JSON.parse(cleaned)
@@ -306,31 +306,31 @@ function getAgeFeedbackGuidance(ageGroup) {
   if (!age || isNaN(age)) return ''
 
   if (age <= 10) {
-    return `\nFEEDBACK TONE (${ageGroup} — young pupils):
-- Be very encouraging and positive — focus heavily on what they did well
+    return `\nFEEDBACK TONE (${ageGroup} - young pupils):
+- Be very encouraging and positive - focus heavily on what they did well
 - Frame improvements as "next steps" or "things to try" rather than criticisms
-- Keep language simple and fun — avoid tactical jargon
+- Keep language simple and fun - avoid tactical jargon
 - Celebrate effort, bravery, and teamwork above technical ability
-- Ratings should still DIFFERENTIATE — a pupil who stood out positively should score higher than one who was quiet. Use the 5-9 range, not a flat score for everyone.`
+- Ratings should still DIFFERENTIATE - a pupil who stood out positively should score higher than one who was quiet. Use the 5-9 range, not a flat score for everyone.`
   } else if (age <= 12) {
-    return `\nFEEDBACK TONE (${ageGroup} — developing pupils):
+    return `\nFEEDBACK TONE (${ageGroup} - developing pupils):
 - Be encouraging but start introducing specific areas to work on
-- Balance praise with constructive pointers — aim for 2 positives per 1 improvement
+- Balance praise with constructive pointers - aim for 2 positives per 1 improvement
 - Use simple tactical language where appropriate (positioning, passing, movement)
 - Recognise effort and improvement, not just outcomes
-- Use the full 5-9 scoring range — differentiate between pupils who stood out and those who were quieter`
+- Use the full 5-9 scoring range - differentiate between pupils who stood out and those who were quieter`
   } else if (age <= 14) {
-    return `\nFEEDBACK TONE (${ageGroup} — adolescent pupils):
-- Balanced and constructive — honest about strengths and weaknesses
+    return `\nFEEDBACK TONE (${ageGroup} - adolescent pupils):
+- Balanced and constructive - honest about strengths and weaknesses
 - Can use tactical terminology (pressing triggers, defensive shape, transitions)
 - Be specific about what to improve and how
 - Acknowledge good performances directly but don't sugarcoat areas needing work
-- Use the full 4-9 scoring range — differentiate clearly between performances`
+- Use the full 4-9 scoring range - differentiate clearly between performances`
   } else {
-    return `\nFEEDBACK TONE (${ageGroup} — older youth pupils):
-- Direct and detailed — these pupils can handle honest, specific feedback
+    return `\nFEEDBACK TONE (${ageGroup} - older youth pupils):
+- Direct and detailed - these pupils can handle honest, specific feedback
 - Use full tactical language and expect higher standards
-- Be critical where warranted — they need to hear what's not working
+- Be critical where warranted - they need to hear what's not working
 - Focus on decision-making, game intelligence, and consistency
 - Hold to higher standards: a 7 should mean genuinely good, not just "tried hard"`
   }
@@ -346,23 +346,23 @@ function getResultScoringContext(context) {
   const isDraw = gd === 0 || result === 'Draw'
   const cleanSheet = goalsAgainst === 0
 
-  // Result context — NOT baselines. Ratings should always be differentiated based on individual performance.
+  // Result context - NOT baselines. Ratings should always be differentiated based on individual performance.
   if (isWin && gd >= 2) {
-    lines.push('- This was a convincing WIN — the team performed well collectively')
-    lines.push('- A win means more pupils may deserve higher ratings, but NOT all of them — some pupils will have contributed more than others. Still use the full range.')
+    lines.push('- This was a convincing WIN - the team performed well collectively')
+    lines.push('- A win means more pupils may deserve higher ratings, but NOT all of them - some pupils will have contributed more than others. Still use the full range.')
   } else if (isWin) {
-    lines.push('- This was a WIN — the team got the result')
+    lines.push('- This was a WIN - the team got the result')
     lines.push('- A win does NOT mean everyone gets the same score. Identify who drove the result and who was carried by teammates.')
   } else if (isDraw) {
-    lines.push('- This was a DRAW — assess each pupil individually')
+    lines.push('- This was a DRAW - assess each pupil individually')
   } else {
-    lines.push('- This was a LOSS — but still assess individuals fairly, not just the scoreline')
-    lines.push('- Some pupils may have performed well despite the result — recognise them. Others may have been at fault — note that too.')
+    lines.push('- This was a LOSS - but still assess individuals fairly, not just the scoreline')
+    lines.push('- Some pupils may have performed well despite the result - recognise them. Others may have been at fault - note that too.')
   }
 
   // Clean sheet bonus
   if (cleanSheet && (isWin || isDraw)) {
-    lines.push('- CLEAN SHEET: defenders and goalkeeper deserve credit for keeping a clean sheet — but still differentiate between them (e.g. a GK who made several saves vs a CB who was barely tested)')
+    lines.push('- CLEAN SHEET: defenders and goalkeeper deserve credit for keeping a clean sheet - but still differentiate between them (e.g. a GK who made several saves vs a CB who was barely tested)')
   }
 
   // Opponent strength context
@@ -371,11 +371,11 @@ function getResultScoringContext(context) {
     const oppWon = opponentLeague.won
     const oppPlayed = opponentLeague.played
     if (oppPos && oppPos <= 3) {
-      lines.push(`- The opponent is ${ordinal(oppPos)} in the league (${oppWon}W from ${oppPlayed} games) — this is a TOP team`)
-      if (isWin) lines.push('- Beating a top-of-the-table team is a significant achievement — reflect this in ratings (most pupils 7-8+)')
-      if (cleanSheet) lines.push('- Keeping a clean sheet against a top team is exceptional — defenders/GK merit 8+')
+      lines.push(`- The opponent is ${ordinal(oppPos)} in the league (${oppWon}W from ${oppPlayed} games) - this is a TOP team`)
+      if (isWin) lines.push('- Beating a top-of-the-table team is a significant achievement - reflect this in ratings (most pupils 7-8+)')
+      if (cleanSheet) lines.push('- Keeping a clean sheet against a top team is exceptional - defenders/GK merit 8+')
     } else if (oppPos && oppPos <= 6) {
-      lines.push(`- Opponent is ${ordinal(oppPos)} — a strong mid-table team`)
+      lines.push(`- Opponent is ${ordinal(oppPos)} - a strong mid-table team`)
     }
   }
 
@@ -408,7 +408,7 @@ ${segmentSummaries}
 ${contextBlock}
 
 Now synthesise these into a comprehensive match analysis:
-1. FORMATION & SHAPE: ${context.startingFormation ? `${ourTeamLabel} were SET UP in a ${context.startingFormation} formation. Your formation observation MUST reference this starting formation explicitly — e.g. "Started in a ${context.startingFormation}" — and then describe how the shape looked in practice. Did they maintain it? Did it morph into something different in/out of possession? Were there deviations from the intended shape?` : `What formation is ${ourTeamLabel} playing? Use the squad position data to determine the EXPECTED shape.`} If pupils appear to be playing different roles from what is listed, note this — in school ${term.sport}, pupils often fill in wherever needed.
+1. FORMATION & SHAPE: ${context.startingFormation ? `${ourTeamLabel} were SET UP in a ${context.startingFormation} formation. Your formation observation MUST reference this starting formation explicitly - e.g. "Started in a ${context.startingFormation}" - and then describe how the shape looked in practice. Did they maintain it? Did it morph into something different in/out of possession? Were there deviations from the intended shape?` : `What formation is ${ourTeamLabel} playing? Use the squad position data to determine the EXPECTED shape.`} If pupils appear to be playing different roles from what is listed, note this - in school ${term.sport}, pupils often fill in wherever needed.
 2. KEY OBSERVATIONS: What stands out tactically? Patterns across the ${term.matchWord}?
 3. STRENGTHS: What ${ourTeamLabel} does well
 4. AREAS TO IMPROVE: What needs work (be specific and constructive)
@@ -418,7 +418,7 @@ Now synthesise these into a comprehensive match analysis:
 Remember this is school-level ${term.sport} (ages 8-16, PE teachers and school coaches). Keep advice practical and age-appropriate.
 IMPORTANT: Always refer to our team as "${ourTeamLabel}" (not "the blue team" or similar). Focus on ${ourTeamLabel} specifically.
 
-IMPORTANT: Generate playerFeedback FIRST — it is the most valuable part of the analysis.
+IMPORTANT: Generate playerFeedback FIRST - it is the most valuable part of the analysis.
 
 Return JSON:
 {
@@ -438,66 +438,66 @@ ${squadPlayers.length > 0 ? (() => {
   const hasLineupData = squadPlayers.some(p => p.is_starting !== undefined && p.is_starting !== null)
   const starters = hasLineupData ? squadPlayers.filter(p => p.is_starting) : squadPlayers
   const subs = hasLineupData ? squadPlayers.filter(p => !p.is_starting) : []
-  return `PLAYER FEEDBACK — THESE ARE THE MOST IMPORTANT RULES:
+  return `PLAYER FEEDBACK - THESE ARE THE MOST IMPORTANT RULES:
 
-PLAYERS: ${starters.map(p => { const pStrs = positionStrings(p.positions); const pos = p.match_position || (pStrs.length ? pStrs.join('/') : 'unknown'); const isProfile = !p.match_position && pStrs.length > 0; return `#${p.squad_number || '?'} ${p.name} (${pos}${isProfile ? ' — profile position' : ''})` }).join(', ')}${subs.length > 0 ? `\nSUBS: ${subs.map(p => { const pStrs = positionStrings(p.positions); const pos = p.match_position || (pStrs.length ? pStrs.join('/') : 'unknown'); const isProfile = !p.match_position && pStrs.length > 0; return `#${p.squad_number || '?'} ${p.name} (${pos}${isProfile ? ' — profile position' : ''})` }).join(', ')}` : ''}
+PLAYERS: ${starters.map(p => { const pStrs = positionStrings(p.positions); const pos = p.match_position || (pStrs.length ? pStrs.join('/') : 'unknown'); const isProfile = !p.match_position && pStrs.length > 0; return `#${p.squad_number || '?'} ${p.name} (${pos}${isProfile ? ' - profile position' : ''})` }).join(', ')}${subs.length > 0 ? `\nSUBS: ${subs.map(p => { const pStrs = positionStrings(p.positions); const pos = p.match_position || (pStrs.length ? pStrs.join('/') : 'unknown'); const isProfile = !p.match_position && pStrs.length > 0; return `#${p.squad_number || '?'} ${p.name} (${pos}${isProfile ? ' - profile position' : ''})` }).join(', ')}` : ''}
 
-RULE 1 — SPECIFIC OBSERVATIONS ARE MANDATORY:
-Every pupil's feedback MUST reference specific things from the segment data above — actual actions, moments, or patterns you observed.
+RULE 1 - SPECIFIC OBSERVATIONS ARE MANDATORY:
+Every pupil's feedback MUST reference specific things from the segment data above - actual actions, moments, or patterns you observed.
 GOOD feedback: "Won 3 aerial duels and made a crucial block at 23 minutes, but was caught too far up the pitch for their second goal at 31 minutes leaving space behind him."
 BAD feedback: "Contributed to the team effort from centre-back. Played their part in the overall team performance." ← NEVER write generic feedback like this. It is useless to a coach.
 If the segment data identified pupils by POSITION rather than shirt number, map those positional observations to the correct pupil using the squad list above. E.g. if the segments reference "the left-back" and the squad shows #3 as LB, attribute those observations to #3.
-If you have fewer specific observations for a pupil, reference their positioning, their partnership with nearby pupils, or how the team's shape around them worked — but always be concrete.
+If you have fewer specific observations for a pupil, reference their positioning, their partnership with nearby pupils, or how the team's shape around them worked - but always be concrete.
 
-RULE 2 — EVALUATE AGAINST THE ROLE THEY ACTUALLY PLAYED:
+RULE 2 - EVALUATE AGAINST THE ROLE THEY ACTUALLY PLAYED:
 Some positions above are match-day assignments; others marked "profile position" are the pupil's usual position and they may have played a different role in THIS ${term.matchWord}. In school ${term.sport}, pupils often fill in wherever needed.
 - If a pupil has a MATCH-DAY position assigned (not marked "profile position"), TRUST that position. Do NOT assume they switched to a completely different role (e.g. a pupil assigned LCB did NOT go in goal) unless you have overwhelming visual evidence from MULTIPLE segments showing them clearly in a different position.
-- If a position is marked "profile position", the pupil may or may not be playing that exact role — use segment observations to determine where they operated.
-- Do NOT fabricate substitutions or position changes you didn't clearly observe. If SUBSTITUTIONS MADE data is provided above, USE it — the incoming pupil takes the outgoing pupil's role/position from that minute onward. If no substitution data is provided, assume starters played the full match unless you have specific visual evidence.
-- Do NOT repeatedly reference a pupil's listed position in the feedback text — focus on what they DID and how well they did it.
+- If a position is marked "profile position", the pupil may or may not be playing that exact role - use segment observations to determine where they operated.
+- Do NOT fabricate substitutions or position changes you didn't clearly observe. If SUBSTITUTIONS MADE data is provided above, USE it - the incoming pupil takes the outgoing pupil's role/position from that minute onward. If no substitution data is provided, assume starters played the full match unless you have specific visual evidence.
+- Do NOT repeatedly reference a pupil's listed position in the feedback text - focus on what they DID and how well they did it.
 - A fullback caught upfield when the opponent scores = their poor positioning contributed to the goal, even if someone else was closer
 - A centre-back who stays disciplined and rarely appears in highlights may be performing excellently
 - A midfielder in a double pivot should be judged on how they shield the defence, not on how many forward runs they make
-- "Activity" alone is not a positive — running around aimlessly out of position is a negative
+- "Activity" alone is not a positive - running around aimlessly out of position is a negative
 
-RULE 3 — DIFFERENTIATE RATINGS (CRITICAL — DO NOT GIVE EVERYONE THE SAME SCORE):
+RULE 3 - DIFFERENTIATE RATINGS (CRITICAL - DO NOT GIVE EVERYONE THE SAME SCORE):
 Not every pupil had the same match. Ratings MUST vary based on actual performance.
-- 4-5/10: Poor — errors leading to goals, frequently out of position, significant negative impact
-- 6/10: Below par — did some things okay but clear weaknesses or lapses that a coach needs to address
-- 7/10: Solid — fulfilled their role competently with no major errors AND showed some positive moments
-- 8/10: Very good — stood out positively with multiple specific good moments beyond just doing their job
-- 9/10: Exceptional — dominated their area of the pitch with consistent quality, reserved for 1-2 pupils max per match
-- 10/10: Perfect — flawless, match-winning performance. Almost never awarded.
+- 4-5/10: Poor - errors leading to goals, frequently out of position, significant negative impact
+- 6/10: Below par - did some things okay but clear weaknesses or lapses that a coach needs to address
+- 7/10: Solid - fulfilled their role competently with no major errors AND showed some positive moments
+- 8/10: Very good - stood out positively with multiple specific good moments beyond just doing their job
+- 9/10: Exceptional - dominated their area of the pitch with consistent quality, reserved for 1-2 pupils max per match
+- 10/10: Perfect - flawless, match-winning performance. Almost never awarded.
 
 RATING DISTRIBUTION RULES (MANDATORY):
-1. You MUST use at least 3 different ratings across the squad — ideally 4+
+1. You MUST use at least 3 different ratings across the squad - ideally 4+
 2. No more than 3 pupils can share the same rating. If you have 4+ at the same number, move the best one UP and the weakest one DOWN.
 3. You MUST have at least one pupil rated BELOW the squad average AND at least one rated ABOVE. There is always a best and worst performer.
 4. Before finalising: rank all pupils mentally from best to worst performance. The top-ranked pupil MUST have the highest rating and the bottom-ranked MUST have the lowest. If they're the same number, your ratings are wrong.
 5. If goals were conceded, at least one defender or midfielder at fault should score lower than the squad average.
-6. A goalkeeper who made several important saves is NOT the same rating as a midfielder who was anonymous — the GK clearly had the better match.
-7. Players directly involved in goals (scorers, assisters) should generally rate higher than pupils with no direct contributions — unless their overall play was poor outside those moments.
+6. A goalkeeper who made several important saves is NOT the same rating as a midfielder who was anonymous - the GK clearly had the better match.
+7. Players directly involved in goals (scorers, assisters) should generally rate higher than pupils with no direct contributions - unless their overall play was poor outside those moments.
 
-RULE 4 — POSITION-SPECIFIC EVALUATION:
+RULE 4 - POSITION-SPECIFIC EVALUATION:
 Evaluate pupils according to their role. Different positions contribute differently:
 
 ${Object.values(taxonomy.positionGuidance).map(g => g.guidance).join('\n\n')}
 
-RULE 5 — COMPLETENESS:
+RULE 5 - COMPLETENESS:
 - You MUST include feedback for ALL ${starters.length} starting pupils
 - NEVER include pupils not in the squad list above
 - For subs: only include if evidence they came on in later segments
 - Use shirt numbers from the video AND squad list together
 
-RULE 6 — ${taxonomy.capabilities.label.toUpperCase()}:
+RULE 6 - ${taxonomy.capabilities.label.toUpperCase()}:
 For each pupil, evaluate against these ${taxonomy.capabilities.items.length} core capabilities where evidence exists:
 ${taxonomy.capabilities.items.map(c => `- ${c.label}: ${c.description}`).join('\n')}
 
 Include a "capabilities" object for each pupil with only the capabilities you have specific evidence for.
 Set value to one of: ${taxonomy.capabilityScale.map(s => `"${s}"`).join(', ')}, or omit if not observed.
 
-RULE 7 — CAMERA PERSPECTIVE AND DIRECTIONAL ACCURACY:
-The footage is from a fixed sideline camera. Do NOT confidently state "left channel" or "right channel" based on screen position alone — teams switch ends at ${term.periods}, so screen-left/right does not reliably correspond to the actual pitch sides. Only reference a specific channel (left/right) if you can confirm it by identifying a known pupil's assigned position. Otherwise use "wide channel", "out wide", or "from the flank".${resultScoringContext}${ageFeedbackGuidance}`
+RULE 7 - CAMERA PERSPECTIVE AND DIRECTIONAL ACCURACY:
+The footage is from a fixed sideline camera. Do NOT confidently state "left channel" or "right channel" based on screen position alone - teams switch ends at ${term.periods}, so screen-left/right does not reliably correspond to the actual pitch sides. Only reference a specific channel (left/right) if you can confirm it by identifying a known pupil's assigned position. Otherwise use "wide channel", "out wide", or "from the flank".${resultScoringContext}${ageFeedbackGuidance}`
 })() : ''}`
 
   const params = {
@@ -509,9 +509,9 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
   }
   let response = await callClaudeWithRetry(params, 3, CLAUDE_SYNTHESIS_TIMEOUT_MS)
 
-  // Detect truncation — if the response was cut off, the JSON (especially playerFeedback) may be incomplete
+  // Detect truncation - if the response was cut off, the JSON (especially playerFeedback) may be incomplete
   if (response.stop_reason === 'max_tokens') {
-    console.warn(`[Gaffer] Synthesis response truncated at ${params.max_tokens} tokens — retrying with higher limit`)
+    console.warn(`[Gaffer] Synthesis response truncated at ${params.max_tokens} tokens - retrying with higher limit`)
     params.max_tokens = 32000
     response = await callClaudeWithRetry(params, 3, CLAUDE_SYNTHESIS_TIMEOUT_MS)
     if (response.stop_reason === 'max_tokens') {
@@ -521,7 +521,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
 
   try {
     let text = response.content[0].text
-    // Strip markdown code fences — handle 3+ backticks, same-line or multi-line
+    // Strip markdown code fences - handle 3+ backticks, same-line or multi-line
     text = text.replace(/^`{3,}(?:json)?\s*/i, '').replace(/\s*`{3,}\s*$/i, '').trim()
 
     // Normalize snake_case keys from AI response to camelCase
@@ -536,7 +536,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
       return obj
     }
 
-    // Try direct parse first (most common case — clean JSON)
+    // Try direct parse first (most common case - clean JSON)
     try {
       return normalizeKeys(JSON.parse(text))
     } catch (e1) {
@@ -564,7 +564,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
       }
     }
 
-    // All parse attempts failed — extract what we can via regex
+    // All parse attempts failed - extract what we can via regex
     console.log('[Gaffer] Falling back to regex field extraction')
     const result = { summary: text }
 
@@ -583,13 +583,13 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
       try { result.recommendations = JSON.parse(recMatch[1]) } catch {}
     }
 
-    // Match both camelCase and snake_case variants — use GREEDY match to capture the full array
+    // Match both camelCase and snake_case variants - use GREEDY match to capture the full array
     const pfMatch = text.match(/"pupil[_]?[Ff]eedback"\s*:\s*(\[[\s\S]*\])\s*[,}]/s)
     if (pfMatch) {
       try {
         result.playerFeedback = JSON.parse(pfMatch[1])
       } catch (pfErr) {
-        console.warn(`[Gaffer] Regex-extracted playerFeedback failed to parse (${pfErr.message}) — captured ${pfMatch[1].length} chars`)
+        console.warn(`[Gaffer] Regex-extracted playerFeedback failed to parse (${pfErr.message}) - captured ${pfMatch[1].length} chars`)
         // Try to salvage: extract individual complete objects from the truncated array
         const objectMatches = pfMatch[1].matchAll(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g)
         const salvaged = []
@@ -616,7 +616,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
  * Analyse a Mux video by extracting frames and sending to Claude Vision.
  * For full matches: samples many frames, batches into segments, then synthesises.
  * For clips: single-pass analysis with denser frame sampling.
- * Runs asynchronously — caller should not await this in the request cycle.
+ * Runs asynchronously - caller should not await this in the request cycle.
  */
 export async function analyseVideoWithMux(video, options = {}) {
   const { analysisType = 'full_match', pupilId, clipId, context = {}, teamColour, squadPlayers = [] } = options
@@ -742,7 +742,7 @@ export async function analyseVideoWithMux(video, options = {}) {
         if (analysisId) {
           const statusCheck = await pool.query('SELECT status FROM video_ai_analysis WHERE id = $1', [analysisId])
           if (statusCheck.rows[0]?.status === 'cancelled') {
-            console.log(`[Gaffer] Analysis ${analysisId} cancelled by user — stopping`)
+            console.log(`[Gaffer] Analysis ${analysisId} cancelled by user - stopping`)
             return
           }
         }
@@ -818,7 +818,7 @@ export async function analyseVideoWithMux(video, options = {}) {
       if (analysisId) {
         const statusCheck = await pool.query('SELECT status FROM video_ai_analysis WHERE id = $1', [analysisId])
         if (statusCheck.rows[0]?.status === 'cancelled') {
-          console.log(`[Gaffer] Analysis ${analysisId} cancelled by user — stopping before synthesis`)
+          console.log(`[Gaffer] Analysis ${analysisId} cancelled by user - stopping before synthesis`)
           return
         }
       }
@@ -831,7 +831,7 @@ export async function analyseVideoWithMux(video, options = {}) {
       if (squadPlayers.length > 0) {
         // Normalize key: AI may return "player_feedback" (snake_case) instead of "playerFeedback" (camelCase)
         if (!analysis.playerFeedback && analysis.player_feedback) {
-          console.log(`[Gaffer] AI returned snake_case "player_feedback" — normalizing to camelCase`)
+          console.log(`[Gaffer] AI returned snake_case "player_feedback" - normalizing to camelCase`)
           analysis.playerFeedback = analysis.player_feedback
         }
 
@@ -859,13 +859,13 @@ export async function analyseVideoWithMux(video, options = {}) {
           // Safeguard: if filtering removed ALL entries, the AI likely used slightly different names/numbers
           // Keep the originals rather than replacing everything with generic placeholders
           if (filtered.length === 0 && before > 0) {
-            console.warn(`[Gaffer] WARNING: Filtering removed ALL ${before} playerFeedback entries — keeping originals (likely name/number mismatch)`)
+            console.warn(`[Gaffer] WARNING: Filtering removed ALL ${before} playerFeedback entries - keeping originals (likely name/number mismatch)`)
           } else {
             analysis.playerFeedback = filtered
           }
         }
 
-        // Ensure all starters have feedback — fill in any the AI missed
+        // Ensure all starters have feedback - fill in any the AI missed
         const starters = squadPlayers.filter(p => p.is_starting)
         if (starters.length > 0) {
           const feedbackNumbers = new Set((analysis.playerFeedback || []).map(pf => pf.squad_number).filter(Boolean).map(Number))
@@ -887,7 +887,7 @@ export async function analyseVideoWithMux(video, options = {}) {
               // Generate a slightly more useful default based on position type
               let defaultFeedback
               if (['GK'].includes(pos)) {
-                defaultFeedback = `Limited footage of the goalkeeper — individual actions were difficult to assess from the available angles. Coach observation recommended for shot-stopping, distribution and communication.`
+                defaultFeedback = `Limited footage of the goalkeeper - individual actions were difficult to assess from the available angles. Coach observation recommended for shot-stopping, distribution and communication.`
               } else if (['CB', 'LCB', 'RCB'].includes(pos)) {
                 defaultFeedback = `Played from ${posLabel} but individual contributions were difficult to distinguish in the footage. Review defensive positioning, aerial ability and distribution in training.`
               } else if (['LB', 'RB', 'LWB', 'RWB'].includes(pos)) {
@@ -915,16 +915,16 @@ export async function analyseVideoWithMux(video, options = {}) {
   } catch (err) {
     console.error('[Gaffer] Analysis failed:', err.message)
     // Extract a user-friendly error message
-    let userMessage = 'Analysis failed — please try again'
+    let userMessage = 'Analysis failed - please try again'
     const status = err?.status || err?.error?.status
     if (status === 400 && (err.message?.includes('balance') || err.message?.includes('billing'))) {
-      userMessage = 'AI credits exhausted — please top up your Anthropic API balance'
+      userMessage = 'AI credits exhausted - please top up your Anthropic API balance'
     } else if (status === 401) {
-      userMessage = 'API key invalid — check your Anthropic API key in settings'
+      userMessage = 'API key invalid - check your Anthropic API key in settings'
     } else if (status === 429) {
-      userMessage = 'Rate limited — too many requests, please try again in a few minutes'
+      userMessage = 'Rate limited - too many requests, please try again in a few minutes'
     } else if (status === 529 || err.message?.includes('overloaded')) {
-      userMessage = 'AI service is busy — please try again in a few minutes'
+      userMessage = 'AI service is busy - please try again in a few minutes'
     }
     if (analysisId) {
       await pool.query('UPDATE video_ai_analysis SET status = $1, error = $2, progress = NULL WHERE id = $3',
@@ -977,8 +977,8 @@ export async function analyseVideoWithMux(video, options = {}) {
     if (analysisId) {
       try {
         await pool.query('UPDATE video_ai_analysis SET status = $1, error = $2, progress = NULL WHERE id = $3',
-          ['failed', 'Failed to save analysis results — please try again', analysisId])
-      } catch { /* last resort — nothing more we can do */ }
+          ['failed', 'Failed to save analysis results - please try again', analysisId])
+      } catch { /* last resort - nothing more we can do */ }
     }
   }
 }
@@ -989,7 +989,7 @@ export async function analyseVideoWithMux(video, options = {}) {
 export async function savePlayerObservations(video, playerFeedback, squadPlayers, options) {
   const { userId, includeRatings = false } = options
   if (!userId) {
-    console.log('[Gaffer] No userId provided — skipping observation auto-save')
+    console.log('[Gaffer] No userId provided - skipping observation auto-save')
     return
   }
 

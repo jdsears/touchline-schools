@@ -24,7 +24,7 @@ function extractYouTubeId(url) {
   return null
 }
 
-// Predefined sections — used for lazy seeding and team creation
+// Predefined sections - used for lazy seeding and team creation
 const PREDEFINED_SECTIONS = [
   ['Attacking Play',         'attacking-play',       1],
   ['Defending',              'defending',             2],
@@ -83,7 +83,7 @@ async function ensureTables() {
       watched_at TIMESTAMPTZ DEFAULT NOW()
     )
   `)
-  // Add unique constraints if missing (safe to retry — throws if exists, caught silently)
+  // Add unique constraints if missing (safe to retry - throws if exists, caught silently)
   try { await pool.query(`ALTER TABLE library_sections ADD CONSTRAINT library_sections_team_slug_uq UNIQUE (team_id, slug)`) } catch {}
   try { await pool.query(`ALTER TABLE library_video_watches ADD CONSTRAINT library_video_watches_video_user_uq UNIQUE (video_id, user_id)`) } catch {}
 
@@ -301,7 +301,7 @@ router.get('/videos/:videoId', authenticateToken, async (req, res, next) => {
   }
 })
 
-// POST /api/video-library/videos — Add a YouTube video
+// POST /api/video-library/videos - Add a YouTube video
 router.post('/videos', authenticateToken, async (req, res, next) => {
   try {
     if (!canManage(req.user)) return res.status(403).json({ message: 'Not authorised' })
@@ -327,7 +327,7 @@ router.post('/videos', authenticateToken, async (req, res, next) => {
   }
 })
 
-// POST /api/video-library/videos/upload — Create Mux direct upload + library_videos row
+// POST /api/video-library/videos/upload - Create Mux direct upload + library_videos row
 router.post('/videos/upload', authenticateToken, async (req, res, next) => {
   try {
     if (!canManage(req.user)) return res.status(403).json({ message: 'Not authorised' })

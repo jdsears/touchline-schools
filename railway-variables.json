@@ -1,5 +1,5 @@
 {
-  "$comment": "Railway environment variables — paste these into your Railway service's Variables tab. Replace placeholder values with your actual credentials.",
+  "$comment": "Railway environment variables - paste these into your Railway service's Variables tab. Replace placeholder values with your actual credentials.",
 
   "NODE_ENV": "production",
   "PORT": "3001",

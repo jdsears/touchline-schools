@@ -130,7 +130,7 @@ export default function CreateClub() {
 
           {showDpa && (
             <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-80 overflow-y-auto border border-navy-700">
-              <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) — v1.0</h3>
+              <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) - v1.0</h3>
 
               <p>This Data Processing Agreement ("DPA") forms part of the agreement between Touchline ("Processor") and the School ("Controller") for the use of the Touchline platform.</p>
 

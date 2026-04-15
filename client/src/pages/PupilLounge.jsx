@@ -1032,7 +1032,7 @@ export default function PupilLounge() {
                   <div className="min-w-0">
                     <p className="text-xs text-energy-400 font-medium">💪 Daily Motivation</p>
                     <p className="text-white text-sm font-medium italic">"{dailyQuote.quote}"</p>
-                    <p className="text-navy-400 text-xs">— {dailyQuote.author}</p>
+                    <p className="text-navy-400 text-xs">- {dailyQuote.author}</p>
                   </div>
                 </div>
               </div>
@@ -4504,7 +4504,7 @@ function MediaUploadModal({ matchId, onClose, onUpload, uploading }) {
 }
 
 // =============================================
-// Pupil Film Room — Educational video library
+// Pupil Film Room - Educational video library
 // =============================================
 
 function PlayerFilmRoom({ userId }) {

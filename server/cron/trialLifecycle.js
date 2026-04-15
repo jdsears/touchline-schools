@@ -60,7 +60,7 @@ export async function scanTrialLifecycle() {
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2)
     console.log(
-      `[TrialLifecycle] Scan complete in ${elapsed}s — ` +
+      `[TrialLifecycle] Scan complete in ${elapsed}s - ` +
       `${stats.teamsChecked} teams checked, ` +
       `${stats.emailsSent} emails sent`
     )

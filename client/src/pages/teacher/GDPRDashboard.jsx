@@ -214,7 +214,7 @@ function StatCard({ icon: Icon, label, value, color, warn }) {
 }
 
 // ---------------------------------------------------------------------------
-// Pupils Tab – search, export, consent, delete
+// Pupils Tab - search, export, consent, delete
 // ---------------------------------------------------------------------------
 function PupilsTab() {
   const [pupils, setPupils] = useState([])
@@ -475,7 +475,7 @@ function PupilGDPRRow({ pupil, expanded, onToggle, onExport, exportLoading, onDe
 }
 
 // ---------------------------------------------------------------------------
-// Requests Tab – list of all export/deletion requests
+// Requests Tab - list of all export/deletion requests
 // ---------------------------------------------------------------------------
 function RequestsTab() {
   const [requests, setRequests] = useState([])
@@ -499,7 +499,7 @@ function RequestsTab() {
       URL.revokeObjectURL(url)
       setRequests(prev => prev.map(r => r.id === request.id ? { ...r, status: 'downloaded' } : r))
     } catch {
-      toast.error('Failed to download — export may have expired')
+      toast.error('Failed to download - export may have expired')
     }
   }
 

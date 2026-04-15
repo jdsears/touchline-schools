@@ -1,14 +1,14 @@
 /**
- * SSO Routes – Microsoft 365 & Google Workspace for Education
+ * SSO Routes - Microsoft 365 & Google Workspace for Education
  *
- * GET  /api/sso/:provider/initiate  – start OAuth flow (returns redirect URL)
- * GET  /api/sso/:provider/callback  – OAuth callback from provider
- * GET  /api/sso/config              – get school's SSO config (HoD only)
- * PUT  /api/sso/config              – update school SSO config (HoD only)
- * GET  /api/sso/domains             – list allowed SSO domains
- * POST /api/sso/domains             – add domain to allowlist
- * DELETE /api/sso/domains/:domain   – remove domain from allowlist
- * GET  /api/sso/providers           – list available providers (public)
+ * GET  /api/sso/:provider/initiate  - start OAuth flow (returns redirect URL)
+ * GET  /api/sso/:provider/callback  - OAuth callback from provider
+ * GET  /api/sso/config              - get school's SSO config (HoD only)
+ * PUT  /api/sso/config              - update school SSO config (HoD only)
+ * GET  /api/sso/domains             - list allowed SSO domains
+ * POST /api/sso/domains             - add domain to allowlist
+ * DELETE /api/sso/domains/:domain   - remove domain from allowlist
+ * GET  /api/sso/providers           - list available providers (public)
  */
 
 import express from 'express'

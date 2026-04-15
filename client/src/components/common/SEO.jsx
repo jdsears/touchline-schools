@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async'
 
 const defaultMeta = {
-  title: 'MoonBoots Sports — School sport, all in one place',
-  description: 'The multi-sport platform for school PE departments. Curriculum PE, extra-curricular sport, assessment, reporting, and AI coaching in one place.',
+  title: 'MoonBoots Sports: The PE department platform for UK schools',
+  description: 'Bespoke PE department platform for UK schools. Curriculum PE, extra-curricular sport, assessment, reporting, and NGB-aligned AI coaching across 17 sports.',
   image: 'https://app.moonbootssports.com/og-image.png',
   url: 'https://app.moonbootssports.com',
 }

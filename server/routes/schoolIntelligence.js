@@ -47,7 +47,7 @@ async function trackAIUsage(schoolId, feature, model, inputTokens, outputTokens)
     return costGBP
   } catch (error) {
     console.error('Failed to track AI usage:', error)
-    // Don't throw — tracking failure shouldn't block the response
+    // Don't throw - tracking failure shouldn't block the response
   }
 }
 
@@ -84,7 +84,7 @@ function checkAICap(req, res, next) {
 // MATCH REPORTS
 // =============================================
 
-// POST /:schoolId/matches/:matchId/generate-report — Generate AI match report
+// POST /:schoolId/matches/:matchId/generate-report - Generate AI match report
 router.post(
   '/:schoolId/matches/:matchId/generate-report',
   authenticateToken,
@@ -188,7 +188,7 @@ router.post(
   }
 )
 
-// PUT /:schoolId/matches/:matchId/report — Edit/approve report
+// PUT /:schoolId/matches/:matchId/report - Edit/approve report
 router.put(
   '/:schoolId/matches/:matchId/report',
   authenticateToken,
@@ -241,7 +241,7 @@ router.put(
   }
 )
 
-// POST /:schoolId/matches/:matchId/report/send — Send report to parents
+// POST /:schoolId/matches/:matchId/report/send - Send report to parents
 router.post(
   '/:schoolId/matches/:matchId/report/send',
   authenticateToken,
@@ -328,7 +328,7 @@ router.post(
 // AI INSIGHTS
 // =============================================
 
-// GET /:schoolId/insights — All insights (paginated)
+// GET /:schoolId/insights - All insights (paginated)
 router.get(
   '/:schoolId/insights',
   authenticateToken,
@@ -371,7 +371,7 @@ router.get(
   }
 )
 
-// GET /:schoolId/teams/:teamId/insights — Team-specific insights
+// GET /:schoolId/teams/:teamId/insights - Team-specific insights
 router.get(
   '/:schoolId/teams/:teamId/insights',
   authenticateToken,
@@ -415,7 +415,7 @@ router.get(
   }
 )
 
-// PUT /:schoolId/insights/:id — Mark insight as seen/actioned
+// PUT /:schoolId/insights/:id - Mark insight as seen/actioned
 router.put(
   '/:schoolId/insights/:id',
   authenticateToken,
@@ -457,7 +457,7 @@ router.put(
 // SEASON REPORT
 // =============================================
 
-// POST /:schoolId/reports/season-summary — Generate season report
+// POST /:schoolId/reports/season-summary - Generate season report
 router.post(
   '/:schoolId/reports/season-summary',
   authenticateToken,
@@ -584,7 +584,7 @@ router.post(
   }
 )
 
-// GET /:schoolId/reports/season-summary/latest — Get latest report
+// GET /:schoolId/reports/season-summary/latest - Get latest report
 router.get(
   '/:schoolId/reports/season-summary/latest',
   authenticateToken,
@@ -629,7 +629,7 @@ router.get(
 // GRANT HELPER
 // =============================================
 
-// POST /:schoolId/grants/draft — Generate grant draft
+// POST /:schoolId/grants/draft - Generate grant draft
 router.post(
   '/:schoolId/grants/draft',
   authenticateToken,
@@ -712,7 +712,7 @@ router.post(
   }
 )
 
-// GET /:schoolId/grants/drafts — List saved drafts
+// GET /:schoolId/grants/drafts - List saved drafts
 router.get(
   '/:schoolId/grants/drafts',
   authenticateToken,
@@ -739,7 +739,7 @@ router.get(
   }
 )
 
-// PUT /:schoolId/grants/drafts/:id — Update draft
+// PUT /:schoolId/grants/drafts/:id - Update draft
 router.put(
   '/:schoolId/grants/drafts/:id',
   authenticateToken,
@@ -793,7 +793,7 @@ router.put(
 // COMPLIANCE ANALYSIS
 // =============================================
 
-// POST /:schoolId/compliance/ai-analysis — Run AI gap analysis
+// POST /:schoolId/compliance/ai-analysis - Run AI gap analysis
 router.post(
   '/:schoolId/compliance/ai-analysis',
   authenticateToken,
@@ -904,7 +904,7 @@ router.post(
   }
 )
 
-// GET /:schoolId/compliance/ai-analysis/latest — Most recent analysis
+// GET /:schoolId/compliance/ai-analysis/latest - Most recent analysis
 router.get(
   '/:schoolId/compliance/ai-analysis/latest',
   authenticateToken,
@@ -949,7 +949,7 @@ router.get(
 // COACH DEVELOPMENT
 // =============================================
 
-// GET /:schoolId/coaches/:userId/development-suggestions — AI suggestions
+// GET /:schoolId/coaches/:userId/development-suggestions - AI suggestions
 router.get(
   '/:schoolId/coaches/:userId/development-suggestions',
   authenticateToken,
@@ -1063,7 +1063,7 @@ router.get(
 // AI USAGE STATS (for school dashboard)
 // =============================================
 
-// GET /:schoolId/ai-usage — Get current month's AI usage
+// GET /:schoolId/ai-usage - Get current month's AI usage
 router.get(
   '/:schoolId/ai-usage',
   authenticateToken,
@@ -1130,7 +1130,7 @@ router.get(
 // ATTENDANCE INSIGHTS
 // =============================================
 
-// POST /:schoolId/teams/:teamId/attendance-insights — Generate AI attendance insights
+// POST /:schoolId/teams/:teamId/attendance-insights - Generate AI attendance insights
 router.post(
   '/:schoolId/teams/:teamId/attendance-insights',
   authenticateToken,
@@ -1251,7 +1251,7 @@ router.post(
         [
           schoolId,
           teamId,
-          `Attendance Insights — ${team.name}`,
+          `Attendance Insights - ${team.name}`,
           typeof insights === 'string' ? insights : JSON.stringify(insights),
           JSON.stringify({ sessions, playerPatterns, generated_at: new Date() }),
         ]

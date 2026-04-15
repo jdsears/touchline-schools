@@ -96,7 +96,7 @@ export async function seedFixtures(schoolId, teams, staff, pupils) {
     await insertMatch(y9Football.id, OPPONENTS.football[5], futureDate(14), 'home', null, null, null)
     await insertMatch(y9Football.id, OPPONENTS.football[6], futureDate(28), 'away', null, null, 'Thorpe St Andrew')
 
-    await insertTrainingSession(y9Football.id, pastDate(4), 'Defending shape – high press vs low block', null)
+    await insertTrainingSession(y9Football.id, pastDate(4), 'Defending shape - high press vs low block', null)
     await insertTrainingSession(y9Football.id, pastDate(11), 'Finishing: 1v1 situations', null)
   }
 
@@ -154,7 +154,7 @@ export async function seedFixtures(schoolId, teams, staff, pupils) {
     )
     await insertObservation(
       schoolId, year9[1].id, teacher1.id,
-      `${year9[1].name.split(' ')[0]} is making good progress with first touch. Still needs to work on decision-making when pressed high – tendency to play backwards rather than take players on.`,
+      `${year9[1].name.split(' ')[0]} is making good progress with first touch. Still needs to work on decision-making when pressed high - tendency to play backwards rather than take players on.`,
       'voice'
     )
     await insertObservation(
@@ -172,7 +172,7 @@ export async function seedFixtures(schoolId, teams, staff, pupils) {
     )
     await insertObservation(
       schoolId, year11[1].id, hodPe.id,
-      `Post-match discussion with ${year11[1].name.split(' ')[0]} – they articulated tactical awareness very well. Discussed potential for GCSE practical assessment and recommended additional coaching sessions.`,
+      `Post-match discussion with ${year11[1].name.split(' ')[0]} - they articulated tactical awareness very well. Discussed potential for GCSE practical assessment and recommended additional coaching sessions.`,
       'voice'
     )
     await insertObservation(

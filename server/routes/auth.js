@@ -140,7 +140,7 @@ router.post('/register', async (req, res, next) => {
     // Check if email should be auto-granted admin
     const shouldBeAdmin = isAdminEmail(email)
 
-    // Create user (defaults to free plan — no payment required to start)
+    // Create user (defaults to free plan - no payment required to start)
     const userResult = await pool.query(
       `INSERT INTO users (name, email, password_hash, role, team_id, is_admin)
        VALUES ($1, $2, $3, 'manager', $4, $5) RETURNING id, email, name, role, team_id, is_admin`,
@@ -202,7 +202,7 @@ router.post('/register', async (req, res, next) => {
         } catch { /* consent tables may not exist yet */ }
       } catch (clubError) {
         console.error('School creation during registration failed:', clubError)
-        // Don't fail the whole registration — user and team are created
+        // Don't fail the whole registration - user and team are created
       }
     }
 
@@ -443,7 +443,7 @@ router.get('/me', authenticateToken, async (req, res, next) => {
         }
       }
     } catch (refreshErr) {
-      // Non-critical — just skip the refresh
+      // Non-critical - just skip the refresh
       console.error('Token refresh failed:', refreshErr.message)
     }
 

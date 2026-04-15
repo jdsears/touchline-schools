@@ -9,7 +9,7 @@
  *  - nonSpec1: Non-specialist who uses the platform for afternoon clubs
  *  - nonSpec2: Non-specialist / Cover supervisor
  *
- * Passwords are all set to '' (empty) – login is disabled for demo users.
+ * Passwords are all set to '' (empty) - login is disabled for demo users.
  * A demo prospect is issued temp credentials by the admin provisioning flow.
  */
 
@@ -17,7 +17,7 @@ import pool from '../../config/database.js'
 import bcrypt from 'bcryptjs'
 
 async function createUser(data) {
-  // Use a deterministic bcrypt hash placeholder – actual demo login uses
+  // Use a deterministic bcrypt hash placeholder - actual demo login uses
   // one-time temp passwords issued by the admin provisioning flow.
   const passwordHash = await bcrypt.hash(data.tempPassword || 'demo-no-login', 10)
 
@@ -90,7 +90,7 @@ export async function seedStaff(schoolId) {
     ON CONFLICT DO NOTHING
   `, [directorOfSport.id])
 
-  // PE Teacher 1 – football & rugby specialist
+  // PE Teacher 1 - football & rugby specialist
   const teacher1 = await createUser({
     name: 'Mr Daniel Brennan',
     email: 'd.brennan.demo@ashworthpark.norfolk.sch.uk',
@@ -105,7 +105,7 @@ export async function seedStaff(schoolId) {
     ON CONFLICT DO NOTHING
   `, [teacher1.id])
 
-  // PE Teacher 2 – hockey & netball specialist
+  // PE Teacher 2 - hockey & netball specialist
   const teacher2 = await createUser({
     name: 'Miss Priya Sharma',
     email: 'p.sharma.demo@ashworthpark.norfolk.sch.uk',
@@ -120,7 +120,7 @@ export async function seedStaff(schoolId) {
     ON CONFLICT DO NOTHING
   `, [teacher2.id])
 
-  // Non-specialist 1 – runs Year 7 morning enrichment football
+  // Non-specialist 1 - runs Year 7 morning enrichment football
   const nonSpec1 = await createUser({
     name: 'Mr Tom Ellis',
     email: 't.ellis.demo@ashworthpark.norfolk.sch.uk',
@@ -130,7 +130,7 @@ export async function seedStaff(schoolId) {
     viewReports: false,
   })
 
-  // Non-specialist 2 – covers PE occasionally, reads reports
+  // Non-specialist 2 - covers PE occasionally, reads reports
   const nonSpec2 = await createUser({
     name: 'Mrs Fatima Al-Hassan',
     email: 'f.alhassan.demo@ashworthpark.norfolk.sch.uk',

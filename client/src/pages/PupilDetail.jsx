@@ -491,7 +491,7 @@ export default function PupilDetail() {
             }
           } catch (e) {
             if (e.message !== 'Generation failed' && !e.message?.includes('No content')) {
-              // JSON parse error — ignore partial chunks
+              // JSON parse error - ignore partial chunks
             } else {
               throw e
             }

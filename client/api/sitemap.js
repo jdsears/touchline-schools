@@ -46,7 +46,7 @@ export default async function handler() {
         }))
     }
   } catch (err) {
-    // Blog fetch failed — generate sitemap without blog posts
+    // Blog fetch failed - generate sitemap without blog posts
   }
 
   const allPages = [

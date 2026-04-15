@@ -23,7 +23,7 @@ export default function Terms() {
           <div className="flex items-start gap-3 p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 mb-10">
             <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <div>
-              <p className="text-amber-300 font-semibold text-sm">DRAFT TEMPLATE — Not legally reviewed</p>
+              <p className="text-amber-300 font-semibold text-sm">DRAFT TEMPLATE - Not legally reviewed</p>
               <p className="text-amber-400/80 text-xs mt-1">
                 These policies are placeholder drafts pending legal review. They do not constitute binding legal agreements until reviewed and approved by a qualified solicitor.
               </p>
@@ -33,10 +33,10 @@ export default function Terms() {
           <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
             Terms, Privacy &amp; Policies
           </h1>
-          <p className="text-navy-400 text-sm mb-10">MoonBoots Sports — MoonBoots Consultancy UK Ltd</p>
+          <p className="text-navy-400 text-sm mb-10">MoonBoots Sports - MoonBoots Consultancy UK Ltd</p>
 
           {/* Terms of Service */}
-          <PolicySection title="Terms of Service" lastUpdated="[DATE — pending review]">
+          <PolicySection title="Terms of Service" lastUpdated="[DATE - pending review]">
             <p>
               These Terms of Service govern your access to and use of MoonBoots Sports (app.moonbootssports.com),
               operated by MoonBoots Consultancy UK Ltd ("we", "us", "our"), a company registered in England and Wales.
@@ -67,7 +67,7 @@ export default function Terms() {
           </PolicySection>
 
           {/* Privacy Policy */}
-          <PolicySection title="Privacy Policy" lastUpdated="[DATE — pending review]">
+          <PolicySection title="Privacy Policy" lastUpdated="[DATE - pending review]">
             <p>
               MoonBoots Consultancy UK Ltd is the data controller for personal data collected through MoonBoots Sports.
               We are committed to protecting the privacy of all users, with particular care given to pupil data.
@@ -96,7 +96,7 @@ export default function Terms() {
           </PolicySection>
 
           {/* Safeguarding */}
-          <PolicySection title="Safeguarding Policy" lastUpdated="[DATE — pending review]">
+          <PolicySection title="Safeguarding Policy" lastUpdated="[DATE - pending review]">
             <p>
               MoonBoots Sports is designed for use with children and young people in school settings.
               We take safeguarding seriously and have implemented platform features to support schools' statutory duties.
@@ -115,7 +115,7 @@ export default function Terms() {
           </PolicySection>
 
           {/* Cookie Policy */}
-          <PolicySection title="Cookie Policy" lastUpdated="[DATE — pending review]">
+          <PolicySection title="Cookie Policy" lastUpdated="[DATE - pending review]">
             <p>
               MoonBoots Sports uses cookies and similar technologies to operate the platform and, where you consent,
               to analyse usage.
@@ -135,7 +135,7 @@ export default function Terms() {
           </PolicySection>
 
           {/* AI Policy */}
-          <PolicySection title="AI Policy" lastUpdated="[DATE — pending review]">
+          <PolicySection title="AI Policy" lastUpdated="[DATE - pending review]">
             <p>
               MoonBoots Sports uses Anthropic's Claude AI to power coaching assistance, session planning, assessment
               comment drafting, and video analysis features.
@@ -161,7 +161,7 @@ export default function Terms() {
           </PolicySection>
 
           <div className="mt-12 pt-8 border-t border-navy-800 text-xs text-navy-500">
-            <p>MoonBoots Consultancy UK Ltd — Registered in England and Wales</p>
+            <p>MoonBoots Consultancy UK Ltd - Registered in England and Wales</p>
             <p className="mt-1">
               Questions?{' '}
               <a href="mailto:hello@moonbootssports.com" className="text-navy-400 hover:text-white transition-colors">

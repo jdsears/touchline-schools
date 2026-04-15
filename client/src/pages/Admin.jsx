@@ -38,7 +38,7 @@ import {
   CreditCard,
   ShieldCheck,
 } from 'lucide-react'
-import api, { blogService, SERVER_URL } from '../services/api'
+import api, { SERVER_URL } from '../services/api'
 import toast from 'react-hot-toast'
 
 // Stat Card Component
@@ -434,9 +434,9 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
     { id: 'team_pro_annual', name: 'Grassroots Pro (Annual)' },
     { id: 'academy_monthly', name: 'Academy (Monthly)' },
     { id: 'academy_annual', name: 'Academy (Annual)' },
-    { id: 'club_starter_monthly', name: 'School Starter (Monthly — 6 teams)' },
-    { id: 'club_growth_monthly', name: 'School Growth (Monthly — 15 teams)' },
-    { id: 'club_scale_monthly', name: 'School Scale (Monthly — 40 teams)' },
+    { id: 'club_starter_monthly', name: 'School Starter (Monthly - 6 teams)' },
+    { id: 'club_growth_monthly', name: 'School Growth (Monthly - 15 teams)' },
+    { id: 'club_scale_monthly', name: 'School Scale (Monthly - 40 teams)' },
   ]
 
   return (
@@ -673,7 +673,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <option value="">No team</option>
                   {allTeams.map((t) => (
                     <option key={t.id} value={t.id}>
-                      {t.name}{t.age_group ? ` (${t.age_group})` : ''}{t.owner_name ? ` — ${t.owner_name}` : ''}
+                      {t.name}{t.age_group ? ` (${t.age_group})` : ''}{t.owner_name ? ` - ${t.owner_name}` : ''}
                     </option>
                   ))}
                 </select>
@@ -779,6 +779,183 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
         ) : null}
       </motion.div>
     </div>
+  )
+}
+
+// Demo Requests management tab
+function DemoRequestsTab() {
+  const [requests, setRequests] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [statusFilter, setStatusFilter] = useState('')
+  const [selectedRequest, setSelectedRequest] = useState(null)
+  const [editNotes, setEditNotes] = useState('')
+  const [saving, setSaving] = useState(false)
+
+  const fetchRequests = async () => {
+    try {
+      const params = statusFilter ? { params: { status: statusFilter } } : {}
+      const res = await api.get('/demo-requests', params)
+      setRequests(res.data)
+    } catch (err) {
+      console.error('Failed to fetch demo requests:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => { fetchRequests() }, [statusFilter])
+
+  const updateStatus = async (id, status) => {
+    setSaving(true)
+    try {
+      const body = { status }
+      if (status === 'contacted') body.contacted_at = new Date().toISOString()
+      const res = await api.patch(`/demo-requests/${id}`, body)
+      fetchRequests()
+      if (selectedRequest?.id === id) {
+        setSelectedRequest(res.data)
+      }
+    } catch (err) {
+      console.error('Failed to update:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const saveNotes = async (id) => {
+    setSaving(true)
+    try {
+      await api.patch(`/demo-requests/${id}`, { internal_notes: editNotes })
+      fetchRequests()
+    } catch (err) {
+      console.error('Failed to save notes:', err)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const STATUS_COLORS = {
+    new: 'bg-blue-500/20 text-blue-400',
+    contacted: 'bg-yellow-500/20 text-yellow-400',
+    demo_issued: 'bg-green-500/20 text-green-400',
+    declined: 'bg-red-500/20 text-red-400',
+    no_response: 'bg-gray-500/20 text-gray-400',
+  }
+
+  if (selectedRequest) {
+    const r = selectedRequest
+    return (
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+        <button onClick={() => setSelectedRequest(null)} className="text-navy-400 hover:text-white flex items-center gap-1 text-sm">
+          &larr; Back to requests
+        </button>
+        <div className="bg-navy-900 border border-navy-800 rounded-xl p-6 space-y-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <h3 className="text-xl font-semibold text-white">{r.name}</h3>
+              <p className="text-navy-400">{r.role_at_school}{r.role_at_school_other ? ` - ${r.role_at_school_other}` : ''}</p>
+            </div>
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[r.status] || ''}`}>
+              {r.status?.replace('_', ' ')}
+            </span>
+          </div>
+          <div className="grid md:grid-cols-2 gap-4 text-sm">
+            <div><span className="text-navy-400">School:</span> <span className="text-white ml-2">{r.school_name}</span></div>
+            <div><span className="text-navy-400">Type:</span> <span className="text-white ml-2">{r.school_type}</span></div>
+            <div><span className="text-navy-400">Email:</span> <a href={`mailto:${r.email}`} className="text-pitch-400 ml-2">{r.email}</a></div>
+            <div><span className="text-navy-400">Pupil roll:</span> <span className="text-white ml-2">{r.pupil_roll_band}</span></div>
+            <div><span className="text-navy-400">Referral:</span> <span className="text-white ml-2">{r.referral_source || 'Not provided'}</span></div>
+            <div><span className="text-navy-400">Submitted:</span> <span className="text-white ml-2">{new Date(r.created_at).toLocaleString('en-GB')}</span></div>
+          </div>
+          {r.hopes_to_help_with && (
+            <div className="bg-navy-800/50 rounded-lg p-4">
+              <p className="text-navy-400 text-xs font-medium mb-2">WHAT THEY WANT HELP WITH</p>
+              <p className="text-white text-sm">{r.hopes_to_help_with}</p>
+            </div>
+          )}
+          <div>
+            <p className="text-navy-400 text-xs font-medium mb-2">INTERNAL NOTES</p>
+            <textarea
+              value={editNotes}
+              onChange={e => setEditNotes(e.target.value)}
+              rows={3}
+              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none text-sm"
+              placeholder="Add notes about follow-up, conversation, next steps..."
+            />
+            <button onClick={() => saveNotes(r.id)} disabled={saving} className="mt-2 px-4 py-2 bg-navy-700 text-white rounded-lg text-sm hover:bg-navy-600 disabled:opacity-50">
+              {saving ? 'Saving...' : 'Save notes'}
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-navy-800">
+            <p className="text-navy-400 text-xs font-medium w-full mb-1">UPDATE STATUS</p>
+            {['contacted', 'demo_issued', 'declined', 'no_response'].map(s => (
+              <button
+                key={s}
+                onClick={() => updateStatus(r.id, s)}
+                disabled={saving || r.status === s}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${r.status === s ? 'opacity-40 cursor-default' : 'hover:opacity-80'} ${STATUS_COLORS[s] || 'bg-navy-700 text-white'}`}
+              >
+                {s.replace('_', ' ')}
+              </button>
+            ))}
+          </div>
+        </div>
+      </motion.div>
+    )
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+      <div className="flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-white">Demo Access Requests</h3>
+        <div className="flex items-center gap-2">
+          <select
+            value={statusFilter}
+            onChange={e => setStatusFilter(e.target.value)}
+            className="px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none"
+          >
+            <option value="">All statuses</option>
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="demo_issued">Demo issued</option>
+            <option value="declined">Declined</option>
+            <option value="no_response">No response</option>
+          </select>
+          <button onClick={fetchRequests} className="p-2 text-navy-400 hover:text-white"><RefreshCw className="w-4 h-4" /></button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>
+      ) : requests.length === 0 ? (
+        <div className="text-center py-12 text-navy-400">No demo requests yet.</div>
+      ) : (
+        <div className="space-y-2">
+          {requests.map(r => (
+            <button
+              key={r.id}
+              onClick={() => { setSelectedRequest(r); setEditNotes(r.internal_notes || '') }}
+              className="w-full text-left bg-navy-900 border border-navy-800 rounded-xl p-4 hover:border-navy-600 transition-colors"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-white">{r.name}</span>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[r.status] || ''}`}>
+                      {r.status?.replace('_', ' ')}
+                    </span>
+                  </div>
+                  <p className="text-sm text-navy-400 mt-0.5">{r.school_name} ({r.school_type}) - {r.role_at_school}</p>
+                </div>
+                <span className="text-xs text-navy-500 whitespace-nowrap">
+                  {new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                </span>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </motion.div>
   )
 }
 
@@ -1220,7 +1397,7 @@ export default function Admin() {
 
       {/* Tabs */}
       <div className="flex gap-2 border-b border-navy-800 pb-2">
-        {['overview', 'finance', 'promo-codes', 'users', 'blog', 'screenshots'].map((tab) => (
+        {['overview', 'finance', 'promo-codes', 'users', 'demo-requests', 'screenshots'].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
@@ -1234,7 +1411,7 @@ export default function Admin() {
             {tab === 'finance' && 'Finance'}
             {tab === 'promo-codes' && 'Promo Codes'}
             {tab === 'users' && 'Users'}
-            {tab === 'blog' && 'Blog'}
+            {tab === 'demo-requests' && 'Demo Requests'}
             {tab === 'screenshots' && 'Screenshots'}
           </button>
         ))}
@@ -1616,7 +1793,7 @@ export default function Admin() {
                       <tbody>
                         {finance.recentSubscriptions.map(sub => (
                           <tr key={sub.id} className="border-b border-navy-800/50">
-                            <td className="py-2 text-white">{sub.team_name || '—'} <span className="text-navy-500 text-xs">{sub.age_group}</span></td>
+                            <td className="py-2 text-white">{sub.team_name || '-'} <span className="text-navy-500 text-xs">{sub.age_group}</span></td>
                             <td className="py-2 text-navy-300">{sub.plan_id?.replace(/_/g, ' ')}</td>
                             <td className="py-2">
                               <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
@@ -1865,11 +2042,16 @@ export default function Admin() {
         </motion.div>
       )}
 
-      {/* Blog Tab */}
-      {activeTab === 'blog' && (
+      {/* Demo Requests Tab */}
+      {activeTab === 'demo-requests' && (
+        <DemoRequestsTab />
+      )}
+
+      {/* LEGACY Blog Tab - removed in v1.5 */}
+      {activeTab === 'blog-removed' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           {editingPost ? (
-            /* Blog Editor */
+            /* Blog Editor - removed */
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <button

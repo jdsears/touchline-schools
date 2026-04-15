@@ -536,7 +536,7 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
 
     // Also include match squad pupil IDs if present
     if (matchSquadRes.rows.length > 0) {
-      // match_squads are definitive — override tactics-based available list
+      // match_squads are definitive - override tactics-based available list
       availablePlayerIds = []
       const squadPlayerRes = await pool.query(
         'SELECT p.id FROM match_squads ms JOIN pupils p ON ms.pupil_id = p.id WHERE ms.match_id = $1',
@@ -600,12 +600,12 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
       res.write(`data: ${JSON.stringify({ type: 'text', text })}\n\n`)
     })
 
-    // Wait for stream to complete — don't throw if we already have content
+    // Wait for stream to complete - don't throw if we already have content
     try {
       await stream.finalMessage()
     } catch (streamErr) {
       console.error('Stream finalization warning:', streamErr.message)
-      // If we got text, the generation succeeded — don't treat as error
+      // If we got text, the generation succeeded - don't treat as error
     }
 
     if (fullText) {
@@ -847,7 +847,7 @@ router.post('/:id/pep-talk/:pupilId', authenticateToken, async (req, res, next) 
         }
       }
     } catch (err) {
-      // Non-critical — continue without video insights
+      // Non-critical - continue without video insights
       console.warn('Could not fetch video analysis for pep talk:', err.message)
     }
 
@@ -862,7 +862,7 @@ router.post('/:id/pep-talk/:pupilId', authenticateToken, async (req, res, next) 
 
 // ============== MATCH GOALS & ASSISTS ==============
 
-// GET /matches/:id/goals — list goals for a match
+// GET /matches/:id/goals - list goals for a match
 router.get('/:id/goals', authenticateToken, async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -878,7 +878,7 @@ router.get('/:id/goals', authenticateToken, async (req, res, next) => {
     )
     res.json(result.rows)
   } catch (error) {
-    // Table may not exist yet — return empty array
+    // Table may not exist yet - return empty array
     if (error.code === '42P01') return res.json([])
     next(error)
   }
@@ -904,7 +904,7 @@ async function ensureMatchGoalsTable() {
   matchGoalsTableReady = true
 }
 
-// POST /matches/:id/goals — add a goal
+// POST /matches/:id/goals - add a goal
 router.post('/:id/goals', authenticateToken, async (req, res, next) => {
   try {
     await ensureMatchGoalsTable()
@@ -930,7 +930,7 @@ router.post('/:id/goals', authenticateToken, async (req, res, next) => {
   }
 })
 
-// DELETE /matches/:id/goals/:goalId — remove a goal
+// DELETE /matches/:id/goals/:goalId - remove a goal
 router.delete('/:id/goals/:goalId', authenticateToken, async (req, res, next) => {
   try {
     await pool.query('DELETE FROM match_goals WHERE id = $1 AND match_id = $2', [req.params.goalId, req.params.id])
@@ -963,7 +963,7 @@ router.get('/:id/substitutions', authenticateToken, async (req, res, next) => {
   }
 })
 
-// POST /matches/:id/substitutions — add a substitution
+// POST /matches/:id/substitutions - add a substitution
 router.post('/:id/substitutions', authenticateToken, async (req, res, next) => {
   try {
     const { pupil_off_id, pupil_on_id, minute, notes } = req.body
@@ -990,7 +990,7 @@ router.post('/:id/substitutions', authenticateToken, async (req, res, next) => {
   }
 })
 
-// DELETE /matches/:id/substitutions/:subId — remove a substitution
+// DELETE /matches/:id/substitutions/:subId - remove a substitution
 router.delete('/:id/substitutions/:subId', authenticateToken, async (req, res, next) => {
   try {
     await pool.query('DELETE FROM match_substitutions WHERE id = $1 AND match_id = $2', [req.params.subId, req.params.id])
@@ -1002,7 +1002,7 @@ router.delete('/:id/substitutions/:subId', authenticateToken, async (req, res, n
 
 // ============== MATCH EVENTS (Sport-Specific) ==============
 
-// GET /matches/:id/events — list events for a match
+// GET /matches/:id/events - list events for a match
 router.get('/:id/events', authenticateToken, async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -1021,7 +1021,7 @@ router.get('/:id/events', authenticateToken, async (req, res, next) => {
   }
 })
 
-// POST /matches/:id/events — add a match event
+// POST /matches/:id/events - add a match event
 router.post('/:id/events', authenticateToken, async (req, res, next) => {
   try {
     const { event_type, pupil_id, secondary_pupil_id, minute, value, details, notes } = req.body
@@ -1038,7 +1038,7 @@ router.post('/:id/events', authenticateToken, async (req, res, next) => {
   }
 })
 
-// DELETE /matches/:id/events/:eventId — remove a match event
+// DELETE /matches/:id/events/:eventId - remove a match event
 router.delete('/:id/events/:eventId', authenticateToken, async (req, res, next) => {
   try {
     await pool.query('DELETE FROM match_events WHERE id = $1 AND match_id = $2', [req.params.eventId, req.params.id])
@@ -1050,7 +1050,7 @@ router.delete('/:id/events/:eventId', authenticateToken, async (req, res, next) 
 
 // ============== PUPIL MATCH STATS ==============
 
-// GET /matches/:id/pupil-stats — get all pupil stats for a match
+// GET /matches/:id/pupil-stats - get all pupil stats for a match
 router.get('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -1067,7 +1067,7 @@ router.get('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
   }
 })
 
-// PUT /matches/:id/pupil-stats/:pupilId — upsert stats for a pupil in a match
+// PUT /matches/:id/pupil-stats/:pupilId - upsert stats for a pupil in a match
 router.put('/:id/pupil-stats/:pupilId', authenticateToken, async (req, res, next) => {
   try {
     const { stats, rating, notes } = req.body
@@ -1085,7 +1085,7 @@ router.put('/:id/pupil-stats/:pupilId', authenticateToken, async (req, res, next
   }
 })
 
-// PUT /matches/:id/pupil-stats — bulk upsert stats for all pupils in a match
+// PUT /matches/:id/pupil-stats - bulk upsert stats for all pupils in a match
 router.put('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
   try {
     const { entries } = req.body
@@ -1110,7 +1110,7 @@ router.put('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
   }
 })
 
-// GET /matches/pupil/:pupilId/season-stats — aggregate stats across all matches
+// GET /matches/pupil/:pupilId/season-stats - aggregate stats across all matches
 router.get('/pupil/:pupilId/season-stats', authenticateToken, async (req, res, next) => {
   try {
     const { pupilId } = req.params
@@ -1733,7 +1733,7 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
     const teamName = teamResult.rows[0]?.name || 'Your Team'
     const teamTz = teamResult.rows[0]?.timezone || 'Europe/London'
 
-    // Get pupils — optionally filter to only those who haven't responded
+    // Get pupils - optionally filter to only those who haven't responded
     const playersResult = await pool.query(
       `SELECT p.*, u.id as user_id, u.email as user_email
        FROM pupils p

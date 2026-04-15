@@ -524,7 +524,7 @@ function BillingTab({ teamId, userEmail }) {
       searchParams.delete('success')
       setSearchParams(searchParams, { replace: true })
 
-      // Sync subscription from Stripe — safety net in case the webhook was missed.
+      // Sync subscription from Stripe - safety net in case the webhook was missed.
       // This ensures the local subscription record exists after checkout.
       if (teamId) {
         syncSubscription(teamId).then(result => {
@@ -567,7 +567,7 @@ function BillingTab({ teamId, userEmail }) {
             return loadBillingData(true)
           }
         } catch (err) {
-          // Sync failed (no Stripe customer, etc.) — that's fine, user is genuinely on free tier
+          // Sync failed (no Stripe customer, etc.) - that's fine, user is genuinely on free tier
           console.log('[Billing] Auto-sync found no Stripe subscription')
         }
       }
@@ -1183,7 +1183,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                 </button>
               </div>
               <p className="text-xs text-navy-500 mt-1">
-                Copy and share with friends and family — includes link{credentials?.guestPin ? ' and PIN' : ''}
+                Copy and share with friends and family - includes link{credentials?.guestPin ? ' and PIN' : ''}
               </p>
               {credentials?.shareCode && (
                 <button
@@ -1652,10 +1652,10 @@ export default function Settings() {
                     <option value={5}>5-a-side</option>
                   </select>
                   <p className="text-xs text-navy-500 mt-1">
-                    {teamSettings.teamFormat === 9 && 'FA standard for U11/U12 — auto-set when age group changes'}
-                    {teamSettings.teamFormat === 7 && 'FA standard for U9/U10 — auto-set when age group changes'}
-                    {teamSettings.teamFormat === 5 && 'FA standard for U7/U8 — auto-set when age group changes'}
-                    {teamSettings.teamFormat === 11 && 'FA standard for U13+ — auto-set when age group changes'}
+                    {teamSettings.teamFormat === 9 && 'FA standard for U11/U12 - auto-set when age group changes'}
+                    {teamSettings.teamFormat === 7 && 'FA standard for U9/U10 - auto-set when age group changes'}
+                    {teamSettings.teamFormat === 5 && 'FA standard for U7/U8 - auto-set when age group changes'}
+                    {teamSettings.teamFormat === 11 && 'FA standard for U13+ - auto-set when age group changes'}
                   </p>
                 </div>
                 <div>

@@ -500,7 +500,7 @@ export default function MatchDetail() {
         force: isReannounce ? true : undefined,
       })
       if (result?.duplicate) {
-        toast.success('Squad already announced — no duplicate emails sent.')
+        toast.success('Squad already announced - no duplicate emails sent.')
         setShowAnnounceModal(false)
         loadMatch()
         return
@@ -509,10 +509,10 @@ export default function MatchDetail() {
       const total = result?.players_notified || 0
       if (result?.email_enabled === false) {
         toast.success(isReannounce ? 'Squad updated!' : 'Squad announced!')
-        toast('Email notifications are not configured — pupils will only see in-app notifications.', { icon: '⚠️', duration: 5000 })
+        toast('Email notifications are not configured - pupils will only see in-app notifications.', { icon: '⚠️', duration: 5000 })
       } else if (sent === 0 && total > 0) {
         toast.success(isReannounce ? 'Squad updated!' : 'Squad announced!')
-        toast(`No emails sent — none of the ${total} pupils have linked Pupil Lounge accounts.`, { icon: '⚠️', duration: 6000 })
+        toast(`No emails sent - none of the ${total} pupils have linked Pupil Lounge accounts.`, { icon: '⚠️', duration: 6000 })
       } else if (sent < total) {
         toast.success(`${isReannounce ? 'Squad updated' : 'Squad announced'}! ${sent}/${total} emails sent.`)
         toast(`${total - sent} pupil${total - sent > 1 ? 's don\'t' : ' doesn\'t'} have a linked Pupil Lounge account.`, { icon: '⚠️', duration: 6000 })
@@ -1576,7 +1576,7 @@ export default function MatchDetail() {
               </div>
             )}
 
-            {/* Sport-specific Match Events — show for non-football or when taxonomy loaded */}
+            {/* Sport-specific Match Events - show for non-football or when taxonomy loaded */}
             {resultDisplay && taxonomy && sport !== 'football' && (
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -1646,7 +1646,7 @@ export default function MatchDetail() {
               </div>
             )}
 
-            {/* Pupil Match Stats — show when we have squad and result */}
+            {/* Pupil Match Stats - show when we have squad and result */}
             {resultDisplay && taxonomy && squad.length > 0 && (
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
@@ -1994,7 +1994,7 @@ export default function MatchDetail() {
                         )
                       })}
                       {squad.filter(s => s.is_starting).length === 0 && (
-                        <p className="text-sm text-navy-500 italic">No starters selected — use the pupil list below to set starting lineup</p>
+                        <p className="text-sm text-navy-500 italic">No starters selected - use the pupil list below to set starting lineup</p>
                       )}
                     </div>
                   </div>
@@ -2778,7 +2778,7 @@ Corners, free kicks, etc...`}
                 <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
                 <div>
                   <p className="text-white font-medium">Video processing</p>
-                  <p className="text-sm text-navy-400">Your video is being transcoded — check back shortly</p>
+                  <p className="text-sm text-navy-400">Your video is being transcoded - check back shortly</p>
                 </div>
               </div>
             )}

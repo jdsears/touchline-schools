@@ -432,7 +432,7 @@ export default function VideoLibrary() {
                     <option value="">None</option>
                     {matches.map(m => (
                       <option key={m.id} value={m.id}>
-                        {m.opponent} — {new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                        {m.opponent} - {new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </option>
                     ))}
                   </select>

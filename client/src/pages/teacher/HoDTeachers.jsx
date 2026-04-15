@@ -18,10 +18,10 @@ const SPORT_ROLES = [
 const SCHOOL_ROLES = [
   { value: 'owner', label: 'Owner', description: 'Full account access, billing, all settings', restricted: true },
   { value: 'school_admin', label: 'School Admin', description: 'Manage staff, settings, and school data' },
-  { value: 'head_of_pe', label: 'Head of PE/Sport', description: 'Full HoD view — all classes, teams, reporting' },
+  { value: 'head_of_pe', label: 'Head of PE/Sport', description: 'Full HoD view - all classes, teams, reporting' },
   { value: 'head_of_sport', label: 'Head of Sport', description: 'Cross-team oversight for assigned sport(s)' },
   { value: 'teacher', label: 'Teacher', description: 'Access to own classes, teams, and pupil data' },
-  { value: 'read_only', label: 'Read Only', description: 'View data only — no edits or deletions' },
+  { value: 'read_only', label: 'Read Only', description: 'View data only - no edits or deletions' },
 ]
 
 // Map role to display label
@@ -53,7 +53,7 @@ const ROLE_BADGE_COLORS = {
 export default function HoDTeachers() {
   const [teachers, setTeachers] = useState([])
   const [loading, setLoading] = useState(true)
-  const [assignModal, setAssignModal] = useState(null) // { userId, name } — sport assign
+  const [assignModal, setAssignModal] = useState(null) // { userId, name } - sport assign
   const [roleModal, setRoleModal] = useState(null)     // { memberId, userId, name, currentRole, schoolId }
   const [assignSport, setAssignSport] = useState('football')
   const [assignRole, setAssignRole] = useState('coach')
