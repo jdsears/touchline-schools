@@ -56,15 +56,6 @@ import gdprRoutes from './routes/gdpr.js'
 import ssoRoutes from './routes/sso.js'
 import demoRequestRoutes from './routes/demoRequests.js'
 
-import { seedSchool } from './db/demo-seed/school.js'
-import { seedStaff } from './db/demo-seed/staff.js'
-import { seedPupils } from './db/demo-seed/pupils.js'
-import { seedTeams } from './db/demo-seed/teams.js'
-import { seedCurriculum } from './db/demo-seed/curriculum.js'
-import { seedFixtures } from './db/demo-seed/fixtures.js'
-import { seedSafeguarding } from './db/demo-seed/safeguarding.js'
-import { seedAuditLog } from './db/demo-seed/auditLog.js'
-
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
 import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
@@ -304,78 +295,6 @@ app.get('/api/health', async (req, res) => {
   }
 })
 
-// Debug endpoint - shows DB state to diagnose demo seed issues
-app.get('/api/debug-db', async (req, res) => {
-  try {
-    const tables = await pool.query(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name`)
-    const tableNames = tables.rows.map(r => r.table_name)
-
-    const checks = {}
-
-    // Check schools
-    if (tableNames.includes('schools')) {
-      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'schools' ORDER BY ordinal_position`)
-      checks.schools_columns = cols.rows.map(r => r.column_name)
-      const count = await pool.query('SELECT COUNT(*) FROM schools')
-      checks.schools_count = parseInt(count.rows[0].count)
-      const demo = await pool.query(`SELECT id, name, slug FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
-      checks.demo_school = demo.rows[0] || null
-    }
-
-    // Check users
-    if (tableNames.includes('users')) {
-      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'users' ORDER BY ordinal_position`)
-      checks.users_columns = cols.rows.map(r => r.column_name)
-      const count = await pool.query('SELECT COUNT(*) FROM users')
-      checks.users_count = parseInt(count.rows[0].count)
-      const admins = await pool.query(`SELECT id, name, email, is_admin, team_id FROM users WHERE is_admin = true`)
-      checks.admin_users = admins.rows
-    }
-
-    // Check school_members
-    if (tableNames.includes('school_members')) {
-      const count = await pool.query('SELECT COUNT(*) FROM school_members')
-      checks.school_members_count = parseInt(count.rows[0].count)
-    }
-
-    // Check teams
-    if (tableNames.includes('teams')) {
-      const count = await pool.query('SELECT COUNT(*) FROM teams')
-      checks.teams_count = parseInt(count.rows[0].count)
-      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'teams' AND column_name IN ('school_id', 'sport', 'gender')`)
-      checks.teams_has_columns = cols.rows.map(r => r.column_name)
-    }
-
-    // Check pupils
-    if (tableNames.includes('pupils')) {
-      const count = await pool.query('SELECT COUNT(*) FROM pupils')
-      checks.pupils_count = parseInt(count.rows[0].count)
-    } else if (tableNames.includes('players')) {
-      checks.pupils_table = 'MISSING (still named players)'
-      const count = await pool.query('SELECT COUNT(*) FROM players')
-      checks.players_count = parseInt(count.rows[0].count)
-    }
-
-    // Check team_memberships
-    checks.has_team_memberships = tableNames.includes('team_memberships')
-
-    // Try the seed and capture error
-    checks.seed_test = 'not attempted'
-    if (!checks.demo_school) {
-      try {
-        await ensureDemoPrerequisites()
-        checks.prerequisites = 'OK'
-      } catch (e) {
-        checks.prerequisites = e.message
-      }
-    }
-
-    res.json({ tables: tableNames, checks, timestamp: new Date().toISOString() })
-  } catch (err) {
-    res.status(500).json({ error: err.message, stack: err.stack?.split('\n').slice(0, 5) })
-  }
-})
-
 // Sitemap
 app.get('/sitemap.xml', async (req, res) => {
   try {
@@ -480,122 +399,7 @@ if (process.env.NODE_ENV === 'production') {
 // Error handler
 app.use(errorHandler)
 
-// Ensure critical tables and columns exist before seeding (migration may have failed partway)
-async function ensureDemoPrerequisites() {
-  const stmts = [
-    // Ensure schools table exists (may still be named 'clubs' from partial migration)
-    `DO $$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'schools') THEN
-        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'clubs') THEN
-          ALTER TABLE clubs RENAME TO schools;
-        ELSE
-          CREATE TABLE schools (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            name TEXT NOT NULL, slug TEXT UNIQUE NOT NULL, logo_url TEXT,
-            primary_color TEXT DEFAULT '#1a365d', secondary_color TEXT DEFAULT '#38a169',
-            contact_email TEXT, contact_phone TEXT, website TEXT,
-            address_line1 TEXT, address_line2 TEXT, city TEXT, county TEXT, postcode TEXT,
-            subscription_tier TEXT DEFAULT 'club_starter', subscription_status TEXT DEFAULT 'trial',
-            season_start_month INTEGER DEFAULT 9, season_end_month INTEGER DEFAULT 6,
-            settings JSONB DEFAULT '{}',
-            created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW()
-          );
-        END IF;
-      END IF;
-    END $$`,
-    // Add columns the demo seed needs on schools
-    `ALTER TABLE schools ADD COLUMN IF NOT EXISTS school_type TEXT`,
-    `ALTER TABLE schools ADD COLUMN IF NOT EXISTS urn TEXT`,
-    `ALTER TABLE schools ADD COLUMN IF NOT EXISTS voice_observations_enabled BOOLEAN DEFAULT false`,
-    `ALTER TABLE schools ADD COLUMN IF NOT EXISTS audio_retention_days INTEGER DEFAULT 7`,
-    `ALTER TABLE schools ADD COLUMN IF NOT EXISTS transcript_retention_days INTEGER DEFAULT 30`,
-    `ALTER TABLE schools ADD COLUMN IF NOT EXISTS is_demo_tenant BOOLEAN DEFAULT false`,
-    // Ensure school_members table exists
-    `DO $$ BEGIN
-      IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'school_members') THEN
-        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_members') THEN
-          ALTER TABLE club_members RENAME TO school_members;
-        ELSE
-          CREATE TABLE school_members (
-            id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-            school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
-            user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-            role TEXT DEFAULT 'teacher',
-            joined_at TIMESTAMPTZ DEFAULT NOW(),
-            UNIQUE(school_id, user_id)
-          );
-        END IF;
-      END IF;
-    END $$`,
-    // Add columns needed by demo seed on school_members
-    `ALTER TABLE school_members ADD COLUMN IF NOT EXISTS school_role TEXT`,
-    `ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_classes BOOLEAN DEFAULT false`,
-    `ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_teams BOOLEAN DEFAULT false`,
-    `ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_curriculum BOOLEAN DEFAULT false`,
-    `ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_reports BOOLEAN DEFAULT false`,
-    `ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_safeguarding BOOLEAN DEFAULT false`,
-    // Ensure teams has school_id column
-    `ALTER TABLE teams ADD COLUMN IF NOT EXISTS school_id UUID REFERENCES schools(id) ON DELETE CASCADE`,
-    `ALTER TABLE teams ADD COLUMN IF NOT EXISTS sport TEXT`,
-    `ALTER TABLE teams ADD COLUMN IF NOT EXISTS gender TEXT`,
-    `ALTER TABLE teams ADD COLUMN IF NOT EXISTS season_type TEXT`,
-    // Ensure team_memberships table exists
-    `CREATE TABLE IF NOT EXISTS team_memberships (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      team_id UUID REFERENCES teams(id) ON DELETE CASCADE,
-      user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-      pupil_id UUID,
-      role TEXT DEFAULT 'player',
-      is_primary BOOLEAN DEFAULT false,
-      created_at TIMESTAMPTZ DEFAULT NOW(),
-      UNIQUE(user_id, team_id)
-    )`,
-  ]
-
-  for (const sql of stmts) {
-    try {
-      await pool.query(sql)
-    } catch (e) {
-      console.warn('[DemoPrereq]', e.message)
-    }
-  }
-}
-
-// Seed demo school if it doesn't exist (runs independently of migrations)
-async function ensureDemoSchool() {
-  try {
-    await ensureDemoPrerequisites()
-
-    const exists = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
-    if (exists.rows.length > 0) {
-      console.log('[DemoSeed] Demo school already exists.')
-      return
-    }
-
-    console.log('[DemoSeed] Seeding Ashworth Park Academy demo school...')
-    const school = await seedSchool()
-    console.log('[DemoSeed] School created:', school.id)
-    const staff = await seedStaff(school.id)
-    console.log('[DemoSeed] Staff created')
-    const pupils = await seedPupils(school.id)
-    console.log('[DemoSeed] Pupils created:', pupils.length)
-    const teams = await seedTeams(school.id, staff, pupils)
-    console.log('[DemoSeed] Teams created:', teams.length)
-    await seedCurriculum(school.id, staff, pupils)
-    console.log('[DemoSeed] Curriculum seeded')
-    await seedFixtures(school.id, teams, staff, pupils)
-    console.log('[DemoSeed] Fixtures seeded')
-    await seedSafeguarding(school.id, staff)
-    console.log('[DemoSeed] Safeguarding seeded')
-    await seedAuditLog(school.id, staff)
-    console.log('[DemoSeed] Ashworth Park Academy is ready.')
-  } catch (err) {
-    console.error('[DemoSeed] Failed to seed demo school:', err.message)
-    console.error('[DemoSeed] Stack:', err.stack?.split('\n').slice(0, 3).join('\n'))
-  }
-}
-
-// Ensure admin users exist and are linked to demo school (runs independently of migrations)
+// Ensure admin users exist (runs independently of migrations)
 async function seedAdminUsers() {
   const admins = [
     { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
@@ -623,47 +427,6 @@ async function seedAdminUsers() {
         console.log(`[Admin] Created admin: ${admin.email}`)
       }
 
-      // Link admin to the demo school and a team if they exist
-      if (userId) {
-        try {
-          const school = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
-          if (school.rows.length > 0) {
-            const schoolId = school.rows[0].id
-
-            // Add to school_members
-            await pool.query(
-              `INSERT INTO school_members (
-                school_id, user_id, role, school_role,
-                can_view_all_classes, can_view_all_teams,
-                can_manage_curriculum, can_view_reports,
-                can_manage_safeguarding, joined_at
-              ) VALUES ($1, $2, 'teacher', 'head_of_pe', true, true, true, true, true, NOW())
-              ON CONFLICT (school_id, user_id) DO NOTHING`,
-              [schoolId, userId]
-            )
-
-            // Link to the first team in the school so the app dashboard works
-            const teamResult = await pool.query(
-              `SELECT id FROM teams WHERE school_id = $1 ORDER BY created_at LIMIT 1`,
-              [schoolId]
-            )
-            if (teamResult.rows.length > 0) {
-              const teamId = teamResult.rows[0].id
-              await pool.query(`UPDATE users SET team_id = $1, has_completed_onboarding = true WHERE id = $2 AND team_id IS NULL`, [teamId, userId])
-              await pool.query(
-                `INSERT INTO team_memberships (team_id, user_id, role, is_primary, created_at)
-                 VALUES ($1, $2, 'manager', true, NOW())
-                 ON CONFLICT (user_id, team_id) DO NOTHING`,
-                [teamId, userId]
-              )
-            }
-
-            console.log(`[Admin] Linked ${admin.email} to demo school`)
-          }
-        } catch (linkErr) {
-          console.error(`[Admin] Failed to link ${admin.email} to demo school:`, linkErr.message)
-        }
-      }
     } catch (err) {
       console.error(`[Admin] Failed to seed ${admin.email}:`, err.message)
     }
@@ -686,10 +449,8 @@ runMigrations().then(() => {
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
     console.log(`⏱️  Upload timeout: 30 minutes`)
 
-    // Seed demo school and admin users (sequential: school first, then admins link to it)
-    ensureDemoSchool()
-      .then(() => seedAdminUsers())
-      .catch(err => console.error('[Startup] Seed error:', err))
+    // Seed admin users
+    seedAdminUsers().catch(err => console.error('[Admin] Seed error:', err))
 
     // Run lifecycle scanners on startup (delayed 30s to let DB settle),
     // then every 24 hours
