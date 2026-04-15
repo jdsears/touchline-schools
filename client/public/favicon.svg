@@ -1,22 +1,5 @@
-<svg width="32" height="32" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="touchlineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#2ED573"/>
-      <stop offset="100%" stop-color="#F5A623"/>
-    </linearGradient>
-  </defs>
-
-  <rect width="64" height="64" rx="12" fill="#0B1C2D"/>
-
-  <g fill="none">
-    <path d="M12 44 C18 12, 46 12, 52 44"
-          stroke="url(#touchlineGradient)"
-          stroke-width="5"
-          stroke-linecap="round"/>
-    <line x1="8" y1="44" x2="56" y2="44"
-          stroke="#2ED573"
-          stroke-width="4"
-          stroke-linecap="round"/>
-    <circle cx="32" cy="44" r="5" fill="#2ED573"/>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+        <rect width="64" height="64" fill="#0F1E3D" rx="11"/>
+        <circle cx="23.04" cy="32.0" r="17.28" fill="#E7E7E7"/>
+        <circle cx="40.96" cy="32.0" r="17.28" fill="#C9A961"/>
+    </svg>

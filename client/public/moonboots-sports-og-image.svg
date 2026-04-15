@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+    <rect width="1200" height="630" fill="#0F1E3D"/>
+    <rect x="0" y="0" width="1200" height="6" fill="#C9A961"/>
+    <rect x="1190" y="0" width="10" height="630" fill="#C9A961"/>
+    <text x="60" y="60" font-family="Poppins, sans-serif"
+          font-size="16" font-weight="600" fill="#C9A961" letter-spacing="3">MOONBOOTS SPORTS</text>
+    <text x="60" y="84" font-family="Poppins, sans-serif"
+          font-size="14" font-weight="400" fill="#FAFAF7" opacity="0.7">A service of MoonBoots Consultancy UK Ltd</text>
+    <text x="60" y="270" font-family="'Times New Roman', Georgia, serif"
+          font-size="64" font-weight="700" fill="#FAFAF7">The PE department</text>
+    <text x="60" y="345" font-family="'Times New Roman', Georgia, serif"
+          font-size="64" font-weight="700" fill="#FAFAF7">platform for</text>
+    <text x="60" y="420" font-family="'Times New Roman', Georgia, serif"
+          font-size="64" font-weight="700" fill="#C9A961">UK schools</text>
+    <line x1="60" y1="465" x2="200" y2="465" stroke="#C9A961" stroke-width="2"/>
+    <text x="60" y="500" font-family="Poppins, sans-serif"
+          font-size="20" font-weight="400" fill="#FAFAF7" opacity="0.85">Curriculum PE and school sport,</text>
+    <text x="60" y="528" font-family="Poppins, sans-serif"
+          font-size="20" font-weight="400" fill="#FAFAF7" opacity="0.85">in one bespoke platform per school.</text>
+    <text x="60" y="585" font-family="Poppins, sans-serif"
+          font-size="16" font-weight="600" fill="#C9A961">moonbootssports.com</text>
+    <g transform="translate(950, 380)">
+        <rect width="180" height="180" fill="#0F1E3D" stroke="#C9A961" stroke-width="2" rx="20"/>
+        <circle cx="70" cy="90" r="42" fill="#E7E7E7"/>
+        <circle cx="110" cy="90" r="42" fill="#C9A961"/>
+    </g>
+</svg>

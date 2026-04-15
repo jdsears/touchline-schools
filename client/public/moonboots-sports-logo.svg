@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 180" width="1280" height="180">
+    
+    <g transform="translate(0,-10) scale(1.0)">
+        <text x="0" y="120" font-family="Poppins, 'SF Pro Display', -apple-system, sans-serif"
+              font-size="160" font-weight="500" fill="#0F1E3D" letter-spacing="-3">m</text>
+        <circle cx="195" cy="80" r="55" fill="#0F1E3D"/>
+        <circle cx="270" cy="80" r="55" fill="#C9A961"/>
+        <text x="320" y="120" font-family="Poppins, 'SF Pro Display', -apple-system, sans-serif"
+              font-size="160" font-weight="500" fill="#0F1E3D" letter-spacing="-3">nboots</text>
+        <text x="900" y="115" font-family="Poppins, 'SF Pro Display', -apple-system, sans-serif"
+              font-size="80" font-weight="300" fill="#C9A961" letter-spacing="-1">sports</text>
+    </g>
+</svg>
