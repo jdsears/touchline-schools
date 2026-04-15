@@ -341,6 +341,47 @@ app.get('/api/debug-db', async (req, res) => {
   }
 })
 
+// Manual seed trigger - shows errors in response so we can debug
+app.get('/api/trigger-seed', async (req, res) => {
+  const log = []
+  try {
+    log.push('Running prerequisites...')
+    await ensureDemoPrerequisites()
+    log.push('Prerequisites done')
+
+    // Delete existing empty school
+    await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
+    log.push('Cleared old school')
+
+    const school = await seedSchool()
+    log.push(`School created: ${school.id}`)
+
+    const staff = await seedStaff(school.id)
+    log.push(`Staff created: ${Object.keys(staff).join(', ')}`)
+
+    const pupils = await seedPupils(school.id)
+    log.push(`Pupils created: ${pupils.length}`)
+
+    const teams = await seedTeams(school.id, staff, pupils)
+    log.push(`Teams created: ${teams.length}`)
+
+    try { await seedCurriculum(school.id, staff, pupils); log.push('Curriculum done') } catch (e) { log.push(`Curriculum FAILED: ${e.message}`) }
+    try { await seedFixtures(school.id, teams, staff, pupils); log.push('Fixtures done') } catch (e) { log.push(`Fixtures FAILED: ${e.message}`) }
+    try { await seedSafeguarding(school.id, staff); log.push('Safeguarding done') } catch (e) { log.push(`Safeguarding FAILED: ${e.message}`) }
+    try { await seedAuditLog(school.id, staff); log.push('AuditLog done') } catch (e) { log.push(`AuditLog FAILED: ${e.message}`) }
+
+    // Link admins
+    await seedAdminUsersAndLink()
+    log.push('Admin users linked')
+
+    res.json({ success: true, log })
+  } catch (err) {
+    log.push(`FATAL: ${err.message}`)
+    log.push(err.stack?.split('\n').slice(0, 3).join('\n'))
+    res.status(500).json({ success: false, log })
+  }
+})
+
 // Sitemap
 app.get('/sitemap.xml', async (req, res) => {
   try {
@@ -479,7 +520,16 @@ async function ensureDemoSchool() {
   try {
     await ensureDemoPrerequisites()
     const exists = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
-    if (exists.rows.length > 0) return console.log('[DemoSeed] Demo school exists.')
+    if (exists.rows.length > 0) {
+      // Check if school was fully seeded (has demo users)
+      const demoUsers = await pool.query(`SELECT COUNT(*) FROM users WHERE is_demo_user = true`)
+      if (parseInt(demoUsers.rows[0].count) > 0) {
+        return console.log('[DemoSeed] Demo school fully seeded.')
+      }
+      // School exists but has no demo data - delete and re-seed
+      console.log('[DemoSeed] Demo school exists but is empty, wiping and re-seeding...')
+      await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
+    }
 
     console.log('[DemoSeed] Seeding Ashworth Park Academy...')
     const school = await seedSchool()
