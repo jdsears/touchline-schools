@@ -399,7 +399,7 @@ if (process.env.NODE_ENV === 'production') {
 // Error handler
 app.use(errorHandler)
 
-// Ensure admin users exist (runs independently of migrations)
+// Ensure admin users exist and are linked to demo school (runs independently of migrations)
 async function seedAdminUsers() {
   const admins = [
     { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
@@ -410,18 +410,63 @@ async function seedAdminUsers() {
   for (const admin of admins) {
     try {
       const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [admin.email.toLowerCase()])
+      let userId
       if (exists.rows.length > 0) {
+        userId = exists.rows[0].id
         if (!exists.rows[0].is_admin) {
-          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [exists.rows[0].id])
+          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [userId])
           console.log(`[Admin] Promoted ${admin.email} to admin`)
         }
       } else {
         const hash = await bcrypt.hash(defaultPassword, 10)
-        await pool.query(
-          `INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true)`,
+        const result = await pool.query(
+          `INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true) RETURNING id`,
           [admin.name, admin.email.toLowerCase(), hash]
         )
+        userId = result.rows[0].id
         console.log(`[Admin] Created admin: ${admin.email}`)
+      }
+
+      // Link admin to the demo school and a team if they exist
+      if (userId) {
+        try {
+          const school = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+          if (school.rows.length > 0) {
+            const schoolId = school.rows[0].id
+
+            // Add to school_members
+            await pool.query(
+              `INSERT INTO school_members (
+                school_id, user_id, role, school_role,
+                can_view_all_classes, can_view_all_teams,
+                can_manage_curriculum, can_view_reports,
+                can_manage_safeguarding, joined_at
+              ) VALUES ($1, $2, 'teacher', 'head_of_pe', true, true, true, true, true, NOW())
+              ON CONFLICT (school_id, user_id) DO NOTHING`,
+              [schoolId, userId]
+            )
+
+            // Link to the first team in the school so the app dashboard works
+            const teamResult = await pool.query(
+              `SELECT id FROM teams WHERE school_id = $1 ORDER BY created_at LIMIT 1`,
+              [schoolId]
+            )
+            if (teamResult.rows.length > 0) {
+              const teamId = teamResult.rows[0].id
+              await pool.query(`UPDATE users SET team_id = $1, has_completed_onboarding = true WHERE id = $2 AND team_id IS NULL`, [teamId, userId])
+              await pool.query(
+                `INSERT INTO team_memberships (team_id, user_id, role, is_primary, created_at)
+                 VALUES ($1, $2, 'manager', true, NOW())
+                 ON CONFLICT (user_id, team_id) DO NOTHING`,
+                [teamId, userId]
+              )
+            }
+
+            console.log(`[Admin] Linked ${admin.email} to demo school`)
+          }
+        } catch (linkErr) {
+          console.error(`[Admin] Failed to link ${admin.email} to demo school:`, linkErr.message)
+        }
       }
     } catch (err) {
       console.error(`[Admin] Failed to seed ${admin.email}:`, err.message)
