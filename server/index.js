@@ -61,6 +61,8 @@ import { scanTrialLifecycle } from './cron/trialLifecycle.js'
 import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
 import { scheduleDemoReset } from './cron/demoReset.js'
 
+import bcrypt from 'bcryptjs'
+
 // Middleware
 import { errorHandler } from './middleware/errorHandler.js'
 
@@ -397,6 +399,36 @@ if (process.env.NODE_ENV === 'production') {
 // Error handler
 app.use(errorHandler)
 
+// Ensure admin users exist (runs independently of migrations)
+async function seedAdminUsers() {
+  const admins = [
+    { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
+    { name: 'Peter Taylor', email: 'petertaylor1983@gmail.com' },
+  ]
+  const defaultPassword = 'MoonBoots2026!'
+
+  for (const admin of admins) {
+    try {
+      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [admin.email.toLowerCase()])
+      if (exists.rows.length > 0) {
+        if (!exists.rows[0].is_admin) {
+          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [exists.rows[0].id])
+          console.log(`[Admin] Promoted ${admin.email} to admin`)
+        }
+      } else {
+        const hash = await bcrypt.hash(defaultPassword, 10)
+        await pool.query(
+          `INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true)`,
+          [admin.name, admin.email.toLowerCase(), hash]
+        )
+        console.log(`[Admin] Created admin: ${admin.email}`)
+      }
+    } catch (err) {
+      console.error(`[Admin] Failed to seed ${admin.email}:`, err.message)
+    }
+  }
+}
+
 // Run migrations and start server
 runMigrations().then(() => {
   // Create HTTP server with custom timeouts for large video uploads
@@ -412,6 +444,9 @@ runMigrations().then(() => {
     console.log(`🚀 Server running on port ${PORT}`)
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
     console.log(`⏱️  Upload timeout: 30 minutes`)
+
+    // Seed admin users (independent of migrations)
+    seedAdminUsers().catch(err => console.error('[Admin] Seed error:', err))
 
     // Run lifecycle scanners on startup (delayed 30s to let DB settle),
     // then every 24 hours
