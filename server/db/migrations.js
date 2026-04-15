@@ -50,12 +50,40 @@ export async function runMigrations() {
       )
     `)
 
-    // Ensure pupil_id column exists (handles existing DBs where column was named player_id)
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'users' AND column_name = 'player_id') THEN
-        ALTER TABLE users RENAME COLUMN player_id TO pupil_id;
-      END IF;
-    END $$`)
+    // Early rename: player_id -> pupil_id across all tables (mirrors Phase 8d for existing DBs
+    // where the migration previously failed before reaching that phase)
+    const earlyPlayerIdRenames = [
+      'users', 'training_attendance', 'training_availability', 'invites',
+      'pupil_messages', 'match_media', 'pupil_achievements', 'team_suggestions',
+      'team_memberships', 'clip_player_tags', 'video_ai_analysis',
+      'event_registrations', 'availability_responses', 'match_availability',
+      'match_squads', 'observations', 'development_plans', 'attribute_snapshots'
+    ]
+    for (const table of earlyPlayerIdRenames) {
+      try {
+        await pool.query(`DO $$ BEGIN
+          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${table}' AND column_name = 'player_id') THEN
+            ALTER TABLE ${table} RENAME COLUMN player_id TO pupil_id;
+          END IF;
+        END $$`)
+      } catch (e) { /* table may not exist yet on fresh DB - safe to skip */ }
+    }
+    // Rename match-specific columns
+    const matchColRenames = [
+      { table: 'match_goals', old: 'scorer_player_id', new: 'scorer_pupil_id' },
+      { table: 'match_goals', old: 'assist_player_id', new: 'assist_pupil_id' },
+      { table: 'match_substitutions', old: 'player_off_id', new: 'pupil_off_id' },
+      { table: 'match_substitutions', old: 'player_on_id', new: 'pupil_on_id' },
+    ]
+    for (const r of matchColRenames) {
+      try {
+        await pool.query(`DO $$ BEGIN
+          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${r.table}' AND column_name = '${r.old}') THEN
+            ALTER TABLE ${r.table} RENAME COLUMN ${r.old} TO ${r.new};
+          END IF;
+        END $$`)
+      } catch (e) { /* table may not exist yet */ }
+    }
 
     // Create players table
     await pool.query(`

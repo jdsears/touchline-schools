@@ -22,26 +22,38 @@ export default class ErrorBoundary extends Component {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-[60vh] flex items-center justify-center p-8">
-          <div className="text-center max-w-md">
-            <AlertCircle className="w-12 h-12 text-alert-400 mx-auto mb-4" />
-            <h2 className="text-lg font-display font-semibold text-white mb-2">
+        <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32, background: 'var(--mb-navy, #0F1E3D)' }}>
+          <div style={{ textAlign: 'center', maxWidth: 400 }}>
+            <AlertCircle size={48} style={{ color: '#ef4444', margin: '0 auto 16px' }} />
+            <h2 style={{ fontFamily: 'var(--font-serif, "Crimson Pro", Georgia, serif)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 8 }}>
               Something went wrong
             </h2>
-            <p className="text-navy-400 text-sm mb-6">
+            <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 14, color: 'rgba(250, 250, 247, 0.6)', lineHeight: 1.6, marginBottom: 24 }}>
               This page failed to load. This can happen due to a network issue or a temporary error.
             </p>
-            <div className="flex gap-3 justify-center">
+            <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
               <button
                 onClick={this.handleRetry}
-                className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors flex items-center gap-2"
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  padding: '10px 20px', borderRadius: 4, border: 'none', cursor: 'pointer',
+                  background: 'var(--mb-gold, #C9A961)', color: 'var(--mb-navy, #0F1E3D)',
+                  fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 14, fontWeight: 600,
+                  transition: 'background 0.15s ease',
+                }}
               >
-                <RefreshCw className="w-4 h-4" />
+                <RefreshCw size={16} />
                 Try Again
               </button>
               <button
                 onClick={() => window.location.reload()}
-                className="px-4 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm transition-colors"
+                style={{
+                  padding: '10px 20px', borderRadius: 4, cursor: 'pointer',
+                  background: 'rgba(255,255,255,0.06)', color: 'rgba(250, 250, 247, 0.7)',
+                  border: '1px solid rgba(201, 169, 97, 0.2)',
+                  fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 14, fontWeight: 500,
+                  transition: 'background 0.15s ease',
+                }}
               >
                 Refresh Page
               </button>

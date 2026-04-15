@@ -13,8 +13,13 @@ function PageTracker() {
 // Loading fallback for lazy-loaded routes
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="spinner w-8 h-8" />
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--mb-navy, #0F1E3D)' }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: '50%',
+        border: '2px solid rgba(201, 169, 97, 0.2)',
+        borderTopColor: 'var(--mb-gold, #C9A961)',
+        animation: 'spin 0.8s linear infinite',
+      }} />
     </div>
   )
 }
