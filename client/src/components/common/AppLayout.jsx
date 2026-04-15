@@ -64,7 +64,7 @@ const navigation = [
   { name: 'League Table', href: '/league', icon: TableIcon },
   { name: 'Tactics', href: '/tactics', icon: Target },
   { name: 'Training', href: '/training', icon: Calendar },
-  { name: 'Players', href: '/players', icon: Users },
+  { name: 'Players', href: '/pupils', icon: Users },
   { name: 'Development', href: '/season-development', icon: TrendingUp },
   { name: 'Videos', href: '/videos', icon: Video },
   { name: 'Film Room', href: '/film-room', icon: MonitorPlay },
@@ -181,13 +181,13 @@ export default function AppLayout() {
             })}
           </nav>
           
-          {/* Club links */}
+          {/* School links */}
           {(myClubs.length > 0 || (user?.role === 'manager' || user?.role === 'assistant')) && (
             <div className="px-3 py-2 border-t border-navy-800">
-              {myClubs.map((club) => (
+              {myClubs.map((school) => (
                 <NavLink
-                  key={club.id}
-                  to={`/club/${club.slug}`}
+                  key={school.id}
+                  to={`/school/${school.slug}`}
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
@@ -198,15 +198,15 @@ export default function AppLayout() {
                   `}
                 >
                   <Building2 className="w-5 h-5" />
-                  <span className="font-medium truncate">{club.name}</span>
+                  <span className="font-medium truncate">{school.name}</span>
                   <span className="ml-auto text-xs bg-amber-600/20 text-amber-400 px-2 py-0.5 rounded-full capitalize">
-                    {club.my_role}
+                    {school.my_role}
                   </span>
                 </NavLink>
               ))}
               {(user?.role === 'manager' || user?.role === 'assistant') && (
                 <NavLink
-                  to="/club/create"
+                  to="/school/create"
                   onClick={() => setSidebarOpen(false)}
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
@@ -217,7 +217,7 @@ export default function AppLayout() {
                   `}
                 >
                   <Plus className="w-5 h-5" />
-                  <span className="font-medium">Create Club</span>
+                  <span className="font-medium">Create School</span>
                 </NavLink>
               )}
             </div>

@@ -59,7 +59,7 @@ function StatCard({ icon: Icon, label, value, sub, color = 'text-pitch-400' }) {
 }
 
 export default function SeasonDevelopment() {
-  const { team, players } = useTeam()
+  const { team, pupils } = useTeam()
   const { user } = useAuth()
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -89,7 +89,7 @@ export default function SeasonDevelopment() {
     setGeneratingReview(true)
     try {
       const res = await seasonDevelopmentService.generateSeasonReview(team.id, {
-        players: data.players,
+        pupils: data.pupils,
         summary: data.summary,
       })
       setAiReview(res.data)
@@ -105,8 +105,8 @@ export default function SeasonDevelopment() {
   }
 
   const sortedPlayers = useMemo(() => {
-    if (!data?.players) return []
-    const list = [...data.players]
+    if (!data?.pupils) return []
+    const list = [...data.pupils]
     list.sort((a, b) => {
       let aVal, bVal
       switch (sortBy) {
@@ -134,7 +134,7 @@ export default function SeasonDevelopment() {
       return sortDir === 'desc' ? bVal - aVal : aVal - bVal
     })
     return list
-  }, [data?.players, sortBy, sortDir])
+  }, [data?.pupils, sortBy, sortDir])
 
   function toggleSort(col) {
     if (sortBy === col) {
@@ -175,7 +175,7 @@ export default function SeasonDevelopment() {
       <div className="p-4 sm:p-6 max-w-6xl mx-auto text-center py-20">
         <TrendingUp className="w-12 h-12 mx-auto mb-4 text-navy-600" />
         <h2 className="text-xl font-bold text-white mb-2">No development data yet</h2>
-        <p className="text-navy-400 text-sm">Start recording training attendance, match observations, and player analyses to see development insights here.</p>
+        <p className="text-navy-400 text-sm">Start recording training attendance, match observations, and pupil analyses to see development insights here.</p>
       </div>
     )
   }
@@ -192,7 +192,7 @@ export default function SeasonDevelopment() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Season Development</h1>
-            <p className="text-navy-400 text-sm mt-0.5">Track player growth, effort and breakthrough potential</p>
+            <p className="text-navy-400 text-sm mt-0.5">Track pupil growth, effort and breakthrough potential</p>
           </div>
         </div>
         <button
@@ -287,14 +287,14 @@ export default function SeasonDevelopment() {
         )}
       </AnimatePresence>
 
-      {/* Player table */}
+      {/* Pupil table */}
       <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-navy-800">
                 <th className="text-left px-4 py-3">
-                  <SortHeader col="name">Player</SortHeader>
+                  <SortHeader col="name">Pupil</SortHeader>
                 </th>
                 <th className="text-center px-3 py-3">
                   <SortHeader col="improvement" className="justify-center">Improvement</SortHeader>
@@ -315,18 +315,18 @@ export default function SeasonDevelopment() {
               </tr>
             </thead>
             <tbody>
-              {sortedPlayers.map(player => (
+              {sortedPlayers.map(pupil => (
                 <PlayerRow
-                  key={player.id}
-                  player={player}
-                  expanded={expandedPlayer === player.id}
-                  onToggle={() => setExpandedPlayer(expandedPlayer === player.id ? null : player.id)}
+                  key={pupil.id}
+                  pupil={pupil}
+                  expanded={expandedPlayer === pupil.id}
+                  onToggle={() => setExpandedPlayer(expandedPlayer === pupil.id ? null : pupil.id)}
                 />
               ))}
               {sortedPlayers.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-4 py-8 text-center text-navy-500">
-                    No player data available for this season
+                    No pupil data available for this season
                   </td>
                 </tr>
               )}
@@ -338,8 +338,8 @@ export default function SeasonDevelopment() {
   )
 }
 
-function PlayerRow({ player, expanded, onToggle }) {
-  const training = player.training || {}
+function PlayerRow({ pupil, expanded, onToggle }) {
+  const training = pupil.training || {}
   return (
     <>
       <tr
@@ -348,14 +348,14 @@ function PlayerRow({ player, expanded, onToggle }) {
       >
         <td className="px-4 py-3">
           <div>
-            <span className="text-white font-medium">{player.name}</span>
-            {player.position && (
-              <span className="ml-2 text-xs text-navy-500">{player.position}</span>
+            <span className="text-white font-medium">{pupil.name}</span>
+            {pupil.position && (
+              <span className="ml-2 text-xs text-navy-500">{pupil.position}</span>
             )}
           </div>
         </td>
         <td className="px-3 py-3 text-center">
-          <ImprovementBadge score={player.development?.improvement_score} />
+          <ImprovementBadge score={pupil.development?.improvement_score} />
         </td>
         <td className="px-3 py-3 text-center">
           {training.attendance_rate != null ? (
@@ -375,21 +375,21 @@ function PlayerRow({ player, expanded, onToggle }) {
           </div>
         </td>
         <td className="px-3 py-3 text-center">
-          <span className="text-sm text-navy-300">{player.observations?.total || 0}</span>
+          <span className="text-sm text-navy-300">{pupil.observations?.total || 0}</span>
         </td>
         <td className="px-3 py-3 text-center">
           <div className="flex items-center justify-center gap-1">
-            {(player.match?.potm_awards > 0) && (
-              <span className="text-xs bg-caution-500/20 text-caution-400 px-1.5 py-0.5 rounded" title="Player of the Match">
-                {player.match.potm_awards} POTM
+            {(pupil.match?.potm_awards > 0) && (
+              <span className="text-xs bg-caution-500/20 text-caution-400 px-1.5 py-0.5 rounded" title="Pupil of the Match">
+                {pupil.match.potm_awards} POTM
               </span>
             )}
-            {(player.achievements?.list?.length > 0) && (
+            {(pupil.achievements?.list?.length > 0) && (
               <span className="text-xs bg-pitch-600/20 text-pitch-400 px-1.5 py-0.5 rounded">
-                {player.achievements.list.length}
+                {pupil.achievements.list.length}
               </span>
             )}
-            {(!player.match?.potm_awards && !player.achievements?.list?.length) && (
+            {(!pupil.match?.potm_awards && !pupil.achievements?.list?.length) && (
               <span className="text-xs text-navy-600">-</span>
             )}
           </div>
@@ -408,7 +408,7 @@ function PlayerRow({ player, expanded, onToggle }) {
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <PlayerExpandedDetail player={player} />
+                <PlayerExpandedDetail pupil={pupil} />
               </motion.div>
             </td>
           </tr>
@@ -418,10 +418,10 @@ function PlayerRow({ player, expanded, onToggle }) {
   )
 }
 
-function PlayerExpandedDetail({ player }) {
-  const training = player.training || {}
-  const observations = player.observations || {}
-  const matches = player.match || {}
+function PlayerExpandedDetail({ pupil }) {
+  const training = pupil.training || {}
+  const observations = pupil.observations || {}
+  const matches = pupil.match || {}
 
   return (
     <div className="bg-navy-800/30 px-4 py-4 border-b border-navy-800">
@@ -475,9 +475,9 @@ function PlayerExpandedDetail({ player }) {
         {/* Achievements */}
         <div className="space-y-2">
           <h4 className="text-xs font-medium text-navy-400 uppercase tracking-wider">Achievements</h4>
-          {player.achievements?.list?.length > 0 ? (
+          {pupil.achievements?.list?.length > 0 ? (
             <div className="space-y-1">
-              {player.achievements.list.map((a, i) => (
+              {pupil.achievements.list.map((a, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
                   <Trophy className="w-3 h-3 text-caution-400 shrink-0" />
                   <span className="text-navy-300 truncate">{a.title || a.type}</span>
@@ -487,24 +487,24 @@ function PlayerExpandedDetail({ player }) {
           ) : (
             <p className="text-xs text-navy-600">No achievements recorded</p>
           )}
-          {player.match?.potm_awards > 0 && (
+          {pupil.match?.potm_awards > 0 && (
             <div className="flex items-center gap-2 text-sm mt-1">
               <Star className="w-3 h-3 text-caution-400" />
-              <span className="text-caution-400 font-medium">{player.match.potm_awards}x Player of the Match</span>
+              <span className="text-caution-400 font-medium">{pupil.match.potm_awards}x Pupil of the Match</span>
             </div>
           )}
         </div>
       </div>
 
       {/* Development info */}
-      {player.development?.has_snapshots && (
+      {pupil.development?.has_snapshots && (
         <div className="mt-4 pt-4 border-t border-navy-800">
           <h4 className="text-xs font-medium text-navy-400 uppercase tracking-wider mb-2">Development</h4>
           <div className="flex items-center gap-3 text-sm">
             <span className="text-navy-400">Improvement Score:</span>
-            <ImprovementBadge score={player.development.improvement_score} />
+            <ImprovementBadge score={pupil.development.improvement_score} />
             <span className="text-xs text-navy-600">
-              ({player.development.snapshot_count} snapshot{player.development.snapshot_count !== 1 ? 's' : ''})
+              ({pupil.development.snapshot_count} snapshot{pupil.development.snapshot_count !== 1 ? 's' : ''})
             </span>
           </div>
         </div>

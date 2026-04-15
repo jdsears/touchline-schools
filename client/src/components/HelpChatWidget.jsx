@@ -12,10 +12,10 @@ const suggestedQuestions = {
   coach: [
     "How do I create a training session?",
     "How do I set up my team's formation?",
-    "How do I track player development?",
+    "How do I track pupil development?",
     "What can the AI assistant help me with?",
   ],
-  player: [
+  pupil: [
     "How do I check my schedule?",
     "What does my development progress show?",
     "How do I talk to The Gaffer?",
@@ -42,8 +42,8 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
   const [submitted, setSubmitted] = useState(false)
   const [supportError, setSupportError] = useState('')
 
-  const questions = userRole === 'parent' || userRole === 'player'
-    ? suggestedQuestions.player
+  const questions = userRole === 'parent' || userRole === 'pupil'
+    ? suggestedQuestions.pupil
     : suggestedQuestions.coach
 
   useEffect(() => {

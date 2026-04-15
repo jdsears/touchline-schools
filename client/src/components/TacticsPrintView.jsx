@@ -11,16 +11,16 @@ function formatPlayerName(name) {
   return `${firstName} ${lastInitial}.`
 }
 
-// SVG pitch with player positions
-function PitchSVG({ positions, players, teamFormat, formation }) {
+// SVG pitch with pupil positions
+function PitchSVG({ positions, pupils, teamFormat, formation }) {
   const w = 300
   const h = 400
   const pad = 12 // pitch field padding inside the SVG
 
   const getPlayer = (posId) => {
     const pos = positions.find(p => p.id === posId)
-    if (!pos?.playerId) return null
-    return players.find(p => p.id === pos.playerId)
+    if (!pos?.pupilId) return null
+    return pupils.find(p => p.id === pos.pupilId)
   }
 
   // Pitch markings helper
@@ -83,9 +83,9 @@ function PitchSVG({ positions, players, teamFormat, formation }) {
       {/* Markings */}
       {renderMarkings()}
 
-      {/* Player dots */}
+      {/* Pupil dots */}
       {positions.map(pos => {
-        const player = getPlayer(pos.id)
+        const pupil = getPlayer(pos.id)
         const cx = pad + (pos.x / 100) * (w - pad * 2)
         const cy = pad + (pos.y / 100) * (h - pad * 2)
 
@@ -94,19 +94,19 @@ function PitchSVG({ positions, players, teamFormat, formation }) {
             {/* Shadow */}
             <circle cx={cx} cy={cy + 1} r={14} fill="rgba(0,0,0,0.2)" />
             {/* Dot */}
-            <circle cx={cx} cy={cy} r={13} fill={player ? 'white' : 'rgba(255,255,255,0.5)'} stroke={player ? '#e5e7eb' : 'rgba(255,255,255,0.3)'} strokeWidth="1" />
+            <circle cx={cx} cy={cy} r={13} fill={pupil ? 'white' : 'rgba(255,255,255,0.5)'} stroke={pupil ? '#e5e7eb' : 'rgba(255,255,255,0.3)'} strokeWidth="1" />
             {/* Squad number */}
             <text
               x={cx}
               y={cy}
               textAnchor="middle"
               dominantBaseline="central"
-              fill={player ? '#1e293b' : '#94a3b8'}
+              fill={pupil ? '#1e293b' : '#94a3b8'}
               fontSize="11"
               fontWeight="700"
               fontFamily="system-ui, sans-serif"
             >
-              {player?.squad_number || ''}
+              {pupil?.squad_number || ''}
             </text>
             {/* Name label below */}
             <rect
@@ -127,7 +127,7 @@ function PitchSVG({ positions, players, teamFormat, formation }) {
               fontWeight="600"
               fontFamily="system-ui, sans-serif"
             >
-              {player ? formatPlayerName(player.name) : pos.label}
+              {pupil ? formatPlayerName(pupil.name) : pos.label}
             </text>
           </g>
         )
@@ -139,7 +139,7 @@ function PitchSVG({ positions, players, teamFormat, formation }) {
 export default function TacticsPrintView({
   onClose,
   positions,
-  players,
+  pupils,
   formation,
   teamFormat,
   teamName,
@@ -164,17 +164,17 @@ export default function TacticsPrintView({
     year: 'numeric',
   })
 
-  // Build bench player list
+  // Build bench pupil list
   const benchList = (benchPlayers || [])
-    .map(id => players.find(p => p.id === id))
+    .map(id => pupils.find(p => p.id === id))
     .filter(Boolean)
 
   // Set piece takers info
   const setPieces = setPieceTakers || {}
   const setPieceEntries = Object.entries(setPieces)
-    .filter(([, playerId]) => playerId)
-    .map(([role, playerId]) => {
-      const player = players.find(p => p.id === Number(playerId) || p.id === playerId)
+    .filter(([, pupilId]) => pupilId)
+    .map(([role, pupilId]) => {
+      const pupil = pupils.find(p => p.id === Number(pupilId) || p.id === pupilId)
       const labels = {
         corners_left: 'Corners (L)',
         corners_right: 'Corners (R)',
@@ -182,9 +182,9 @@ export default function TacticsPrintView({
         penalties: 'Penalties',
         throw_ins_long: 'Long Throws',
       }
-      return { label: labels[role] || role, player }
+      return { label: labels[role] || role, pupil }
     })
-    .filter(e => e.player)
+    .filter(e => e.pupil)
 
   // Game model summary
   const gmEntries = []
@@ -278,12 +278,12 @@ export default function TacticsPrintView({
               paddingBottom: '4mm',
               borderBottom: '2px solid #22c55e',
             }}>
-              {/* Club logo */}
+              {/* School logo */}
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 {logoUrl && (
                   <img
                     src={logoUrl}
-                    alt="Club badge"
+                    alt="School badge"
                     style={{ height: '40px', width: 'auto', objectFit: 'contain' }}
                     crossOrigin="anonymous"
                   />
@@ -337,7 +337,7 @@ export default function TacticsPrintView({
             <div style={{ maxWidth: '160mm', margin: '0 auto', marginBottom: '6mm' }}>
               <PitchSVG
                 positions={positions}
-                players={players}
+                pupils={pupils}
                 teamFormat={teamFormat}
                 formation={formation}
               />
@@ -393,7 +393,7 @@ export default function TacticsPrintView({
                       {setPieceEntries.map((e, i) => (
                         <div key={i} style={{ padding: '1mm 0', display: 'flex', justifyContent: 'space-between' }}>
                           <span style={{ color: '#64748b' }}>{e.label}</span>
-                          <span style={{ fontWeight: 600 }}>{formatPlayerName(e.player.name)}</span>
+                          <span style={{ fontWeight: 600 }}>{formatPlayerName(e.pupil.name)}</span>
                         </div>
                       ))}
                     </div>
@@ -453,14 +453,14 @@ export default function TacticsPrintView({
                 color: '#334155',
               }}>
                 {positions
-                  .filter(pos => pos.playerId)
+                  .filter(pos => pos.pupilId)
                   .map(pos => {
-                    const player = players.find(p => p.id === pos.playerId)
-                    if (!player) return null
+                    const pupil = pupils.find(p => p.id === pos.pupilId)
+                    if (!pupil) return null
                     return (
                       <div key={pos.id} style={{ display: 'flex', gap: '4px', padding: '0.5mm 0' }}>
-                        <span style={{ fontWeight: 700, minWidth: '16px' }}>{player.squad_number || '-'}</span>
-                        <span>{player.name}</span>
+                        <span style={{ fontWeight: 700, minWidth: '16px' }}>{pupil.squad_number || '-'}</span>
+                        <span>{pupil.name}</span>
                         <span style={{ color: '#94a3b8', marginLeft: 'auto' }}>({pos.label})</span>
                       </div>
                     )

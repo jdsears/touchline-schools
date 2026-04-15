@@ -26,7 +26,7 @@ export default function Blog() {
     <div className="min-h-screen bg-navy-950">
       <SEO
         title="Blog"
-        description="Coaching insights, tips, and grassroots football news from Touchline. Practical advice for volunteer coaches, club managers, and youth football."
+        description="Coaching insights, tips, and grassroots football news from Touchline. Practical advice for volunteer coaches, school managers, and youth football."
         path="/blog"
       />
       {/* Header */}

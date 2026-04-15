@@ -51,7 +51,7 @@ function slugify(text) {
     .replace(/(^-|-$)/g, '')
 }
 
-// Register new user with team (and optionally a club)
+// Register new user with team (and optionally a school)
 router.post('/register', async (req, res, next) => {
   try {
     const {
@@ -70,7 +70,7 @@ router.post('/register', async (req, res, next) => {
       logoUrl,
       // Promo code (optional)
       promoCode,
-      // Club registration (optional)
+      // School registration (optional)
       accountType,
       clubName,
       dpaAccepted,
@@ -83,13 +83,13 @@ router.post('/register', async (req, res, next) => {
       return res.status(400).json({ message: 'All fields are required' })
     }
 
-    // Validate club-specific fields
-    if (accountType === 'club') {
+    // Validate school-specific fields
+    if (accountType === 'school') {
       if (!clubName) {
-        return res.status(400).json({ message: 'Club name is required' })
+        return res.status(400).json({ message: 'School name is required' })
       }
       if (!dpaAccepted) {
-        return res.status(400).json({ message: 'You must accept the Data Processing Agreement to create a club' })
+        return res.status(400).json({ message: 'You must accept the Data Processing Agreement to create a school' })
       }
     }
 
@@ -148,19 +148,19 @@ router.post('/register', async (req, res, next) => {
     )
     const user = userResult.rows[0]
 
-    // If club registration, create the club and link the team
-    let club = null
-    if (accountType === 'club') {
+    // If school registration, create the school and link the team
+    let school = null
+    if (accountType === 'school') {
       try {
         // Generate unique slug
         let slug = slugify(clubName)
-        const existingSlug = await pool.query('SELECT id FROM clubs WHERE slug = $1', [slug])
+        const existingSlug = await pool.query('SELECT id FROM schools WHERE slug = $1', [slug])
         if (existingSlug.rows.length > 0) {
           slug = `${slug}-${Date.now().toString(36)}`
         }
 
         const clubResult = await pool.query(
-          `INSERT INTO clubs (
+          `INSERT INTO schools (
             name, slug, contact_email,
             primary_color, secondary_color
           ) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
@@ -172,25 +172,25 @@ router.post('/register', async (req, res, next) => {
             secondaryColor || '#38a169',
           ]
         )
-        club = clubResult.rows[0]
+        school = clubResult.rows[0]
 
-        // Add creator as club owner with full permissions
+        // Add creator as school owner with full permissions
         await pool.query(
-          `INSERT INTO club_members (club_id, user_id, role, can_manage_payments, can_manage_players, can_view_financials, can_invite_members, joined_at)
+          `INSERT INTO school_members (school_id, user_id, role, can_manage_payments, can_manage_players, can_view_financials, can_invite_members, joined_at)
            VALUES ($1, $2, 'owner', true, true, true, true, NOW())`,
-          [club.id, user.id]
+          [school.id, user.id]
         )
 
-        // Link the team to the club
+        // Link the team to the school
         await pool.query(
-          'UPDATE teams SET club_id = $1 WHERE id = $2',
-          [club.id, team.id]
+          'UPDATE teams SET school_id = $1 WHERE id = $2',
+          [school.id, team.id]
         )
 
         // Record DPA acceptance
         await pool.query(
-          `UPDATE clubs SET dpa_accepted_at = NOW(), dpa_accepted_by = $1, dpa_version = '1.0' WHERE id = $2`,
-          [user.id, club.id]
+          `UPDATE schools SET dpa_accepted_at = NOW(), dpa_accepted_by = $1, dpa_version = '1.0' WHERE id = $2`,
+          [user.id, school.id]
         )
         try {
           const ipAddress = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.ip
@@ -201,7 +201,7 @@ router.post('/register', async (req, res, next) => {
           )
         } catch { /* consent tables may not exist yet */ }
       } catch (clubError) {
-        console.error('Club creation during registration failed:', clubError)
+        console.error('School creation during registration failed:', clubError)
         // Don't fail the whole registration — user and team are created
       }
     }
@@ -281,7 +281,7 @@ router.post('/register', async (req, res, next) => {
         accent_color: team.accent_color,
         logo_url: team.logo_url,
       },
-      ...(club ? { club: { id: club.id, slug: club.slug, name: club.name } } : {}),
+      ...(school ? { school: { id: school.id, slug: school.slug, name: school.name } } : {}),
       ...(promoApplied ? { promoApplied } : {}),
     })
   } catch (error) {
@@ -303,7 +303,7 @@ router.post('/login', async (req, res, next) => {
 
     // Find user
     const result = await pool.query(
-      `SELECT u.id, u.email, u.name, u.role, u.team_id, u.player_id, u.password_hash, u.is_admin
+      `SELECT u.id, u.email, u.name, u.role, u.team_id, u.pupil_id, u.password_hash, u.is_admin
        FROM users u
        WHERE LOWER(u.email) = $1`,
       [normalizedEmail]
@@ -334,7 +334,7 @@ router.post('/login', async (req, res, next) => {
 
     // Get all team memberships for this user
     const membershipsResult = await pool.query(
-      `SELECT tm.team_id, tm.role, tm.player_id, tm.is_primary, t.name as team_name, t.hub_name, t.logo_url
+      `SELECT tm.team_id, tm.role, tm.pupil_id, tm.is_primary, t.name as team_name, t.hub_name, t.logo_url
        FROM team_memberships tm
        JOIN teams t ON tm.team_id = t.id
        WHERE tm.user_id = $1
@@ -347,7 +347,7 @@ router.post('/login', async (req, res, next) => {
     // If user has no memberships in the new table, fall back to users.team_id (legacy support)
     let activeTeamId = teamId
     let activeRole = user.role
-    let activePlayerId = user.player_id
+    let activePlayerId = user.pupil_id
 
     if (memberships.length > 0) {
       // If a specific team was requested, use it; otherwise use primary or first membership
@@ -358,7 +358,7 @@ router.post('/login', async (req, res, next) => {
       if (requestedMembership) {
         activeTeamId = requestedMembership.team_id
         activeRole = requestedMembership.role
-        activePlayerId = requestedMembership.player_id
+        activePlayerId = requestedMembership.pupil_id
       }
     } else if (user.team_id) {
       // Legacy: use team_id from users table
@@ -380,7 +380,7 @@ router.post('/login', async (req, res, next) => {
         name: user.name,
         role: activeRole,
         team_id: activeTeamId,
-        player_id: activePlayerId,
+        pupil_id: activePlayerId,
         is_admin: user.is_admin,
         hasFullAccess: true, // Free app - everyone has full access
         subscriptionStatus: user.is_admin ? 'admin' : 'free',
@@ -392,12 +392,12 @@ router.post('/login', async (req, res, next) => {
         hub_name: m.hub_name,
         logo_url: m.logo_url,
         role: m.role,
-        player_id: m.player_id,
+        pupil_id: m.pupil_id,
         is_primary: m.is_primary
       })) : user.team_id ? [{
         team_id: user.team_id,
         role: user.role,
-        player_id: user.player_id,
+        pupil_id: user.pupil_id,
         is_primary: true
       }] : []
     })
@@ -411,7 +411,7 @@ router.get('/me', authenticateToken, async (req, res, next) => {
   try {
     // Get all team memberships for this user
     const membershipsResult = await pool.query(
-      `SELECT tm.team_id, tm.role, tm.player_id, tm.is_primary, t.name as team_name, t.hub_name, t.logo_url
+      `SELECT tm.team_id, tm.role, tm.pupil_id, tm.is_primary, t.name as team_name, t.hub_name, t.logo_url
        FROM team_memberships tm
        JOIN teams t ON tm.team_id = t.id
        WHERE tm.user_id = $1
@@ -454,7 +454,7 @@ router.get('/me', authenticateToken, async (req, res, next) => {
         name: req.user.name,
         role: req.user.role,
         team_id: req.user.team_id,
-        player_id: req.user.player_id,
+        pupil_id: req.user.pupil_id,
         is_admin: req.user.is_admin,
         hasFullAccess: req.user.hasFullAccess,
         subscriptionStatus: req.user.subscriptionStatus,
@@ -467,12 +467,12 @@ router.get('/me', authenticateToken, async (req, res, next) => {
         hub_name: m.hub_name,
         logo_url: m.logo_url,
         role: m.role,
-        player_id: m.player_id,
+        pupil_id: m.pupil_id,
         is_primary: m.is_primary
       })) : req.user.team_id ? [{
         team_id: req.user.team_id,
         role: req.user.role,
-        player_id: req.user.player_id,
+        pupil_id: req.user.pupil_id,
         is_primary: true
       }] : []
     }
@@ -546,7 +546,7 @@ router.post('/switch-team', authenticateToken, async (req, res, next) => {
 
     // Verify user is a member of this team
     const membershipResult = await pool.query(
-      `SELECT tm.team_id, tm.role, tm.player_id, t.name as team_name, t.hub_name, t.logo_url
+      `SELECT tm.team_id, tm.role, tm.pupil_id, t.name as team_name, t.hub_name, t.logo_url
        FROM team_memberships tm
        JOIN teams t ON tm.team_id = t.id
        WHERE tm.user_id = $1 AND tm.team_id = $2`,
@@ -577,7 +577,7 @@ router.post('/switch-team', authenticateToken, async (req, res, next) => {
         name: req.user.name,
         role: membership ? membership.role : req.user.role,
         team_id: teamId,
-        player_id: membership ? membership.player_id : req.user.player_id,
+        pupil_id: membership ? membership.pupil_id : req.user.pupil_id,
         is_admin: req.user.is_admin,
         hasFullAccess: true,
         subscriptionStatus: req.user.is_admin ? 'admin' : 'free',
@@ -699,7 +699,7 @@ router.post('/magic-link/verify', async (req, res, next) => {
     const { token } = req.body
 
     const result = await pool.query(
-      `SELECT id, email, name, role, team_id, player_id, is_admin FROM users
+      `SELECT id, email, name, role, team_id, pupil_id, is_admin FROM users
        WHERE magic_link_token = $1 AND magic_link_expires > NOW()`,
       [token]
     )
@@ -718,7 +718,7 @@ router.post('/magic-link/verify', async (req, res, next) => {
 
     // Get team memberships (same as login endpoint)
     const membershipsResult = await pool.query(
-      `SELECT tm.team_id, tm.role, tm.player_id, tm.is_primary, t.name as team_name, t.hub_name, t.logo_url
+      `SELECT tm.team_id, tm.role, tm.pupil_id, tm.is_primary, t.name as team_name, t.hub_name, t.logo_url
        FROM team_memberships tm
        JOIN teams t ON tm.team_id = t.id
        WHERE tm.user_id = $1
@@ -730,13 +730,13 @@ router.post('/magic-link/verify', async (req, res, next) => {
     // Determine active team context
     let activeTeamId = user.team_id
     let activeRole = user.role
-    let activePlayerId = user.player_id
+    let activePlayerId = user.pupil_id
 
     if (memberships.length > 0) {
       const primaryMembership = memberships.find(m => m.is_primary) || memberships[0]
       activeTeamId = primaryMembership.team_id
       activeRole = primaryMembership.role
-      activePlayerId = primaryMembership.player_id
+      activePlayerId = primaryMembership.pupil_id
     }
 
     // Generate token with team context
@@ -754,7 +754,7 @@ router.post('/magic-link/verify', async (req, res, next) => {
         name: user.name,
         role: activeRole,
         team_id: activeTeamId,
-        player_id: activePlayerId,
+        pupil_id: activePlayerId,
         is_admin: user.is_admin,
         hasFullAccess: true,
         subscriptionStatus: user.is_admin ? 'admin' : 'free',
@@ -765,12 +765,12 @@ router.post('/magic-link/verify', async (req, res, next) => {
         hub_name: m.hub_name,
         logo_url: m.logo_url,
         role: m.role,
-        player_id: m.player_id,
+        pupil_id: m.pupil_id,
         is_primary: m.is_primary
       })) : user.team_id ? [{
         team_id: user.team_id,
         role: user.role,
-        player_id: user.player_id,
+        pupil_id: user.pupil_id,
         is_primary: true
       }] : []
     })
@@ -865,7 +865,7 @@ router.get('/invite/:token', async (req, res, next) => {
       `SELECT i.*, t.name as team_name, p.name as player_name
        FROM invites i
        JOIN teams t ON i.team_id = t.id
-       LEFT JOIN players p ON i.player_id = p.id
+       LEFT JOIN pupils p ON i.pupil_id = p.id
        WHERE i.token = $1 AND i.expires_at > NOW() AND i.accepted_at IS NULL`,
       [token]
     )
@@ -881,7 +881,7 @@ router.get('/invite/:token', async (req, res, next) => {
       role: invite.role,
       team_name: invite.team_name,
       player_name: invite.player_name,
-      player_id: invite.player_id,
+      pupil_id: invite.pupil_id,
     })
   } catch (error) {
     next(error)
@@ -909,7 +909,7 @@ router.post('/invite/accept', async (req, res, next) => {
 
     // Check if user already exists with this email
     const existingUserResult = await pool.query(
-      'SELECT id, email, name, role, team_id, player_id, is_admin FROM users WHERE LOWER(email) = $1',
+      'SELECT id, email, name, role, team_id, pupil_id, is_admin FROM users WHERE LOWER(email) = $1',
       [invite.email.toLowerCase().trim()]
     )
 
@@ -930,9 +930,9 @@ router.post('/invite/accept', async (req, res, next) => {
 
       // Add team membership for existing user
       await pool.query(
-        `INSERT INTO team_memberships (user_id, team_id, role, player_id, is_primary)
+        `INSERT INTO team_memberships (user_id, team_id, role, pupil_id, is_primary)
          VALUES ($1, $2, $3, $4, false)`,
-        [existingUser.id, invite.team_id, invite.role, invite.player_id || null]
+        [existingUser.id, invite.team_id, invite.role, invite.pupil_id || null]
       )
 
       // Return user with the new team context
@@ -942,7 +942,7 @@ router.post('/invite/accept', async (req, res, next) => {
         name: existingUser.name,
         role: invite.role,
         team_id: invite.team_id,
-        player_id: invite.player_id || null,
+        pupil_id: invite.pupil_id || null,
         is_admin: existingUser.is_admin
       }
     } else {
@@ -950,24 +950,24 @@ router.post('/invite/accept', async (req, res, next) => {
       const passwordHash = await bcrypt.hash(password, 10)
 
       const userResult = await pool.query(
-        `INSERT INTO users (name, email, password_hash, role, team_id, player_id)
-         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, name, role, team_id, player_id, is_admin`,
+        `INSERT INTO users (name, email, password_hash, role, team_id, pupil_id)
+         VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, email, name, role, team_id, pupil_id, is_admin`,
         [
           name || invite.email.split('@')[0],
           invite.email,
           passwordHash,
           invite.role,
           invite.team_id,
-          invite.player_id || null
+          invite.pupil_id || null
         ]
       )
       user = userResult.rows[0]
 
       // Create primary team membership for new user
       await pool.query(
-        `INSERT INTO team_memberships (user_id, team_id, role, player_id, is_primary)
+        `INSERT INTO team_memberships (user_id, team_id, role, pupil_id, is_primary)
          VALUES ($1, $2, $3, $4, true)`,
-        [user.id, invite.team_id, invite.role, invite.player_id || null]
+        [user.id, invite.team_id, invite.role, invite.pupil_id || null]
       )
     }
 
@@ -992,7 +992,7 @@ router.post('/invite/accept', async (req, res, next) => {
         name: user.name,
         role: invite.role,
         team_id: invite.team_id,
-        player_id: invite.player_id || null,
+        pupil_id: invite.pupil_id || null,
         is_admin: user.is_admin || false,
         hasFullAccess: true,
         subscriptionStatus: user.is_admin ? 'admin' : 'free',
@@ -1001,7 +1001,7 @@ router.post('/invite/accept', async (req, res, next) => {
         team_id: invite.team_id,
         team_name: invite.team_name,
         role: invite.role,
-        player_id: invite.player_id || null,
+        pupil_id: invite.pupil_id || null,
         is_primary: true
       }]
     })

@@ -10,7 +10,7 @@ const FORMAT_DEFAULTS = {
   11: { duration: 70, periods: 2, periodLength: 35, playersOnField: 10 },
 }
 
-// Maximum match squad sizes by format (players on field + subs allowed)
+// Maximum match squad sizes by format (pupils on field + subs allowed)
 const MAX_MATCH_SQUAD = {
   5: 8,    // 5 + 3 subs (rolling)
   7: 10,   // 7 + 3 subs
@@ -22,11 +22,11 @@ function calculatePlayingTime(squadPlayers, playersOnField, matchDuration, numPe
   const totalSquad = squadPlayers.length
   if (totalSquad === 0 || playersOnField === 0 || matchDuration === 0) return null
 
-  // If squad <= players on field, everyone plays the full match
+  // If squad <= pupils on field, everyone plays the full match
   if (totalSquad <= playersOnField) {
     return {
       slots: squadPlayers.map(p => ({
-        player: p,
+        pupil: p,
         segments: [{ start: 0, end: matchDuration }],
         totalMinutes: matchDuration,
         percentage: 100,
@@ -59,8 +59,8 @@ function calculatePlayingTime(squadPlayers, playersOnField, matchDuration, numPe
     }))
   }
 
-  const players = squadPlayers.map((p, idx) => ({
-    player: p,
+  const pupils = squadPlayers.map((p, idx) => ({
+    pupil: p,
     index: idx,
     segments: [],
     totalMinutes: 0,
@@ -73,17 +73,17 @@ function calculatePlayingTime(squadPlayers, playersOnField, matchDuration, numPe
     const windowLength = window.end - window.start
 
     // Sort by total minutes played (ascending), break ties by index for stability
-    const sortedByMinutes = [...players].sort((a, b) => {
+    const sortedByMinutes = [...pupils].sort((a, b) => {
       if (a.totalMinutes !== b.totalMinutes) return a.totalMinutes - b.totalMinutes
       return a.index - b.index
     })
 
-    // Pick the least-played players to be on field for this window
+    // Pick the least-played pupils to be on field for this window
     const onField = new Set(sortedByMinutes.slice(0, playersOnField).map(p => p.index))
 
-    for (const p of players) {
+    for (const p of pupils) {
       if (onField.has(p.index)) {
-        // Merge with previous segment if player stays on
+        // Merge with previous segment if pupil stays on
         const lastSeg = p.segments[p.segments.length - 1]
         if (lastSeg && lastSeg.end === window.start) {
           lastSeg.end = window.end
@@ -106,18 +106,18 @@ function calculatePlayingTime(squadPlayers, playersOnField, matchDuration, numPe
   }
 
   // Round minutes
-  players.forEach(p => {
+  pupils.forEach(p => {
     p.totalMinutes = Math.round(p.totalMinutes)
     p.percentage = Math.round((p.totalMinutes / matchDuration) * 100)
   })
 
-  const minMinutes = Math.min(...players.map(p => p.totalMinutes))
-  const maxMinutes = Math.max(...players.map(p => p.totalMinutes))
+  const minMinutes = Math.min(...pupils.map(p => p.totalMinutes))
+  const maxMinutes = Math.max(...pupils.map(p => p.totalMinutes))
   const allEqual = maxMinutes - minMinutes <= 2
 
   return {
-    slots: players.map(p => ({
-      player: p.player,
+    slots: pupils.map(p => ({
+      pupil: p.pupil,
       segments: p.segments,
       totalMinutes: p.totalMinutes,
       percentage: p.percentage,
@@ -144,11 +144,11 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
   const [showPrintView, setShowPrintView] = useState(false)
   const [rollingSubInterval, setRollingSubInterval] = useState(0) // 0 = period-boundary mode
 
-  // Limit squad to match day squad size, prioritising starting players
+  // Limit squad to match day squad size, prioritising starting pupils
   const allSelected = squad.filter(s => s.is_starting || s.selected)
   const squadPlayers = useMemo(() => {
     if (allSelected.length <= maxSquad) return allSelected
-    // Prioritise starting players, then take subs up to the limit
+    // Prioritise starting pupils, then take subs up to the limit
     const starters = allSelected.filter(s => s.is_starting)
     const subs = allSelected.filter(s => !s.is_starting)
     return [...starters, ...subs].slice(0, maxSquad)
@@ -180,7 +180,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
           <div className="text-left">
             <h3 className="font-display font-semibold text-white text-sm">Playing Time Calculator</h3>
             <p className="text-xs text-navy-400">
-              Fair rotation plan for {squadPlayers.length} players
+              Fair rotation plan for {squadPlayers.length} pupils
               {wasLimited && (
                 <span className="text-amber-400 ml-1">(limited from {allSelected.length} to match day {maxSquad})</span>
               )}
@@ -316,7 +316,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                   className="flex items-center gap-2 text-sm text-navy-400 hover:text-white transition-colors"
                 >
                   {showTimeline ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  {showTimeline ? 'Hide' : 'Show'} Player Timeline
+                  {showTimeline ? 'Hide' : 'Show'} Pupil Timeline
                 </button>
                 <button
                   onClick={() => setShowPrintView(true)}
@@ -350,8 +350,8 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                   {result.slots.map((slot, idx) => (
                     <div key={idx} className="flex items-center gap-2">
                       <div className="w-[112px] truncate text-sm text-navy-300 flex-shrink-0">
-                        {slot.player.player_name || slot.player.name}
-                        {slot.player.squad_number ? ` #${slot.player.squad_number}` : ''}
+                        {slot.pupil.player_name || slot.pupil.name}
+                        {slot.pupil.squad_number ? ` #${slot.pupil.squad_number}` : ''}
                       </div>
                       <div className="flex-1 relative h-6 bg-navy-800/50 rounded overflow-hidden">
                         {/* Sub time dividers */}
@@ -382,10 +382,10 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                 </div>
               )}
 
-              {/* Player Summary Table */}
+              {/* Pupil Summary Table */}
               <div className="bg-navy-800/30 rounded-lg overflow-hidden">
                 <div className="grid grid-cols-12 gap-1 px-3 py-2 text-xs text-navy-500 border-b border-navy-700">
-                  <div className="col-span-5">Player</div>
+                  <div className="col-span-5">Pupil</div>
                   <div className="col-span-3 text-center">Playing Time</div>
                   <div className="col-span-2 text-center">% of Match</div>
                   <div className="col-span-2 text-center">Status</div>
@@ -393,7 +393,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                 {result.slots.map((slot, idx) => (
                   <div key={idx} className="grid grid-cols-12 gap-1 px-3 py-2 text-sm border-b border-navy-800/50 last:border-0">
                     <div className="col-span-5 text-white truncate">
-                      {slot.player.player_name || slot.player.name}
+                      {slot.pupil.player_name || slot.pupil.name}
                     </div>
                     <div className="col-span-3 text-center text-navy-300">{slot.totalMinutes} min</div>
                     <div className="col-span-2 text-center">

@@ -273,7 +273,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
       const res = await api.get(`/admin/users/${userId}`)
       setUserDetail(res.data)
       setSelectedTeamId(res.data.team_id || '')
-      setSelectedPlayerId(res.data.player_id || '')
+      setSelectedPlayerId(res.data.pupil_id || '')
       if (res.data.team_id) {
         fetchTeamPlayers(res.data.team_id)
       }
@@ -296,10 +296,10 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
 
   const fetchTeamPlayers = async (teamId) => {
     try {
-      const res = await api.get(`/admin/teams/${teamId}/players`)
+      const res = await api.get(`/admin/teams/${teamId}/pupils`)
       setTeamPlayers(res.data)
     } catch (error) {
-      console.error('Failed to load team players:', error)
+      console.error('Failed to load team pupils:', error)
       setTeamPlayers([])
     }
   }
@@ -393,18 +393,18 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
   }
 
   const handleLinkPlayer = async () => {
-    if (selectedPlayerId === (userDetail.player_id || '')) return
-    setActionLoading('player')
+    if (selectedPlayerId === (userDetail.pupil_id || '')) return
+    setActionLoading('pupil')
     try {
-      await api.put(`/admin/users/${userId}/player`, {
-        player_id: selectedPlayerId || null,
+      await api.put(`/admin/users/${userId}/pupil`, {
+        pupil_id: selectedPlayerId || null,
       })
       const playerName = teamPlayers.find(p => p.id === selectedPlayerId)?.name || 'None'
-      toast.success(selectedPlayerId ? `Linked to ${playerName}` : 'Player link removed')
+      toast.success(selectedPlayerId ? `Linked to ${playerName}` : 'Pupil link removed')
       fetchUserDetail()
       onUpdated()
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to link player')
+      toast.error(error.response?.data?.message || 'Failed to link pupil')
     } finally {
       setActionLoading(null)
     }
@@ -434,9 +434,9 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
     { id: 'team_pro_annual', name: 'Grassroots Pro (Annual)' },
     { id: 'academy_monthly', name: 'Academy (Monthly)' },
     { id: 'academy_annual', name: 'Academy (Annual)' },
-    { id: 'club_starter_monthly', name: 'Club Starter (Monthly — 6 teams)' },
-    { id: 'club_growth_monthly', name: 'Club Growth (Monthly — 15 teams)' },
-    { id: 'club_scale_monthly', name: 'Club Scale (Monthly — 40 teams)' },
+    { id: 'club_starter_monthly', name: 'School Starter (Monthly — 6 teams)' },
+    { id: 'club_growth_monthly', name: 'School Growth (Monthly — 15 teams)' },
+    { id: 'club_scale_monthly', name: 'School Scale (Monthly — 40 teams)' },
   ]
 
   return (
@@ -482,8 +482,8 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                 </div>
               )}
               <div className="mt-1 text-sm text-navy-400">
-                Player Profile:{' '}
-                {userDetail.player_id ? (
+                Pupil Profile:{' '}
+                {userDetail.pupil_id ? (
                   <span className="text-pitch-400">{userDetail.player_name || 'Linked'}</span>
                 ) : (
                   <span className="text-red-400">Not linked</span>
@@ -535,7 +535,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <option value="manager">Manager</option>
                   <option value="assistant">Assistant</option>
                   <option value="parent">Parent</option>
-                  <option value="player">Player</option>
+                  <option value="pupil">Pupil</option>
                 </select>
               </div>
             </div>
@@ -695,12 +695,12 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
               </p>
             </div>
 
-            {/* Link Player Profile */}
+            {/* Link Pupil Profile */}
             {userDetail.team_id && (
               <div className="bg-navy-800/50 rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4 text-orange-400" />
-                  <div className="text-white text-sm font-medium">Link Player Profile</div>
+                  <div className="text-white text-sm font-medium">Link Pupil Profile</div>
                 </div>
                 <div className="flex gap-2">
                   <select
@@ -708,7 +708,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                     onChange={(e) => setSelectedPlayerId(e.target.value)}
                     className="flex-1 px-3 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
                   >
-                    <option value="">No player linked</option>
+                    <option value="">No pupil linked</option>
                     {teamPlayers.map((p) => (
                       <option key={p.id} value={p.id}>
                         {p.name}{p.squad_number ? ` (#${p.squad_number})` : ''}
@@ -717,10 +717,10 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   </select>
                   <button
                     onClick={handleLinkPlayer}
-                    disabled={actionLoading === 'player' || selectedPlayerId === (userDetail.player_id || '')}
+                    disabled={actionLoading === 'pupil' || selectedPlayerId === (userDetail.pupil_id || '')}
                     className="flex items-center gap-2 px-3 py-1.5 bg-orange-600 text-white rounded-lg text-sm hover:bg-orange-700 transition-colors disabled:opacity-50"
                   >
-                    {actionLoading === 'player' ? (
+                    {actionLoading === 'pupil' ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
                     ) : (
                       <Users className="w-4 h-4" />
@@ -729,7 +729,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   </button>
                 </div>
                 <p className="text-xs text-navy-500 mt-2">
-                  Link this account to a player profile so they can access the Player Lounge.
+                  Link this account to a pupil profile so they can access the Pupil Lounge.
                 </p>
               </div>
             )}
@@ -818,7 +818,7 @@ export default function Admin() {
 
   // Redirect non-admins
   if (!user?.is_admin) {
-    return <Navigate to="/dashboard" replace />
+    return <Navigate to="/teacher" replace />
   }
 
   useEffect(() => {
@@ -923,7 +923,7 @@ export default function Admin() {
   // Feature screenshots
   const FEATURE_PAGES = [
     { slug: 'session-planner', title: 'Session Planner' },
-    { slug: 'player-development', title: 'Player Development' },
+    { slug: 'pupil-development', title: 'Pupil Development' },
     { slug: 'video-analysis', title: 'Video Analysis' },
     { slug: 'tactical-advisor', title: 'Tactical Advisor' },
     { slug: 'tactics-board', title: 'Tactics Board' },
@@ -1254,8 +1254,8 @@ export default function Admin() {
             />
             <StatCard
               title="Clubs"
-              value={stats.clubs?.total_clubs || 0}
-              subtitle={`+${stats.clubs?.new_clubs_7d || 0} this week`}
+              value={stats.schools?.total_clubs || 0}
+              subtitle={`+${stats.schools?.new_clubs_7d || 0} this week`}
               icon={Building2}
               color="cyan"
             />
@@ -1268,8 +1268,8 @@ export default function Admin() {
             />
             <StatCard
               title="Players"
-              value={stats.players?.total_players || 0}
-              subtitle={`${stats.players?.active_players || 0} active`}
+              value={stats.pupils?.total_players || 0}
+              subtitle={`${stats.pupils?.active_players || 0} active`}
               icon={UserCheck}
               color="orange"
             />
@@ -1300,7 +1300,7 @@ export default function Admin() {
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-navy-400">Players</span>
-                  <span className="text-white font-medium">{stats.users.players}</span>
+                  <span className="text-white font-medium">{stats.users.pupils}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-navy-400">Parents</span>
@@ -1352,19 +1352,19 @@ export default function Admin() {
             </div>
 
             <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
-              <h3 className="font-semibold text-white mb-4">Club Tiers</h3>
+              <h3 className="font-semibold text-white mb-4">School Tiers</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="text-navy-400">Starter (6 teams)</span>
-                  <span className="text-white font-medium">{stats.clubs?.starter || 0}</span>
+                  <span className="text-white font-medium">{stats.schools?.starter || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-navy-400">Growth (15 teams)</span>
-                  <span className="text-white font-medium">{stats.clubs?.growth || 0}</span>
+                  <span className="text-white font-medium">{stats.schools?.growth || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-navy-400">Scale (40 teams)</span>
-                  <span className="text-white font-medium">{stats.clubs?.scale || 0}</span>
+                  <span className="text-white font-medium">{stats.schools?.scale || 0}</span>
                 </div>
               </div>
             </div>
@@ -1416,7 +1416,7 @@ export default function Admin() {
                   ))}
                 </div>
               ) : (
-                <div className="text-navy-500 text-sm text-center py-4">No clubs registered yet</div>
+                <div className="text-navy-500 text-sm text-center py-4">No schools registered yet</div>
               )}
             </div>
           </div>
@@ -1815,7 +1815,7 @@ export default function Admin() {
                     <td className="px-4 py-3 hidden md:table-cell">
                       {u.billing_exempt ? (
                         <span className="text-xs text-pitch-400">Full access</span>
-                      ) : (u.role === 'parent' || u.role === 'player') && u.team_name ? (
+                      ) : (u.role === 'parent' || u.role === 'pupil') && u.team_name ? (
                         <span className="text-xs text-blue-400">Team member</span>
                       ) : u.subscription_tier && !['free', 'free_trial', 'trial_14d', ''].includes(u.subscription_tier) ? (
                         <span className="text-xs text-pitch-400 capitalize">

@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async'
 
 const defaultMeta = {
-  title: 'Touchline | AI-Powered Coaching & Club Management for Grassroots Football',
-  description: 'Touchline gives grassroots football coaches AI-powered tools for tactics, training sessions, player development, and club management. Free plan available.',
+  title: 'Touchline | AI-Powered Coaching & School Management for Grassroots Football',
+  description: 'Touchline gives grassroots football coaches AI-powered tools for tactics, training sessions, pupil development, and school management. Free plan available.',
   image: 'https://touchline.xyz/touchline-og-image.png',
   url: 'https://touchline.xyz',
 }

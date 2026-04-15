@@ -1,5 +1,5 @@
 // MatchDetail.jsx
-import '@mux/mux-player'
+import '@mux/mux-pupil'
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -141,7 +141,7 @@ export default function MatchDetail() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { user } = useAuth()
-  const { updateMatch, team, players, branding } = useTeam()
+  const { updateMatch, team, pupils, branding } = useTeam()
 
   const isManager = user?.role === 'manager' || user?.role === 'assistant'
 
@@ -219,16 +219,16 @@ export default function MatchDetail() {
   const [editingTeamNotes, setEditingTeamNotes] = useState(false)
   const [savingTeamNotes, setSavingTeamNotes] = useState(false)
 
-  // Player of the Match
+  // Pupil of the Match
   const [showPotmModal, setShowPotmModal] = useState(false)
-  const [potmData, setPotmData] = useState({ playerId: '', reason: '' })
+  const [potmData, setPotmData] = useState({ pupilId: '', reason: '' })
   const [savingPotm, setSavingPotm] = useState(false)
   const [parentVoteData, setParentVoteData] = useState(null)
 
   // Match Goals & Assists
   const [matchGoals, setMatchGoals] = useState([])
   const [showGoalModal, setShowGoalModal] = useState(false)
-  const [goalData, setGoalData] = useState({ scorer_player_id: '', assist_player_id: '', minute: '', goal_type: 'open_play', notes: '' })
+  const [goalData, setGoalData] = useState({ scorer_pupil_id: '', assist_pupil_id: '', minute: '', goal_type: 'open_play', notes: '' })
   const [savingGoal, setSavingGoal] = useState(false)
 
   // Match Substitutions
@@ -386,11 +386,11 @@ export default function MatchDetail() {
     }
   }
 
-  async function handleAvailabilityUpdate(playerId, status) {
+  async function handleAvailabilityUpdate(pupilId, status) {
     try {
-      await teamService.updateAvailability(id, { player_id: playerId, status })
+      await teamService.updateAvailability(id, { pupil_id: pupilId, status })
       setAvailability(prev => prev.map(a =>
-        a.player_id === playerId ? { ...a, status } : a
+        a.pupil_id === pupilId ? { ...a, status } : a
       ))
       toast.success('Availability updated')
     } catch (error) {
@@ -398,14 +398,14 @@ export default function MatchDetail() {
     }
   }
 
-  async function handleToggleSquad(playerId, isInSquad) {
+  async function handleToggleSquad(pupilId, isInSquad) {
     const newSquad = isInSquad
-      ? squad.filter(s => s.player_id !== playerId)
-      : [...squad, { player_id: playerId, is_starting: false }]
+      ? squad.filter(s => s.pupil_id !== pupilId)
+      : [...squad, { pupil_id: pupilId, is_starting: false }]
 
     try {
       await teamService.updateSquad(id, newSquad.map(s => ({
-        player_id: s.player_id,
+        pupil_id: s.pupil_id,
         is_starting: s.is_starting,
         position: s.position
       })))
@@ -415,14 +415,14 @@ export default function MatchDetail() {
     }
   }
 
-  async function handleToggleStarting(playerId, isStarting) {
+  async function handleToggleStarting(pupilId, isStarting) {
     const newSquad = squad.map(s =>
-      s.player_id === playerId ? { ...s, is_starting: !isStarting } : s
+      s.pupil_id === pupilId ? { ...s, is_starting: !isStarting } : s
     )
 
     try {
       await teamService.updateSquad(id, newSquad.map(s => ({
-        player_id: s.player_id,
+        pupil_id: s.pupil_id,
         is_starting: s.is_starting,
         position: s.position
       })))
@@ -432,14 +432,14 @@ export default function MatchDetail() {
     }
   }
 
-  async function handlePositionChange(playerId, position) {
+  async function handlePositionChange(pupilId, position) {
     const newSquad = squad.map(s =>
-      s.player_id === playerId ? { ...s, position: position || null } : s
+      s.pupil_id === pupilId ? { ...s, position: position || null } : s
     )
 
     try {
       await teamService.updateSquad(id, newSquad.map(s => ({
-        player_id: s.player_id,
+        pupil_id: s.pupil_id,
         is_starting: s.is_starting,
         position: s.position
       })))
@@ -456,9 +456,9 @@ export default function MatchDetail() {
       const res = await teamService.requestAvailability(id, deadline.toISOString(), { pendingOnly })
       const count = res.data?.players_notified || 0
       if (pendingOnly) {
-        toast.success(count > 0 ? `Reminder sent to ${count} pending player${count !== 1 ? 's' : ''}` : 'No pending players to remind')
+        toast.success(count > 0 ? `Reminder sent to ${count} pending pupil${count !== 1 ? 's' : ''}` : 'No pending pupils to remind')
       } else {
-        toast.success('Availability request sent to all players')
+        toast.success('Availability request sent to all pupils')
       }
     } catch (error) {
       toast.error('Failed to send availability request')
@@ -484,15 +484,15 @@ export default function MatchDetail() {
       const total = result?.players_notified || 0
       if (result?.email_enabled === false) {
         toast.success(isReannounce ? 'Squad updated!' : 'Squad announced!')
-        toast('Email notifications are not configured — players will only see in-app notifications.', { icon: '⚠️', duration: 5000 })
+        toast('Email notifications are not configured — pupils will only see in-app notifications.', { icon: '⚠️', duration: 5000 })
       } else if (sent === 0 && total > 0) {
         toast.success(isReannounce ? 'Squad updated!' : 'Squad announced!')
-        toast(`No emails sent — none of the ${total} players have linked Player Lounge accounts.`, { icon: '⚠️', duration: 6000 })
+        toast(`No emails sent — none of the ${total} pupils have linked Pupil Lounge accounts.`, { icon: '⚠️', duration: 6000 })
       } else if (sent < total) {
         toast.success(`${isReannounce ? 'Squad updated' : 'Squad announced'}! ${sent}/${total} emails sent.`)
-        toast(`${total - sent} player${total - sent > 1 ? 's don\'t' : ' doesn\'t'} have a linked Player Lounge account.`, { icon: '⚠️', duration: 6000 })
+        toast(`${total - sent} pupil${total - sent > 1 ? 's don\'t' : ' doesn\'t'} have a linked Pupil Lounge account.`, { icon: '⚠️', duration: 6000 })
       } else {
-        toast.success(`${isReannounce ? 'Squad updated' : 'Squad announced'}! All ${sent} players emailed.`)
+        toast.success(`${isReannounce ? 'Squad updated' : 'Squad announced'}! All ${sent} pupils emailed.`)
       }
       setShowAnnounceModal(false)
       loadMatch() // Refresh to show announcement status
@@ -658,47 +658,47 @@ export default function MatchDetail() {
   }
 
   async function handleSavePotm() {
-    if (!potmData.playerId) {
-      toast.error('Please select a player')
+    if (!potmData.pupilId) {
+      toast.error('Please select a pupil')
       return
     }
 
     setSavingPotm(true)
     try {
-      const response = await teamService.setPlayerOfMatch(id, potmData.playerId, potmData.reason)
+      const response = await teamService.setPlayerOfMatch(id, potmData.pupilId, potmData.reason)
       setMatch(prev => ({
         ...prev,
-        player_of_match_id: potmData.playerId,
+        player_of_match_id: potmData.pupilId,
         player_of_match_reason: potmData.reason,
         player_of_match_name: response.data.player_name
       }))
       setShowPotmModal(false)
-      setPotmData({ playerId: '', reason: '' })
-      toast.success('Player of the Match awarded!')
+      setPotmData({ pupilId: '', reason: '' })
+      toast.success('Pupil of the Match awarded!')
     } catch (error) {
-      toast.error('Failed to set Player of the Match')
+      toast.error('Failed to set Pupil of the Match')
     }
     setSavingPotm(false)
   }
 
   async function handleAddGoal(e) {
     e.preventDefault()
-    if (!goalData.scorer_player_id) {
+    if (!goalData.scorer_pupil_id) {
       toast.error('Please select a goalscorer')
       return
     }
     setSavingGoal(true)
     try {
       const res = await teamService.addMatchGoal(id, {
-        scorer_player_id: goalData.scorer_player_id,
-        assist_player_id: goalData.assist_player_id || null,
+        scorer_pupil_id: goalData.scorer_pupil_id,
+        assist_pupil_id: goalData.assist_pupil_id || null,
         minute: goalData.minute ? parseInt(goalData.minute) : null,
         goal_type: goalData.goal_type,
         notes: goalData.notes || null,
       })
       setMatchGoals(prev => [...prev, res.data].sort((a, b) => (a.minute || 999) - (b.minute || 999)))
       setShowGoalModal(false)
-      setGoalData({ scorer_player_id: '', assist_player_id: '', minute: '', goal_type: 'open_play', notes: '' })
+      setGoalData({ scorer_pupil_id: '', assist_pupil_id: '', minute: '', goal_type: 'open_play', notes: '' })
       toast.success('Goal added!')
     } catch {
       toast.error('Failed to add goal')
@@ -719,7 +719,7 @@ export default function MatchDetail() {
   async function handleAddSub(e) {
     e.preventDefault()
     if (!subData.player_off_id && !subData.player_on_id) {
-      toast.error('Please select at least one player')
+      toast.error('Please select at least one pupil')
       return
     }
     setSavingSub(true)
@@ -835,7 +835,7 @@ export default function MatchDetail() {
       }
       setMatch(prev => ({ ...prev, prep_notes: content }))
       setEditingPrepManually(false)
-      toast.success('Match prep shared with players! They can now see it in their Player Zone.')
+      toast.success('Match prep shared with pupils! They can now see it in their Pupil Zone.')
     } catch (error) {
       console.error('Failed to share prep:', error?.response?.status, error?.response?.data, error.message)
       toast.error('Failed to share match prep')
@@ -946,7 +946,7 @@ export default function MatchDetail() {
     try {
       await api.patch(`/matches/${id}`, { prep_notes: null })
       setMatch(prev => ({ ...prev, prep_notes: null }))
-      toast.success('Match prep removed from player view')
+      toast.success('Match prep removed from pupil view')
     } catch (error) {
       toast.error('Failed to remove match prep')
     }
@@ -961,7 +961,7 @@ export default function MatchDetail() {
         ...prev,
         report: { generated: response.data.report, generatedAt: new Date().toISOString(), published: false }
       }))
-      toast.success('Match report generated! Review it and share to Player Zone when ready.')
+      toast.success('Match report generated! Review it and share to Pupil Zone when ready.')
     } catch (error) {
       console.error('Failed to generate report:', error)
       toast.error('Failed to generate match report')
@@ -1494,26 +1494,26 @@ export default function MatchDetail() {
               </div>
             )}
 
-            {/* Player of the Match - Only show when match has a result */}
+            {/* Pupil of the Match - Only show when match has a result */}
             {resultDisplay && (
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-display font-semibold text-white flex items-center gap-2">
                     <Award className="w-5 h-5 text-energy-400" />
-                    Player of the Match
+                    Pupil of the Match
                   </h2>
                   {isManager && (
                     <button
                       onClick={() => {
                         setPotmData({
-                          playerId: match.player_of_match_id || '',
+                          pupilId: match.player_of_match_id || '',
                           reason: match.player_of_match_reason || ''
                         })
                         setShowPotmModal(true)
                       }}
                       className="text-sm text-pitch-400 hover:text-pitch-300"
                     >
-                      {match.player_of_match_id ? 'Change' : 'Select Player'}
+                      {match.player_of_match_id ? 'Change' : 'Select Pupil'}
                     </button>
                   )}
                 </div>
@@ -1526,7 +1526,7 @@ export default function MatchDetail() {
                       </div>
                       <div className="flex-1">
                         <p className="font-semibold text-white text-lg">
-                          {match.player_of_match_name || players.find(p => p.id === match.player_of_match_id)?.name || 'Unknown Player'}
+                          {match.player_of_match_name || pupils.find(p => p.id === match.player_of_match_id)?.name || 'Unknown Pupil'}
                         </p>
                         {match.player_of_match_reason && (
                           <p className="text-sm text-navy-300 mt-1 italic">
@@ -1540,14 +1540,14 @@ export default function MatchDetail() {
                 ) : (
                   <div className="text-center py-6 text-navy-400">
                     <Award className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                    <p>No Player of the Match selected yet</p>
+                    <p>No Pupil of the Match selected yet</p>
                     {isManager && (
                       <button
                         onClick={() => setShowPotmModal(true)}
                         className="btn-primary mt-4"
                       >
                         <Star className="w-4 h-4" />
-                        Select Player
+                        Select Pupil
                       </button>
                     )}
                   </div>
@@ -1560,12 +1560,12 @@ export default function MatchDetail() {
               <div className="card p-6">
                 <div className="flex items-center gap-2 mb-4">
                   <Heart className="w-5 h-5 text-energy-400" />
-                  <h2 className="font-display font-semibold text-white">Parents' Player of the Match</h2>
+                  <h2 className="font-display font-semibold text-white">Parents' Pupil of the Match</h2>
                   <span className="text-xs text-navy-400 ml-auto">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="space-y-2">
                   {parentVoteData.votes.map((v, idx) => (
-                    <div key={v.player_id} className="flex items-center gap-3">
+                    <div key={v.pupil_id} className="flex items-center gap-3">
                       <span className="text-sm text-navy-300 w-5 text-right">{idx + 1}.</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
@@ -1735,15 +1735,15 @@ export default function MatchDetail() {
                         const orderB = posOrder[b.position] ?? 99
                         return orderA - orderB
                       }).map(s => {
-                        const playerName = s.player_name || availability.find(a => a.player_id === s.player_id)?.player_name
-                        const profilePositions = s.player_positions || availability.find(a => a.player_id === s.player_id)?.positions || []
+                        const playerName = s.player_name || availability.find(a => a.pupil_id === s.pupil_id)?.player_name
+                        const profilePositions = s.player_positions || availability.find(a => a.pupil_id === s.pupil_id)?.positions || []
                         return (
-                          <div key={s.player_id} className="flex items-center justify-between text-sm text-white p-2 bg-pitch-500/10 rounded border border-pitch-500/20 gap-2">
+                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-white p-2 bg-pitch-500/10 rounded border border-pitch-500/20 gap-2">
                             <span className="truncate">{playerName}</span>
                             <div className="flex items-center gap-2 shrink-0">
                               <select
                                 value={s.position || ''}
-                                onChange={(e) => handlePositionChange(s.player_id, e.target.value)}
+                                onChange={(e) => handlePositionChange(s.pupil_id, e.target.value)}
                                 className="bg-navy-800 border border-navy-600 text-xs text-navy-300 rounded px-1.5 py-0.5 focus:border-pitch-500 focus:outline-none"
                                 title="Match-day position"
                               >
@@ -1758,7 +1758,7 @@ export default function MatchDetail() {
                                   ))}
                               </select>
                               <button
-                                onClick={() => handleToggleStarting(s.player_id, true)}
+                                onClick={() => handleToggleStarting(s.pupil_id, true)}
                                 className="text-xs text-navy-400 hover:text-energy-400 transition-colors whitespace-nowrap"
                                 title="Move to subs"
                               >
@@ -1769,7 +1769,7 @@ export default function MatchDetail() {
                         )
                       })}
                       {squad.filter(s => s.is_starting).length === 0 && (
-                        <p className="text-sm text-navy-500 italic">No starters selected — use the player list below to set starting lineup</p>
+                        <p className="text-sm text-navy-500 italic">No starters selected — use the pupil list below to set starting lineup</p>
                       )}
                     </div>
                   </div>
@@ -1782,15 +1782,15 @@ export default function MatchDetail() {
                         const orderB = posOrder[b.position] ?? 99
                         return orderA - orderB
                       }).map(s => {
-                        const playerName = s.player_name || availability.find(a => a.player_id === s.player_id)?.player_name
-                        const profilePositions = s.player_positions || availability.find(a => a.player_id === s.player_id)?.positions || []
+                        const playerName = s.player_name || availability.find(a => a.pupil_id === s.pupil_id)?.player_name
+                        const profilePositions = s.player_positions || availability.find(a => a.pupil_id === s.pupil_id)?.positions || []
                         return (
-                          <div key={s.player_id} className="flex items-center justify-between text-sm text-navy-300 p-2 bg-energy-500/10 rounded border border-energy-500/20 gap-2">
+                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-navy-300 p-2 bg-energy-500/10 rounded border border-energy-500/20 gap-2">
                             <span className="truncate">{playerName}</span>
                             <div className="flex items-center gap-2 shrink-0">
                               <select
                                 value={s.position || ''}
-                                onChange={(e) => handlePositionChange(s.player_id, e.target.value)}
+                                onChange={(e) => handlePositionChange(s.pupil_id, e.target.value)}
                                 className="bg-navy-800 border border-navy-600 text-xs text-navy-300 rounded px-1.5 py-0.5 focus:border-energy-500 focus:outline-none"
                                 title="Match-day position"
                               >
@@ -1805,7 +1805,7 @@ export default function MatchDetail() {
                                   ))}
                               </select>
                               <button
-                                onClick={() => handleToggleStarting(s.player_id, false)}
+                                onClick={() => handleToggleStarting(s.pupil_id, false)}
                                 className="text-xs text-navy-400 hover:text-pitch-400 transition-colors whitespace-nowrap"
                                 title="Move to starting"
                               >
@@ -1827,7 +1827,7 @@ export default function MatchDetail() {
             {/* Availability Summary */}
             <div className="card p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display font-semibold text-white">Player Availability</h2>
+                <h2 className="font-display font-semibold text-white">Pupil Availability</h2>
                 {isManager && (
                   <div className="flex gap-2">
                     {availability.filter(a => a.status === 'pending').length > 0 && (
@@ -1878,33 +1878,33 @@ export default function MatchDetail() {
                 </div>
               </div>
 
-              {/* Player List */}
+              {/* Pupil List */}
               {loadingAvailability ? (
                 <div className="flex justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-pitch-500" />
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {availability.map(player => {
-                    const StatusIcon = statusIcons[player.status]
-                    const inSquad = squad.some(s => s.player_id === player.player_id)
-                    const squadEntry = squad.find(s => s.player_id === player.player_id)
+                  {availability.map(pupil => {
+                    const StatusIcon = statusIcons[pupil.status]
+                    const inSquad = squad.some(s => s.pupil_id === pupil.pupil_id)
+                    const squadEntry = squad.find(s => s.pupil_id === pupil.pupil_id)
 
                     return (
                       <div
-                        key={player.player_id}
+                        key={pupil.pupil_id}
                         className={`flex items-center justify-between p-3 rounded-lg border transition ${
                           inSquad ? 'bg-pitch-500/10 border-pitch-500/30' : 'bg-navy-800/50 border-navy-700'
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-white">
-                            {player.squad_number || player.player_name?.charAt(0)}
+                            {pupil.squad_number || pupil.player_name?.charAt(0)}
                           </div>
                           <div>
-                            <p className="text-sm font-medium text-white">{player.player_name}</p>
-                            {player.positions?.length > 0 && (
-                              <p className="text-xs text-navy-400">{player.positions.join(', ')}</p>
+                            <p className="text-sm font-medium text-white">{pupil.player_name}</p>
+                            {pupil.positions?.length > 0 && (
+                              <p className="text-xs text-navy-400">{pupil.positions.join(', ')}</p>
                             )}
                           </div>
                         </div>
@@ -1918,9 +1918,9 @@ export default function MatchDetail() {
                                 return (
                                   <button
                                     key={status}
-                                    onClick={() => handleAvailabilityUpdate(player.player_id, status)}
+                                    onClick={() => handleAvailabilityUpdate(pupil.pupil_id, status)}
                                     className={`p-1.5 rounded transition ${
-                                      player.status === status
+                                      pupil.status === status
                                         ? statusColors[status]
                                         : 'text-navy-500 hover:text-navy-300 hover:bg-navy-700'
                                     }`}
@@ -1932,18 +1932,18 @@ export default function MatchDetail() {
                               })}
                             </div>
                           ) : (
-                            <span className={`px-2 py-1 rounded text-xs border ${statusColors[player.status]}`}>
+                            <span className={`px-2 py-1 rounded text-xs border ${statusColors[pupil.status]}`}>
                               <StatusIcon className="w-3 h-3 inline mr-1" />
-                              {player.status}
+                              {pupil.status}
                             </span>
                           )}
 
-                          {/* Squad Toggle (Manager only) - show for available players, or any player already in squad */}
-                          {isManager && (player.status === 'available' || inSquad || !upcoming) && (
+                          {/* Squad Toggle (Manager only) - show for available pupils, or any pupil already in squad */}
+                          {isManager && (pupil.status === 'available' || inSquad || !upcoming) && (
                             <>
                               <div className="w-px h-6 bg-navy-700 mx-1" />
                               <button
-                                onClick={() => handleToggleSquad(player.player_id, inSquad)}
+                                onClick={() => handleToggleSquad(pupil.pupil_id, inSquad)}
                                 className={`px-3 py-1.5 rounded text-xs font-bold transition ${
                                   inSquad
                                     ? 'bg-pitch-500 text-white'
@@ -1954,7 +1954,7 @@ export default function MatchDetail() {
                               </button>
                               {inSquad && (
                                 <button
-                                  onClick={() => handleToggleStarting(player.player_id, squadEntry?.is_starting)}
+                                  onClick={() => handleToggleStarting(pupil.pupil_id, squadEntry?.is_starting)}
                                   className={`px-3 py-1.5 rounded text-xs font-bold transition ${
                                     squadEntry?.is_starting
                                       ? 'bg-energy-500 text-white'
@@ -1977,7 +1977,7 @@ export default function MatchDetail() {
             {/* Playing Time Calculator */}
             {squad.length > 0 && isManager && (
               <PlayingTimeCalculator
-                squad={squad.map(s => ({ ...s, selected: true, name: s.player_name || availability.find(a => a.player_id === s.player_id)?.player_name || 'Player' }))}
+                squad={squad.map(s => ({ ...s, selected: true, name: s.player_name || availability.find(a => a.pupil_id === s.pupil_id)?.player_name || 'Pupil' }))}
                 teamFormat={teamFormat}
                 formation={getPrimaryFormation(matchFormations) || team?.formation || defaultFormationByFormat[teamFormat]}
                 formationPositions={(() => {
@@ -2011,7 +2011,7 @@ export default function MatchDetail() {
                     <CheckCircle className="w-5 h-5 text-pitch-400" />
                     <div>
                       <p className="font-medium text-pitch-400">Match Prep Shared with Players</p>
-                      <p className="text-sm text-pitch-400/70">Players can see this in their Player Zone</p>
+                      <p className="text-sm text-pitch-400/70">Players can see this in their Pupil Zone</p>
                     </div>
                   </div>
                   <button
@@ -2077,7 +2077,7 @@ export default function MatchDetail() {
                   </button>
                 </div>
                 <p className="text-sm text-navy-400">
-                  Write or edit tactical notes, formation plans, and team instructions. This will be shown to players.
+                  Write or edit tactical notes, formation plans, and team instructions. This will be shown to pupils.
                 </p>
                 <textarea
                   value={manualPrepContent}
@@ -2193,7 +2193,7 @@ Corners, free kicks, etc...`}
                   <FileText className="w-5 h-5 text-pitch-400" />
                   <div>
                     <p className="font-medium text-white">Current Match Prep</p>
-                    <p className="text-xs text-navy-400">Visible to players</p>
+                    <p className="text-xs text-navy-400">Visible to pupils</p>
                   </div>
                 </div>
                 {/* Visual Formation Display */}
@@ -2295,7 +2295,7 @@ Corners, free kicks, etc...`}
               {editingTeamNotes ? (
                 <div className="card p-4 space-y-4">
                   <p className="text-sm text-navy-400">
-                    Add your notes on overall team performance. These notes help the AI provide more personalized feedback to players.
+                    Add your notes on overall team performance. These notes help the AI provide more personalized feedback to pupils.
                   </p>
                   <textarea
                     value={teamNotes}
@@ -2333,7 +2333,7 @@ Corners, free kicks, etc...`}
                   <FileText className="w-8 h-8 text-navy-600 mx-auto mb-2" />
                   <p className="text-navy-400 text-sm">
                     {isManager
-                      ? 'Add notes about overall team performance to help personalize player feedback.'
+                      ? 'Add notes about overall team performance to help personalize pupil feedback.'
                       : 'No team performance notes yet.'}
                   </p>
                 </div>
@@ -2380,7 +2380,7 @@ Corners, free kicks, etc...`}
                         <p className="font-medium text-white">AI Match Report Ready</p>
                         <p className="text-xs text-navy-400">
                           {match.report?.published
-                            ? 'Visible to parents in the Player Zone'
+                            ? 'Visible to parents in the Pupil Zone'
                             : 'Not yet shared with parents'}
                           {match.report?.editedAt && ' (edited)'}
                         </p>
@@ -2434,7 +2434,7 @@ Corners, free kicks, etc...`}
                               ) : (
                                 <>
                                   <Share2 className="w-4 h-4" />
-                                  Share to Player Zone
+                                  Share to Pupil Zone
                                 </>
                               )}
                             </button>
@@ -2538,7 +2538,7 @@ Corners, free kicks, etc...`}
                   )}
                 </div>
                 <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
-                  <mux-player
+                  <mux-pupil
                     playback-id={matchVideo.mux_playback_id}
                     stream-type="on-demand"
                     style={{ width: '100%', height: '100%' }}
@@ -2692,7 +2692,7 @@ Corners, free kicks, etc...`}
                 <div className="flex-1">
                   <p className="font-medium text-white">AI Video Analysis</p>
                   <p className="text-sm text-navy-400">
-                    Get tactical insights and player performance notes
+                    Get tactical insights and pupil performance notes
                   </p>
                 </div>
                 <ChevronRight className="w-5 h-5 text-navy-600" />
@@ -2737,7 +2737,7 @@ Corners, free kicks, etc...`}
                     <div key={clip.id} className="bg-navy-800/50 rounded-lg overflow-hidden group">
                       <div className="aspect-video relative">
                         {clip.mux_playback_id ? (
-                          <mux-player
+                          <mux-pupil
                             playback-id={clip.mux_playback_id}
                             stream-type="on-demand"
                             style={{ width: '100%', height: '100%' }}
@@ -3092,7 +3092,7 @@ Corners, free kicks, etc...`}
         )}
       </AnimatePresence>
 
-      {/* Player of the Match Modal */}
+      {/* Pupil of the Match Modal */}
       <AnimatePresence>
         {showPotmModal && (
           <motion.div
@@ -3112,7 +3112,7 @@ Corners, free kicks, etc...`}
               <div className="p-6 border-b border-navy-800">
                 <h2 className="font-display text-xl font-semibold text-white text-center flex items-center justify-center gap-2">
                   <Award className="w-6 h-6 text-energy-400" />
-                  Player of the Match
+                  Pupil of the Match
                 </h2>
                 <p className="text-sm text-navy-400 text-center mt-1">
                   vs {match.opponent}
@@ -3122,20 +3122,20 @@ Corners, free kicks, etc...`}
               <div className="p-6 space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-navy-300 mb-2">
-                    Select Player
+                    Select Pupil
                   </label>
                   <select
-                    value={potmData.playerId}
-                    onChange={(e) => setPotmData(prev => ({ ...prev, playerId: e.target.value }))}
+                    value={potmData.pupilId}
+                    onChange={(e) => setPotmData(prev => ({ ...prev, pupilId: e.target.value }))}
                     className="input w-full"
                   >
-                    <option value="">Choose a player...</option>
-                    {players
+                    <option value="">Choose a pupil...</option>
+                    {pupils
                       .filter(p => p.is_active !== false)
                       .sort((a, b) => (a.squad_number || 999) - (b.squad_number || 999))
-                      .map(player => (
-                        <option key={player.id} value={player.id}>
-                          {player.squad_number ? `#${player.squad_number} ` : ''}{player.name}
+                      .map(pupil => (
+                        <option key={pupil.id} value={pupil.id}>
+                          {pupil.squad_number ? `#${pupil.squad_number} ` : ''}{pupil.name}
                         </option>
                       ))
                     }
@@ -3154,7 +3154,7 @@ Corners, free kicks, etc...`}
                     className="input w-full resize-none"
                   />
                   <p className="text-xs text-navy-500 mt-1">
-                    This will be shown to players and parents
+                    This will be shown to pupils and parents
                   </p>
                 </div>
               </div>
@@ -3168,7 +3168,7 @@ Corners, free kicks, etc...`}
                 </button>
                 <button
                   onClick={handleSavePotm}
-                  disabled={savingPotm || !potmData.playerId}
+                  disabled={savingPotm || !potmData.pupilId}
                   className="btn-primary flex-1"
                 >
                   {savingPotm ? <Loader2 className="w-5 h-5 animate-spin" /> : (
@@ -3212,18 +3212,18 @@ Corners, free kicks, etc...`}
                 <div>
                   <label className="block text-sm font-medium text-navy-300 mb-2">Goalscorer *</label>
                   <select
-                    value={goalData.scorer_player_id}
-                    onChange={(e) => setGoalData(prev => ({ ...prev, scorer_player_id: e.target.value }))}
+                    value={goalData.scorer_pupil_id}
+                    onChange={(e) => setGoalData(prev => ({ ...prev, scorer_pupil_id: e.target.value }))}
                     className="input w-full"
                     required
                   >
-                    <option value="">Select player...</option>
-                    {players
+                    <option value="">Select pupil...</option>
+                    {pupils
                       .filter(p => p.is_active !== false)
                       .sort((a, b) => (a.squad_number || 999) - (b.squad_number || 999))
-                      .map(player => (
-                        <option key={player.id} value={player.id}>
-                          {player.squad_number ? `#${player.squad_number} ` : ''}{player.name}
+                      .map(pupil => (
+                        <option key={pupil.id} value={pupil.id}>
+                          {pupil.squad_number ? `#${pupil.squad_number} ` : ''}{pupil.name}
                         </option>
                       ))
                     }
@@ -3233,17 +3233,17 @@ Corners, free kicks, etc...`}
                 <div>
                   <label className="block text-sm font-medium text-navy-300 mb-2">Assist (optional)</label>
                   <select
-                    value={goalData.assist_player_id}
-                    onChange={(e) => setGoalData(prev => ({ ...prev, assist_player_id: e.target.value }))}
+                    value={goalData.assist_pupil_id}
+                    onChange={(e) => setGoalData(prev => ({ ...prev, assist_pupil_id: e.target.value }))}
                     className="input w-full"
                   >
                     <option value="">No assist / unknown</option>
-                    {players
+                    {pupils
                       .filter(p => p.is_active !== false)
                       .sort((a, b) => (a.squad_number || 999) - (b.squad_number || 999))
-                      .map(player => (
-                        <option key={player.id} value={player.id}>
-                          {player.squad_number ? `#${player.squad_number} ` : ''}{player.name}
+                      .map(pupil => (
+                        <option key={pupil.id} value={pupil.id}>
+                          {pupil.squad_number ? `#${pupil.squad_number} ` : ''}{pupil.name}
                         </option>
                       ))
                     }
@@ -3283,7 +3283,7 @@ Corners, free kicks, etc...`}
                   <button type="button" onClick={() => setShowGoalModal(false)} className="btn-secondary flex-1">
                     Cancel
                   </button>
-                  <button type="submit" disabled={savingGoal || !goalData.scorer_player_id} className="btn-primary flex-1">
+                  <button type="submit" disabled={savingGoal || !goalData.scorer_pupil_id} className="btn-primary flex-1">
                     {savingGoal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                     Add Goal
                   </button>
@@ -3320,19 +3320,19 @@ Corners, free kicks, etc...`}
 
               <form onSubmit={handleAddSub} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">Player Off</label>
+                  <label className="block text-sm font-medium text-navy-300 mb-2">Pupil Off</label>
                   <select
                     value={subData.player_off_id}
                     onChange={(e) => setSubData(prev => ({ ...prev, player_off_id: e.target.value }))}
                     className="input w-full"
                   >
-                    <option value="">Select player coming off...</option>
-                    {players
+                    <option value="">Select pupil coming off...</option>
+                    {pupils
                       .filter(p => p.is_active !== false)
                       .sort((a, b) => (a.squad_number || 999) - (b.squad_number || 999))
-                      .map(player => (
-                        <option key={player.id} value={player.id}>
-                          {player.squad_number ? `#${player.squad_number} ` : ''}{player.name}
+                      .map(pupil => (
+                        <option key={pupil.id} value={pupil.id}>
+                          {pupil.squad_number ? `#${pupil.squad_number} ` : ''}{pupil.name}
                         </option>
                       ))
                     }
@@ -3340,19 +3340,19 @@ Corners, free kicks, etc...`}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">Player On</label>
+                  <label className="block text-sm font-medium text-navy-300 mb-2">Pupil On</label>
                   <select
                     value={subData.player_on_id}
                     onChange={(e) => setSubData(prev => ({ ...prev, player_on_id: e.target.value }))}
                     className="input w-full"
                   >
-                    <option value="">Select player coming on...</option>
-                    {players
+                    <option value="">Select pupil coming on...</option>
+                    {pupils
                       .filter(p => p.is_active !== false)
                       .sort((a, b) => (a.squad_number || 999) - (b.squad_number || 999))
-                      .map(player => (
-                        <option key={player.id} value={player.id}>
-                          {player.squad_number ? `#${player.squad_number} ` : ''}{player.name}
+                      .map(pupil => (
+                        <option key={pupil.id} value={pupil.id}>
+                          {pupil.squad_number ? `#${pupil.squad_number} ` : ''}{pupil.name}
                         </option>
                       ))
                     }
@@ -3459,8 +3459,8 @@ Corners, free kicks, etc...`}
                 </h2>
                 <p className="text-sm text-navy-400 mt-1">
                   {match.squad_announced
-                    ? `This will re-notify ${squad.length} players with the updated squad`
-                    : `This will notify ${squad.length} players of their selection`}
+                    ? `This will re-notify ${squad.length} pupils with the updated squad`
+                    : `This will notify ${squad.length} pupils of their selection`}
                 </p>
               </div>
 
@@ -3482,7 +3482,7 @@ Corners, free kicks, etc...`}
                     value={announceData.meetup_location}
                     onChange={(e) => setAnnounceData(prev => ({ ...prev, meetup_location: e.target.value }))}
                     className="input"
-                    placeholder="e.g. Club car park, main entrance"
+                    placeholder="e.g. School car park, main entrance"
                   />
                 </div>
 
@@ -3491,7 +3491,7 @@ Corners, free kicks, etc...`}
                     <strong className="text-white">Squad Summary:</strong>
                   </p>
                   <p className="text-sm text-navy-400 mt-1">
-                    {squad.filter(s => s.is_starting).length} starting players, {squad.filter(s => !s.is_starting).length} substitutes
+                    {squad.filter(s => s.is_starting).length} starting pupils, {squad.filter(s => !s.is_starting).length} substitutes
                   </p>
                 </div>
               </div>

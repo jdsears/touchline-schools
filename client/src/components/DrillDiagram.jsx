@@ -8,7 +8,7 @@ const TEAM_COLORS = {
 
 const ARROW_COLORS = {
   pass: '#facc15',   // Yellow dashed - ball movement
-  run: '#ffffff',    // White solid - player runs
+  run: '#ffffff',    // White solid - pupil runs
   dribble: '#22d3ee', // Cyan wavy - dribble
 }
 
@@ -70,7 +70,7 @@ function PitchMarkings({ area }) {
 }
 
 export default function DrillDiagram({ diagram, className = '' }) {
-  if (!diagram || (!diagram.players?.length && !diagram.cones?.length)) {
+  if (!diagram || (!diagram.pupils?.length && !diagram.cones?.length)) {
     return null
   }
 
@@ -200,12 +200,12 @@ export default function DrillDiagram({ diagram, className = '' }) {
           })}
 
           {/* Players */}
-          {diagram.players?.map((player, i) => {
-            const pos = toSvg(player.x, player.y)
-            const colors = TEAM_COLORS[player.team] || TEAM_COLORS.A
+          {diagram.pupils?.map((pupil, i) => {
+            const pos = toSvg(pupil.x, pupil.y)
+            const colors = TEAM_COLORS[pupil.team] || TEAM_COLORS.A
             return (
               <motion.g
-                key={`player-${i}`}
+                key={`pupil-${i}`}
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ delay: 0.05 * i, type: 'spring', stiffness: 300, damping: 20 }}
@@ -220,7 +220,7 @@ export default function DrillDiagram({ diagram, className = '' }) {
                   fill={colors.text} fontSize="9" fontWeight="700"
                   style={{ fontFamily: 'system-ui, sans-serif' }}
                 >
-                  {player.label}
+                  {pupil.label}
                 </text>
               </motion.g>
             )

@@ -54,7 +54,7 @@ const KB_CATEGORIES = [
   { value: 'general', label: 'General' },
   { value: 'coaching_guidelines', label: 'Coaching Guidelines' },
   { value: 'session_plans', label: 'Session Plans' },
-  { value: 'player_development', label: 'Player Development' },
+  { value: 'player_development', label: 'Pupil Development' },
   { value: 'tactical', label: 'Tactical' },
   { value: 'match_prep', label: 'Match Preparation' },
   { value: 'observations', label: 'Observations' },
@@ -1364,16 +1364,16 @@ export default function Settings() {
 
   // Load Gaffer status for parents
   useEffect(() => {
-    if (user?.role === 'parent' && user?.player_id) {
+    if (user?.role === 'parent' && user?.pupil_id) {
       loadGafferStatus()
     } else {
       setLoadingGafferStatus(false)
     }
-  }, [user?.role, user?.player_id])
+  }, [user?.role, user?.pupil_id])
 
   async function loadGafferStatus() {
     try {
-      const response = await playerChatService.getGafferStatus(user.player_id)
+      const response = await playerChatService.getGafferStatus(user.pupil_id)
       setGafferDisabled(response.data.disabled)
     } catch (error) {
       console.error('Failed to load Gaffer status:', error)
@@ -1386,7 +1386,7 @@ export default function Settings() {
     setSaving(true)
     try {
       const newStatus = !gafferDisabled
-      await playerChatService.setGafferStatus(user.player_id, newStatus)
+      await playerChatService.setGafferStatus(user.pupil_id, newStatus)
       setGafferDisabled(newStatus)
       toast.success(newStatus ? 'The Gaffer has been disabled' : 'The Gaffer has been enabled')
     } catch (error) {
@@ -1771,7 +1771,7 @@ export default function Settings() {
                   onChange={(e) => setCoachingPhilosophy(e.target.value)}
                   className="input"
                   rows={5}
-                  placeholder="e.g., I believe in player-led development with a focus on creativity and expression. We play a possession-based style and encourage players to take risks with the ball. Fun and enjoyment come first, but I want to build technically excellent players who understand the game..."
+                  placeholder="e.g., I believe in pupil-led development with a focus on creativity and expression. We play a possession-based style and encourage pupils to take risks with the ball. Fun and enjoyment come first, but I want to build technically excellent pupils who understand the game..."
                 />
                 <p className="text-xs text-navy-500 mt-2">
                   {coachingPhilosophy.length}/500 characters
@@ -1962,7 +1962,7 @@ export default function Settings() {
               <div className="card p-6">
                 <h2 className="font-display text-xl font-semibold text-white mb-4">Invite Players/Parents</h2>
                 <p className="text-navy-400 text-sm mb-4">
-                  To invite parents, go to a player's profile and click the "Invite Parent" button.
+                  To invite parents, go to a pupil's profile and click the "Invite Parent" button.
                   This creates a personalized invite linked to their child's profile.
                 </p>
               </div>
@@ -1980,7 +1980,7 @@ export default function Settings() {
               className="card p-6"
             >
               <h2 className="font-display text-xl font-semibold text-white mb-2">Coaching Qualifications</h2>
-              <p className="text-sm text-navy-400 mb-6">Record your coaching badges and certifications. These are used by Club Intelligence for development suggestions.</p>
+              <p className="text-sm text-navy-400 mb-6">Record your coaching badges and certifications. These are used by School Intelligence for development suggestions.</p>
 
               <div className="space-y-3">
                 {qualifications.map((q, index) => (

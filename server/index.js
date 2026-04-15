@@ -17,7 +17,7 @@ import pool from './config/database.js'
 // Routes
 import authRoutes from './routes/auth.js'
 import teamRoutes from './routes/teams.js'
-import playerRoutes from './routes/players.js'
+import pupilRoutes from './routes/pupils.js'
 import matchRoutes from './routes/matches.js'
 import chatRoutes from './routes/chat.js'
 import trainingRoutes from './routes/training.js'
@@ -27,29 +27,35 @@ import notificationRoutes from './routes/notifications.js'
 import leagueRoutes from './routes/league.js'
 import documentRoutes from './routes/documents.js'
 import announcementRoutes from './routes/announcements.js'
-import billingRoutes from './routes/billing.js'
 import suggestionRoutes from './routes/suggestions.js'
 import tusUploadRoutes from './routes/tusUpload.js'
 import adminRoutes from './routes/admin.js'
 import blogRoutes from './routes/blog.js'
 import supportRoutes from './routes/support.js'
 import streamingRoutes from './routes/streaming.js'
-import clubRoutes from './routes/clubs.js'
-import clubPaymentRoutes from './routes/clubPayments.js'
-import clubCommsRoutes from './routes/clubComms.js'
-import parentPortalRoutes from './routes/parentPortal.js'
-import clubSafeguardingRoutes from './routes/clubSafeguarding.js'
-import clubEventsRoutes from './routes/clubEvents.js'
-import clubScheduleRoutes from './routes/clubSchedule.js'
-import clubIntelligenceRoutes from './routes/clubIntelligence.js'
+import schoolRoutes from './routes/schools.js'
+import schoolCommsRoutes from './routes/schoolComms.js'
+import schoolSafeguardingRoutes from './routes/schoolSafeguarding.js'
+import schoolEventsRoutes from './routes/schoolEvents.js'
+import schoolScheduleRoutes from './routes/schoolSchedule.js'
+import schoolIntelligenceRoutes from './routes/schoolIntelligence.js'
 import knowledgeBaseRoutes from './routes/knowledgeBase.js'
-import giftAidRoutes from './routes/giftAid.js'
 import seasonDevelopmentRoutes from './routes/seasonDevelopment.js'
 import videoLibraryRoutes from './routes/videoLibrary.js'
+import teachingGroupRoutes from './routes/teachingGroups.js'
+import assessmentRoutes from './routes/assessments.js'
+import sportKnowledgeBaseRoutes from './routes/sportKnowledgeBase.js'
+import hodRoutes from './routes/headOfDepartment.js'
+import onboardingRoutes from './routes/onboarding.js'
+import pupilManagementRoutes from './routes/pupilManagement.js'
+import reportingRoutes from './routes/reporting.js'
+import enterpriseBillingRoutes from './routes/enterpriseBilling.js'
+import voiceObservationRoutes from './routes/voiceObservations.js'
+import voiceSafeguardingRoutes from './routes/voiceSafeguarding.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
-import { scanPaymentReminders } from './cron/paymentReminders.js'
+import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
 
 // Middleware
 import { errorHandler } from './middleware/errorHandler.js'
@@ -67,11 +73,11 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Canonical domain redirect: non-canonical hosts -> touchline.xyz
+// Canonical domain redirect: non-canonical hosts -> schools.touchline.xyz
 // Handles: railway.app preview domain, www subdomain, any other alias.
 // HTTP -> HTTPS is handled by Railway's edge proxy, but if a request
 // somehow arrives as HTTP, the redirect below covers it too.
-const CANONICAL_HOST = 'touchline.xyz'
+const CANONICAL_HOST = 'schools.touchline.xyz'
 app.use((req, res, next) => {
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').replace(/:\d+$/, '')
   if (host && host !== CANONICAL_HOST) {
@@ -106,11 +112,9 @@ app.use(cors({
   credentials: true,
 }))
 
-// Use raw body for Stripe webhook, skip parsing for TUS uploads, JSON for everything else
+// Skip JSON parsing for TUS uploads (they send raw binary chunks), JSON for everything else
 app.use((req, res, next) => {
-  if (req.originalUrl === '/api/billing/webhook' || req.originalUrl === '/api/club-payments/webhook') {
-    express.raw({ type: 'application/json' })(req, res, next)
-  } else if (req.originalUrl.startsWith('/api/uploads/video')) {
+  if (req.originalUrl.startsWith('/api/uploads/video')) {
     // TUS upload routes handle their own body parsing - skip JSON middleware
     // TUS PATCH requests send raw binary chunks, not JSON
     next()
@@ -125,8 +129,8 @@ app.use(express.urlencoded({ extended: true }))
 app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads/logos')))
 app.use('/uploads/videos', express.static(path.join(__dirname, 'uploads/videos')))
 
-// Protected: club documents (registrations, compliance, etc.) require valid JWT
-app.use('/uploads/clubs', (req, res, next) => {
+// Protected: school documents (compliance, etc.) require valid JWT
+app.use('/uploads/schools', (req, res, next) => {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
   if (!token) {
@@ -138,7 +142,7 @@ app.use('/uploads/clubs', (req, res, next) => {
   } catch {
     return res.status(401).json({ error: 'Invalid or expired token' })
   }
-}, express.static(path.join(__dirname, 'uploads/clubs')))
+}, express.static(path.join(__dirname, 'uploads/schools')))
 
 // Fallback for any other uploads (match media, documents, etc.)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
@@ -179,7 +183,7 @@ app.use('/api/', apiLimiter)
 // API Routes
 app.use('/api/auth', authLimiter, authRoutes)
 app.use('/api/teams', teamRoutes)
-app.use('/api/players', playerRoutes)
+app.use('/api/pupils', pupilRoutes)
 app.use('/api/matches', matchRoutes)
 app.use('/api/chat', chatRoutes)
 app.use('/api/training', trainingRoutes)
@@ -189,25 +193,31 @@ app.use('/api/notifications', notificationRoutes)
 app.use('/api/league', leagueRoutes)
 app.use('/api/documents', documentRoutes)
 app.use('/api/announcements', announcementRoutes)
-app.use('/api/billing', billingRoutes)
 app.use('/api/suggestions', suggestionRoutes)
 app.use('/api/uploads/video', tusUploadRoutes)
 app.use('/api/admin', adminRoutes)
 app.use('/api/blog', blogRoutes)
 app.use('/api/support', supportRoutes)
 app.use('/api/streaming', streamingRoutes)
-app.use('/api/clubs', clubRoutes)
-app.use('/api/club-payments', clubPaymentRoutes)
-app.use('/api/club-comms', clubCommsRoutes)
-app.use('/api/parent', parentPortalRoutes)
-app.use('/api/club-safeguarding', clubSafeguardingRoutes)
-app.use('/api/club-events', clubEventsRoutes)
-app.use('/api/teams', clubScheduleRoutes)
-app.use('/api/club-intelligence', clubIntelligenceRoutes)
+app.use('/api/schools', schoolRoutes)
+app.use('/api/school-comms', schoolCommsRoutes)
+app.use('/api/school-safeguarding', schoolSafeguardingRoutes)
+app.use('/api/school-events', schoolEventsRoutes)
+app.use('/api/teams', schoolScheduleRoutes)
+app.use('/api/school-intelligence', schoolIntelligenceRoutes)
 app.use('/api/knowledge-base', knowledgeBaseRoutes)
-app.use('/api/gift-aid', giftAidRoutes)
 app.use('/api/teams', seasonDevelopmentRoutes)
 app.use('/api/video-library', videoLibraryRoutes)
+app.use('/api/teaching-groups', teachingGroupRoutes)
+app.use('/api/assessments', assessmentRoutes)
+app.use('/api/sport-knowledge', sportKnowledgeBaseRoutes)
+app.use('/api/hod', hodRoutes)
+app.use('/api/onboarding', onboardingRoutes)
+app.use('/api/pupil-management', pupilManagementRoutes)
+app.use('/api/reporting', reportingRoutes)
+app.use('/api/enterprise-billing', enterpriseBillingRoutes)
+app.use('/api/voice-observations', voiceObservationRoutes)
+app.use('/api/voice-safeguarding', voiceSafeguardingRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -280,13 +290,7 @@ app.get('/sitemap.xml', async (req, res) => {
     const staticPages = [
       { loc: '/', changefreq: 'weekly', priority: '1.0' },
       { loc: '/login', changefreq: 'monthly', priority: '0.8' },
-      { loc: '/register', changefreq: 'monthly', priority: '0.9' },
-      { loc: '/pricing', changefreq: 'weekly', priority: '0.9' },
       { loc: '/blog', changefreq: 'weekly', priority: '0.8' },
-      { loc: '/grassroots-football-coaching', changefreq: 'monthly', priority: '0.9' },
-      { loc: '/youth-football-coaches', changefreq: 'monthly', priority: '0.9' },
-      { loc: '/football-training-plans', changefreq: 'monthly', priority: '0.9' },
-      { loc: '/club-payments', changefreq: 'monthly', priority: '0.9' },
       { loc: '/terms', changefreq: 'monthly', priority: '0.5' },
     ]
 
@@ -294,8 +298,7 @@ app.get('/sitemap.xml', async (req, res) => {
   const featurePages = [
     'session-planner', 'player-development', 'video-analysis',
     'tactical-advisor', 'tactics-board', 'match-prep',
-    'live-streaming', 'parent-portal',
-    'safeguarding', 'events-camps', 'ai-intelligence',
+    'live-streaming', 'safeguarding', 'ai-intelligence',
   ].map(slug => ({
     loc: `/features/${slug}`, changefreq: 'monthly', priority: '0.8',
   }))
@@ -324,7 +327,7 @@ app.get('/sitemap.xml', async (req, res) => {
   ]
 
   const urls = allPages.map(p => `  <url>
-    <loc>https://touchline.xyz${p.loc}</loc>
+    <loc>https://schools.touchline.xyz${p.loc}</loc>
     <lastmod>${p.lastmod}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
@@ -343,9 +346,9 @@ ${urls}
     console.error('Sitemap generation error:', err.message)
     const fallback = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://touchline.xyz/</loc></url>
-  <url><loc>https://touchline.xyz/pricing</loc></url>
-  <url><loc>https://touchline.xyz/blog</loc></url>
+  <url><loc>https://schools.touchline.xyz/</loc></url>
+  <url><loc>https://schools.touchline.xyz/pricing</loc></url>
+  <url><loc>https://schools.touchline.xyz/blog</loc></url>
 </urlset>`
     res.set('Content-Type', 'text/xml; charset=utf-8')
     res.status(200).send(fallback)
@@ -354,21 +357,15 @@ ${urls}
 
 // Robots.txt - dynamic
 app.get('/robots.txt', (req, res) => {
-  const robotsTxt = `# Touchline - Robots.txt
-# https://touchline.xyz
+  const robotsTxt = `# Touchline for Schools - Robots.txt
+# https://schools.touchline.xyz
 
 User-agent: *
 Allow: /
 Allow: /login
-Allow: /register
-Allow: /pricing
 Allow: /blog
 Allow: /terms
-Allow: /grassroots-football-coaching
-Allow: /youth-football-coaches
-Allow: /football-training-plans
 Allow: /features/
-Allow: /club-payments
 Allow: /watch/
 
 # Disallow authenticated app routes
@@ -382,8 +379,8 @@ Disallow: /matches
 Disallow: /fixtures
 Disallow: /league
 Disallow: /lounge
-Disallow: /settings
 Disallow: /player-lounge
+Disallow: /settings
 Disallow: /invite
 Disallow: /club/
 
@@ -391,7 +388,7 @@ Disallow: /club/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://touchline.xyz/sitemap.xml
+Sitemap: https://schools.touchline.xyz/sitemap.xml
 `
 
   res.set('Content-Type', 'text/plain; charset=utf-8')
@@ -443,10 +440,10 @@ runMigrations().then(() => {
     const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000
     setTimeout(() => {
       scanTrialLifecycle().catch(err => console.error('[TrialLifecycle] Startup scan error:', err))
-      scanPaymentReminders().catch(err => console.error('[PaymentReminders] Startup scan error:', err))
+      purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Startup scan error:', err))
       setInterval(() => {
         scanTrialLifecycle().catch(err => console.error('[TrialLifecycle] Scheduled scan error:', err))
-        scanPaymentReminders().catch(err => console.error('[PaymentReminders] Scheduled scan error:', err))
+        purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Scheduled scan error:', err))
       }, TWENTY_FOUR_HOURS)
     }, 30_000)
   })

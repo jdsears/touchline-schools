@@ -92,8 +92,8 @@ async function extractChunkMetadata(content, documentTitle, documentCategory) {
       messages: [{
         role: 'user',
         content: `Extract metadata from this coaching content chunk. Return JSON with:
-- "tags": array of 2-5 relevant tags (e.g. "passing", "pressing", "warm-up", "U13", "defending", "set pieces", "player welfare")
-- "skill_focus": primary skill or topic (e.g. "passing and receiving", "defensive shape", "player wellbeing") or null
+- "tags": array of 2-5 relevant tags (e.g. "passing", "pressing", "warm-up", "U13", "defending", "set pieces", "pupil welfare")
+- "skill_focus": primary skill or topic (e.g. "passing and receiving", "defensive shape", "pupil wellbeing") or null
 - "session_type": if applicable, one of "training", "match_prep", "review", "development" or null
 - "age_group": if a specific age group is mentioned (e.g. "U13", "U10") or null
 
@@ -525,18 +525,18 @@ function buildFAGuidelinesContent(ageNum) {
   const commonPrinciples = `
 ## FA Coaching Principles
 
-- **70-30 ratio**: Ball-rolling time vs standing/talking time — players should be active for at least 70% of the session
+- **70-30 ratio**: Ball-rolling time vs standing/talking time — pupils should be active for at least 70% of the session
 - **Game-realistic practices**: No static line drills. Everything should relate to real game situations
 - **Teaching Games for Understanding (TGfU)**: Game-based learning, not drill-based
 - **Ask more than tell**: Coaches should use guided discovery and ask questions rather than dictating
 - **Whisper more than shout**: Calm, positive coaching environment
-- **Player-centred approach**: Empower individuals, develop the whole person
+- **Pupil-centred approach**: Empower individuals, develop the whole person
 - **The FA Four Corner Model**: Every session should consider Technical/Tactical, Physical, Psychological, and Social development
 
-## England DNA — Player-Centred Philosophy
+## England DNA — Pupil-Centred Philosophy
 
-- Foundation Phase: "Power of Play" — developing young players through enjoyment
-- Athlete-centred coaching: empower players, develop the whole person
+- Foundation Phase: "Power of Play" — developing young pupils through enjoyment
+- Athlete-centred coaching: empower pupils, develop the whole person
 - Four Corner Model: Technical/Tactical, Physical, Psychological, Social
 - Coaching methodology: more questions than answers, game-based learning, 70-30 active ratio
 
@@ -549,7 +549,7 @@ Five pillars: Enjoy the Game, Give Respect, Be Inclusive, Work Together, Play Sa
 ## FA Safeguarding Requirements
 
 - DBS Checks mandatory for anyone 16+ in unsupervised role with under-18s (valid 36 months)
-- Club Welfare Officer (CWO) is a mandatory role
+- School Welfare Officer (CWO) is a mandatory role
 - No anonymous messaging between adults and minors
 - All coaching interactions should be transparent and safeguarding-aware
 
@@ -618,7 +618,7 @@ ${commonPrinciples}`,
 - No league tables or published results — results genuinely do not matter
 - No deliberate heading (indirect free kick if infringed)
 - Pass-in/dribble-in replaces throw-in (from 2024-25 season)
-- Unlimited rolling substitutions — every player should get equal time
+- Unlimited rolling substitutions — every pupil should get equal time
 - Trophy events: max 2 weekends per season, 40-minute max playing duration
 
 ### Session & Coaching Focus
@@ -656,14 +656,14 @@ ${commonPrinciples}`,
 ### Match Format for U${ageNum}: Mini Soccer (7v7, or 5v5 under FutureFit)
 
 - Pitch: 60×40 yards. Goals: 12ft×6ft. Ball: size 3. Match: 25 min halves
-- Still fun-focused with maximum game time for all players
+- Still fun-focused with maximum game time for all pupils
 - No deliberate heading at U9 (indirect free kick). U10 heading ban from 2025-26.
 
 ### Session & Coaching Focus
 
 - Begin introducing: basic width, support play, simple passing combinations
 - Technical focus: passing, receiving, dribbling under light pressure, shooting
-- Let players explore positions — don't lock them into fixed roles yet
+- Let pupils explore positions — don't lock them into fixed roles yet
 - Training: small-sided games (3v3, 4v4, 5v5), fun technical challenges
 - Minimal tactical instruction — guide through questions, not commands
 - Development is the priority, results are secondary
@@ -735,10 +735,10 @@ ${commonPrinciples}`,
 - Tactical development appropriate: formations, pressing, transitions, set pieces
 - Physical development: be aware of growth spurts, Peak Height Velocity, and injury risk
 - Mental resilience: coping with pressure, competitive environment, dealing with setbacks
-- Relative age effect: some players may be 11 months older/younger than peers
+- Relative age effect: some pupils may be 11 months older/younger than peers
 - The FA Four Corner Model remains central: Technical/Tactical, Physical, Psychological, Social
 - Development still matters — avoid win-at-all-costs mentality
-- Encourage players to play multiple positions to build understanding
+- Encourage pupils to play multiple positions to build understanding
 - Substitution strategies — equal playing time for younger age groups (FA guidance)
 
 ## FA FutureFit — Format Changes from 2026-27 Season

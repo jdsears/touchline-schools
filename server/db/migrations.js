@@ -2787,7 +2787,664 @@ export async function runMigrations() {
       console.warn('Library sections seeding warning:', e.message)
     }
 
-    console.log('✅ Migrations completed')
+    // ==========================================
+    // PHASE 8: TOUCHLINE FOR SCHOOLS TRANSFORMATION
+    // ==========================================
+    // Rename core entities, add multi-sport support, drop stripped features.
+    // This is a fresh product database so no data preservation is needed.
+
+    console.log('Running Phase 8: Schools transformation...')
+
+    // --- 8a: Drop stripped tables (gift aid, parent payments, guardians) ---
+    await pool.query(`DROP TABLE IF EXISTS gift_aid_records CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS gift_aid_receipt_sequences CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS parent_gift_aid_declarations CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS club_charity_settings CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS club_transactions CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS player_subscriptions CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS payment_plans CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS guardian_invites CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS player_guardians CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS guardians CASCADE`)
+    await pool.query(`DROP TABLE IF EXISTS parent_potm_votes CASCADE`)
+
+    // --- 8b: Rename core tables ---
+    // clubs -> schools
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'clubs') THEN
+        ALTER TABLE clubs RENAME TO schools;
+      END IF;
+    END $$`)
+
+    // club_members -> school_members
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_members') THEN
+        ALTER TABLE club_members RENAME TO school_members;
+      END IF;
+    END $$`)
+
+    // club_announcements -> school_announcements
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_announcements') THEN
+        ALTER TABLE club_announcements RENAME TO school_announcements;
+      END IF;
+    END $$`)
+
+    // club_comms_log -> school_comms_log
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_comms_log') THEN
+        ALTER TABLE club_comms_log RENAME TO school_comms_log;
+      END IF;
+    END $$`)
+
+    // club_events -> school_events
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_events') THEN
+        ALTER TABLE club_events RENAME TO school_events;
+      END IF;
+    END $$`)
+
+    // players -> pupils
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'players') THEN
+        ALTER TABLE players RENAME TO pupils;
+      END IF;
+    END $$`)
+
+    // player_achievements -> pupil_achievements
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_achievements') THEN
+        ALTER TABLE player_achievements RENAME TO pupil_achievements;
+      END IF;
+    END $$`)
+
+    // player_messages -> pupil_messages
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_messages') THEN
+        ALTER TABLE player_messages RENAME TO pupil_messages;
+      END IF;
+    END $$`)
+
+    // --- 8c: Rename club_id -> school_id in surviving tables ---
+    const clubIdRenames = [
+      'school_members', 'teams', 'school_announcements', 'school_comms_log',
+      'compliance_records', 'safeguarding_roles', 'safeguarding_incidents',
+      'compliance_alerts', 'school_events', 'event_registrations',
+      'session_schedule', 'match_reports', 'ai_insights', 'ai_usage', 'grant_drafts'
+    ]
+    for (const table of clubIdRenames) {
+      await pool.query(`DO $$ BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = '${table}' AND column_name = 'club_id'
+        ) THEN
+          ALTER TABLE ${table} RENAME COLUMN club_id TO school_id;
+        END IF;
+      END $$`)
+    }
+
+    // --- 8d: Rename player_id -> pupil_id in surviving tables ---
+    const playerIdRenames = [
+      'users', 'training_attendance', 'training_availability', 'invites',
+      'pupil_messages', 'match_media', 'pupil_achievements', 'team_suggestions',
+      'team_memberships', 'clip_player_tags', 'video_ai_analysis',
+      'event_registrations', 'availability_responses', 'match_availability',
+      'match_squads', 'observations', 'development_plans', 'attribute_snapshots'
+    ]
+    for (const table of playerIdRenames) {
+      await pool.query(`DO $$ BEGIN
+        IF EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = '${table}' AND column_name = 'player_id'
+        ) THEN
+          ALTER TABLE ${table} RENAME COLUMN player_id TO pupil_id;
+        END IF;
+      END $$`)
+    }
+
+    // Rename player-related columns in match tables
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_goals' AND column_name = 'scorer_player_id') THEN
+        ALTER TABLE match_goals RENAME COLUMN scorer_player_id TO scorer_pupil_id;
+      END IF;
+    END $$`)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_goals' AND column_name = 'assist_player_id') THEN
+        ALTER TABLE match_goals RENAME COLUMN assist_player_id TO assist_pupil_id;
+      END IF;
+    END $$`)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_substitutions' AND column_name = 'player_off_id') THEN
+        ALTER TABLE match_substitutions RENAME COLUMN player_off_id TO pupil_off_id;
+      END IF;
+    END $$`)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_substitutions' AND column_name = 'player_on_id') THEN
+        ALTER TABLE match_substitutions RENAME COLUMN player_on_id TO pupil_on_id;
+      END IF;
+    END $$`)
+
+    // Also rename guardian_id -> drop it from event_registrations (guardians table is gone)
+    await pool.query(`DO $$ BEGIN
+      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'event_registrations' AND column_name = 'guardian_id') THEN
+        ALTER TABLE event_registrations DROP COLUMN guardian_id;
+      END IF;
+    END $$`)
+
+    // --- 8e: Add new columns to schools table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS school_type TEXT DEFAULT 'state'
+        CHECK (school_type IN ('state', 'independent', 'academy', 'grammar', 'sixth_form_college'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS urn TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS sso_provider TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS sso_config JSONB;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // Index on URN for school lookups
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_schools_urn ON schools(urn) WHERE urn IS NOT NULL`)
+
+    // --- 8f: Add sport and schools-specific columns to teams ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teams ADD COLUMN IF NOT EXISTS sport TEXT DEFAULT 'football'
+        CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teams ADD COLUMN IF NOT EXISTS gender TEXT DEFAULT 'mixed'
+        CHECK (gender IN ('boys', 'girls', 'mixed'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teams ADD COLUMN IF NOT EXISTS season_type TEXT DEFAULT 'year_round'
+        CHECK (season_type IN ('autumn', 'spring', 'summer', 'year_round'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teams_sport ON teams(sport)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teams_school ON teams(school_id) WHERE school_id IS NOT NULL`)
+
+    // --- 8g: Add pupil-specific columns to pupils table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils ADD COLUMN IF NOT EXISTS year_group INTEGER CHECK (year_group BETWEEN 7 AND 13);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils ADD COLUMN IF NOT EXISTS house TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 8h: Create pupil_sports join table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS pupil_sports (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball')),
+      active BOOLEAN DEFAULT true,
+      joined_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(pupil_id, sport)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_sports_pupil ON pupil_sports(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_sports_sport ON pupil_sports(sport)`)
+
+    // --- 8i: Create teacher_sports join table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS teacher_sports (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball')),
+      role TEXT DEFAULT 'coach' CHECK (role IN ('head_of_sport', 'coach', 'assistant')),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(teacher_id, sport)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teacher_sports_teacher ON teacher_sports(teacher_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teacher_sports_sport ON teacher_sports(sport)`)
+
+    // --- 8j: Create audit_log table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS audit_log (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID REFERENCES schools(id) ON DELETE SET NULL,
+      user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      action TEXT NOT NULL,
+      entity_type TEXT,
+      entity_id UUID,
+      details JSONB,
+      ip_address TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_school ON audit_log(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_created ON audit_log(created_at)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audit_log_entity ON audit_log(entity_type, entity_id)`)
+
+    console.log('Phase 8: Schools transformation complete')
+
+    // ==========================================
+    // PHASE 9: CURRICULUM PE AND ASSESSMENT
+    // ==========================================
+    // Teaching groups (timetabled PE classes), sport units, assessment
+    // criteria, pupil assessments, and reporting infrastructure.
+
+    console.log('Running Phase 9: Curriculum PE and assessment...')
+
+    // --- 9a: Teaching groups (timetabled PE classes) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS teaching_groups (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      year_group INTEGER NOT NULL CHECK (year_group BETWEEN 7 AND 13),
+      group_identifier TEXT,
+      teacher_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      academic_year TEXT NOT NULL,
+      key_stage TEXT NOT NULL DEFAULT 'KS3' CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teaching_groups_school ON teaching_groups(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teaching_groups_teacher ON teaching_groups(teacher_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_teaching_groups_year ON teaching_groups(year_group)`)
+
+    // --- 9b: Teaching group pupils (which pupils are in each class) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS teaching_group_pupils (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teaching_group_id UUID NOT NULL REFERENCES teaching_groups(id) ON DELETE CASCADE,
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(teaching_group_id, pupil_id)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_tg_pupils_group ON teaching_group_pupils(teaching_group_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_tg_pupils_pupil ON teaching_group_pupils(pupil_id)`)
+
+    // --- 9c: Sport units (blocks of lessons within a teaching group) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sport_units (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teaching_group_id UUID NOT NULL REFERENCES teaching_groups(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL CHECK (sport IN ('football', 'rugby', 'cricket', 'hockey', 'netball',
+        'athletics', 'gymnastics', 'dance', 'swimming', 'badminton', 'tennis', 'table_tennis',
+        'rounders', 'basketball', 'handball', 'outdoor_adventurous', 'fitness', 'other')),
+      unit_name TEXT NOT NULL,
+      curriculum_area TEXT NOT NULL CHECK (curriculum_area IN (
+        'invasion_games', 'net_wall', 'striking_fielding', 'athletics',
+        'gymnastics', 'dance', 'swimming', 'outdoor_adventurous', 'fitness', 'other'
+      )),
+      start_date DATE,
+      end_date DATE,
+      term TEXT CHECK (term IN ('autumn', 'spring', 'summer')),
+      lesson_count INTEGER,
+      display_order INTEGER DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_units_group ON sport_units(teaching_group_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_units_sport ON sport_units(sport)`)
+
+    // --- 9d: Assessment scales (school-defined grading systems) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS assessment_scales (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      key_stage TEXT NOT NULL CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      scale_type TEXT NOT NULL DEFAULT 'descriptive' CHECK (scale_type IN ('descriptive', 'numeric', 'percentage')),
+      grades JSONB NOT NULL,
+      is_default BOOLEAN DEFAULT false,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_scales_school ON assessment_scales(school_id)`)
+
+    // --- 9e: Curriculum strands (assessment dimensions) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS curriculum_strands (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+      key_stage TEXT NOT NULL CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      strand_name TEXT NOT NULL,
+      description TEXT,
+      display_order INTEGER DEFAULT 0,
+      is_system_default BOOLEAN DEFAULT false,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_curriculum_strands_school ON curriculum_strands(school_id)`)
+
+    // --- 9f: Assessment criteria (specific criteria within strands) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS assessment_criteria (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      strand_id UUID NOT NULL REFERENCES curriculum_strands(id) ON DELETE CASCADE,
+      sport TEXT,
+      criterion TEXT NOT NULL,
+      grade_descriptors JSONB,
+      key_stage TEXT NOT NULL CHECK (key_stage IN ('KS3', 'KS4', 'KS5')),
+      display_order INTEGER DEFAULT 0,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_criteria_strand ON assessment_criteria(strand_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_criteria_sport ON assessment_criteria(sport)`)
+
+    // --- 9g: Pupil assessments (actual marks and observations) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS pupil_assessments (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL,
+      criteria_id UUID REFERENCES assessment_criteria(id) ON DELETE SET NULL,
+      assessment_type TEXT NOT NULL DEFAULT 'formative' CHECK (assessment_type IN ('formative', 'summative', 'practical_exam')),
+      grade TEXT,
+      score NUMERIC,
+      teacher_notes TEXT,
+      assessed_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      assessed_at TIMESTAMPTZ DEFAULT NOW(),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_assessments_pupil ON pupil_assessments(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_assessments_unit ON pupil_assessments(unit_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_assessments_criteria ON pupil_assessments(criteria_id)`)
+
+    // --- 9h: Reporting windows (school reporting periods) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS reporting_windows (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      academic_year TEXT NOT NULL,
+      term TEXT CHECK (term IN ('autumn', 'spring', 'summer')),
+      opens_at TIMESTAMPTZ,
+      closes_at TIMESTAMPTZ,
+      year_groups INTEGER[],
+      status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'open', 'closed', 'published')),
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_reporting_windows_school ON reporting_windows(school_id)`)
+
+    // --- 9i: Pupil reports (generated report data per pupil per subject) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS pupil_reports (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      reporting_window_id UUID NOT NULL REFERENCES reporting_windows(id) ON DELETE CASCADE,
+      unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL,
+      sport TEXT,
+      attainment_grade TEXT,
+      effort_grade TEXT,
+      teacher_comment TEXT,
+      ai_draft_comment TEXT,
+      generated_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'submitted', 'published')),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_reports_pupil ON pupil_reports(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_reports_window ON pupil_reports(reporting_window_id)`)
+
+    // --- 9j: Seed default curriculum strands for KS3 and KS4 ---
+    try {
+      const ks3Strands = [
+        ['Physical Competence', 'Develop competence to excel in a broad range of physical activities', 1],
+        ['Rules, Strategies and Tactics', 'Apply rules, strategies and tactics across different sports and activities', 2],
+        ['Health and Fitness', 'Understand how to lead a healthy, active lifestyle and improve fitness', 3],
+        ['Evaluation and Improvement', 'Analyse performance, identify strengths and areas for development', 4],
+      ]
+      for (const [name, desc, order] of ks3Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS3' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS3', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+
+      const ks4Strands = [
+        ['Practical Performance', 'Demonstrate skills, techniques and tactics in chosen sports', 1],
+        ['Analysis and Evaluation', 'Analyse and evaluate performance to produce strategies for improvement', 2],
+        ['Anatomy and Physiology', 'Understand the body systems and their role in physical activity', 3],
+        ['Physical Training', 'Understand the principles and methods of training', 4],
+        ['Sport Psychology', 'Understand psychological factors affecting performance', 5],
+        ['Socio-cultural Influences', 'Understand social, cultural and ethical factors in sport', 6],
+      ]
+      for (const [name, desc, order] of ks4Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS4' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS4', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+    } catch (e) {
+      console.warn('Curriculum strands seeding warning:', e.message)
+    }
+
+    console.log('Phase 9: Curriculum PE and assessment complete')
+
+    // ==========================================
+    // PHASE 10: U7+ AGE RANGE AND SPORT KNOWLEDGE BASE
+    // ==========================================
+    // Extend to primary/prep schools (Years 2-6), add sport knowledge base.
+
+    console.log('Running Phase 10: Extended age range and sport knowledge base...')
+
+    // --- 10a: Extend year_group range to support Years 2-13 (U7 upwards) ---
+    // Drop the old CHECK constraint and add a wider one
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils DROP CONSTRAINT IF EXISTS pupils_year_group_check;
+      ALTER TABLE pupils ADD CONSTRAINT pupils_year_group_check CHECK (year_group BETWEEN 2 AND 13);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teaching_groups DROP CONSTRAINT IF EXISTS teaching_groups_year_group_check;
+      ALTER TABLE teaching_groups ADD CONSTRAINT teaching_groups_year_group_check CHECK (year_group BETWEEN 2 AND 13);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 10b: Extend key_stage enums to include KS1 and KS2 ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE teaching_groups DROP CONSTRAINT IF EXISTS teaching_groups_key_stage_check;
+      ALTER TABLE teaching_groups ADD CONSTRAINT teaching_groups_key_stage_check
+        CHECK (key_stage IN ('KS1', 'KS2', 'KS3', 'KS4', 'KS5'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE curriculum_strands DROP CONSTRAINT IF EXISTS curriculum_strands_key_stage_check;
+      ALTER TABLE curriculum_strands ADD CONSTRAINT curriculum_strands_key_stage_check
+        CHECK (key_stage IN ('KS1', 'KS2', 'KS3', 'KS4', 'KS5'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE assessment_criteria DROP CONSTRAINT IF EXISTS assessment_criteria_key_stage_check;
+      ALTER TABLE assessment_criteria ADD CONSTRAINT assessment_criteria_key_stage_check
+        CHECK (key_stage IN ('KS1', 'KS2', 'KS3', 'KS4', 'KS5'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 10c: Extend school_type enum for primary/prep ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools DROP CONSTRAINT IF EXISTS schools_school_type_check;
+      ALTER TABLE schools ADD CONSTRAINT schools_school_type_check
+        CHECK (school_type IN ('state', 'independent', 'academy', 'grammar', 'sixth_form_college', 'primary', 'prep', 'all_through', 'middle'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 10d: Create sport_knowledge_base table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sport_knowledge_base (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+      sport TEXT NOT NULL,
+      title TEXT NOT NULL,
+      content TEXT NOT NULL,
+      category TEXT DEFAULT 'general' CHECK (category IN (
+        'general', 'development_framework', 'age_guidance', 'tactics',
+        'training_methodology', 'safeguarding', 'assessment_criteria',
+        'rules_and_regulations', 'custom'
+      )),
+      age_range TEXT,
+      is_system_default BOOLEAN DEFAULT false,
+      created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_kb_school ON sport_knowledge_base(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_kb_sport ON sport_knowledge_base(sport)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sport_kb_category ON sport_knowledge_base(category)`)
+
+    // --- 10e: Seed KS1 and KS2 curriculum strands ---
+    try {
+      const ks1Strands = [
+        ['Master Basic Movements', 'Develop fundamental movements including running, jumping, throwing and catching', 1],
+        ['Participate in Team Activities', 'Engage in team games, developing simple tactics for attacking and defending', 2],
+        ['Perform Dances', 'Perform dances using simple movement patterns', 3],
+      ]
+      for (const [name, desc, order] of ks1Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS1' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS1', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+
+      const ks2Strands = [
+        ['Apply Skills in Competition', 'Use running, jumping, throwing and catching in isolation and combination', 1],
+        ['Play Competitive Games', 'Play competitive games and apply basic principles of attacking and defending', 2],
+        ['Develop Flexibility and Control', 'Develop flexibility, strength, technique, control and balance through gymnastics and athletics', 3],
+        ['Perform Dances', 'Perform dances using a range of movement patterns', 4],
+        ['Swimming and Water Safety', 'Swim competently, confidently and proficiently over 25 metres, using a range of strokes', 5],
+        ['Compare and Improve', 'Compare performances with previous ones and demonstrate improvement', 6],
+      ]
+      for (const [name, desc, order] of ks2Strands) {
+        const exists = await pool.query(
+          `SELECT id FROM curriculum_strands WHERE strand_name = $1 AND key_stage = 'KS2' AND is_system_default = true`,
+          [name]
+        )
+        if (exists.rows.length === 0) {
+          await pool.query(
+            `INSERT INTO curriculum_strands (key_stage, strand_name, description, display_order, is_system_default)
+             VALUES ('KS2', $1, $2, $3, true)`,
+            [name, desc, order]
+          )
+        }
+      }
+    } catch (e) {
+      console.warn('KS1/KS2 strands seeding warning:', e.message)
+    }
+
+    console.log('Phase 10: Extended age range and sport knowledge base complete')
+
+    // ==========================================
+    // PHASE 11: VOICE OBSERVATIONS GROUNDWORK
+    // ==========================================
+    // Schema foundations for voice observations feature (future build).
+    // Adds observation source tracking, audio_sources table, pupil
+    // nicknames, and retention fields. No UI or pipeline yet.
+
+    console.log('Running Phase 11: Voice observations groundwork...')
+
+    // --- 11a: Add source and voice-related fields to observations table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'typed'
+        CHECK (source IN ('typed', 'voice', 'assessment_import', 'video_tag', 'ai_suggested'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS audio_source_id UUID;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS transcript_fragment TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS confidence REAL;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT DEFAULT 'confirmed'
+        CHECK (review_state IN ('pending_review', 'confirmed', 'edited', 'rejected'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 11b: Create audio_sources table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS audio_sources (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      context_type TEXT NOT NULL DEFAULT 'general'
+        CHECK (context_type IN ('session', 'match', 'half_time', 'post_fixture', 'lesson', 'general')),
+      context_id UUID,
+      duration_seconds INTEGER,
+      storage_url TEXT,
+      transcript TEXT,
+      transcript_generated_at TIMESTAMPTZ,
+      extraction_completed_at TIMESTAMPTZ,
+      retention_expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_teacher ON audio_sources(teacher_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_school ON audio_sources(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_retention ON audio_sources(retention_expires_at)`)
+
+    // Add foreign key from observations to audio_sources
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE observations ADD CONSTRAINT observations_audio_source_fkey
+        FOREIGN KEY (audio_source_id) REFERENCES audio_sources(id) ON DELETE SET NULL;
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$`)
+
+    // --- 11c: Add pupil nicknames field ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT[];
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 11d: Add school-level voice observations configuration ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS voice_observations_enabled BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS audio_retention_days INTEGER DEFAULT 7
+        CHECK (audio_retention_days BETWEEN 1 AND 30);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE schools ADD COLUMN IF NOT EXISTS transcript_retention_days INTEGER DEFAULT 30
+        CHECK (transcript_retention_days BETWEEN 7 AND 90);
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    console.log('Phase 11: Voice observations groundwork complete')
+
+    console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
   }

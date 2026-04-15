@@ -42,9 +42,9 @@ export async function checkTeamLimit() {
   return response.data
 }
 
-// Check player limit for a team
+// Check pupil limit for a team
 export async function checkPlayerLimit(teamId) {
-  const response = await api.get('/billing/limits/player', {
+  const response = await api.get('/billing/limits/pupil', {
     params: teamId ? { teamId } : {},
   })
   return response.data

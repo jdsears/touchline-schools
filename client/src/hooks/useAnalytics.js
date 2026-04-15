@@ -27,13 +27,13 @@ export function usePageTracking(pageTitle) {
       '/chat': 'AI Chat',
       '/tactics': 'Tactics Board',
       '/training': 'Training',
-      '/players': 'Players',
+      '/pupils': 'Players',
       '/matches': 'Matches',
       '/fixtures': 'Fixtures',
       '/league': 'League Table',
       '/lounge': 'Team Lounge',
       '/settings': 'Settings',
-      '/player-lounge': 'Player Lounge',
+      '/pupil-lounge': 'Pupil Lounge',
     }
 
     const title = pageTitle || pageTitles[location.pathname] || 'Page'

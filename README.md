@@ -1,29 +1,45 @@
-# Football Assistant Manager (FAM)
+# Touchline for Schools
 
-An AI-powered assistant manager for grassroots football coaches. Built with React, Node.js, PostgreSQL, and Claude AI.
+A multi-sport platform for UK secondary school PE departments. Built with React, Node.js, PostgreSQL, and Claude AI.
 
-## Features
+Touchline for Schools gives PE departments and sports staff a single platform to run every team sport across the school. Teachers plan sessions, manage fixtures, track attendance, and report on pupil development. Pupils get a personal portal to track their own progress across every sport they play.
 
-- 🤖 **AI Assistant Manager** - Chat with Claude about tactics, training, and player development
-- ⚽ **Tactical Engine** - Build formations and game models with visual tools
-- 📋 **Training Generator** - AI-generated session plans tailored to your needs
-- 👥 **Player Profiles** - Track development and generate Individual Development Plans
-- 🏆 **Match Management** - Pre-match prep, result logging, and post-match analysis
-- 📹 **Video Analysis** - Embed Veo footage and get AI tactical insights
-- 👨‍👩‍👧‍👦 **Coach & Player Lounges** - Separate dashboards for staff and players
+## Sports Supported
+
+- Football
+- Rugby
+- Cricket
+- Hockey
+- Netball
+
+Architecture supports adding further sports without core rewrites.
+
+## Core Features
+
+- **Multi-sport team management**: one platform for every sport, every year group
+- **Teacher hub**: session planning, fixtures, attendance, reports, AI-assisted coaching
+- **Pupil portal**: personal development tracking across all sports
+- **AI coaching assistant**: sport-aware guidance for teachers and pupils
+- **Tactics board**: sport-specific pitch and formation tools
+- **Video analysis**: upload, tag, and review match and training footage
+- **Live streaming**: broadcast school fixtures via Mux
+- **Safeguarding**: audit trails, incident logging, role-based access
+- **Enterprise-grade**: SSO-ready, GDPR-compliant data handling, Head of Department visibility
 
 ## Tech Stack
 
 - **Frontend**: React 18 + Vite + Tailwind CSS
 - **Backend**: Node.js + Express
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (Railway)
 - **AI**: Anthropic Claude API
-- **Deployment**: Railway
+- **Video**: Mux
+- **Email**: Amazon SES via Resend
+- **Deployment**: Railway + Cloudflare
 
 ## Project Structure
 
 ```
-football-assistant-manager/
+touchline-schools/
 ├── client/                 # React frontend
 │   ├── src/
 │   │   ├── components/    # Reusable components
@@ -36,6 +52,7 @@ football-assistant-manager/
 │   ├── routes/            # API routes
 │   ├── services/          # Business logic
 │   ├── middleware/        # Express middleware
+│   ├── db/                # Database migrations
 │   └── config/            # Configuration
 └── ...
 ```
@@ -53,7 +70,7 @@ football-assistant-manager/
 1. Clone the repository:
 ```bash
 git clone <your-repo-url>
-cd football-assistant-manager
+cd touchline-schools
 ```
 
 2. Install dependencies:
@@ -63,8 +80,9 @@ npm install
 
 3. Set up environment variables:
 ```bash
-cp .env.example .env
-# Edit .env with your values
+cp server/.env.example server/.env
+cp client/.env.example client/.env
+# Edit both .env files with your values
 ```
 
 4. Run database migrations:
@@ -83,84 +101,31 @@ The app will be available at:
 
 ### Environment Variables
 
+See `server/.env.example` and `client/.env.example` for all required configuration.
+
 | Variable | Description |
 |----------|-------------|
 | `DATABASE_URL` | PostgreSQL connection string |
 | `JWT_SECRET` | Secret key for JWT tokens |
-| `ANTHROPIC_API_KEY` | Your Claude API key |
+| `ANTHROPIC_API_KEY` | Claude API key |
 | `FRONTEND_URL` | Frontend URL for CORS |
+| `RESEND_API_KEY` | Email service API key |
 
-## Deployment to Railway
+## Deployment
 
-1. Create a new Railway project
-2. Add a PostgreSQL database
-3. Connect your GitHub repository
-4. Set environment variables in Railway dashboard
-5. Deploy!
+Touchline for Schools runs on its own Railway project, separate from the main Touchline product.
 
-Railway will automatically:
-- Build the React frontend
-- Start the Node.js server
-- Set up the database connection
+- Separate Railway project and PostgreSQL database
+- Domain: `schools.touchline.xyz` (placeholder)
+- Cloudflare DNS and CDN
+- Separate Anthropic API key, Mux project, and Resend domain
 
-### Railway Setup
+## Target Users
 
-```bash
-# Install Railway CLI
-npm install -g @railway/cli
-
-# Login
-railway login
-
-# Initialize project
-railway init
-
-# Add PostgreSQL
-railway add
-
-# Deploy
-railway up
-```
-
-## API Routes
-
-### Authentication
-- `POST /api/auth/register` - Register new user + team
-- `POST /api/auth/login` - Login
-- `GET /api/auth/me` - Get current user
-- `POST /api/auth/magic-link` - Send magic link
-- `POST /api/auth/invite/accept` - Accept team invite
-
-### Teams
-- `GET /api/teams/:id` - Get team
-- `PUT /api/teams/:id` - Update team
-- `GET /api/teams/:id/players` - Get players
-- `POST /api/teams/:id/players` - Add player
-- `GET /api/teams/:id/matches` - Get matches
-- `POST /api/teams/:id/matches` - Add match
-
-### Chat
-- `POST /api/chat/:teamId/message` - Send message to AI
-- `GET /api/chat/:teamId/history` - Get chat history
-
-### Players
-- `GET /api/players/:id` - Get player
-- `PUT /api/players/:id` - Update player
-- `GET /api/players/:id/observations` - Get observations
-- `POST /api/players/:id/observations` - Add observation
-- `POST /api/players/:id/idp/generate` - Generate IDP
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Submit a pull request
+- **Head of PE / Head of Sport**: whole-school visibility across every sport, every team, every year group
+- **PE Teachers / Sports coaches**: session planning, fixture management, pupil development tracking
+- **Pupils (Years 7 to 13)**: personal sport portal with stats, goals, coach feedback, and training plans
 
 ## License
 
 Proprietary - MoonBoots Consultancy UK Ltd
-
-## Support
-
-For support, contact john@moonboots.io

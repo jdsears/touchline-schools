@@ -203,10 +203,10 @@ export const PLANS = {
     },
   },
 
-  // Club Plans — monthly only, video pools shared across teams
+  // School Plans — monthly only, video pools shared across teams
   club_starter_monthly: {
     id: 'club_starter_monthly',
-    name: 'Club Starter',
+    name: 'School Starter',
     lookupKey: 'touchline_club_starter',
     price: 9900,    // £99/mo
     interval: 'month',
@@ -228,11 +228,11 @@ export const PLANS = {
       priorityProcessing: true,
       brandingControls: true,
     },
-    isClubPool: true,
+    isSchoolPool: true,
   },
   club_growth_monthly: {
     id: 'club_growth_monthly',
-    name: 'Club Growth',
+    name: 'School Growth',
     lookupKey: 'touchline_club_growth',
     price: 19900,   // £199/mo
     interval: 'month',
@@ -256,11 +256,11 @@ export const PLANS = {
       advancedReporting: true,
       whiteLabel: true,
     },
-    isClubPool: true,
+    isSchoolPool: true,
   },
   club_scale_monthly: {
     id: 'club_scale_monthly',
-    name: 'Club Scale',
+    name: 'School Scale',
     lookupKey: 'touchline_club_scale',
     price: 34900,   // £349/mo
     interval: 'month',
@@ -285,7 +285,7 @@ export const PLANS = {
       prioritySupport: true,
       whiteLabel: true,
     },
-    isClubPool: true,
+    isSchoolPool: true,
   },
 }
 
@@ -347,7 +347,7 @@ const FREE_ENTITLEMENTS = {
   status: 'free',
 }
 
-// Exempt entitlements (equivalent to Club Scale + unlimited credits)
+// Exempt entitlements (equivalent to School Scale + unlimited credits)
 const EXEMPT_ENTITLEMENTS = {
   planId: 'billing_exempt',
   planName: 'Billing Exempt',
@@ -695,14 +695,14 @@ export async function canCreateTeam(userId, userEmail) {
 }
 
 /**
- * Check if team can add another player
+ * Check if team can add another pupil
  */
 export async function canAddPlayer(teamId) {
   const entitlements = await getEntitlements({ teamId })
 
-  // Count current players
+  // Count current pupils
   const result = await pool.query(
-    'SELECT COUNT(*) as count FROM players WHERE team_id = $1',
+    'SELECT COUNT(*) as count FROM pupils WHERE team_id = $1',
     [teamId]
   )
   const currentPlayers = parseInt(result.rows[0]?.count || 0)

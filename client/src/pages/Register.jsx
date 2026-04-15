@@ -55,10 +55,10 @@ export default function Register() {
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const fileInputRef = useRef(null)
 
-  // Account type: 'team' or 'club'
+  // Account type: 'team' or 'school'
   const [accountType, setAccountType] = useState(null)
 
-  // Club-specific state
+  // School-specific state
   const [dpaAccepted, setDpaAccepted] = useState(false)
   const [showDpa, setShowDpa] = useState(false)
 
@@ -77,7 +77,7 @@ export default function Register() {
     teamName: '',
     ageGroup: 'U13',
     teamFormat: 11,
-    // Step 3 (club): Club name
+    // Step 3 (school): School name
     clubName: '',
     // Step 4: Branding
     hubName: '',
@@ -179,38 +179,38 @@ Last updated: 17 February 2026
 
 These Terms of Service ("Terms") govern your access to and use of Touchline (touchline.xyz), operated by MoonBoots Consultancy UK Ltd ("we", "us", "our"), a company registered in England and Wales.
 
-By accessing or using Touchline, you agree to be bound by these Terms. If you are accepting these Terms on behalf of a football club or organisation, you represent that you have the authority to bind that organisation.
+By accessing or using Touchline, you agree to be bound by these Terms. If you are accepting these Terms on behalf of a football school or organisation, you represent that you have the authority to bind that organisation.
 
 1. About Touchline
 
-Touchline is an AI-powered coaching platform designed for grassroots football. It provides session planning, player development insights, video analysis, and communication tools for coaches, clubs, and parents.
+Touchline is an AI-powered coaching platform designed for grassroots football. It provides session planning, pupil development insights, video analysis, and communication tools for coaches, schools, and parents.
 
-Touchline is a coaching support tool. It does not replace qualified coaching, medical advice, or safeguarding procedures. All coaching decisions remain the responsibility of the coach and club.
+Touchline is a coaching support tool. It does not replace qualified coaching, medical advice, or safeguarding procedures. All coaching decisions remain the responsibility of the coach and school.
 
 2. Account Types
 
 Individual Coach Accounts
-Individual coaches may create a personal account to access Touchline features for their own coaching activities. Coaches are responsible for ensuring they hold appropriate coaching qualifications and DBS checks as required by their club and governing body.
+Individual coaches may create a personal account to access Touchline features for their own coaching activities. Coaches are responsible for ensuring they hold appropriate coaching qualifications and DBS checks as required by their school and governing body.
 
-Club Accounts
-Clubs may register for a club account, which enables multiple coaches and administrators to use Touchline under a single organisation. Before a club account is activated:
-- The club must designate a Club Administrator with authority to accept these Terms
-- The club must review and accept our Privacy Policy and Safeguarding Policy
-- The club must confirm they hold a current safeguarding policy of their own
-- The club must confirm they have an appointed Club Welfare Officer
-- The club must confirm all coaches using the platform hold appropriate DBS clearance
-Club accounts are not activated until these requirements are satisfied.
+School Accounts
+Clubs may register for a school account, which enables multiple coaches and administrators to use Touchline under a single organisation. Before a school account is activated:
+- The school must designate a School Administrator with authority to accept these Terms
+- The school must review and accept our Privacy Policy and Safeguarding Policy
+- The school must confirm they hold a current safeguarding policy of their own
+- The school must confirm they have an appointed School Welfare Officer
+- The school must confirm all coaches using the platform hold appropriate DBS clearance
+School accounts are not activated until these requirements are satisfied.
 
 Parent/Guardian Access
-Where a club enables parent communication features, parents and guardians may be granted limited access to view session plans, development updates, and club communications relating to their child. Parent access is managed by the club and subject to these Terms.
+Where a school enables parent communication features, parents and guardians may be granted limited access to view session plans, development updates, and school communications relating to their child. Parent access is managed by the school and subject to these Terms.
 
 3. Acceptable Use
 
-You agree to use Touchline only for lawful purposes related to grassroots football coaching and club management. You must not:
+You agree to use Touchline only for lawful purposes related to grassroots football coaching and school management. You must not:
 - Use the platform in any way that could harm, endanger, or negatively impact any child or young person
 - Upload, share, or transmit any content that is abusive, offensive, discriminatory, or inappropriate
 - Share login credentials or allow unauthorised individuals to access the platform
-- Attempt to access data belonging to other users, clubs, or organisations
+- Attempt to access data belonging to other users, schools, or organisations
 - Use the platform to contact children or young people directly
 - Use automated tools, scrapers, or bots to access the platform
 - Reverse-engineer, decompile, or attempt to extract the source code
@@ -219,7 +219,7 @@ You agree to use Touchline only for lawful purposes related to grassroots footba
 
 Your Content: You retain ownership of any content you upload to Touchline. By uploading content, you grant us a limited licence to store, process, and display it within the platform.
 
-AI-Generated Content: AI-generated content is provided as guidance only. You are responsible for reviewing all AI output before use and ensuring it is appropriate for your players' age, ability, and needs.
+AI-Generated Content: AI-generated content is provided as guidance only. You are responsible for reviewing all AI output before use and ensuring it is appropriate for your pupils' age, ability, and needs.
 
 Data Processing: We process personal data in accordance with our Privacy Policy and UK GDPR.
 
@@ -227,14 +227,14 @@ Data Processing: We process personal data in accordance with our Privacy Policy 
 
 Touchline operates on a subscription basis. Subscriptions renew automatically unless cancelled before the renewal date. You may cancel at any time through your account settings. Refunds are handled on a case-by-case basis within 14 days of initial subscription.
 
-6. Club Responsibilities
+6. School Responsibilities
 
 Clubs using Touchline are responsible for:
 - Ensuring all coaches and staff are appropriately vetted (DBS checked) and qualified
 - Maintaining their own safeguarding policy in accordance with FA and local authority guidelines
 - Obtaining appropriate consent from parents/guardians before any child's data is entered
-- Appointing a Club Administrator responsible for managing user access
-- Removing access promptly for any individual who leaves the club
+- Appointing a School Administrator responsible for managing user access
+- Removing access promptly for any individual who leaves the school
 - Reporting safeguarding concerns through their own procedures and to the relevant authorities
 
 7. Our Responsibilities
@@ -255,7 +255,7 @@ Touchline is provided "as is" without warranties of any kind. We are not liable 
 
 10. Termination
 
-We may suspend or terminate your account if you breach these Terms. You may close your account at any time. If a club account is terminated, all associated coach and parent access will also be revoked.
+We may suspend or terminate your account if you breach these Terms. You may close your account at any time. If a school account is terminated, all associated coach and parent access will also be revoked.
 
 11. Governing Law
 
@@ -280,19 +280,19 @@ We are the data controller for personal data processed through Touchline. We com
 1. Data We Collect
 
 Account Data: Name, email, password (encrypted), subscription and payment details, preferences.
-Coach Data: Qualifications, club affiliation, session plans, video uploads.
-Club Data: Club name, contact details, Welfare Officer details, safeguarding compliance.
-Player Data: First name, age group, position, development notes, attendance, performance observations.
-Parent/Guardian Data: Name, email, relationship to player, communication preferences.
+Coach Data: Qualifications, school affiliation, session plans, video uploads.
+School Data: School name, contact details, Welfare Officer details, safeguarding compliance.
+Pupil Data: First name, age group, position, development notes, attendance, performance observations.
+Parent/Guardian Data: Name, email, relationship to pupil, communication preferences.
 Technical Data: IP address, browser type, pages visited, session duration.
 
 2. How We Use Your Data
 
-We use data to provide the service, process payments, generate AI coaching suggestions, manage club administration, ensure platform security, and comply with legal obligations. We do not sell, rent, or trade personal data.
+We use data to provide the service, process payments, generate AI coaching suggestions, manage school administration, ensure platform security, and comply with legal obligations. We do not sell, rent, or trade personal data.
 
 3. Children's Data
 
-- Player data is only entered by coaches or club administrators, never by children
+- Pupil data is only entered by coaches or school administrators, never by children
 - Children do not create accounts or access the platform directly
 - Clubs must obtain parental/guardian consent before entering any child's data
 - We do not use children's data for marketing or to train AI models
@@ -300,12 +300,12 @@ We use data to provide the service, process payments, generate AI coaching sugge
 
 4. Data Sharing
 
-We share data only with: service providers (under data processing agreements), within a club (role-based access), where required by law, and for safeguarding purposes.
+We share data only with: service providers (under data processing agreements), within a school (role-based access), where required by law, and for safeguarding purposes.
 
 5. Data Retention
 
 Active account data: Duration of account plus 30 days
-Player data: Duration of club membership plus 12 months
+Pupil data: Duration of school membership plus 12 months
 Video uploads: Duration of account plus 30 days
 Payment records: 7 years (legal requirement)
 Technical logs: 12 months
@@ -316,7 +316,7 @@ Under UK GDPR: access, rectification, erasure, restriction, portability, objecti
 
 7. AI and Automated Processing
 
-AI-generated content is always presented as suggestions. No decisions about a player are made solely by AI. We do not use personal data about individual players to train AI models.
+AI-generated content is always presented as suggestions. No decisions about a pupil are made solely by AI. We do not use personal data about individual pupils to train AI models.
 
 8. Contact
 
@@ -332,7 +332,7 @@ Last updated: 17 February 2026
 
 The safety and wellbeing of children and young people is the highest priority at Touchline.
 
-Touchline is a coaching support platform. It does not replace a club's own safeguarding procedures, the role of the Club Welfare Officer, or the responsibilities of coaches and parents.
+Touchline is a coaching support platform. It does not replace a school's own safeguarding procedures, the role of the School Welfare Officer, or the responsibilities of coaches and parents.
 
 1. Our Principles
 
@@ -344,19 +344,19 @@ Touchline is a coaching support platform. It does not replace a club's own safeg
 2. How Touchline Protects Children
 
 - Children never access the platform directly
-- We collect the minimum data necessary about young players
-- Player data is only visible to authorised coaches and administrators
+- We collect the minimum data necessary about young pupils
+- Pupil data is only visible to authorised coaches and administrators
 - No direct messaging to children is possible
 - Video and images are stored securely with restricted access
 - All AI content is reviewed by the coach before use
 
-3. Club Requirements
+3. School Requirements
 
-Before activation, clubs must confirm: current safeguarding policy, appointed Club Welfare Officer, DBS clearance for all coaches, FA Safeguarding Children training, and parental consent procedures.
+Before activation, schools must confirm: current safeguarding policy, appointed School Welfare Officer, DBS clearance for all coaches, FA Safeguarding Children training, and parental consent procedures.
 
 4. Reporting Concerns
 
-If you have a safeguarding concern about a child, follow your club's procedures and contact your Club Welfare Officer. If a child is in immediate danger, contact the police (999).
+If you have a safeguarding concern about a child, follow your school's procedures and contact your School Welfare Officer. If a child is in immediate danger, contact the police (999).
 
 You can also contact:
 - The FA Safeguarding Team: 0800 169 1863
@@ -402,14 +402,14 @@ ARTIFICIAL INTELLIGENCE POLICY
 Last updated: 17 February 2026
 =====================================
 
-Touchline uses artificial intelligence to support grassroots football coaches with session planning, player development insights, and video analysis.
+Touchline uses artificial intelligence to support grassroots football coaches with session planning, pupil development insights, and video analysis.
 
 We believe AI should enhance coaching, not replace it. Every AI feature in Touchline is designed to support the coach's judgement, never to override it.
 
 1. How AI is Used
 
 - Session Planning: AI generates training session suggestions based on coach inputs (age group, objectives, ability level, equipment), tailored to FA coaching frameworks.
-- Player Development Insights: AI identifies patterns in coaching observations and suggests focus areas.
+- Pupil Development Insights: AI identifies patterns in coaching observations and suggests focus areas.
 - Video Analysis: AI assists with tactical observations (positioning, movement, set-pieces). AI does not identify children by name; this is done by the coach.
 - Content Generation: AI drafts parent communications, session summaries, and development reports for coach review.
 
@@ -432,8 +432,8 @@ We believe AI should enhance coaching, not replace it. Every AI feature in Touch
 4. Data and AI Training
 
 - AI uses only information the coach has provided within their account
-- Individual player data is never used to train AI models
-- Club data is never shared between clubs
+- Individual pupil data is never used to train AI models
+- School data is never shared between schools
 - Video footage is not used for AI training
 - AI improvements are based on anonymised, aggregated usage patterns only
 
@@ -450,12 +450,12 @@ We believe AI should enhance coaching, not replace it. Every AI feature in Touch
 - Session plans respect FA guidelines for each age group
 - Development language is positive and growth-focused
 - AI does not generate content that pressures children or prioritises results over development
-- Content follows FA Player Development Model principles
+- Content follows FA Pupil Development Model principles
 
 7. Accuracy and Limitations
 
 - AI can make mistakes; coaches must always review before use
-- AI does not know your players personally; your judgement takes priority
+- AI does not know your pupils personally; your judgement takes priority
 - AI cannot assess physical readiness or provide medical advice
 
 8. Transparency
@@ -519,14 +519,14 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
       hubName: formData.hubName || `${formData.teamName} ${formData.ageGroup} Hub`,
       timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       ...(promoResult?.valid ? { promoCode: promoCode.trim() } : {}),
-      ...(accountType === 'club' ? { clubName: formData.clubName, dpaAccepted } : {}),
+      ...(accountType === 'school' ? { clubName: formData.clubName, dpaAccepted } : {}),
     }
 
     const result = await register(registrationData)
 
     if (result.success) {
-      if (result.club?.slug) {
-        navigate(`/club/${result.club.slug}/billing`)
+      if (result.school?.slug) {
+        navigate(`/school/${result.school.slug}/billing`)
       } else {
         navigate('/pricing')
       }
@@ -607,7 +607,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
       <SEO
         title="Register"
         path="/register"
-        description="Create your free Touchline account. AI-powered coaching tools for grassroots football teams - tactics, training, and player development."
+        description="Create your free Touchline account. AI-powered coaching tools for grassroots football teams - tactics, training, and pupil development."
       />
       <div className="flex-1 flex items-center justify-center p-8">
         <motion.div
@@ -621,7 +621,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
           </Link>
 
           <h1 className="font-display text-3xl font-bold text-white mb-2">
-            {step === 1 ? 'Get started' : step === 2 ? 'Create your account' : step === 3 ? (accountType === 'club' ? 'Set up your club' : 'Set up your team') : 'Customize your hub'}
+            {step === 1 ? 'Get started' : step === 2 ? 'Create your account' : step === 3 ? (accountType === 'school' ? 'Set up your school' : 'Set up your team') : 'Customize your hub'}
           </h1>
           <p className="text-navy-400 mb-8">
             {step === 1
@@ -629,7 +629,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
               : step === 2
               ? 'Create your free account'
               : step === 3
-              ? (accountType === 'club' ? 'Tell us about your club and first team' : 'Tell us about your team')
+              ? (accountType === 'school' ? 'Tell us about your school and first team' : 'Tell us about your team')
               : 'Make it yours with custom branding'
             }
           </p>
@@ -657,7 +657,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                     </div>
                     <div>
                       <p className="text-white font-semibold text-lg">A Team</p>
-                      <p className="text-navy-400 text-sm">I coach a single team and want to manage players, sessions, and fixtures</p>
+                      <p className="text-navy-400 text-sm">I coach a single team and want to manage pupils, sessions, and fixtures</p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-navy-500 ml-auto flex-shrink-0" />
                   </div>
@@ -665,9 +665,9 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
 
                 <button
                   type="button"
-                  onClick={() => selectAccountType('club')}
+                  onClick={() => selectAccountType('school')}
                   className={`w-full text-left p-5 rounded-xl border-2 transition-all hover:border-amber-500 ${
-                    accountType === 'club' ? 'border-amber-500 bg-amber-500/10' : 'border-navy-700 bg-navy-900/50 hover:bg-navy-800/50'
+                    accountType === 'school' ? 'border-amber-500 bg-amber-500/10' : 'border-navy-700 bg-navy-900/50 hover:bg-navy-800/50'
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -675,8 +675,8 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       <Building2 className="w-6 h-6 text-amber-400" />
                     </div>
                     <div>
-                      <p className="text-white font-semibold text-lg">A Club</p>
-                      <p className="text-navy-400 text-sm">I run a club with multiple teams and want to manage payments, guardians, and registrations</p>
+                      <p className="text-white font-semibold text-lg">A School</p>
+                      <p className="text-navy-400 text-sm">I run a school with multiple teams and want to manage payments, guardians, and registrations</p>
                     </div>
                     <ArrowRight className="w-5 h-5 text-navy-500 ml-auto flex-shrink-0" />
                   </div>
@@ -856,9 +856,9 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
 
             {step === 3 && (
               <>
-                {accountType === 'club' && (
+                {accountType === 'school' && (
                   <div>
-                    <label htmlFor="clubName" className="label">Club Name</label>
+                    <label htmlFor="clubName" className="label">School Name</label>
                     <div className="relative">
                       <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
                       <input
@@ -872,12 +872,12 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         required
                       />
                     </div>
-                    <p className="text-xs text-navy-500 mt-1">The name of your club — teams sit under this</p>
+                    <p className="text-xs text-navy-500 mt-1">The name of your school — teams sit under this</p>
                   </div>
                 )}
 
                 <div>
-                  <label htmlFor="teamName" className="label">{accountType === 'club' ? 'First Team Name' : 'Team Name'}</label>
+                  <label htmlFor="teamName" className="label">{accountType === 'school' ? 'First Team Name' : 'Team Name'}</label>
                   <div className="relative">
                     <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
                     <input
@@ -976,7 +976,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 </div>
 
                 <div>
-                  <label className="label">Club Logo <span className="text-navy-500">(optional)</span></label>
+                  <label className="label">School Logo <span className="text-navy-500">(optional)</span></label>
                   <div className="flex items-center gap-3">
                     {logoPreview ? (
                       <div className="relative">
@@ -1012,7 +1012,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       </label>
                     )}
                     <div className="text-xs text-navy-400">
-                      <p>Upload your club badge or logo</p>
+                      <p>Upload your school badge or logo</p>
                       <p>PNG, JPG, SVG (max 2MB)</p>
                     </div>
                   </div>
@@ -1088,7 +1088,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   <BrandingPreview />
                 </div>
 
-                {accountType === 'club' && (
+                {accountType === 'school' && (
                   <div className="mt-6 p-4 bg-navy-900/50 rounded-xl border border-navy-800 space-y-4">
                     <div className="flex items-center gap-2">
                       <Shield className="w-5 h-5 text-amber-400" />
@@ -1107,12 +1107,12 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                     {showDpa && (
                       <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-60 overflow-y-auto border border-navy-700">
                         <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) — v1.0</h3>
-                        <p>This Data Processing Agreement ("DPA") forms part of the agreement between Touchline ("Processor") and the Club ("Controller") for the use of the Touchline platform.</p>
+                        <p>This Data Processing Agreement ("DPA") forms part of the agreement between Touchline ("Processor") and the School ("Controller") for the use of the Touchline platform.</p>
                         <h4 className="font-medium text-navy-200">1. Roles & Responsibilities</h4>
-                        <p>The Club acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. Touchline acts as a <strong className="text-navy-200">Data Processor</strong>, processing data solely on the Club's instructions.</p>
+                        <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. Touchline acts as a <strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions.</p>
                         <h4 className="font-medium text-navy-200">2. Data Processed</h4>
-                        <p>Player names, dates of birth, medical information, emergency contacts, photographs, identity documents, guardian contact details, payment information (via Stripe), and consent records.</p>
-                        <h4 className="font-medium text-navy-200">3. Club Obligations</h4>
+                        <p>Pupil names, dates of birth, medical information, emergency contacts, photographs, identity documents, guardian contact details, payment information (via Stripe), and consent records.</p>
+                        <h4 className="font-medium text-navy-200">3. School Obligations</h4>
                         <p>Ensure lawful basis for processing, respond to DSARs within 30 days, report breaches to the ICO within 72 hours, and inform guardians about data processing.</p>
                         <h4 className="font-medium text-navy-200">4. Touchline Obligations</h4>
                         <p>Process data only as instructed, implement security measures, not transfer data outside UK/EEA, assist with DSARs, and delete data upon account termination.</p>
@@ -1136,7 +1136,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         {dpaAccepted && <Check className="w-3 h-3 text-white" />}
                       </button>
                       <span className="text-xs text-navy-300">
-                        I confirm that I am authorised to act on behalf of this club and I accept the Data Processing Agreement. I understand that the club is the Data Controller.
+                        I confirm that I am authorised to act on behalf of this school and I accept the Data Processing Agreement. I understand that the school is the Data Controller.
                       </span>
                     </label>
                   </div>
@@ -1157,14 +1157,14 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
 
                 <button
                   type="submit"
-                  disabled={loading || (step === 2 && !agreedToTerms) || (step === 4 && accountType === 'club' && !dpaAccepted)}
+                  disabled={loading || (step === 2 && !agreedToTerms) || (step === 4 && accountType === 'school' && !dpaAccepted)}
                   className="btn-primary flex-1 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {loading ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      {step === 4 ? (accountType === 'club' ? 'Create Club' : 'Create Hub') : 'Continue'}
+                      {step === 4 ? (accountType === 'school' ? 'Create School' : 'Create Hub') : 'Continue'}
                       <ArrowRight className="w-5 h-5" />
                     </>
                   )}
@@ -1297,13 +1297,13 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
             className="text-center mb-8"
           >
             <h2 className="font-display text-2xl font-bold text-white mb-3">
-              {step <= 2 ? 'Start Free Today' : step === 3 ? (accountType === 'club' ? 'Your Club Hub' : 'Your Team Hub') : 'Your Brand'}
+              {step <= 2 ? 'Start Free Today' : step === 3 ? (accountType === 'school' ? 'Your School Hub' : 'Your Team Hub') : 'Your Brand'}
             </h2>
             <p className="text-navy-400">
               {step <= 2
                 ? 'No credit card required. Full access to all features.'
                 : step === 3
-                ? (accountType === 'club' ? 'Manage multiple teams from one place' : 'Everything your team needs in one place')
+                ? (accountType === 'school' ? 'Manage multiple teams from one place' : 'Everything your team needs in one place')
                 : 'Customize your hub to match your identity'
               }
             </p>
@@ -1322,10 +1322,10 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 { icon: Sparkles, label: 'AI-Powered Tools', color: 'amber' },
                 { icon: Users, label: 'Parent Portal', color: 'pitch' },
                 { icon: MessageSquare, label: 'Team Messaging', color: 'amber' },
-              ] : step === 3 ? (accountType === 'club' ? [
+              ] : step === 3 ? (accountType === 'school' ? [
                 { icon: Building2, label: 'Multi-Team Management', color: 'amber' },
-                { icon: Users, label: 'Player Registrations', color: 'pitch' },
-                { icon: Shield, label: 'Club Payments', color: 'amber' },
+                { icon: Users, label: 'Pupil Registrations', color: 'pitch' },
+                { icon: Shield, label: 'School Payments', color: 'amber' },
                 { icon: Calendar, label: 'All Teams, One Place', color: 'pitch' },
               ] : [
                 { icon: Calendar, label: 'Match Fixtures', color: 'pitch' },
@@ -1333,7 +1333,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 { icon: MessageSquare, label: 'Availability', color: 'pitch' },
                 { icon: ExternalLink, label: 'FA Full-Time Sync', color: 'amber' },
               ]) : [
-                { icon: Image, label: 'Club Logo', color: 'pitch' },
+                { icon: Image, label: 'School Logo', color: 'pitch' },
                 { icon: Sparkles, label: 'Custom Colors', color: 'amber' },
                 { icon: Users, label: 'Team Identity', color: 'pitch' },
                 { icon: Shield, label: 'Professional Look', color: 'amber' },

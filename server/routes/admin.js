@@ -36,7 +36,7 @@ router.get('/stats', async (req, res) => {
         COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '7 days') as new_users_7d,
         COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '30 days') as new_users_30d,
         COUNT(*) FILTER (WHERE role = 'manager') as coaches,
-        COUNT(*) FILTER (WHERE role = 'player') as players,
+        COUNT(*) FILTER (WHERE role = 'pupil') as pupils,
         COUNT(*) FILTER (WHERE role = 'parent') as parents
       FROM users
     `)
@@ -74,7 +74,7 @@ router.get('/stats', async (req, res) => {
       FROM promo_codes
     `)
 
-    // Get club stats
+    // Get school stats
     const clubStats = await pool.query(`
       SELECT
         COUNT(*) as total_clubs,
@@ -82,16 +82,16 @@ router.get('/stats', async (req, res) => {
         COUNT(*) FILTER (WHERE subscription_tier = 'club_starter') as starter,
         COUNT(*) FILTER (WHERE subscription_tier = 'club_growth') as growth,
         COUNT(*) FILTER (WHERE subscription_tier = 'club_scale') as scale
-      FROM clubs
+      FROM schools
     `)
 
-    // Get player stats
+    // Get pupil stats
     const playerStats = await pool.query(`
       SELECT
         COUNT(*) as total_players,
         COUNT(*) FILTER (WHERE is_active = true) as active_players,
         COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '7 days') as new_players_7d
-      FROM players
+      FROM pupils
     `)
 
     // Recent activity
@@ -102,11 +102,11 @@ router.get('/stats', async (req, res) => {
       LIMIT 10
     `)
 
-    // Recent clubs
+    // Recent schools
     const recentClubs = await pool.query(`
       SELECT c.id, c.name, c.subscription_tier, c.created_at,
-             (SELECT COUNT(*) FROM teams t WHERE t.club_id = c.id) as team_count
-      FROM clubs c
+             (SELECT COUNT(*) FROM teams t WHERE t.school_id = c.id) as team_count
+      FROM schools c
       ORDER BY c.created_at DESC
       LIMIT 5
     `)
@@ -130,8 +130,8 @@ router.get('/stats', async (req, res) => {
       teams: teamStats.rows[0],
       subscriptions: subscriptionStats.rows[0],
       promoCodes: promoStats.rows[0],
-      clubs: clubStats.rows[0],
-      players: playerStats.rows[0],
+      schools: clubStats.rows[0],
+      pupils: playerStats.rows[0],
       recentUsers: recentUsers.rows,
       recentClubs: recentClubs.rows,
       topManagers: topManagers.rows
@@ -200,12 +200,12 @@ router.get('/users/:userId', async (req, res) => {
     const { userId } = req.params
 
     const userResult = await pool.query(
-      `SELECT u.id, u.email, u.name, u.role, u.is_admin, u.billing_exempt, u.created_at, u.team_id, u.player_id,
+      `SELECT u.id, u.email, u.name, u.role, u.is_admin, u.billing_exempt, u.created_at, u.team_id, u.pupil_id,
               t.name as team_name, t.trial_ends_at, t.subscription_tier,
               p.name as player_name
        FROM users u
        LEFT JOIN teams t ON u.team_id = t.id
-       LEFT JOIN players p ON u.player_id = p.id
+       LEFT JOIN pupils p ON u.pupil_id = p.id
        WHERE u.id = $1`,
       [userId]
     )
@@ -264,7 +264,7 @@ router.put('/users/:userId/role', async (req, res) => {
     const { userId } = req.params
     const { role } = req.body
 
-    const validRoles = ['manager', 'assistant', 'parent', 'player']
+    const validRoles = ['manager', 'assistant', 'parent', 'pupil']
     if (!role || !validRoles.includes(role)) {
       return res.status(400).json({ message: `Role must be one of: ${validRoles.join(', ')}` })
     }
@@ -423,18 +423,18 @@ router.delete('/users/:userId', async (req, res) => {
     await safeQuery('DELETE FROM team_memberships WHERE user_id = $1', [userId])
     await safeQuery('DELETE FROM promo_code_redemptions WHERE user_id = $1', [userId])
     await safeQuery('DELETE FROM compliance_records WHERE user_id = $1', [userId])
-    await safeQuery('DELETE FROM club_members WHERE user_id = $1', [userId])
+    await safeQuery('DELETE FROM school_members WHERE user_id = $1', [userId])
     await safeQuery('DELETE FROM guardians WHERE user_id = $1', [userId])
     await safeQuery('DELETE FROM messages WHERE user_id = $1', [userId])
     await safeQuery('DELETE FROM match_availability WHERE user_id = $1', [userId])
     await safeQuery('DELETE FROM availability_responses WHERE responded_by = $1', [userId])
 
     // Null out foreign keys in tables that reference this user
-    await safeQuery('UPDATE player_messages SET user_id = NULL WHERE user_id = $1', [userId])
+    await safeQuery('UPDATE pupil_messages SET user_id = NULL WHERE user_id = $1', [userId])
     await safeQuery('UPDATE team_documents SET uploaded_by = NULL WHERE uploaded_by = $1', [userId])
     await safeQuery('UPDATE match_clips SET uploaded_by = NULL WHERE uploaded_by = $1', [userId])
     await safeQuery('UPDATE team_announcements SET created_by = NULL WHERE created_by = $1', [userId])
-    await safeQuery('UPDATE player_achievements SET awarded_by = NULL WHERE awarded_by = $1', [userId])
+    await safeQuery('UPDATE pupil_achievements SET awarded_by = NULL WHERE awarded_by = $1', [userId])
     await safeQuery('UPDATE team_suggestions SET submitted_by = NULL WHERE submitted_by = $1', [userId])
     await safeQuery('UPDATE team_suggestions SET responded_by = NULL WHERE responded_by = $1', [userId])
     await safeQuery('UPDATE promo_codes SET created_by = NULL WHERE created_by = $1', [userId])
@@ -450,10 +450,10 @@ router.delete('/users/:userId', async (req, res) => {
     await safeQuery('UPDATE safeguarding_incidents SET resolved_by = NULL WHERE resolved_by = $1', [userId])
     await safeQuery('UPDATE compliance_alerts SET target_user_id = NULL WHERE target_user_id = $1', [userId])
     await safeQuery('UPDATE compliance_alerts SET acknowledged_by = NULL WHERE acknowledged_by = $1', [userId])
-    await safeQuery('UPDATE club_announcements SET created_by = NULL WHERE created_by = $1', [userId])
+    await safeQuery('UPDATE school_announcements SET created_by = NULL WHERE created_by = $1', [userId])
     await safeQuery('UPDATE guardian_invites SET claimed_by = NULL WHERE claimed_by = $1', [userId])
-    await safeQuery('UPDATE club_comms_log SET sent_by = NULL WHERE sent_by = $1', [userId])
-    await safeQuery('UPDATE club_events SET created_by = NULL WHERE created_by = $1', [userId])
+    await safeQuery('UPDATE school_comms_log SET sent_by = NULL WHERE sent_by = $1', [userId])
+    await safeQuery('UPDATE school_events SET created_by = NULL WHERE created_by = $1', [userId])
     await safeQuery('UPDATE session_schedule SET created_by = NULL WHERE created_by = $1', [userId])
     await safeQuery('UPDATE match_reports SET approved_by = NULL WHERE approved_by = $1', [userId])
     await safeQuery('UPDATE payment_plans SET created_by = NULL WHERE created_by = $1', [userId])
@@ -485,29 +485,29 @@ router.get('/teams', async (req, res) => {
   }
 })
 
-// GET /api/admin/teams/:teamId/players - List players in a team (for linking)
-router.get('/teams/:teamId/players', async (req, res) => {
+// GET /api/admin/teams/:teamId/pupils - List pupils in a team (for linking)
+router.get('/teams/:teamId/pupils', async (req, res) => {
   try {
     const { teamId } = req.params
     const result = await pool.query(
       `SELECT p.id, p.name, p.squad_number
-       FROM players p
+       FROM pupils p
        WHERE p.team_id = $1
        ORDER BY p.name ASC`,
       [teamId]
     )
     res.json(result.rows)
   } catch (error) {
-    console.error('Admin list team players error:', error)
-    res.status(500).json({ message: 'Failed to load players' })
+    console.error('Admin list team pupils error:', error)
+    res.status(500).json({ message: 'Failed to load pupils' })
   }
 })
 
-// PUT /api/admin/users/:userId/player - Link user to a player profile
-router.put('/users/:userId/player', async (req, res) => {
+// PUT /api/admin/users/:userId/pupil - Link user to a pupil profile
+router.put('/users/:userId/pupil', async (req, res) => {
   try {
     const { userId } = req.params
-    const { player_id } = req.body
+    const { pupil_id } = req.body
 
     // Verify user exists
     const userResult = await pool.query('SELECT id, team_id FROM users WHERE id = $1', [userId])
@@ -515,21 +515,21 @@ router.put('/users/:userId/player', async (req, res) => {
       return res.status(404).json({ message: 'User not found' })
     }
 
-    // If player_id provided, verify the player exists
-    if (player_id) {
-      const playerResult = await pool.query('SELECT id, name, team_id FROM players WHERE id = $1', [player_id])
+    // If pupil_id provided, verify the pupil exists
+    if (pupil_id) {
+      const playerResult = await pool.query('SELECT id, name, team_id FROM pupils WHERE id = $1', [pupil_id])
       if (playerResult.rows.length === 0) {
-        return res.status(404).json({ message: 'Player not found' })
+        return res.status(404).json({ message: 'Pupil not found' })
       }
     }
 
-    // Update user's player_id
+    // Update user's pupil_id
     const result = await pool.query(
-      'UPDATE users SET player_id = $1 WHERE id = $2 RETURNING id, name, email, player_id',
-      [player_id || null, userId]
+      'UPDATE users SET pupil_id = $1 WHERE id = $2 RETURNING id, name, email, pupil_id',
+      [pupil_id || null, userId]
     )
 
-    // Also update or create team_membership with the player link
+    // Also update or create team_membership with the pupil link
     const user = userResult.rows[0]
     if (user.team_id) {
       const membershipExists = await pool.query(
@@ -538,21 +538,21 @@ router.put('/users/:userId/player', async (req, res) => {
       )
       if (membershipExists.rows.length > 0) {
         await pool.query(
-          'UPDATE team_memberships SET player_id = $1 WHERE user_id = $2 AND team_id = $3',
-          [player_id || null, userId, user.team_id]
+          'UPDATE team_memberships SET pupil_id = $1 WHERE user_id = $2 AND team_id = $3',
+          [pupil_id || null, userId, user.team_id]
         )
       } else {
         await pool.query(
-          'INSERT INTO team_memberships (user_id, team_id, role, player_id, is_primary) VALUES ($1, $2, (SELECT role FROM users WHERE id = $1), $3, true)',
-          [userId, user.team_id, player_id || null]
+          'INSERT INTO team_memberships (user_id, team_id, role, pupil_id, is_primary) VALUES ($1, $2, (SELECT role FROM users WHERE id = $1), $3, true)',
+          [userId, user.team_id, pupil_id || null]
         )
       }
     }
 
     res.json(result.rows[0])
   } catch (error) {
-    console.error('Admin link player error:', error)
-    res.status(500).json({ message: 'Failed to link player profile' })
+    console.error('Admin link pupil error:', error)
+    res.status(500).json({ message: 'Failed to link pupil profile' })
   }
 })
 
@@ -885,9 +885,9 @@ router.get('/finance', async (req, res, next) => {
           WHEN subscription_tier LIKE 'team_core%' THEN 'Core'
           WHEN subscription_tier LIKE 'team_pro%' THEN 'Pro'
           WHEN subscription_tier LIKE 'academy%' THEN 'Academy'
-          WHEN subscription_tier LIKE 'club_starter%' THEN 'Club Starter'
-          WHEN subscription_tier LIKE 'club_growth%' THEN 'Club Growth'
-          WHEN subscription_tier LIKE 'club_scale%' THEN 'Club Scale'
+          WHEN subscription_tier LIKE 'club_starter%' THEN 'School Starter'
+          WHEN subscription_tier LIKE 'club_growth%' THEN 'School Growth'
+          WHEN subscription_tier LIKE 'club_scale%' THEN 'School Scale'
           ELSE 'Other'
         END as tier_group,
         subscription_tier,

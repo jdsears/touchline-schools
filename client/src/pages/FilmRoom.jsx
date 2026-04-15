@@ -140,7 +140,7 @@ export default function FilmRoom() {
             <MonitorPlay className="w-7 h-7 text-pitch-400" />
             Film Room
           </h1>
-          <p className="text-navy-400 mt-1">Curate educational videos for your players</p>
+          <p className="text-navy-400 mt-1">Curate educational videos for your pupils</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => setShowAddSection(true)} className="btn-secondary text-sm">
@@ -467,7 +467,7 @@ function AddVideoModal({ sections, teamId, onClose, onAdded }) {
           </div>
           <div>
             <label className="label">Notes (optional)</label>
-            <textarea value={notes} onChange={e => setNotes(e.target.value)} className="input w-full" rows={2} placeholder="What should players look for?" />
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} className="input w-full" rows={2} placeholder="What should pupils look for?" />
           </div>
 
           {/* YouTube Mode */}
@@ -604,11 +604,11 @@ function WatcherDrawer({ video, onClose }) {
         ) : data ? (
           <div className="p-4">
             <p className="text-sm text-navy-400 mb-4">
-              {data.watched_count} of {data.total} players watched
+              {data.watched_count} of {data.total} pupils watched
             </p>
             <div className="space-y-2">
               {data.watchers.map(w => (
-                <div key={w.player_id} className="flex items-center gap-3 py-2">
+                <div key={w.pupil_id} className="flex items-center gap-3 py-2">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
                     w.watched ? 'bg-pitch-500/20 text-pitch-400' : 'bg-navy-700 text-navy-500'
                   }`}>

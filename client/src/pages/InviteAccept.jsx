@@ -47,7 +47,7 @@ export default function InviteAccept() {
     
     if (result.success) {
       if (invite.role === 'player' || invite.role === 'parent') {
-        navigate('/player-lounge', { replace: true })
+        navigate('/pupil-lounge', { replace: true })
       } else {
         navigate('/dashboard', { replace: true })
       }

@@ -310,11 +310,11 @@ router.get('/video/:id', authenticateToken, async (req, res, next) => {
       }
     }
 
-    // Get clips with player tags
+    // Get clips with pupil tags
     const clipsResult = await pool.query(`
       SELECT c.*,
         COALESCE(json_agg(
-          json_build_object('playerId', t.player_id, 'feedback', t.feedback, 'rating', t.rating)
+          json_build_object('pupilId', t.pupil_id, 'feedback', t.feedback, 'rating', t.rating)
         ) FILTER (WHERE t.id IS NOT NULL), '[]') as player_tags
       FROM video_clips c
       LEFT JOIN clip_player_tags t ON t.clip_id = c.id
@@ -448,13 +448,13 @@ router.post('/video/:id/clips', authenticateToken, async (req, res, next) => {
 
     const clip = clipResult.rows[0]
 
-    // Tag players
+    // Tag pupils
     if (playerTags && playerTags.length > 0) {
       for (const tag of playerTags) {
         await pool.query(
-          `INSERT INTO clip_player_tags (clip_id, player_id, feedback, rating)
+          `INSERT INTO clip_player_tags (clip_id, pupil_id, feedback, rating)
            VALUES ($1, $2, $3, $4)`,
-          [clip.id, tag.playerId, tag.feedback || null, tag.rating || null]
+          [clip.id, tag.pupilId, tag.feedback || null, tag.rating || null]
         )
       }
     }
@@ -471,7 +471,7 @@ router.get('/video/:id/clips', authenticateToken, async (req, res, next) => {
     const result = await pool.query(`
       SELECT c.*,
         COALESCE(json_agg(
-          json_build_object('playerId', t.player_id, 'feedback', t.feedback, 'rating', t.rating)
+          json_build_object('pupilId', t.pupil_id, 'feedback', t.feedback, 'rating', t.rating)
         ) FILTER (WHERE t.id IS NOT NULL), '[]') as player_tags
       FROM video_clips c
       LEFT JOIN clip_player_tags t ON t.clip_id = c.id
@@ -495,18 +495,18 @@ router.delete('/clips/:clipId', authenticateToken, async (req, res, next) => {
   }
 })
 
-// PUT /api/videos/clips/:clipId/tag — add/update player tag on clip
+// PUT /api/videos/clips/:clipId/tag — add/update pupil tag on clip
 router.put('/clips/:clipId/tag', authenticateToken, async (req, res, next) => {
   try {
-    const { playerId, feedback, rating } = req.body
+    const { pupilId, feedback, rating } = req.body
     const { clipId } = req.params
 
     await pool.query(
-      `INSERT INTO clip_player_tags (clip_id, player_id, feedback, rating)
+      `INSERT INTO clip_player_tags (clip_id, pupil_id, feedback, rating)
        VALUES ($1, $2, $3, $4)
-       ON CONFLICT (clip_id, player_id)
+       ON CONFLICT (clip_id, pupil_id)
        DO UPDATE SET feedback = $3, rating = $4`,
-      [clipId, playerId, feedback || null, rating || null]
+      [clipId, pupilId, feedback || null, rating || null]
     )
 
     res.json({ success: true })
@@ -516,20 +516,20 @@ router.put('/clips/:clipId/tag', authenticateToken, async (req, res, next) => {
 })
 
 // =============================================
-// Player Clips (for Player Lounge)
+// Pupil Clips (for Pupil Lounge)
 // =============================================
 
-// GET /api/videos/player/:playerId/clips
-router.get('/player/:playerId/clips', authenticateToken, async (req, res, next) => {
+// GET /api/videos/pupil/:pupilId/clips
+router.get('/pupil/:pupilId/clips', authenticateToken, async (req, res, next) => {
   try {
     const result = await pool.query(`
       SELECT c.*, t.feedback, t.rating, v.title as video_title, v.mux_playback_id, v.thumbnail_url
       FROM clip_player_tags t
       JOIN video_clips c ON c.id = t.clip_id
       JOIN videos v ON v.id = c.video_id
-      WHERE t.player_id = $1
+      WHERE t.pupil_id = $1
       ORDER BY c.created_at DESC
-    `, [req.params.playerId])
+    `, [req.params.pupilId])
 
     res.json({ clips: result.rows })
   } catch (error) {
@@ -544,7 +544,7 @@ router.get('/player/:playerId/clips', authenticateToken, async (req, res, next) 
 // POST /api/videos/video/:id/analyse
 router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
   try {
-    const { analysisType = 'full_match', playerId, clipId, teamColour, depth = 'standard' } = req.body
+    const { analysisType = 'full_match', pupilId, clipId, teamColour, depth = 'standard' } = req.body
     const videoId = req.params.id
 
     const videoResult = await pool.query('SELECT * FROM videos WHERE id = $1', [videoId])
@@ -586,7 +586,7 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
     // Return immediately, run analysis in background
     res.json({ message: 'Analysis started', videoId, depth })
 
-    // Get match context and squad players
+    // Get match context and squad pupils
     let context = {}
     if (video.match_id) {
       const matchResult = await pool.query(
@@ -617,8 +617,8 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
                     sp.name AS scorer_name, sp.squad_number AS scorer_number,
                     ap.name AS assist_name, ap.squad_number AS assist_number
              FROM match_goals mg
-             LEFT JOIN players sp ON mg.scorer_player_id = sp.id
-             LEFT JOIN players ap ON mg.assist_player_id = ap.id
+             LEFT JOIN pupils sp ON mg.scorer_pupil_id = sp.id
+             LEFT JOIN pupils ap ON mg.assist_pupil_id = ap.id
              WHERE mg.match_id = $1
              ORDER BY mg.minute ASC NULLS LAST`,
             [video.match_id]
@@ -635,8 +635,8 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
                     poff.name AS player_off_name, poff.squad_number AS player_off_number,
                     pon.name AS player_on_name, pon.squad_number AS player_on_number
              FROM match_substitutions ms
-             LEFT JOIN players poff ON ms.player_off_id = poff.id
-             LEFT JOIN players pon ON ms.player_on_id = pon.id
+             LEFT JOIN pupils poff ON ms.pupil_off_id = poff.id
+             LEFT JOIN pupils pon ON ms.pupil_on_id = pon.id
              WHERE ms.match_id = $1
              ORDER BY ms.minute ASC NULLS LAST`,
             [video.match_id]
@@ -675,13 +675,13 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
       }
     }
 
-    // Load match squad (starting + subs) if available, otherwise fall back to all team players
+    // Load match squad (starting + subs) if available, otherwise fall back to all team pupils
     let squadPlayers = []
     if (video.match_id) {
       const squadResult = await pool.query(
         `SELECT p.id, p.name, p.squad_number, p.positions, ms.position AS match_position, ms.is_starting
          FROM match_squads ms
-         JOIN players p ON ms.player_id = p.id
+         JOIN pupils p ON ms.pupil_id = p.id
          WHERE ms.match_id = $1
          ORDER BY ms.is_starting DESC, p.squad_number NULLS LAST, p.name`,
         [video.match_id]
@@ -692,7 +692,7 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
     }
     if (squadPlayers.length === 0) {
       const playersResult = await pool.query(
-        'SELECT id, name, squad_number, positions FROM players WHERE team_id = $1 ORDER BY squad_number NULLS LAST, name',
+        'SELECT id, name, squad_number, positions FROM pupils WHERE team_id = $1 ORDER BY squad_number NULLS LAST, name',
         [video.team_id]
       )
       squadPlayers = playersResult.rows
@@ -703,7 +703,7 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
     const teamName = teamResult.rows[0]?.name || null
 
     // Run in background
-    analyseVideoWithMux(video, { analysisType, playerId, clipId, context, teamColour, teamName, squadPlayers, userId: req.user.id, depth }).catch(err => {
+    analyseVideoWithMux(video, { analysisType, pupilId, clipId, context, teamColour, teamName, squadPlayers, userId: req.user.id, depth }).catch(err => {
       console.error('Video analysis failed:', err)
     })
   } catch (error) {
@@ -805,7 +805,7 @@ router.put('/analysis/:analysisId', authenticateToken, async (req, res, next) =>
   }
 })
 
-// POST /api/videos/analysis/:analysisId/approve — approve analysis and save player observations
+// POST /api/videos/analysis/:analysisId/approve — approve analysis and save pupil observations
 router.post('/analysis/:analysisId/approve', authenticateToken, async (req, res, next) => {
   try {
     const { analysisId } = req.params
@@ -832,20 +832,20 @@ router.post('/analysis/:analysisId/approve', authenticateToken, async (req, res,
     }
     const video = videoResult.rows[0]
 
-    // Save player observations if there's player feedback and a linked match
+    // Save pupil observations if there's pupil feedback and a linked match
     const playerFeedback = analysis.player_feedback
     if (video.match_id && playerFeedback?.length > 0) {
-      // Load squad players for ID mapping
+      // Load squad pupils for ID mapping
       const squadResult = await pool.query(
         `SELECT p.id, p.name, p.squad_number, p.positions, ms.is_starting
-         FROM match_squads ms JOIN players p ON ms.player_id = p.id
+         FROM match_squads ms JOIN pupils p ON ms.pupil_id = p.id
          WHERE ms.match_id = $1`,
         [video.match_id]
       )
       let squadPlayers = squadResult.rows
       if (squadPlayers.length === 0) {
         const playersResult = await pool.query(
-          'SELECT id, name, squad_number, positions FROM players WHERE team_id = $1',
+          'SELECT id, name, squad_number, positions FROM pupils WHERE team_id = $1',
           [video.team_id]
         )
         squadPlayers = playersResult.rows
@@ -866,7 +866,7 @@ router.post('/analysis/:analysisId/approve', authenticateToken, async (req, res,
       [analysisId]
     )
 
-    res.json({ message: 'Analysis approved and player notes saved' })
+    res.json({ message: 'Analysis approved and pupil notes saved' })
   } catch (error) {
     next(error)
   }

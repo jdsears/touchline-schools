@@ -63,36 +63,36 @@ export const teamService = {
   removeMember: (teamId, userId) => api.delete(`/teams/${teamId}/members/${userId}`),
 
   // Players
-  getPlayers: (teamId) => api.get(`/teams/${teamId}/players`),
-  addPlayer: (teamId, data) => api.post(`/teams/${teamId}/players`, data),
-  getPlayer: (playerId) => api.get(`/players/${playerId}`),
-  updatePlayer: (playerId, data) => api.put(`/players/${playerId}`, data),
-  deletePlayer: (playerId) => api.delete(`/players/${playerId}`),
+  getPlayers: (teamId) => api.get(`/teams/${teamId}/pupils`),
+  addPlayer: (teamId, data) => api.post(`/teams/${teamId}/pupils`, data),
+  getPlayer: (pupilId) => api.get(`/pupils/${pupilId}`),
+  updatePlayer: (pupilId, data) => api.put(`/pupils/${pupilId}`, data),
+  deletePlayer: (pupilId) => api.delete(`/pupils/${pupilId}`),
 
-  // Player observations
-  getObservations: (playerId) => api.get(`/players/${playerId}/observations`),
-  addObservation: (playerId, data) => api.post(`/players/${playerId}/observations`, data),
-  updateObservation: (playerId, obsId, data) => api.put(`/players/${playerId}/observations/${obsId}`, data),
-  deleteObservation: (playerId, obsId) => api.delete(`/players/${playerId}/observations/${obsId}`),
+  // Pupil observations
+  getObservations: (pupilId) => api.get(`/pupils/${pupilId}/observations`),
+  addObservation: (pupilId, data) => api.post(`/pupils/${pupilId}/observations`, data),
+  updateObservation: (pupilId, obsId, data) => api.put(`/pupils/${pupilId}/observations/${obsId}`, data),
+  deleteObservation: (pupilId, obsId) => api.delete(`/pupils/${pupilId}/observations/${obsId}`),
 
-  // Player IDP
-  getIDP: (playerId) => api.get(`/players/${playerId}/idp`),
-  generateIDP: (playerId, options = {}) => api.post(`/players/${playerId}/idp/generate`, options),
-  updateIDPSettings: (playerId, settings) => api.patch(`/players/${playerId}/idp/settings`, settings),
+  // Pupil IDP
+  getIDP: (pupilId) => api.get(`/pupils/${pupilId}/idp`),
+  generateIDP: (pupilId, options = {}) => api.post(`/pupils/${pupilId}/idp/generate`, options),
+  updateIDPSettings: (pupilId, settings) => api.patch(`/pupils/${pupilId}/idp/settings`, settings),
 
-  // Player attribute analysis
-  analyzeAttributes: (playerId) => api.post(`/players/${playerId}/attributes/analyze`),
+  // Pupil attribute analysis
+  analyzeAttributes: (pupilId) => api.post(`/pupils/${pupilId}/attributes/analyze`),
 
-  // Player achievements/badges
-  getAchievements: (playerId) => api.get(`/players/${playerId}/achievements`),
-  awardAchievement: (playerId, data) => api.post(`/players/${playerId}/achievements`, data),
-  deleteAchievement: (playerId, achievementId) =>
-    api.delete(`/players/${playerId}/achievements/${achievementId}`),
-  getBadgeTypes: () => api.get(`/players/badge-types`),
+  // Pupil achievements/badges
+  getAchievements: (pupilId) => api.get(`/pupils/${pupilId}/achievements`),
+  awardAchievement: (pupilId, data) => api.post(`/pupils/${pupilId}/achievements`, data),
+  deleteAchievement: (pupilId, achievementId) =>
+    api.delete(`/pupils/${pupilId}/achievements/${achievementId}`),
+  getBadgeTypes: () => api.get(`/pupils/badge-types`),
 
-  // Player parent invites
-  inviteParent: (playerId, email) => api.post(`/players/${playerId}/invite-parent`, { email }),
-  getPlayerInvites: (playerId) => api.get(`/players/${playerId}/invites`),
+  // Pupil parent invites
+  inviteParent: (pupilId, email) => api.post(`/pupils/${pupilId}/invite-parent`, { email }),
+  getPlayerInvites: (pupilId) => api.get(`/pupils/${pupilId}/invites`),
 
   // Matches
   getMatches: (teamId) => api.get(`/teams/${teamId}/matches`),
@@ -130,13 +130,13 @@ export const teamService = {
   updateSquad: (matchId, squad) => api.post(`/matches/${matchId}/squad`, { squad }),
   announceSquad: (matchId, data) => api.post(`/matches/${matchId}/squad/announce`, data),
 
-  // Player of the Match
-  setPlayerOfMatch: (matchId, playerId, reason) =>
-    api.post(`/matches/${matchId}/player-of-match`, { player_id: playerId, reason }),
-  getPlayerOfMatchStats: (playerId) => api.get(`/matches/potm-stats/${playerId}`),
+  // Pupil of the Match
+  setPlayerOfMatch: (matchId, pupilId, reason) =>
+    api.post(`/matches/${matchId}/pupil-of-match`, { pupil_id: pupilId, reason }),
+  getPlayerOfMatchStats: (pupilId) => api.get(`/matches/potm-stats/${pupilId}`),
 
   // Pre-match pep talk
-  getPepTalk: (matchId, playerId) => api.post(`/matches/${matchId}/pep-talk/${playerId}`),
+  getPepTalk: (matchId, pupilId) => api.post(`/matches/${matchId}/pep-talk/${pupilId}`),
 }
 
 // League service
@@ -215,17 +215,17 @@ export const chatService = {
   clearHistory: (teamId) => api.delete(`/chat/${teamId}/history`),
 }
 
-// Player chat service (player/parent AI assistant - "The Gaffer")
+// Pupil chat service (pupil/parent AI assistant - "The Gaffer")
 export const playerChatService = {
-  getHistory: (playerId, limit = 50) =>
-    api.get(`/chat/player/${playerId}/history`, { params: { limit } }),
-  sendMessage: (playerId, message) =>
-    api.post(`/chat/player/${playerId}/message`, { message }),
-  clearHistory: (playerId) => api.delete(`/chat/player/${playerId}/history`),
+  getHistory: (pupilId, limit = 50) =>
+    api.get(`/chat/pupil/${pupilId}/history`, { params: { limit } }),
+  sendMessage: (pupilId, message) =>
+    api.post(`/chat/pupil/${pupilId}/message`, { message }),
+  clearHistory: (pupilId) => api.delete(`/chat/pupil/${pupilId}/history`),
   // Parent control for The Gaffer
-  getGafferStatus: (playerId) => api.get(`/chat/player/${playerId}/gaffer-status`),
-  setGafferStatus: (playerId, disabled) =>
-    api.put(`/chat/player/${playerId}/gaffer-status`, { disabled }),
+  getGafferStatus: (pupilId) => api.get(`/chat/pupil/${pupilId}/gaffer-status`),
+  setGafferStatus: (pupilId, disabled) =>
+    api.put(`/chat/pupil/${pupilId}/gaffer-status`, { disabled }),
 }
 
 // Video service
@@ -247,7 +247,7 @@ export const videoService = {
   getClips: (videoId) => api.get(`/videos/video/${videoId}/clips`),
   deleteClip: (clipId) => api.delete(`/videos/clips/${clipId}`),
   tagPlayer: (clipId, data) => api.put(`/videos/clips/${clipId}/tag`, data),
-  getPlayerClips: (playerId) => api.get(`/videos/player/${playerId}/clips`),
+  getPupilClips: (pupilId) => api.get(`/videos/pupil/${pupilId}/clips`),
   assignVideo: (videoId, data) => api.put(`/videos/video/${videoId}/assign`, data),
 }
 
@@ -268,22 +268,22 @@ export const libraryService = {
   getWatchSummary: () => api.get('/video-library/watch-summary'),
 }
 
-// Content service (for player lounge)
+// Content service (for pupil lounge)
 export const contentService = {
   getContent: (teamId) => api.get(`/teams/${teamId}/content`),
   addContent: (teamId, data) => api.post(`/teams/${teamId}/content`, data),
   updateContent: (contentId, data) => api.put(`/content/${contentId}`, data),
   deleteContent: (contentId) => api.delete(`/content/${contentId}`),
-  getPlayerContent: (playerId) => api.get(`/players/${playerId}/content`),
+  getPlayerContent: (pupilId) => api.get(`/pupils/${pupilId}/content`),
 }
 
-// Player zone service (for players/parents)
+// Pupil zone service (for pupils/parents)
 export const playerZoneService = {
-  getZoneData: (playerId) => api.get(`/players/${playerId}/zone`),
-  updateAvailability: (playerId, matchId, data) =>
-    api.post(`/players/${playerId}/availability/${matchId}`, data),
-  updateTrainingAvailability: (playerId, sessionId, data) =>
-    api.post(`/players/${playerId}/training-availability/${sessionId}`, data),
+  getZoneData: (pupilId) => api.get(`/pupils/${pupilId}/zone`),
+  updateAvailability: (pupilId, matchId, data) =>
+    api.post(`/pupils/${pupilId}/availability/${matchId}`, data),
+  updateTrainingAvailability: (pupilId, sessionId, data) =>
+    api.post(`/pupils/${pupilId}/training-availability/${sessionId}`, data),
 }
 
 // Document service (team documents)
@@ -299,7 +299,7 @@ export const documentService = {
     api.delete(`/documents/${teamId}/documents/${docId}`),
 }
 
-// Match media service (parent/player uploads)
+// Match media service (parent/pupil uploads)
 export const matchMediaService = {
   getMedia: (matchId) => api.get(`/matches/${matchId}/media`),
   uploadMedia: (matchId, formData) =>
@@ -336,15 +336,15 @@ export const announcementService = {
     api.delete(`/announcements/${teamId}/announcements/${announcementId}`),
 }
 
-// Suggestion service (player/parent suggestions to coaches)
+// Suggestion service (pupil/parent suggestions to coaches)
 export const suggestionService = {
   // For coaches - get all team suggestions
   getSuggestions: (teamId, status = null, limit = 50) =>
     api.get(`/suggestions/${teamId}`, { params: { status, limit } }),
-  // For players/parents - get their own suggestions
+  // For pupils/parents - get their own suggestions
   getMySuggestions: (teamId) =>
     api.get(`/suggestions/${teamId}/my-suggestions`),
-  // For players/parents - submit a suggestion
+  // For pupils/parents - submit a suggestion
   createSuggestion: (teamId, data) =>
     api.post(`/suggestions/${teamId}`, data),
   // For coaches - respond to a suggestion
@@ -372,149 +372,149 @@ export const streamingService = {
   verifyPin: (shareCode, pin) => api.post(`/streaming/watch/${shareCode}`, { pin }),
 }
 
-// Club service (CRM & club management)
+// School service (CRM & school management)
 export const clubService = {
-  // My clubs
-  getMyClubs: () => api.get('/clubs'),
+  // My schools
+  getMyClubs: () => api.get('/schools'),
 
-  // Club CRUD
-  createClub: (data) => api.post('/clubs', data),
-  getClub: (clubId) => api.get(`/clubs/${clubId}`),
-  getClubBySlug: (slug) => api.get(`/clubs/by-slug/${slug}`),
-  updateClub: (clubId, data) => api.put(`/clubs/${clubId}`, data),
-  getDashboard: (clubId) => api.get(`/clubs/${clubId}/dashboard`),
+  // School CRUD
+  createClub: (data) => api.post('/schools', data),
+  getClub: (schoolId) => api.get(`/schools/${schoolId}`),
+  getClubBySlug: (slug) => api.get(`/schools/by-slug/${slug}`),
+  updateClub: (schoolId, data) => api.put(`/schools/${schoolId}`, data),
+  getDashboard: (schoolId) => api.get(`/schools/${schoolId}/dashboard`),
 
   // Members
-  getMembers: (clubId) => api.get(`/clubs/${clubId}/members`),
-  inviteMember: (clubId, data) => api.post(`/clubs/${clubId}/members/invite`, data),
-  updateMember: (clubId, memberId, data) => api.put(`/clubs/${clubId}/members/${memberId}`, data),
-  removeMember: (clubId, memberId) => api.delete(`/clubs/${clubId}/members/${memberId}`),
+  getMembers: (schoolId) => api.get(`/schools/${schoolId}/members`),
+  inviteMember: (schoolId, data) => api.post(`/schools/${schoolId}/members/invite`, data),
+  updateMember: (schoolId, memberId, data) => api.put(`/schools/${schoolId}/members/${memberId}`, data),
+  removeMember: (schoolId, memberId) => api.delete(`/schools/${schoolId}/members/${memberId}`),
 
   // Teams
-  getTeams: (clubId) => api.get(`/clubs/${clubId}/teams`),
-  createTeam: (clubId, data) => api.post(`/clubs/${clubId}/teams`, data),
-  linkTeam: (clubId, teamId, data) => api.put(`/clubs/${clubId}/teams/${teamId}`, data),
+  getTeams: (schoolId) => api.get(`/schools/${schoolId}/teams`),
+  createTeam: (schoolId, data) => api.post(`/schools/${schoolId}/teams`, data),
+  linkTeam: (schoolId, teamId, data) => api.put(`/schools/${schoolId}/teams/${teamId}`, data),
 
   // Guardians
-  getGuardians: (clubId, search) => api.get(`/clubs/${clubId}/guardians`, { params: { search } }),
-  getGuardian: (clubId, guardianId) => api.get(`/clubs/${clubId}/guardians/${guardianId}`),
-  addGuardian: (clubId, data) => api.post(`/clubs/${clubId}/guardians`, data),
-  updateGuardian: (clubId, guardianId, data) => api.put(`/clubs/${clubId}/guardians/${guardianId}`, data),
-  removeGuardian: (clubId, guardianId) => api.delete(`/clubs/${clubId}/guardians/${guardianId}`),
+  getGuardians: (schoolId, search) => api.get(`/schools/${schoolId}/guardians`, { params: { search } }),
+  getGuardian: (schoolId, guardianId) => api.get(`/schools/${schoolId}/guardians/${guardianId}`),
+  addGuardian: (schoolId, data) => api.post(`/schools/${schoolId}/guardians`, data),
+  updateGuardian: (schoolId, guardianId, data) => api.put(`/schools/${schoolId}/guardians/${guardianId}`, data),
+  removeGuardian: (schoolId, guardianId) => api.delete(`/schools/${schoolId}/guardians/${guardianId}`),
 
   // Players (cross-team)
-  getPlayers: (clubId, params) => api.get(`/clubs/${clubId}/players`, { params }),
+  getPlayers: (schoolId, params) => api.get(`/schools/${schoolId}/pupils`, { params }),
 
   // Registration
-  getRegistrationInfo: (slug) => api.get(`/clubs/by-slug/${slug}/register`),
-  submitRegistration: (slug, data) => api.post(`/clubs/by-slug/${slug}/register`, data, {
+  getRegistrationInfo: (slug) => api.get(`/schools/by-slug/${slug}/register`),
+  submitRegistration: (slug, data) => api.post(`/schools/by-slug/${slug}/register`, data, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
-  getRegistrations: (clubId, status) => api.get(`/clubs/${clubId}/registrations`, { params: { status } }),
-  reviewRegistration: (clubId, playerId, status) => api.put(`/clubs/${clubId}/registrations/${playerId}`, { status }),
+  getRegistrations: (schoolId, status) => api.get(`/schools/${schoolId}/registrations`, { params: { status } }),
+  reviewRegistration: (schoolId, pupilId, status) => api.put(`/schools/${schoolId}/registrations/${pupilId}`, { status }),
 }
 
-// Club payments service (Stripe Connect + payment plans + subscriptions)
+// School payments service (Stripe Connect + payment plans + subscriptions)
 export const clubPaymentService = {
   // Stripe Connect
-  startStripeConnect: (clubId) => api.post(`/club-payments/${clubId}/stripe/connect`),
-  getStripeAccount: (clubId) => api.get(`/club-payments/${clubId}/stripe/account`),
-  getStripeDashboardLink: (clubId) => api.post(`/club-payments/${clubId}/stripe/dashboard-link`),
+  startStripeConnect: (schoolId) => api.post(`/school-payments/${schoolId}/stripe/connect`),
+  getStripeAccount: (schoolId) => api.get(`/school-payments/${schoolId}/stripe/account`),
+  getStripeDashboardLink: (schoolId) => api.post(`/school-payments/${schoolId}/stripe/dashboard-link`),
 
   // Payment plans
-  getPaymentPlans: (clubId, includeArchived) => api.get(`/club-payments/${clubId}/payment-plans`, { params: { include_archived: includeArchived } }),
-  createPaymentPlan: (clubId, data) => api.post(`/club-payments/${clubId}/payment-plans`, data),
-  updatePaymentPlan: (clubId, planId, data) => api.put(`/club-payments/${clubId}/payment-plans/${planId}`, data),
-  archivePaymentPlan: (clubId, planId) => api.delete(`/club-payments/${clubId}/payment-plans/${planId}`),
+  getPaymentPlans: (schoolId, includeArchived) => api.get(`/school-payments/${schoolId}/payment-plans`, { params: { include_archived: includeArchived } }),
+  createPaymentPlan: (schoolId, data) => api.post(`/school-payments/${schoolId}/payment-plans`, data),
+  updatePaymentPlan: (schoolId, planId, data) => api.put(`/school-payments/${schoolId}/payment-plans/${planId}`, data),
+  archivePaymentPlan: (schoolId, planId) => api.delete(`/school-payments/${schoolId}/payment-plans/${planId}`),
 
   // Subscriptions
-  getSubscriptions: (clubId, params) => api.get(`/club-payments/${clubId}/subscriptions`, { params }),
-  getOverdueSubscriptions: (clubId) => api.get(`/club-payments/${clubId}/subscriptions/overdue`),
-  createSubscription: (clubId, data) => api.post(`/club-payments/${clubId}/subscriptions`, data),
-  bulkAssign: (clubId, data) => api.post(`/club-payments/${clubId}/subscriptions/bulk`, data),
-  sendReminder: (clubId, subscriptionId) => api.post(`/club-payments/${clubId}/subscriptions/${subscriptionId}/remind`),
+  getSubscriptions: (schoolId, params) => api.get(`/school-payments/${schoolId}/subscriptions`, { params }),
+  getOverdueSubscriptions: (schoolId) => api.get(`/school-payments/${schoolId}/subscriptions/overdue`),
+  createSubscription: (schoolId, data) => api.post(`/school-payments/${schoolId}/subscriptions`, data),
+  bulkAssign: (schoolId, data) => api.post(`/school-payments/${schoolId}/subscriptions/bulk`, data),
+  sendReminder: (schoolId, subscriptionId) => api.post(`/school-payments/${schoolId}/subscriptions/${subscriptionId}/remind`),
 
   // Finance
-  getFinanceSummary: (clubId) => api.get(`/club-payments/${clubId}/finance/summary`),
-  getTransactions: (clubId, params) => api.get(`/club-payments/${clubId}/finance/transactions`, { params }),
-  exportTransactions: (clubId) => api.get(`/club-payments/${clubId}/finance/export`, { responseType: 'blob' }),
-  getForecast: (clubId) => api.get(`/club-payments/${clubId}/finance/forecast`),
+  getFinanceSummary: (schoolId) => api.get(`/school-payments/${schoolId}/finance/summary`),
+  getTransactions: (schoolId, params) => api.get(`/school-payments/${schoolId}/finance/transactions`, { params }),
+  exportTransactions: (schoolId) => api.get(`/school-payments/${schoolId}/finance/export`, { responseType: 'blob' }),
+  getForecast: (schoolId) => api.get(`/school-payments/${schoolId}/finance/forecast`),
 
   // Overview
-  getPaymentsOverview: (clubId) => api.get(`/club-payments/${clubId}/payments/overview`),
+  getPaymentsOverview: (schoolId) => api.get(`/school-payments/${schoolId}/payments/overview`),
 
   // Portal (public, no auth)
-  getPortalInfo: (token) => api.get(`/club-payments/portal/${token}`),
-  createPortalPayment: (token) => api.post(`/club-payments/portal/${token}/pay`),
-  getPortalHistory: (token) => api.get(`/club-payments/portal/${token}/history`),
+  getPortalInfo: (token) => api.get(`/school-payments/portal/${token}`),
+  createPortalPayment: (token) => api.post(`/school-payments/portal/${token}/pay`),
+  getPortalHistory: (token) => api.get(`/school-payments/portal/${token}/history`),
 }
 
-// Club communications service (announcements, bulk email, guardian invites)
+// School communications service (announcements, bulk email, guardian invites)
 export const clubCommsService = {
   // Announcements
-  getAnnouncements: (clubId, params) => api.get(`/club-comms/${clubId}/announcements`, { params }),
-  createAnnouncement: (clubId, data) => api.post(`/club-comms/${clubId}/announcements`, data),
-  updateAnnouncement: (clubId, announcementId, data) => api.put(`/club-comms/${clubId}/announcements/${announcementId}`, data),
-  deleteAnnouncement: (clubId, announcementId) => api.delete(`/club-comms/${clubId}/announcements/${announcementId}`),
+  getAnnouncements: (schoolId, params) => api.get(`/school-comms/${schoolId}/announcements`, { params }),
+  createAnnouncement: (schoolId, data) => api.post(`/school-comms/${schoolId}/announcements`, data),
+  updateAnnouncement: (schoolId, announcementId, data) => api.put(`/school-comms/${schoolId}/announcements/${announcementId}`, data),
+  deleteAnnouncement: (schoolId, announcementId) => api.delete(`/school-comms/${schoolId}/announcements/${announcementId}`),
 
   // Bulk comms
-  sendToParents: (clubId, data) => api.post(`/club-comms/${clubId}/send-to-parents`, data),
-  getCommsLog: (clubId) => api.get(`/club-comms/${clubId}/comms-log`),
+  sendToParents: (schoolId, data) => api.post(`/school-comms/${schoolId}/send-to-parents`, data),
+  getCommsLog: (schoolId) => api.get(`/school-comms/${schoolId}/comms-log`),
 
   // Guardian invites
-  inviteGuardian: (clubId, guardianId) => api.post(`/club-comms/${clubId}/guardians/${guardianId}/invite`),
-  inviteAllGuardians: (clubId) => api.post(`/club-comms/${clubId}/guardians/invite-all`),
-  getGuardianInvite: (token) => api.get(`/club-comms/guardian-invite/${token}`),
-  claimGuardianInvite: (token) => api.post(`/club-comms/guardian-invite/${token}/claim`),
-  registerGuardianInvite: (token, data) => api.post(`/club-comms/guardian-invite/${token}/register`, data),
+  inviteGuardian: (schoolId, guardianId) => api.post(`/school-comms/${schoolId}/guardians/${guardianId}/invite`),
+  inviteAllGuardians: (schoolId) => api.post(`/school-comms/${schoolId}/guardians/invite-all`),
+  getGuardianInvite: (token) => api.get(`/school-comms/guardian-invite/${token}`),
+  claimGuardianInvite: (token) => api.post(`/school-comms/guardian-invite/${token}/claim`),
+  registerGuardianInvite: (token, data) => api.post(`/school-comms/guardian-invite/${token}/register`, data),
 }
 
-// Club safeguarding service (compliance, incidents, roles, alerts)
+// School safeguarding service (compliance, incidents, roles, alerts)
 export const clubSafeguardingService = {
   // Compliance overview
-  getOverview: (clubId) => api.get(`/club-safeguarding/${clubId}/compliance/overview`),
+  getOverview: (schoolId) => api.get(`/school-safeguarding/${schoolId}/compliance/overview`),
 
   // Compliance records
-  getComplianceRecords: (clubId) => api.get(`/club-safeguarding/${clubId}/compliance`),
-  getComplianceRecord: (clubId, recordId) => api.get(`/club-safeguarding/${clubId}/compliance/${recordId}`),
-  createComplianceRecord: (clubId, data) => api.post(`/club-safeguarding/${clubId}/compliance`, data),
-  updateComplianceRecord: (clubId, recordId, data) => api.put(`/club-safeguarding/${clubId}/compliance/${recordId}`, data),
-  uploadDocument: (clubId, recordId, formData) => api.post(`/club-safeguarding/${clubId}/compliance/${recordId}/documents`, formData, {
+  getComplianceRecords: (schoolId) => api.get(`/school-safeguarding/${schoolId}/compliance`),
+  getComplianceRecord: (schoolId, recordId) => api.get(`/school-safeguarding/${schoolId}/compliance/${recordId}`),
+  createComplianceRecord: (schoolId, data) => api.post(`/school-safeguarding/${schoolId}/compliance`, data),
+  updateComplianceRecord: (schoolId, recordId, data) => api.put(`/school-safeguarding/${schoolId}/compliance/${recordId}`, data),
+  uploadDocument: (schoolId, recordId, formData) => api.post(`/school-safeguarding/${schoolId}/compliance/${recordId}/documents`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   }),
 
   // Safeguarding roles
-  getRoles: (clubId) => api.get(`/club-safeguarding/${clubId}/safeguarding/roles`),
-  assignRole: (clubId, data) => api.post(`/club-safeguarding/${clubId}/safeguarding/roles`, data),
-  removeRole: (clubId, roleId) => api.delete(`/club-safeguarding/${clubId}/safeguarding/roles/${roleId}`),
+  getRoles: (schoolId) => api.get(`/school-safeguarding/${schoolId}/safeguarding/roles`),
+  assignRole: (schoolId, data) => api.post(`/school-safeguarding/${schoolId}/safeguarding/roles`, data),
+  removeRole: (schoolId, roleId) => api.delete(`/school-safeguarding/${schoolId}/safeguarding/roles/${roleId}`),
 
   // Incidents
-  getIncidents: (clubId) => api.get(`/club-safeguarding/${clubId}/safeguarding/incidents`),
-  getIncident: (clubId, incidentId) => api.get(`/club-safeguarding/${clubId}/safeguarding/incidents/${incidentId}`),
-  createIncident: (clubId, data) => api.post(`/club-safeguarding/${clubId}/safeguarding/incidents`, data),
-  updateIncident: (clubId, incidentId, data) => api.put(`/club-safeguarding/${clubId}/safeguarding/incidents/${incidentId}`, data),
+  getIncidents: (schoolId) => api.get(`/school-safeguarding/${schoolId}/safeguarding/incidents`),
+  getIncident: (schoolId, incidentId) => api.get(`/school-safeguarding/${schoolId}/safeguarding/incidents/${incidentId}`),
+  createIncident: (schoolId, data) => api.post(`/school-safeguarding/${schoolId}/safeguarding/incidents`, data),
+  updateIncident: (schoolId, incidentId, data) => api.put(`/school-safeguarding/${schoolId}/safeguarding/incidents/${incidentId}`, data),
 
   // Compliance alerts
-  getAlerts: (clubId) => api.get(`/club-safeguarding/${clubId}/compliance/alerts`),
-  acknowledgeAlert: (clubId, alertId, data) => api.put(`/club-safeguarding/${clubId}/compliance/alerts/${alertId}`, data),
-  generateAlerts: (clubId) => api.post(`/club-safeguarding/${clubId}/compliance/alerts/generate`),
+  getAlerts: (schoolId) => api.get(`/school-safeguarding/${schoolId}/compliance/alerts`),
+  acknowledgeAlert: (schoolId, alertId, data) => api.put(`/school-safeguarding/${schoolId}/compliance/alerts/${alertId}`, data),
+  generateAlerts: (schoolId) => api.post(`/school-safeguarding/${schoolId}/compliance/alerts/generate`),
 }
 
-// Club events service (camps, tournaments, availability)
+// School events service (camps, tournaments, availability)
 export const clubEventsService = {
   // Events CRUD
-  getEvents: (clubId, params) => api.get(`/club-events/${clubId}/events`, { params }),
-  createEvent: (clubId, data) => api.post(`/club-events/${clubId}/events`, data),
-  getEvent: (clubId, eventId) => api.get(`/club-events/${clubId}/events/${eventId}`),
-  updateEvent: (clubId, eventId, data) => api.put(`/club-events/${clubId}/events/${eventId}`, data),
-  cancelEvent: (clubId, eventId) => api.delete(`/club-events/${clubId}/events/${eventId}`),
-  getRegistrations: (clubId, eventId) => api.get(`/club-events/${clubId}/events/${eventId}/registrations`),
-  exportRegistrations: (clubId, eventId) => api.get(`/club-events/${clubId}/events/${eventId}/export`, { responseType: 'blob' }),
-  updateAttendance: (clubId, eventId, data) => api.put(`/club-events/${clubId}/events/${eventId}/attendance`, data),
+  getEvents: (schoolId, params) => api.get(`/school-events/${schoolId}/events`, { params }),
+  createEvent: (schoolId, data) => api.post(`/school-events/${schoolId}/events`, data),
+  getEvent: (schoolId, eventId) => api.get(`/school-events/${schoolId}/events/${eventId}`),
+  updateEvent: (schoolId, eventId, data) => api.put(`/school-events/${schoolId}/events/${eventId}`, data),
+  cancelEvent: (schoolId, eventId) => api.delete(`/school-events/${schoolId}/events/${eventId}`),
+  getRegistrations: (schoolId, eventId) => api.get(`/school-events/${schoolId}/events/${eventId}/registrations`),
+  exportRegistrations: (schoolId, eventId) => api.get(`/school-events/${schoolId}/events/${eventId}/export`, { responseType: 'blob' }),
+  updateAttendance: (schoolId, eventId, data) => api.put(`/school-events/${schoolId}/events/${eventId}/attendance`, data),
 
   // Public event (no auth)
-  getPublicEvent: (eventId) => api.get(`/club-events/public/${eventId}`),
-  registerForEvent: (eventId, data) => api.post(`/club-events/public/${eventId}/register`, data),
+  getPublicEvent: (eventId) => api.get(`/school-events/public/${eventId}`),
+  registerForEvent: (eventId, data) => api.post(`/school-events/public/${eventId}/register`, data),
 }
 
 // Schedule & availability service
@@ -526,59 +526,59 @@ export const scheduleService = {
   getAvailability: (teamId, sessionId) => api.get(`/teams/${teamId}/schedule/${sessionId}/availability`),
   submitAvailability: (teamId, sessionId, data) => api.post(`/teams/${teamId}/schedule/${sessionId}/availability`, data),
   updateAttendance: (teamId, sessionId, data) => api.put(`/teams/${teamId}/schedule/${sessionId}/attendance`, data),
-  getClubAttendanceStats: (clubId) => api.get(`/teams/clubs/${clubId}/attendance/stats`),
+  getClubAttendanceStats: (schoolId) => api.get(`/teams/schools/${schoolId}/attendance/stats`),
 }
 
-// Club AI intelligence service
+// School AI intelligence service
 export const clubIntelligenceService = {
   // Match reports
-  generateMatchReport: (clubId, matchId) => api.post(`/club-intelligence/${clubId}/matches/${matchId}/generate-report`),
-  updateMatchReport: (clubId, matchId, data) => api.put(`/club-intelligence/${clubId}/matches/${matchId}/report`, data),
-  sendMatchReport: (clubId, matchId) => api.post(`/club-intelligence/${clubId}/matches/${matchId}/report/send`),
+  generateMatchReport: (schoolId, matchId) => api.post(`/school-intelligence/${schoolId}/matches/${matchId}/generate-report`),
+  updateMatchReport: (schoolId, matchId, data) => api.put(`/school-intelligence/${schoolId}/matches/${matchId}/report`, data),
+  sendMatchReport: (schoolId, matchId) => api.post(`/school-intelligence/${schoolId}/matches/${matchId}/report/send`),
 
   // Insights
-  getInsights: (clubId, params) => api.get(`/club-intelligence/${clubId}/insights`, { params }),
-  getTeamInsights: (clubId, teamId) => api.get(`/club-intelligence/${clubId}/teams/${teamId}/insights`),
-  markInsight: (clubId, insightId, data) => api.put(`/club-intelligence/${clubId}/insights/${insightId}`, data),
+  getInsights: (schoolId, params) => api.get(`/school-intelligence/${schoolId}/insights`, { params }),
+  getTeamInsights: (schoolId, teamId) => api.get(`/school-intelligence/${schoolId}/teams/${teamId}/insights`),
+  markInsight: (schoolId, insightId, data) => api.put(`/school-intelligence/${schoolId}/insights/${insightId}`, data),
 
   // Season report
-  generateSeasonSummary: (clubId) => api.post(`/club-intelligence/${clubId}/reports/season-summary`),
-  getLatestSeasonSummary: (clubId) => api.get(`/club-intelligence/${clubId}/reports/season-summary/latest`),
+  generateSeasonSummary: (schoolId) => api.post(`/school-intelligence/${schoolId}/reports/season-summary`),
+  getLatestSeasonSummary: (schoolId) => api.get(`/school-intelligence/${schoolId}/reports/season-summary/latest`),
 
   // Grant helper
-  generateGrantDraft: (clubId, data) => api.post(`/club-intelligence/${clubId}/grants/draft`, data),
-  getGrantDrafts: (clubId) => api.get(`/club-intelligence/${clubId}/grants/drafts`),
-  updateGrantDraft: (clubId, draftId, data) => api.put(`/club-intelligence/${clubId}/grants/drafts/${draftId}`, data),
+  generateGrantDraft: (schoolId, data) => api.post(`/school-intelligence/${schoolId}/grants/draft`, data),
+  getGrantDrafts: (schoolId) => api.get(`/school-intelligence/${schoolId}/grants/drafts`),
+  updateGrantDraft: (schoolId, draftId, data) => api.put(`/school-intelligence/${schoolId}/grants/drafts/${draftId}`, data),
 
   // Compliance analysis
-  runComplianceAnalysis: (clubId) => api.post(`/club-intelligence/${clubId}/compliance/ai-analysis`),
-  getLatestComplianceAnalysis: (clubId) => api.get(`/club-intelligence/${clubId}/compliance/ai-analysis/latest`),
+  runComplianceAnalysis: (schoolId) => api.post(`/school-intelligence/${schoolId}/compliance/ai-analysis`),
+  getLatestComplianceAnalysis: (schoolId) => api.get(`/school-intelligence/${schoolId}/compliance/ai-analysis/latest`),
 
   // Coach development
-  getCoachSuggestions: (clubId, userId) => api.get(`/club-intelligence/${clubId}/coaches/${userId}/development-suggestions`),
+  getCoachSuggestions: (schoolId, userId) => api.get(`/school-intelligence/${schoolId}/coaches/${userId}/development-suggestions`),
 }
 
 // Gift Aid service
 export const giftAidService = {
-  // Club charity settings (admin)
-  getCharitySettings: (clubId) => api.get(`/gift-aid/${clubId}/charity-settings`),
-  updateCharitySettings: (clubId, data) => api.put(`/gift-aid/${clubId}/charity-settings`, data),
+  // School charity settings (admin)
+  getCharitySettings: (schoolId) => api.get(`/gift-aid/${schoolId}/charity-settings`),
+  updateCharitySettings: (schoolId, data) => api.put(`/gift-aid/${schoolId}/charity-settings`, data),
 
   // Parent declarations
-  getDeclaration: (clubId) => api.get(`/gift-aid/${clubId}/declaration`),
-  saveDeclaration: (clubId, data) => api.post(`/gift-aid/${clubId}/declaration`, data),
+  getDeclaration: (schoolId) => api.get(`/gift-aid/${schoolId}/declaration`),
+  saveDeclaration: (schoolId, data) => api.post(`/gift-aid/${schoolId}/declaration`, data),
   getMyDeclarations: () => api.get('/gift-aid/my-declarations'),
 
   // Receipts
   getMyReceipts: () => api.get('/gift-aid/my-receipts'),
   downloadReceipt: (receiptId) => api.get(`/gift-aid/receipts/${receiptId}/pdf`, { responseType: 'arraybuffer' }),
 
-  // Club dashboard
-  getDashboard: (clubId, taxYear) => api.get(`/gift-aid/${clubId}/dashboard`, { params: { tax_year: taxYear } }),
+  // School dashboard
+  getDashboard: (schoolId, taxYear) => api.get(`/gift-aid/${schoolId}/dashboard`, { params: { tax_year: taxYear } }),
 
   // Exports
-  exportHMRC: (clubId, taxYear) => api.get(`/gift-aid/${clubId}/export/hmrc`, { params: { tax_year: taxYear }, responseType: 'blob' }),
-  exportAudit: (clubId, taxYear) => api.get(`/gift-aid/${clubId}/export/audit`, { params: { tax_year: taxYear }, responseType: 'blob' }),
+  exportHMRC: (schoolId, taxYear) => api.get(`/gift-aid/${schoolId}/export/hmrc`, { params: { tax_year: taxYear }, responseType: 'blob' }),
+  exportAudit: (schoolId, taxYear) => api.get(`/gift-aid/${schoolId}/export/audit`, { params: { tax_year: taxYear }, responseType: 'blob' }),
 }
 
 // Parent portal service (authenticated parent dashboard)
@@ -587,7 +587,7 @@ export const parentService = {
   getChildren: () => api.get('/parent/children'),
   getPayments: () => api.get('/parent/payments'),
   getAnnouncements: () => api.get('/parent/announcements'),
-  getChildSchedule: (playerId) => api.get(`/parent/children/${playerId}/schedule`),
+  getChildSchedule: (pupilId) => api.get(`/parent/children/${pupilId}/schedule`),
   updateNotificationPreferences: (preferences) => api.put('/parent/notification-preferences', { preferences }),
 }
 
@@ -616,7 +616,7 @@ export const blogService = {
 // Season Development service
 export const seasonDevelopmentService = {
   getDashboard: (teamId, params) => api.get(`/teams/${teamId}/season-development`, { params }),
-  getPlayerSnapshots: (teamId, playerId) => api.get(`/teams/${teamId}/players/${playerId}/snapshots`),
+  getPlayerSnapshots: (teamId, pupilId) => api.get(`/teams/${teamId}/pupils/${pupilId}/snapshots`),
   generateSeasonReview: (teamId, data) => api.post(`/teams/${teamId}/season-review`, data),
 }
 
@@ -630,6 +630,119 @@ export const knowledgeBaseService = {
   }),
   search: (teamId, query) => api.post(`/knowledge-base/${teamId}/search`, query),
   deleteDocument: (teamId, docId) => api.delete(`/knowledge-base/${teamId}/${docId}`),
+}
+
+// Teacher Hub cross-team service (extra-curricular)
+export const teacherService = {
+  getMyTeams: () => api.get('/teams/mine'),
+  getMyFixtures: () => api.get('/teams/mine/fixtures'),
+  getMySessions: () => api.get('/teams/mine/sessions'),
+}
+
+// Teaching Groups service (curriculum PE classes)
+export const teachingGroupService = {
+  list: () => api.get('/teaching-groups'),
+  get: (id) => api.get(`/teaching-groups/${id}`),
+  create: (data) => api.post('/teaching-groups', data),
+  update: (id, data) => api.put(`/teaching-groups/${id}`, data),
+  remove: (id) => api.delete(`/teaching-groups/${id}`),
+  addPupils: (id, pupilIds) => api.post(`/teaching-groups/${id}/pupils`, { pupil_ids: pupilIds }),
+  removePupil: (id, pupilId) => api.delete(`/teaching-groups/${id}/pupils/${pupilId}`),
+  addUnit: (id, data) => api.post(`/teaching-groups/${id}/units`, data),
+  updateUnit: (id, unitId, data) => api.put(`/teaching-groups/${id}/units/${unitId}`, data),
+  removeUnit: (id, unitId) => api.delete(`/teaching-groups/${id}/units/${unitId}`),
+}
+
+// Assessment service (curriculum PE assessment)
+export const assessmentService = {
+  getStrands: (keyStage) => api.get('/assessments/strands', { params: { key_stage: keyStage } }),
+  getCriteria: (strandId, sport) => api.get(`/assessments/criteria/${strandId}`, { params: { sport } }),
+  getUnitAssessments: (unitId) => api.get(`/assessments/unit/${unitId}`),
+  record: (data) => api.post('/assessments', data),
+  recordBatch: (assessments) => api.post('/assessments/batch', { assessments }),
+  update: (id, data) => api.put(`/assessments/${id}`, data),
+  getPupilAssessments: (pupilId) => api.get(`/assessments/pupil/${pupilId}`),
+  getDashboard: () => api.get('/assessments/dashboard'),
+  getPupilDictionary: () => api.get('/assessments/pupil-dictionary'),
+}
+
+// Reporting service
+export const reportingService = {
+  getWindows: () => api.get('/reporting/windows'),
+  createWindow: (data) => api.post('/reporting/windows', data),
+  updateWindow: (id, data) => api.put(`/reporting/windows/${id}`, data),
+  getWindowReports: (windowId) => api.get(`/reporting/windows/${windowId}/reports`),
+  getMyReports: () => api.get('/reporting/my-reports'),
+  saveReport: (data) => api.post('/reporting/reports', data),
+  generateAIDraft: (data) => api.post('/reporting/reports/ai-draft', data),
+}
+
+// Pupil Management service
+export const pupilManagementService = {
+  list: (params) => api.get('/pupil-management', { params }),
+  getStats: () => api.get('/pupil-management/stats'),
+  getProfile: (id) => api.get(`/pupil-management/${id}/profile`),
+  update: (id, data) => api.put(`/pupil-management/${id}`, data),
+  create: (data) => api.post('/pupil-management', data),
+}
+
+// Onboarding service
+export const onboardingService = {
+  getStatus: () => api.get('/onboarding/status'),
+  createSchool: (data) => api.post('/onboarding/school', data),
+  inviteTeachers: (schoolId, teachers) => api.post('/onboarding/teachers', { school_id: schoolId, teachers }),
+  importPupilsCSV: (schoolId, file) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('school_id', schoolId)
+    return api.post('/onboarding/pupils/csv', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  createTeam: (data) => api.post('/onboarding/teams', data),
+}
+
+// Head of Department service (whole-school views)
+export const hodService = {
+  check: () => api.get('/hod/check'),
+  getOverview: () => api.get('/hod/overview'),
+  getTeachers: () => api.get('/hod/teachers'),
+  getTeams: (sport) => api.get('/hod/teams', { params: { sport } }),
+  getClasses: () => api.get('/hod/classes'),
+  assignTeacherSport: (userId, sport, role) => api.post(`/hod/teachers/${userId}/sports`, { sport, role }),
+  removeTeacherSport: (userId, sport) => api.delete(`/hod/teachers/${userId}/sports/${sport}`),
+}
+
+// Voice Observations service
+export const voiceObservationService = {
+  upload: (audioFile, contextType, contextId) => {
+    const formData = new FormData()
+    formData.append('audio', audioFile)
+    formData.append('context_type', contextType)
+    if (contextId) formData.append('context_id', contextId)
+    return api.post('/voice-observations/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    })
+  },
+  getStatus: (audioSourceId) => api.get(`/voice-observations/status/${audioSourceId}`),
+  getReview: (audioSourceId) => api.get(`/voice-observations/${audioSourceId}`),
+  editObservation: (audioSourceId, observationId, data) =>
+    api.patch(`/voice-observations/${audioSourceId}/observations/${observationId}`, data),
+  confirmAll: (audioSourceId) => api.post(`/voice-observations/${audioSourceId}/confirm`),
+  rejectObservation: (audioSourceId, observationId) =>
+    api.post(`/voice-observations/${audioSourceId}/observations/${observationId}/reject`),
+  discard: (audioSourceId) => api.delete(`/voice-observations/${audioSourceId}`),
+  listPending: () => api.get('/voice-observations'),
+}
+
+// Sport Knowledge Base service
+export const sportKnowledgeService = {
+  list: (params) => api.get('/sport-knowledge', { params }),
+  getSports: () => api.get('/sport-knowledge/sports'),
+  create: (data) => api.post('/sport-knowledge', data),
+  update: (id, data) => api.put(`/sport-knowledge/${id}`, data),
+  remove: (id) => api.delete(`/sport-knowledge/${id}`),
+  getForAI: (sport, schoolId) => api.get(`/sport-knowledge/for-ai/${sport}`, { params: { school_id: schoolId } }),
 }
 
 export default api

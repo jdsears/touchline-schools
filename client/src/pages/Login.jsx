@@ -51,10 +51,10 @@ export default function Login() {
     if (result.success) {
       // Navigate based on user role
       const userRole = result.user?.role
-      if (userRole === 'player' || userRole === 'parent') {
-        navigate('/player-lounge')
+      if (userRole === 'pupil' || userRole === 'parent') {
+        navigate('/pupil')
       } else {
-        navigate('/dashboard')
+        navigate('/teacher')
       }
     }
 
@@ -79,7 +79,7 @@ export default function Login() {
       <SEO
         title="Login"
         path="/login"
-        description="Sign in to Touchline to access your coaching dashboard, tactics board, and player management tools."
+        description="Sign in to Touchline to access your coaching dashboard, tactics board, and pupil management tools."
         noIndex={true}
       />
       <div className="flex-1 flex items-center justify-center p-8">
@@ -272,7 +272,7 @@ export default function Login() {
                 <rect x="282" y="75" width="18" height="50" />
               </g>
 
-              {/* Animated player positions - 4-3-3 formation */}
+              {/* Animated pupil positions - 4-3-3 formation */}
               <g filter="url(#glow)">
                 {/* Goalkeeper */}
                 <motion.circle
@@ -366,7 +366,7 @@ export default function Login() {
               { icon: Brain, label: 'AI-Powered Analysis', color: 'pitch' },
               { icon: Target, label: 'Tactical Planning', color: 'amber' },
               { icon: Users, label: 'Squad Management', color: 'pitch' },
-              { icon: TrendingUp, label: 'Player Development', color: 'amber' },
+              { icon: TrendingUp, label: 'Pupil Development', color: 'amber' },
             ].map(({ icon: Icon, label, color }, i) => (
               <motion.div
                 key={label}

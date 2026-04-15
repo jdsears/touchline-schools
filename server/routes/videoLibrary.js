@@ -268,7 +268,7 @@ router.get('/videos', authenticateToken, async (req, res, next) => {
       result.rows.forEach(v => { v.watch_count = countMap[v.id] || 0 })
     }
 
-    // If player, attach watch status
+    // If pupil, attach watch status
     if (!isManager) {
       const watches = await pool.query(
         `SELECT video_id FROM library_video_watches
@@ -458,11 +458,11 @@ router.get('/videos/:videoId/watchers', authenticateToken, async (req, res, next
 
     const teamId = req.user.team_id
 
-    // Get all squad players
-    const players = await pool.query(
-      `SELECT p.id as player_id, p.name, p.squad_number, u.id as user_id
-       FROM players p
-       LEFT JOIN users u ON u.player_id = p.id
+    // Get all squad pupils
+    const pupils = await pool.query(
+      `SELECT p.id as pupil_id, p.name, p.squad_number, u.id as user_id
+       FROM pupils p
+       LEFT JOIN users u ON u.pupil_id = p.id
        WHERE p.team_id = $1
        ORDER BY p.squad_number NULLS LAST, p.name`,
       [teamId]
@@ -475,13 +475,13 @@ router.get('/videos/:videoId/watchers', authenticateToken, async (req, res, next
     )
     const watchMap = Object.fromEntries(watches.rows.map(w => [w.user_id, w.watched_at]))
 
-    const watchers = players.rows.map(p => ({
+    const watchers = pupils.rows.map(p => ({
       ...p,
       watched: !!watchMap[p.user_id],
       watched_at: watchMap[p.user_id] || null,
     }))
 
-    res.json({ watchers, total: players.rows.length, watched_count: watches.rows.length })
+    res.json({ watchers, total: pupils.rows.length, watched_count: watches.rows.length })
   } catch (error) {
     next(error)
   }
@@ -495,7 +495,7 @@ router.get('/watch-summary', authenticateToken, async (req, res, next) => {
     const teamId = req.user.team_id
 
     const squadCount = await pool.query(
-      'SELECT COUNT(*) FROM players WHERE team_id = $1',
+      'SELECT COUNT(*) FROM pupils WHERE team_id = $1',
       [teamId]
     )
     const total = parseInt(squadCount.rows[0].count)

@@ -6,7 +6,7 @@ import fs from 'fs'
 import pool from '../config/database.js'
 import { authenticateToken, requireTeamAccess } from '../middleware/auth.js'
 import { extractFixturesFromImage, extractPlayersFromImage, generateTrainingSession, generateTrainingSummary } from '../services/claudeService.js'
-import { normalizePlayerPositions, normalizePlayersPositions } from '../utils/playerUtils.js'
+import { normalizePlayerPositions, normalizePlayersPositions } from '../utils/pupilUtils.js'
 import { sendTeamInviteEmail, sendNotificationEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
 import { sendPushToUser } from '../services/pushService.js'
 import { getFrontendUrl } from '../utils/urlUtils.js'
@@ -68,6 +68,75 @@ const trainingImgUpload = multer({
     } else {
       cb(new Error('Only image files are allowed'))
     }
+  }
+})
+
+// Get all teams the current user coaches (for Teacher Hub cross-team views)
+router.get('/mine', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id
+
+    // Teams where user is owner OR has a team_membership with a coaching role
+    const result = await pool.query(
+      `SELECT DISTINCT t.*,
+        (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count,
+        (SELECT COUNT(*) FROM matches m WHERE m.team_id = t.id) AS match_count
+       FROM teams t
+       LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+       WHERE t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))
+       ORDER BY t.sport ASC, t.name ASC`,
+      [userId]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get upcoming fixtures across all teams the current user coaches
+router.get('/mine/fixtures', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id
+
+    const result = await pool.query(
+      `SELECT m.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+              t.primary_color AS team_color
+       FROM matches m
+       JOIN teams t ON m.team_id = t.id
+       LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+       WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
+       ORDER BY m.date DESC
+       LIMIT 50`,
+      [userId]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Get upcoming training sessions across all teams the current user coaches
+router.get('/mine/sessions', authenticateToken, async (req, res, next) => {
+  try {
+    const userId = req.user.id
+
+    const result = await pool.query(
+      `SELECT ts.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+              t.primary_color AS team_color
+       FROM training_sessions ts
+       JOIN teams t ON ts.team_id = t.id
+       LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+       WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
+       ORDER BY ts.session_date DESC
+       LIMIT 50`,
+      [userId]
+    )
+
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
   }
 })
 
@@ -365,39 +434,39 @@ router.delete('/:id/members/:userId', authenticateToken, requireTeamAccess, asyn
   }
 })
 
-// Get players
-router.get('/:id/players', authenticateToken, requireTeamAccess, async (req, res, next) => {
+// Get pupils
+router.get('/:id/pupils', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { id } = req.params
 
     const result = await pool.query(
-      'SELECT * FROM players WHERE team_id = $1 ORDER BY squad_number NULLS LAST, name',
+      'SELECT * FROM pupils WHERE team_id = $1 ORDER BY squad_number NULLS LAST, name',
       [id]
     )
 
     // Normalize positions from JSONB format to simple string array for client compatibility
-    const players = result.rows.map(normalizePlayerPositions)
-    res.json(players)
+    const pupils = result.rows.map(normalizePlayerPositions)
+    res.json(pupils)
   } catch (error) {
     next(error)
   }
 })
 
-// Add player
-router.post('/:id/players', authenticateToken, requireTeamAccess, async (req, res, next) => {
+// Add pupil
+router.post('/:id/pupils', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { id } = req.params
     const { name, dob, positions, parentContact, notes, squadNumber } = req.body
 
     if (!name) {
-      return res.status(400).json({ message: 'Player name is required' })
+      return res.status(400).json({ message: 'Pupil name is required' })
     }
 
-    // Check player limit
+    // Check pupil limit
     const playerLimit = await canAddPlayer(id)
     if (!playerLimit.allowed) {
       return res.status(403).json({
-        message: `Team limit reached (${playerLimit.limit} players). Upgrade your plan to add more players.`,
+        message: `Team limit reached (${playerLimit.limit} pupils). Upgrade your plan to add more pupils.`,
         code: 'PLAYER_LIMIT_REACHED',
         current: playerLimit.current,
         limit: playerLimit.limit,
@@ -405,7 +474,7 @@ router.post('/:id/players', authenticateToken, requireTeamAccess, async (req, re
     }
 
     const result = await pool.query(
-      `INSERT INTO players (team_id, name, dob, positions, parent_contact, notes, squad_number)
+      `INSERT INTO pupils (team_id, name, dob, positions, parent_contact, notes, squad_number)
        VALUES ($1, $2, $3, $4::jsonb, $5, $6, $7) RETURNING *`,
       [id, name, dob || null, JSON.stringify(positions || []), parentContact || null, notes || null, squadNumber || null]
     )
@@ -417,8 +486,8 @@ router.post('/:id/players', authenticateToken, requireTeamAccess, async (req, re
   }
 })
 
-// Extract players from image using AI
-router.post('/:id/players/extract-from-image', authenticateToken, requireTeamAccess, upload.single('image'), async (req, res, next) => {
+// Extract pupils from image using AI
+router.post('/:id/pupils/extract-from-image', authenticateToken, requireTeamAccess, upload.single('image'), async (req, res, next) => {
   try {
     const { id } = req.params
 
@@ -435,7 +504,7 @@ router.post('/:id/players/extract-from-image', authenticateToken, requireTeamAcc
       }
       return res.status(429).json({
         message: usageCheck.limit === 0
-          ? 'Image import is not available on your current plan. Upgrade to Core or Pro to import players from images.'
+          ? 'Image import is not available on your current plan. Upgrade to Core or Pro to import pupils from images.'
           : `Monthly import limit reached (${usageCheck.limit}). Upgrade your plan for more imports.`,
         code: 'OCR_LIMIT_REACHED',
         usage: { current: usageCheck.current, limit: usageCheck.limit },
@@ -448,15 +517,15 @@ router.post('/:id/players/extract-from-image', authenticateToken, requireTeamAcc
     const imageBase64 = imageBuffer.toString('base64')
     const mediaType = req.file.mimetype || 'image/png'
 
-    // Extract players using Claude
-    const players = await extractPlayersFromImage(imageBase64, mediaType)
+    // Extract pupils using Claude
+    const pupils = await extractPlayersFromImage(imageBase64, mediaType)
 
     // Clean up uploaded file
     fs.unlinkSync(req.file.path)
 
     res.json({
-      players,
-      count: players.length,
+      pupils,
+      count: pupils.length,
     })
   } catch (error) {
     // Clean up file on error
@@ -467,61 +536,61 @@ router.post('/:id/players/extract-from-image', authenticateToken, requireTeamAcc
   }
 })
 
-// Bulk import players
-router.post('/:id/players/bulk', authenticateToken, requireTeamAccess, async (req, res, next) => {
+// Bulk import pupils
+router.post('/:id/pupils/bulk', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { players } = req.body
+    const { pupils } = req.body
 
-    if (!players || !Array.isArray(players) || players.length === 0) {
+    if (!pupils || !Array.isArray(pupils) || pupils.length === 0) {
       return res.status(400).json({ message: 'Players array is required' })
     }
 
-    // Check if team can add all these players
+    // Check if team can add all these pupils
     const playerLimit = await canAddPlayer(id)
     const availableSlots = playerLimit.limit - playerLimit.current
-    if (players.length > availableSlots) {
+    if (pupils.length > availableSlots) {
       return res.status(403).json({
-        message: `Cannot add ${players.length} players. Team has ${availableSlots} slots remaining (${playerLimit.limit} max).`,
+        message: `Cannot add ${pupils.length} pupils. Team has ${availableSlots} slots remaining (${playerLimit.limit} max).`,
         code: 'PLAYER_LIMIT_REACHED',
         current: playerLimit.current,
         limit: playerLimit.limit,
-        requested: players.length,
+        requested: pupils.length,
         available: availableSlots,
       })
     }
 
-    // Build all player data first, then batch insert
-    const playerData = players.map(player => {
+    // Build all pupil data first, then batch insert
+    const playerData = pupils.map(pupil => {
       let parentContact = null
-      if (player.parentName || player.parentEmail) {
+      if (pupil.parentName || pupil.parentEmail) {
         const contacts = []
-        if (player.parentName) {
+        if (pupil.parentName) {
           contacts.push({
-            name: player.parentName,
-            email: player.parentEmail || null,
-            phone: player.parentPhone || null,
+            name: pupil.parentName,
+            email: pupil.parentEmail || null,
+            phone: pupil.parentPhone || null,
           })
         }
-        if (player.secondaryParentName) {
+        if (pupil.secondaryParentName) {
           contacts.push({
-            name: player.secondaryParentName,
-            email: player.secondaryParentEmail || null,
+            name: pupil.secondaryParentName,
+            email: pupil.secondaryParentEmail || null,
             phone: null,
           })
         }
         parentContact = JSON.stringify(contacts)
       }
       return {
-        name: player.name,
-        dob: player.dateOfBirth || null,
-        positions: player.positions || [],
+        name: pupil.name,
+        dob: pupil.dateOfBirth || null,
+        positions: pupil.positions || [],
         parentContact,
-        notes: player.registrationId ? `Registration ID: ${player.registrationId}` : null,
+        notes: pupil.registrationId ? `Registration ID: ${pupil.registrationId}` : null,
       }
     })
 
-    // Batch insert all players in a single query
+    // Batch insert all pupils in a single query
     const values = []
     const params = []
     let paramIdx = 1
@@ -531,7 +600,7 @@ router.post('/:id/players/bulk', authenticateToken, requireTeamAccess, async (re
       paramIdx += 6
     }
     const batchResult = await pool.query(
-      `INSERT INTO players (team_id, name, dob, positions, parent_contact, notes)
+      `INSERT INTO pupils (team_id, name, dob, positions, parent_contact, notes)
        VALUES ${values.join(', ')} RETURNING *`,
       params
     )
@@ -539,7 +608,7 @@ router.post('/:id/players/bulk', authenticateToken, requireTeamAccess, async (re
 
     // Normalize positions for client compatibility
     res.status(201).json({
-      players: normalizePlayersPositions(results),
+      pupils: normalizePlayersPositions(results),
       count: results.length,
     })
   } catch (error) {
@@ -810,7 +879,7 @@ router.get('/:id/training', authenticateToken, requireTeamAccess, async (req, re
 router.post('/:id/training/generate', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { duration, focusAreas, players, constraints, coachDrills, date, time, meet_time, venue_type, existingSessionId, location, session_type, level } = req.body
+    const { duration, focusAreas, pupils, constraints, coachDrills, date, time, meet_time, venue_type, existingSessionId, location, session_type, level } = req.body
 
     // For existing sessions (e.g. scheduled sessions), allow empty focus areas with a sensible default
     const resolvedFocusAreas = (focusAreas && focusAreas.length > 0)
@@ -838,7 +907,7 @@ router.post('/:id/training/generate', authenticateToken, requireTeamAccess, asyn
     const sessionPlan = await generateTrainingSession({
       duration,
       focusAreas: resolvedFocusAreas,
-      players: players || 14,
+      pupils: pupils || 14,
       constraints,
       coachDrills,
       teamFormat,
@@ -968,7 +1037,7 @@ router.put('/:id/training/:sessionId', authenticateToken, requireTeamAccess, asy
   }
 })
 
-// Toggle share plan with players
+// Toggle share plan with pupils
 router.put('/:id/training/:sessionId/share', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { sessionId } = req.params
@@ -1142,25 +1211,25 @@ router.get('/:id/training/:sessionId/attendance', authenticateToken, requireTeam
       CREATE TABLE IF NOT EXISTS training_attendance (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         session_id UUID NOT NULL REFERENCES training_sessions(id) ON DELETE CASCADE,
-        player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
         attended BOOLEAN NOT NULL DEFAULT false,
         notes TEXT,
         recorded_by UUID REFERENCES users(id),
         created_at TIMESTAMPTZ DEFAULT NOW(),
         updated_at TIMESTAMPTZ DEFAULT NOW(),
-        UNIQUE(session_id, player_id)
+        UNIQUE(session_id, pupil_id)
       )
     `)
 
     const result = await pool.query(
       `SELECT
-        p.id as player_id,
+        p.id as pupil_id,
         p.name as player_name,
         COALESCE(ta.attended, false) as attended,
         ta.notes,
         ta.effort_rating
-       FROM players p
-       LEFT JOIN training_attendance ta ON ta.player_id = p.id AND ta.session_id = $1
+       FROM pupils p
+       LEFT JOIN training_attendance ta ON ta.pupil_id = p.id AND ta.session_id = $1
        WHERE p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
        ORDER BY p.name`,
       [sessionId, id]
@@ -1177,7 +1246,7 @@ router.get('/:id/training/:sessionId/attendance', authenticateToken, requireTeam
 router.put('/:id/training/:sessionId/attendance', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { sessionId } = req.params
-    const { attendance } = req.body // Array of { player_id, attended, notes? }
+    const { attendance } = req.body // Array of { pupil_id, attended, notes? }
 
     if (!Array.isArray(attendance)) {
       return res.status(400).json({ message: 'attendance must be an array' })
@@ -1185,18 +1254,18 @@ router.put('/:id/training/:sessionId/attendance', authenticateToken, requireTeam
 
     const results = []
     for (const record of attendance) {
-      const { player_id, attended, notes, effort_rating } = record
+      const { pupil_id, attended, notes, effort_rating } = record
       // effort_rating is optional (1-5) — only set if provided
       const effortVal = effort_rating && effort_rating >= 1 && effort_rating <= 5 ? effort_rating : null
       const result = await pool.query(
-        `INSERT INTO training_attendance (session_id, player_id, attended, notes, recorded_by, effort_rating)
+        `INSERT INTO training_attendance (session_id, pupil_id, attended, notes, recorded_by, effort_rating)
          VALUES ($1, $2, $3, $4, $5, $6)
-         ON CONFLICT (session_id, player_id)
+         ON CONFLICT (session_id, pupil_id)
          DO UPDATE SET attended = $3, notes = $4, recorded_by = $5,
            effort_rating = COALESCE($6, training_attendance.effort_rating),
            updated_at = NOW()
          RETURNING *`,
-        [sessionId, player_id, attended, notes || null, req.user.id, effortVal]
+        [sessionId, pupil_id, attended, notes || null, req.user.id, effortVal]
       )
       results.push(result.rows[0])
     }
@@ -1209,22 +1278,22 @@ router.put('/:id/training/:sessionId/attendance', authenticateToken, requireTeam
 
 // ============== TRAINING AVAILABILITY ==============
 
-// Get training session availability for all players
+// Get training session availability for all pupils
 router.get('/:id/training/:sessionId/availability', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { id, sessionId } = req.params
 
     const result = await pool.query(
       `SELECT
-        p.id as player_id,
+        p.id as pupil_id,
         p.name as player_name,
         p.squad_number,
         COALESCE(ta.status, 'pending') as status,
         ta.notes,
         ta.responded_at,
         ta.user_id
-       FROM players p
-       LEFT JOIN training_availability ta ON ta.player_id = p.id AND ta.session_id = $1
+       FROM pupils p
+       LEFT JOIN training_availability ta ON ta.pupil_id = p.id AND ta.session_id = $1
        WHERE p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
        ORDER BY p.name`,
       [sessionId, id]
@@ -1236,14 +1305,14 @@ router.get('/:id/training/:sessionId/availability', authenticateToken, requireTe
   }
 })
 
-// Update training availability for a player
+// Update training availability for a pupil
 router.post('/:id/training/:sessionId/availability', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
     const { sessionId } = req.params
-    const { player_id, status, notes } = req.body
+    const { pupil_id, status, notes } = req.body
 
-    if (!player_id || !status) {
-      return res.status(400).json({ message: 'player_id and status are required' })
+    if (!pupil_id || !status) {
+      return res.status(400).json({ message: 'pupil_id and status are required' })
     }
 
     if (!['available', 'unavailable', 'maybe', 'pending'].includes(status)) {
@@ -1251,12 +1320,12 @@ router.post('/:id/training/:sessionId/availability', authenticateToken, requireT
     }
 
     const result = await pool.query(
-      `INSERT INTO training_availability (session_id, player_id, user_id, status, notes, responded_at)
+      `INSERT INTO training_availability (session_id, pupil_id, user_id, status, notes, responded_at)
        VALUES ($1, $2, $3, $4, $5, NOW())
-       ON CONFLICT (session_id, player_id)
+       ON CONFLICT (session_id, pupil_id)
        DO UPDATE SET status = $4, notes = $5, user_id = $3, responded_at = NOW(), updated_at = NOW()
        RETURNING *`,
-      [sessionId, player_id, req.user.id, status, notes || null]
+      [sessionId, pupil_id, req.user.id, status, notes || null]
     )
 
     res.json(result.rows[0])
@@ -1277,14 +1346,14 @@ router.post('/:id/training/:sessionId/availability/bulk', authenticateToken, req
 
     const results = []
     for (const avail of availabilities) {
-      const { player_id, status, notes } = avail
+      const { pupil_id, status, notes } = avail
       const result = await pool.query(
-        `INSERT INTO training_availability (session_id, player_id, user_id, status, notes, responded_at)
+        `INSERT INTO training_availability (session_id, pupil_id, user_id, status, notes, responded_at)
          VALUES ($1, $2, $3, $4, $5, NOW())
-         ON CONFLICT (session_id, player_id)
+         ON CONFLICT (session_id, pupil_id)
          DO UPDATE SET status = $4, notes = $5, user_id = $3, responded_at = NOW(), updated_at = NOW()
          RETURNING *`,
-        [sessionId, player_id, req.user.id, status, notes || null]
+        [sessionId, pupil_id, req.user.id, status, notes || null]
       )
       results.push(result.rows[0])
     }
@@ -1313,9 +1382,9 @@ router.post('/:id/training/:sessionId/availability/request', authenticateToken, 
     const session = sessionResult.rows[0]
 
     // Get team name
-    const teamResult = await pool.query('SELECT name, club_id FROM teams WHERE id = $1', [id])
+    const teamResult = await pool.query('SELECT name, school_id FROM teams WHERE id = $1', [id])
     const teamName = teamResult.rows[0]?.name || 'Your Team'
-    const clubId = teamResult.rows[0]?.club_id
+    const schoolId = teamResult.rows[0]?.school_id
 
     const sessionType = session.session_type === 's&c' ? 'S&C' : 'Training'
     const sessionDate = new Date(session.date).toLocaleDateString('en-GB', {
@@ -1323,12 +1392,12 @@ router.post('/:id/training/:sessionId/availability/request', authenticateToken, 
     })
     const sessionTime = session.time ? ` at ${session.time.slice(0, 5)}` : ''
 
-    // Get players — optionally filter to only those who haven't responded
+    // Get pupils — optionally filter to only those who haven't responded
     const playersResult = await pool.query(
       `SELECT p.*, u.id as user_id, u.email as user_email
-       FROM players p
-       LEFT JOIN users u ON u.player_id = p.id
-       ${pendingOnly ? 'LEFT JOIN training_availability ta ON ta.player_id = p.id AND ta.session_id = $2' : ''}
+       FROM pupils p
+       LEFT JOIN users u ON u.pupil_id = p.id
+       ${pendingOnly ? 'LEFT JOIN training_availability ta ON ta.pupil_id = p.id AND ta.session_id = $2' : ''}
        WHERE p.team_id = $1 AND (p.is_active IS NULL OR p.is_active = true)
        ${pendingOnly ? 'AND ta.id IS NULL' : ''}`,
       pendingOnly ? [id, sessionId] : [id]
@@ -1345,9 +1414,9 @@ router.post('/:id/training/:sessionId/availability/request', authenticateToken, 
       const notifMessage = `Please confirm your availability for ${sessionType.toLowerCase()} on ${sessionDate}${sessionTime}.`
       const notifData = JSON.stringify({ session_id: sessionId })
 
-      for (const player of playersWithAccounts) {
+      for (const pupil of playersWithAccounts) {
         notifValues.push(`($${paramIdx}, $${paramIdx+1}, 'availability_request', $${paramIdx+2}, $${paramIdx+3}, $${paramIdx+4})`)
-        notifParams.push(player.user_id, id, notifTitle, notifMessage, notifData)
+        notifParams.push(pupil.user_id, id, notifTitle, notifMessage, notifData)
         paramIdx += 5
       }
       await pool.query(
@@ -1363,28 +1432,28 @@ router.post('/:id/training/:sessionId/availability/request', authenticateToken, 
     const batchEmails = []
     const emailledAddresses = new Set()
 
-    for (const player of playersWithAccounts) {
-      if (!player.user_email) continue
-      emailledAddresses.add(player.user_email.toLowerCase())
+    for (const pupil of playersWithAccounts) {
+      if (!pupil.user_email) continue
+      emailledAddresses.add(pupil.user_email.toLowerCase())
       batchEmails.push({
-        to: player.user_email,
+        to: pupil.user_email,
         template: 'availabilityRequest',
-        data: { teamName, playerName: player.name, matchInfo: sessionInfo, matchDate: `${sessionDate}${sessionTime}`, responseLink }
+        data: { teamName, playerName: pupil.name, matchInfo: sessionInfo, matchDate: `${sessionDate}${sessionTime}`, responseLink }
       })
     }
 
     // Add linked guardians/parents
-    if (clubId) {
+    if (schoolId) {
       const guardiansResult = await pool.query(
         `SELECT DISTINCT g.email, g.first_name, g.notification_preferences, p.name as player_name
          FROM guardians g
-         JOIN player_guardians pg ON pg.guardian_id = g.id
-         JOIN players p ON pg.player_id = p.id
-         ${pendingOnly ? 'LEFT JOIN training_availability ta ON ta.player_id = p.id AND ta.session_id = $3' : ''}
-         WHERE g.club_id = $1 AND p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
+         JOIN pupil_guardians pg ON pg.guardian_id = g.id
+         JOIN pupils p ON pg.pupil_id = p.id
+         ${pendingOnly ? 'LEFT JOIN training_availability ta ON ta.pupil_id = p.id AND ta.session_id = $3' : ''}
+         WHERE g.school_id = $1 AND p.team_id = $2 AND (p.is_active IS NULL OR p.is_active = true)
          AND g.email IS NOT NULL
          ${pendingOnly ? 'AND ta.id IS NULL' : ''}`,
-        pendingOnly ? [clubId, id, sessionId] : [clubId, id]
+        pendingOnly ? [schoolId, id, sessionId] : [schoolId, id]
       )
       for (const guardian of guardiansResult.rows) {
         const prefs = guardian.notification_preferences || {}
@@ -1402,8 +1471,8 @@ router.post('/:id/training/:sessionId/availability/request', authenticateToken, 
     const { sent: emailsSent } = await sendBatchEmails(batchEmails)
 
     // Send push notifications
-    for (const player of playersWithAccounts) {
-      sendPushToUser(player.user_id, {
+    for (const pupil of playersWithAccounts) {
+      sendPushToUser(pupil.user_id, {
         title: `📋 ${sessionType} Availability`,
         body: `Please confirm availability for ${sessionDate}`,
         tag: `training-availability-${sessionId}`,
@@ -1447,25 +1516,25 @@ router.post('/:id/announce', authenticateToken, requireTeamAccess, async (req, r
     }
     const teamName = teamResult.rows[0].name
 
-    // Get all active players with parent emails
+    // Get all active pupils with parent emails
     const playersResult = await pool.query(
       `SELECT id, name, parent_email, parent_contact
-       FROM players
+       FROM pupils
        WHERE team_id = $1 AND is_active = true`,
       [id]
     )
 
     // Collect all unique parent emails
     const allParentEmails = new Set()
-    for (const player of playersResult.rows) {
-      if (player.parent_email) {
-        allParentEmails.add(player.parent_email)
+    for (const pupil of playersResult.rows) {
+      if (pupil.parent_email) {
+        allParentEmails.add(pupil.parent_email)
       }
-      if (player.parent_contact) {
+      if (pupil.parent_contact) {
         try {
-          const contacts = typeof player.parent_contact === 'string'
-            ? JSON.parse(player.parent_contact)
-            : player.parent_contact
+          const contacts = typeof pupil.parent_contact === 'string'
+            ? JSON.parse(pupil.parent_contact)
+            : pupil.parent_contact
           if (Array.isArray(contacts)) {
             contacts.filter(c => c.email).forEach(c => allParentEmails.add(c.email))
           }

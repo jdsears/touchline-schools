@@ -1,4 +1,4 @@
-import '@mux/mux-player'
+import '@mux/mux-pupil'
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -190,7 +190,7 @@ export default function VideoLibrary() {
         <div className="card p-12 text-center max-w-lg mx-auto">
           <Film className="w-16 h-16 text-navy-600 mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold text-white mb-2">No Videos Yet</h2>
-          <p className="text-navy-400 mb-6">Upload match or training videos to unlock AI analysis, clips, and player feedback.</p>
+          <p className="text-navy-400 mb-6">Upload match or training videos to unlock AI analysis, clips, and pupil feedback.</p>
           <button onClick={() => setShowUploader(true)} className="btn-primary">
             <Upload className="w-4 h-4" /> Upload First Video
           </button>
@@ -291,7 +291,7 @@ export default function VideoLibrary() {
         </div>
       )}
 
-      {/* Video Player Modal */}
+      {/* Video Pupil Modal */}
       <AnimatePresence>
         {activeVideo?.mux_playback_id && (
           <motion.div
@@ -315,7 +315,7 @@ export default function VideoLibrary() {
                 </button>
               </div>
               <div className="aspect-video">
-                <mux-player
+                <mux-pupil
                   ref={playerRef}
                   playback-id={activeVideo.mux_playback_id}
                   stream-type="on-demand"

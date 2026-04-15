@@ -36,13 +36,13 @@ import QuickStartGuide from '../components/QuickStartGuide'
 
 export default function Dashboard() {
   const { user } = useAuth()
-  const { team, players, upcomingMatches, recentResults, loading } = useTeam()
+  const { team, pupils, upcomingMatches, recentResults, loading } = useTeam()
   const [currentTime, setCurrentTime] = useState(new Date())
 
   // Announcements state
   const [announcements, setAnnouncements] = useState([])
   const [showAnnouncementForm, setShowAnnouncementForm] = useState(false)
-  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '', priority: 'normal', send_email: false, email_recipients: 'all', selected_player_ids: [], expires_at: '' })
+  const [newAnnouncement, setNewAnnouncement] = useState({ title: '', content: '', priority: 'normal', send_email: false, email_recipients: 'all', selected_pupil_ids: [], expires_at: '' })
   const [creatingAnnouncement, setCreatingAnnouncement] = useState(false)
   const [viewingAnnouncement, setViewingAnnouncement] = useState(null)
   const [editingAnnouncement, setEditingAnnouncement] = useState(null)
@@ -119,7 +119,7 @@ export default function Dashboard() {
       const response = await announcementService.createAnnouncement(team.id, payload)
       setAnnouncements(prev => [response.data, ...prev])
       const { emails_sent = 0, emails_attempted = 0, email_enabled } = response.data
-      setNewAnnouncement({ title: '', content: '', priority: 'normal', send_email: false, email_recipients: 'all', selected_player_ids: [], expires_at: '' })
+      setNewAnnouncement({ title: '', content: '', priority: 'normal', send_email: false, email_recipients: 'all', selected_pupil_ids: [], expires_at: '' })
       setShowAnnouncementForm(false)
 
       // Show appropriate message based on email status
@@ -215,7 +215,7 @@ export default function Dashboard() {
   const quickActions = [
     { name: 'Ask Pep', href: '/chat', icon: MessageSquare, color: 'pitch' },
     { name: 'Add Training', href: '/training?new=true', icon: Calendar, color: 'energy' },
-    { name: 'Add Player', href: '/players?new=true', icon: Users, color: 'blue' },
+    { name: 'Add Pupil', href: '/pupils?new=true', icon: Users, color: 'blue' },
     { name: 'Log Match', href: '/matches?new=true', icon: Trophy, color: 'caution' },
   ]
   
@@ -366,7 +366,7 @@ export default function Dashboard() {
                   'Prepare for next match',
                   'Generate a training session',
                   'Half-time adjustments for when losing',
-                  'Player development ideas',
+                  'Pupil development ideas',
                 ].map((suggestion) => (
                   <Link
                     key={suggestion}
@@ -486,36 +486,36 @@ export default function Dashboard() {
                       <div className="ml-6 space-y-2">
                         <select
                           value={newAnnouncement.email_recipients}
-                          onChange={e => setNewAnnouncement(prev => ({ ...prev, email_recipients: e.target.value, selected_player_ids: [] }))}
+                          onChange={e => setNewAnnouncement(prev => ({ ...prev, email_recipients: e.target.value, selected_pupil_ids: [] }))}
                           className="input w-full text-sm"
                         >
                           <option value="all">All parents</option>
                           <option value="matchday_squad">Matchday squad only</option>
-                          <option value="selected">Selected players only</option>
+                          <option value="selected">Selected pupils only</option>
                         </select>
                         {newAnnouncement.email_recipients === 'selected' && (
                           <div className="max-h-32 overflow-y-auto bg-navy-900 rounded-lg p-2 space-y-1">
-                            {players.map(player => (
-                              <label key={player.id} className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer hover:text-white">
+                            {pupils.map(pupil => (
+                              <label key={pupil.id} className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer hover:text-white">
                                 <input
                                   type="checkbox"
-                                  checked={newAnnouncement.selected_player_ids.includes(player.id)}
+                                  checked={newAnnouncement.selected_pupil_ids.includes(pupil.id)}
                                   onChange={e => {
                                     if (e.target.checked) {
-                                      setNewAnnouncement(prev => ({ ...prev, selected_player_ids: [...prev.selected_player_ids, player.id] }))
+                                      setNewAnnouncement(prev => ({ ...prev, selected_pupil_ids: [...prev.selected_pupil_ids, pupil.id] }))
                                     } else {
-                                      setNewAnnouncement(prev => ({ ...prev, selected_player_ids: prev.selected_player_ids.filter(id => id !== player.id) }))
+                                      setNewAnnouncement(prev => ({ ...prev, selected_pupil_ids: prev.selected_pupil_ids.filter(id => id !== pupil.id) }))
                                     }
                                   }}
                                   className="w-3 h-3 rounded border-navy-600 bg-navy-700 text-pitch-500"
                                 />
-                                {player.name}
+                                {pupil.name}
                               </label>
                             ))}
                           </div>
                         )}
                         {newAnnouncement.email_recipients === 'matchday_squad' && (
-                          <p className="text-xs text-navy-500">Emails will be sent to parents of players in the next match squad</p>
+                          <p className="text-xs text-navy-500">Emails will be sent to parents of pupils in the next match squad</p>
                         )}
                       </div>
                     )}
@@ -577,7 +577,7 @@ export default function Dashboard() {
               <div className="p-6 text-center flex-1 flex flex-col items-center justify-center">
                 <Megaphone className="w-8 h-8 text-navy-600 mx-auto mb-2" />
                 <p className="text-navy-400 text-sm">No announcements yet</p>
-                <p className="text-navy-500 text-xs mt-1">Send updates to players & parents</p>
+                <p className="text-navy-500 text-xs mt-1">Send updates to pupils & parents</p>
               </div>
             )}
 
@@ -711,7 +711,7 @@ export default function Dashboard() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-navy-400">Squad Size</span>
-                <span className="font-semibold text-white">{players.length} players</span>
+                <span className="font-semibold text-white">{pupils.length} pupils</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-navy-400">Age Group</span>
