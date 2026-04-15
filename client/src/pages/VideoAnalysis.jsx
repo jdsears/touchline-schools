@@ -1,4 +1,4 @@
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -114,7 +114,7 @@ export default function VideoAnalysis() {
     loadData()
   }, [id, videoIdParam])
 
-  // Listen for timeupdate on mux-pupil
+  // Listen for timeupdate on mux-player
   useEffect(() => {
     const el = playerRef.current
     if (!el) return
@@ -710,7 +710,7 @@ export default function VideoAnalysis() {
                       {video?.mux_playback_id ? (
                         <div className="space-y-4">
                           <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
-                            <mux-pupil
+                            <mux-player
                               ref={playerRef}
                               playback-id={video.mux_playback_id}
                               stream-type="on-demand"

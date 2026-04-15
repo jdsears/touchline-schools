@@ -1,5 +1,5 @@
 // MatchDetail.jsx
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -2763,7 +2763,7 @@ Corners, free kicks, etc...`}
                   )}
                 </div>
                 <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
-                  <mux-pupil
+                  <mux-player
                     playback-id={matchVideo.mux_playback_id}
                     stream-type="on-demand"
                     style={{ width: '100%', height: '100%' }}
@@ -2962,7 +2962,7 @@ Corners, free kicks, etc...`}
                     <div key={clip.id} className="bg-navy-800/50 rounded-lg overflow-hidden group">
                       <div className="aspect-video relative">
                         {clip.mux_playback_id ? (
-                          <mux-pupil
+                          <mux-player
                             playback-id={clip.mux_playback_id}
                             stream-type="on-demand"
                             style={{ width: '100%', height: '100%' }}

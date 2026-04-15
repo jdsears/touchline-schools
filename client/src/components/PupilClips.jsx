@@ -1,4 +1,4 @@
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Video, Play, X, Loader2, Scissors, MessageSquare, Star } from 'lucide-react'
@@ -144,7 +144,7 @@ export default function PupilClips({ pupilId }) {
 
               {activeClip.mux_playback_id && (
                 <div className="aspect-video">
-                  <mux-pupil
+                  <mux-player
                     ref={playerRef}
                     playback-id={activeClip.mux_playback_id}
                     start-time={activeClip.start_time}

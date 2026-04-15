@@ -11,7 +11,7 @@ import {
   Download, Table2, Minus, Settings, ToggleLeft, ToggleRight, Lightbulb, Eye, EyeOff,
   Radio, WifiOff, Share2, Copy, Check, Scissors, UserCheck, MonitorPlay
 } from 'lucide-react'
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 import HelpChatWidget from '../components/HelpChatWidget'
 import PlayerClips from '../components/PupilClips'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, isSameMonth, isSameDay, isToday, addMonths, subMonths, parseISO } from 'date-fns'
@@ -1770,7 +1770,7 @@ export default function PupilLounge() {
               ) : streamCredentials.status === 'active' ? (
                 <div className="card overflow-hidden">
                   <div className="aspect-video bg-black">
-                    <mux-pupil
+                    <mux-player
                       playback-id={streamCredentials.playbackId}
                       stream-type="live"
                       autoplay
@@ -4627,7 +4627,7 @@ function PlayerFilmRoom({ userId }) {
                   title={playingVideo.title}
                 />
               ) : playingVideo.mux_playback_id ? (
-                <mux-pupil
+                <mux-player
                   playback-id={playingVideo.mux_playback_id}
                   metadata-video-title={playingVideo.title}
                   style={{ width: '100%', height: '100%' }}

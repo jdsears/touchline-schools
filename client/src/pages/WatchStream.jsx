@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Radio, Lock, Loader2, WifiOff, AlertCircle } from 'lucide-react'
 import { streamingService } from '../services/api'
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 
 export default function WatchStream() {
   const { shareCode } = useParams()
@@ -209,7 +209,7 @@ export default function WatchStream() {
             className="rounded-xl overflow-hidden bg-black shadow-2xl"
           >
             <div className="aspect-video">
-              <mux-pupil
+              <mux-player
                 playback-id={stream.playbackId}
                 stream-type="live"
                 autoplay
