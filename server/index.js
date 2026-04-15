@@ -511,10 +511,28 @@ async function ensureDemoPrerequisites() {
   // Ensure team_memberships exists
   stmts.push(`CREATE TABLE IF NOT EXISTS team_memberships (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), team_id UUID REFERENCES teams(id) ON DELETE CASCADE, user_id UUID REFERENCES users(id) ON DELETE CASCADE, pupil_id UUID, role TEXT DEFAULT 'player', is_primary BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(user_id, team_id))`)
   // Ensure pupils table exists (may still be named players)
-  stmts.push(`DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupils') THEN IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'players') THEN ALTER TABLE players RENAME TO pupils; ELSE CREATE TABLE pupils (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT NOT NULL, school_id UUID, year_group INTEGER, house TEXT, date_of_birth DATE, created_at TIMESTAMPTZ DEFAULT NOW()); END IF; END IF; END $$`)
-  // Ensure teaching_groups and related tables exist
-  stmts.push(`CREATE TABLE IF NOT EXISTS teaching_groups (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, year_group INTEGER, sport TEXT, term TEXT, teacher_id UUID, created_at TIMESTAMPTZ DEFAULT NOW())`)
-  stmts.push(`CREATE TABLE IF NOT EXISTS teaching_group_pupils (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, pupil_id UUID, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teaching_group_id, pupil_id))`)
+  stmts.push(`DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupils') THEN IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'players') THEN ALTER TABLE players RENAME TO pupils; ELSE CREATE TABLE pupils (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT NOT NULL, school_id UUID, year_group INTEGER, house TEXT, date_of_birth DATE, is_active BOOLEAN DEFAULT true, user_id UUID, created_at TIMESTAMPTZ DEFAULT NOW()); END IF; END IF; END $$`)
+  // Add missing columns on pupils
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS year_group INTEGER`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS house TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS user_id UUID`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS school_id UUID`)
+  // Create all tables the demo seed needs (Phases 8-12 of migration that may not have run)
+  const createTables = [
+    `CREATE TABLE IF NOT EXISTS teacher_sports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, sport TEXT NOT NULL, role TEXT DEFAULT 'coach', created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teacher_id, sport))`,
+    `CREATE TABLE IF NOT EXISTS audit_log (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, user_id UUID, action TEXT NOT NULL, entity_type TEXT, entity_id UUID, details JSONB, ip_address TEXT, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS teaching_groups (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, year_group INTEGER, group_identifier TEXT, teacher_id UUID, academic_year TEXT, key_stage TEXT DEFAULT 'KS3', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS teaching_group_pupils (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, pupil_id UUID, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teaching_group_id, pupil_id))`,
+    `CREATE TABLE IF NOT EXISTS sport_units (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, sport TEXT NOT NULL, unit_name TEXT NOT NULL, curriculum_area TEXT, start_date DATE, end_date DATE, term TEXT, lesson_count INTEGER, display_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS assessment_scales (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, key_stage TEXT, scale_type TEXT DEFAULT 'descriptive', grades JSONB, is_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS curriculum_strands (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, key_stage TEXT, strand_name TEXT NOT NULL, description TEXT, display_order INTEGER DEFAULT 0, is_system_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS assessment_criteria (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), strand_id UUID, sport TEXT, criterion_name TEXT NOT NULL, description TEXT, display_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS pupil_assessments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID, sport_unit_id UUID, strand_id UUID, criterion_id UUID, grade TEXT, teacher_id UUID, assessed_at TIMESTAMPTZ DEFAULT NOW(), created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS reporting_windows (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, academic_year TEXT, term TEXT, opens_at TIMESTAMPTZ, closes_at TIMESTAMPTZ, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS pupil_reports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID NOT NULL, reporting_window_id UUID, teaching_group_id UUID, teacher_id UUID, overall_grade TEXT, effort_grade TEXT, comment TEXT, ai_draft TEXT, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
+  ]
+  for (const sql of createTables) stmts.push(sql)
 
   for (const sql of stmts) {
     try { await pool.query(sql) } catch (e) { console.warn('[DemoPrereq]', e.message.slice(0, 80)) }
