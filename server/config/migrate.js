@@ -93,27 +93,6 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- Observations table
-CREATE TABLE IF NOT EXISTS observations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
-  observer_id UUID NOT NULL REFERENCES users(id),
-  type VARCHAR(50) NOT NULL,
-  content TEXT NOT NULL,
-  context VARCHAR(255),
-  context_type VARCHAR(20) DEFAULT 'general',
-  match_id UUID REFERENCES matches(id) ON DELETE SET NULL,
-  training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Add context columns to observations if not exist
-DO $$ BEGIN
-  ALTER TABLE observations ADD COLUMN IF NOT EXISTS context_type VARCHAR(20) DEFAULT 'general';
-  ALTER TABLE observations ADD COLUMN IF NOT EXISTS training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_column THEN NULL;
-END $$;
-
 -- Matches table with availability tracking
 CREATE TABLE IF NOT EXISTS matches (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -219,6 +198,27 @@ CREATE TABLE IF NOT EXISTS training_sessions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Observations table
+CREATE TABLE IF NOT EXISTS observations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+  observer_id UUID NOT NULL REFERENCES users(id),
+  type VARCHAR(50) NOT NULL,
+  content TEXT NOT NULL,
+  context VARCHAR(255),
+  context_type VARCHAR(20) DEFAULT 'general',
+  match_id UUID REFERENCES matches(id) ON DELETE SET NULL,
+  training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add context columns to observations if not exist
+DO $$ BEGIN
+  ALTER TABLE observations ADD COLUMN IF NOT EXISTS context_type VARCHAR(20) DEFAULT 'general';
+  ALTER TABLE observations ADD COLUMN IF NOT EXISTS training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
 -- Tactics table
 CREATE TABLE IF NOT EXISTS tactics (
