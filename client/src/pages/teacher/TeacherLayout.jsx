@@ -69,8 +69,26 @@ const sharedNav = [
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
-function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEnabled }) {
+// Map internal role values to school-friendly display labels
+const ROLE_DISPLAY = {
+  owner: 'Owner',
+  school_admin: 'School Admin',
+  head_of_pe: 'Head of PE/Sport',
+  head_of_sport: 'Head of Sport',
+  teacher: 'Teacher',
+  read_only: 'Read Only',
+  // Legacy grassroots roles -> school labels
+  manager: 'Teacher',
+  assistant: 'Assistant Teacher',
+  scout: 'Assistant Teacher',
+  admin: 'School Admin',
+  coach: 'Teacher',
+  parent: 'Parent',
+}
+
+function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEnabled, schoolRole }) {
   const basePath = '/teacher'
+  const roleDisplay = ROLE_DISPLAY[schoolRole] || ROLE_DISPLAY[user?.role] || user?.role
 
   function NavItem({ item }) {
     const fullPath = item.end ? basePath : `${basePath}${item.href}`
@@ -177,7 +195,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-white truncate">{user?.name}</div>
-            <div className="text-xs text-navy-400 capitalize">{user?.role}</div>
+            <div className="text-xs text-navy-400">{roleDisplay}</div>
           </div>
           <button
             onClick={logout}
@@ -197,13 +215,17 @@ export default function TeacherLayout() {
   const location = useLocation()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isHoD, setIsHoD] = useState(false)
+  const [schoolRole, setSchoolRole] = useState(null)
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [voicePendingCount, setVoicePendingCount] = useState(0)
   const [showRecorder, setShowRecorder] = useState(false)
 
   useEffect(() => {
     hodService.check()
-      .then(res => setIsHoD(res.data.isHoD))
+      .then(res => {
+        setIsHoD(res.data.isHoD)
+        if (res.data.role) setSchoolRole(res.data.role)
+      })
       .catch(() => setIsHoD(false))
 
     // Check voice observations feature flag and pending count
@@ -246,6 +268,7 @@ export default function TeacherLayout() {
           pathname={location.pathname}
           isHoD={isHoD}
           voiceEnabled={voiceEnabled}
+          schoolRole={schoolRole}
         />
       </aside>
 

@@ -1,33 +1,35 @@
 import express from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { HOD_ROLES } from '../middleware/schoolAuth.js'
 
 const router = express.Router()
 
 router.use(authenticateToken)
 
-// Middleware: require HoD role (owner or admin in school_members)
+// Roles that grant HoD-level access to whole-school data
+// HOD_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe']
+const HOD_ROLE_LIST = HOD_ROLES.map(r => `'${r}'`).join(', ')
+
+// Middleware: require HoD role (owner, school_admin, admin, or head_of_pe)
 async function requireHoD(req, res, next) {
   try {
     // Site admins bypass
     if (req.user.is_admin) {
-      const schoolResult = await pool.query(
-        'SELECT id FROM schools LIMIT 1'
-      )
-      if (schoolResult.rows.length > 0) {
-        req.schoolId = schoolResult.rows[0].id
-      }
+      const schoolResult = await pool.query('SELECT id FROM schools LIMIT 1')
+      if (schoolResult.rows.length > 0) req.schoolId = schoolResult.rows[0].id
       return next()
     }
 
-    // Find the user's school membership with an admin-level role
+    // Check both school_role (new) and legacy role column
     const result = await pool.query(
-      `SELECT sm.school_id, sm.role
+      `SELECT sm.school_id, sm.role, sm.school_role
        FROM school_members sm
-       WHERE sm.user_id = $1 AND sm.role IN ('owner', 'admin')
+       WHERE sm.user_id = $1
+         AND (sm.school_role = ANY($2) OR sm.role = ANY($2))
        ORDER BY sm.joined_at ASC
        LIMIT 1`,
-      [req.user.id]
+      [req.user.id, HOD_ROLES]
     )
 
     if (result.rows.length === 0) {
@@ -35,7 +37,7 @@ async function requireHoD(req, res, next) {
     }
 
     req.schoolId = result.rows[0].school_id
-    req.hodRole = result.rows[0].role
+    req.hodRole = result.rows[0].school_role || result.rows[0].role
     next()
   } catch (error) {
     console.error('HoD auth error:', error)
@@ -47,25 +49,27 @@ async function requireHoD(req, res, next) {
 router.get('/check', async (req, res) => {
   try {
     if (req.user.is_admin) {
-      return res.json({ isHoD: true, role: 'admin' })
+      return res.json({ isHoD: true, role: 'school_admin' })
     }
 
     const result = await pool.query(
-      `SELECT sm.school_id, sm.role, s.name AS school_name
+      `SELECT sm.school_id, sm.role, sm.school_role, s.name AS school_name
        FROM school_members sm
        JOIN schools s ON sm.school_id = s.id
-       WHERE sm.user_id = $1 AND sm.role IN ('owner', 'admin')
+       WHERE sm.user_id = $1
+         AND (sm.school_role = ANY($2) OR sm.role = ANY($2))
        LIMIT 1`,
-      [req.user.id]
+      [req.user.id, HOD_ROLES]
     )
 
     if (result.rows.length === 0) {
       return res.json({ isHoD: false })
     }
 
+    const effectiveRole = result.rows[0].school_role || result.rows[0].role
     res.json({
       isHoD: true,
-      role: result.rows[0].role,
+      role: effectiveRole,
       school_id: result.rows[0].school_id,
       school_name: result.rows[0].school_name,
     })
@@ -160,13 +164,18 @@ router.get('/overview', requireHoD, async (req, res) => {
   }
 })
 
-// GET /teachers - List all teachers with their sport/team assignments
+// GET /teachers - List all teachers/staff with their sport/team assignments
 router.get('/teachers', requireHoD, async (req, res) => {
   try {
     const schoolId = req.schoolId
 
     const result = await pool.query(
-      `SELECT u.id, u.name, u.email, sm.role,
+      `SELECT u.id, u.name, u.email,
+              sm.id AS member_id,
+              sm.school_id,
+              sm.role,
+              COALESCE(sm.school_role, sm.role) AS effective_role,
+              sm.school_role,
               sm.joined_at,
               (SELECT json_agg(json_build_object('sport', ts.sport, 'role', ts.role))
                FROM teacher_sports ts WHERE ts.teacher_id = u.id) AS sports,
@@ -176,8 +185,18 @@ router.get('/teachers', requireHoD, async (req, res) => {
                FROM teaching_groups tg WHERE tg.teacher_id = u.id) AS class_count
        FROM school_members sm
        JOIN users u ON sm.user_id = u.id
-       WHERE sm.school_id = $1 AND sm.role IN ('owner', 'admin', 'coach')
-       ORDER BY sm.role ASC, u.name ASC`,
+       WHERE sm.school_id = $1
+         AND (sm.school_role NOT IN ('parent', 'read_only') OR sm.role NOT IN ('parent'))
+         AND sm.status IN ('active', 'invited')
+       ORDER BY
+         CASE COALESCE(sm.school_role, sm.role)
+           WHEN 'owner' THEN 1
+           WHEN 'school_admin' THEN 2
+           WHEN 'head_of_pe' THEN 3
+           WHEN 'head_of_sport' THEN 4
+           WHEN 'admin' THEN 2
+           ELSE 5
+         END, u.name ASC`,
       [schoolId]
     )
 

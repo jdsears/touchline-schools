@@ -711,6 +711,8 @@ export const hodService = {
   getClasses: () => api.get('/hod/classes'),
   assignTeacherSport: (userId, sport, role) => api.post(`/hod/teachers/${userId}/sports`, { sport, role }),
   removeTeacherSport: (userId, sport) => api.delete(`/hod/teachers/${userId}/sports/${sport}`),
+  updateTeacherRole: (schoolId, memberId, role) => api.put(`/schools/${schoolId}/members/${memberId}`, { role }),
+  getSchoolMembers: (schoolId) => api.get(`/schools/${schoolId}/members`),
 }
 
 // Voice Observations service

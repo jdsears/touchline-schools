@@ -3504,6 +3504,76 @@ export async function runMigrations() {
 
     console.log('Phase 12: GDPR data export & deletion complete')
 
+    // =========================================================================
+    // PHASE 13: Role-Based Access Control (Schools RBAC)
+    // =========================================================================
+
+    // --- 13a: Add school-product roles to school_members
+    //   New role vocabulary for the schools product:
+    //     owner       – the account owner (set at school creation)
+    //     school_admin – IT admin / bursar (manage billing, staff, settings)
+    //     head_of_pe  – Head of PE / Head of Sport department (full HoD view)
+    //     head_of_sport – Head of a specific sport (per-sport HoD, stored in teacher_sports)
+    //     teacher     – curriculum PE teacher or extracurricular coach
+    //     read_only   – observer / governor / visiting inspector (read, no write)
+    //   Legacy roles (owner, admin, coach) kept for backwards compatibility.
+    // ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS school_role TEXT
+        CHECK (school_role IN (
+          'owner', 'school_admin', 'head_of_pe', 'head_of_sport', 'teacher', 'read_only',
+          'admin', 'coach', 'parent', 'treasurer', 'secretary'
+        ));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // Backfill school_role from legacy role column for existing members
+    await pool.query(`UPDATE school_members SET school_role = CASE
+      WHEN role = 'owner' THEN 'owner'
+      WHEN role = 'admin' THEN 'school_admin'
+      WHEN role = 'coach' THEN 'teacher'
+      WHEN role = 'parent' THEN 'read_only'
+      ELSE role
+    END
+    WHERE school_role IS NULL`)
+
+    // --- 13b: Add permissions columns if not already present ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_classes BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_teams BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_curriculum BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_reports BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_safeguarding BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 13c: Populate new permission columns based on school_role ---
+    await pool.query(`UPDATE school_members SET
+      can_view_all_classes = (school_role IN ('owner', 'school_admin', 'head_of_pe')),
+      can_view_all_teams   = (school_role IN ('owner', 'school_admin', 'head_of_pe', 'head_of_sport')),
+      can_manage_curriculum = (school_role IN ('owner', 'school_admin', 'head_of_pe')),
+      can_view_reports     = (school_role IN ('owner', 'school_admin', 'head_of_pe', 'head_of_sport', 'teacher')),
+      can_manage_safeguarding = (school_role IN ('owner', 'school_admin', 'head_of_pe'))
+    WHERE school_role IS NOT NULL`)
+
+    console.log('Phase 13: RBAC schools roles complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
