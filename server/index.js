@@ -349,9 +349,10 @@ app.get('/api/trigger-seed', async (req, res) => {
     await ensureDemoPrerequisites()
     log.push('Prerequisites done')
 
-    // Delete existing empty school
+    // Delete existing demo data
+    await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
     await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
-    log.push('Cleared old school')
+    log.push('Cleared old school and demo users')
 
     const school = await seedSchool()
     log.push(`School created: ${school.id}`)
@@ -526,8 +527,9 @@ async function ensureDemoSchool() {
       if (parseInt(demoUsers.rows[0].count) > 0) {
         return console.log('[DemoSeed] Demo school fully seeded.')
       }
-      // School exists but has no demo data - delete and re-seed
+      // School exists but has no demo data - wipe everything and re-seed
       console.log('[DemoSeed] Demo school exists but is empty, wiping and re-seeding...')
+      await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
       await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
     }
 
