@@ -249,6 +249,7 @@ export const videoService = {
   tagPlayer: (clipId, data) => api.put(`/videos/clips/${clipId}/tag`, data),
   getPupilClips: (pupilId) => api.get(`/videos/pupil/${pupilId}/clips`),
   assignVideo: (videoId, data) => api.put(`/videos/video/${videoId}/assign`, data),
+  getSportTaxonomy: (sport) => api.get(`/videos/sport-taxonomy/${sport}`),
 }
 
 // Film Room (video library) service

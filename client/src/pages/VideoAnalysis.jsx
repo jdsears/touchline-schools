@@ -32,13 +32,15 @@ import {
   Square,
 } from 'lucide-react'
 import { teamService, videoService } from '../services/api'
+import { useSportTaxonomy } from '../hooks/useSportTaxonomy'
 import { purchaseVideoCredits, confirmVideoCredits } from '../services/billing'
 import { useTeam } from '../context/TeamContext'
 import toast from 'react-hot-toast'
 import AIMarkdown from '../components/AIMarkdown'
 import VideoUpload from '../components/VideoUpload'
 
-const clipCategories = [
+// Default clip categories — overridden by sport-specific taxonomy when loaded
+const DEFAULT_CLIP_CATEGORIES = [
   { value: 'general', label: 'General', color: 'navy' },
   { value: 'highlight', label: 'Highlight', color: 'pitch' },
   { value: 'coaching_point', label: 'Coaching Point', color: 'energy' },
@@ -57,6 +59,8 @@ function formatTime(seconds) {
 export default function VideoAnalysis() {
   const { id, videoId: videoIdParam } = useParams()
   const { team, pupils } = useTeam()
+  const taxonomy = useSportTaxonomy(team?.sport)
+  const clipCategories = taxonomy?.clipCategories || DEFAULT_CLIP_CATEGORIES
 
   const [match, setMatch] = useState(null)
   const [video, setVideo] = useState(null)

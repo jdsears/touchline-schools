@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import pool from '../config/database.js'
+import { getTaxonomy } from '../constants/sportTaxonomy.js'
 
 const anthropic = new Anthropic()
 
@@ -119,10 +120,13 @@ async function fetchFramesBatch(playbackId, times, concurrency = 5) {
  * Build the context/system preamble shared across all calls
  */
 function buildContext(video, options) {
-  const { teamColour, teamName, context = {}, squadPlayers = [] } = options
-  const videoType = video.type === 'training' ? 'training session' : 'match'
+  const { teamColour, teamName, sport = 'football', context = {}, squadPlayers = [] } = options
+  const taxonomy = getTaxonomy(sport)
+  const term = taxonomy.terminology
+  const videoType = video.type === 'training' ? 'training session' : term.matchWord
   const ourTeamLabel = teamName || (teamColour ? `the ${teamColour} team` : 'our team')
   const lines = []
+  lines.push(`SPORT: ${term.context} (${term.teamSize})`)
   if (teamColour) lines.push(`OUR TEAM (${teamName || 'our team'}) is wearing ${teamColour.toUpperCase()} kit — focus your analysis on THIS team`)
   if (context.opponent) lines.push(`Opponent: ${context.opponent}`)
   if (context.ageGroup) lines.push(`Age group: ${context.ageGroup}`)
@@ -191,15 +195,16 @@ function buildContext(video, options) {
       lines.push(`SQUAD: ${playerList}`)
     }
   }
-  return { videoType, contextBlock: lines.join('\n'), ourTeamLabel }
+  return { videoType, contextBlock: lines.join('\n'), ourTeamLabel, taxonomy }
 }
 
 /**
  * Analyse a batch of frames — returns segment-level observations
  */
 async function analyseSegment(frames, segmentIndex, totalSegments, video, options) {
-  const { teamColour, squadPlayers = [] } = options
-  const { videoType, contextBlock } = buildContext(video, options)
+  const { teamColour, sport = 'football', squadPlayers = [] } = options
+  const { videoType, contextBlock, taxonomy } = buildContext(video, options)
+  const term = taxonomy.terminology
 
   const content = []
   for (const frame of frames) {
@@ -228,11 +233,11 @@ ${profileEntries.map(([num, profile]) => `  #${num} ${profile.name}: ${profile.d
 
   content.push({
     type: 'text',
-    text: `Analyse this segment (${Math.floor(startTime / 60)}m-${Math.floor(endTime / 60)}m) of a UK grassroots football ${videoType}. This is segment ${segmentIndex + 1} of ${totalSegments}.
+    text: `Analyse this segment (${Math.floor(startTime / 60)}m-${Math.floor(endTime / 60)}m) of a ${term.context} ${videoType}. This is segment ${segmentIndex + 1} of ${totalSegments}.
 ${contextBlock}
 ${profileContext}
 For this segment, identify:
-1. Formation and team shape — ${options.context?.startingFormation ? `the team's STARTING FORMATION is ${options.context.startingFormation}. Note whether the shape matches this formation or has deviated.` : 'the squad positions listed above show the INTENDED formation.'} Note if pupils appear to be playing a different role (common in grassroots when teams are short on pupils).
+1. Formation and team shape — ${options.context?.startingFormation ? `the team's STARTING FORMATION is ${options.context.startingFormation}. Note whether the shape matches this formation or has deviated.` : 'the squad positions listed above show the INTENDED formation.'} Note if pupils appear to be playing a different role (common in school sport when teams are short on pupils).
 2. Key tactical moments (attacks, defensive actions, transitions, set pieces)
 3. Individual pupil actions (good AND bad) — be specific about what you see each pupil do:${squadPlayers.length > 0 ? `
    - FIRST try to identify pupils by reading SHIRT NUMBERS visible in the frames. Match numbers to the squad list.
@@ -253,7 +258,7 @@ Return JSON:
   "segmentSummary": "2-3 sentences about this segment",
   "formation": "observed formation if visible",
   "observations": [
-    { "category": "formation|attack|defence|transition|set_piece", "observation": "...", "timestamp": "Xm:XXs", "importance": "high|medium|low" }
+    { "category": "${taxonomy.observationCategories.join('|')}", "observation": "...", "timestamp": "Xm:XXs", "importance": "high|medium|low" }
   ],
   "playerNotes": [
     { "squad_number": 7, "name": "Pupil Name", "action": "what they did", "quality": "positive|negative|neutral", "timestamp": "Xm:XXs", "visual": "brief visual descriptors if shirt number was confirmed — e.g. tall, dark hair, long sleeves" }
@@ -264,7 +269,7 @@ Return JSON:
   const response = await callClaudeWithRetry({
     model: 'claude-sonnet-4-6',
     max_tokens: 4000,
-    system: cacheableSystem("You are The Gaffer, Touchline's AI tactical assistant for grassroots football. Analyse match footage segments precisely. Be specific about what you see. When shirt numbers are not readable, identify pupils by their position on the pitch and map to the squad list. Always respond with valid JSON."),
+    system: cacheableSystem(`You are The Gaffer, Touchline's AI tactical assistant for ${term.context}. Analyse ${term.matchWord} footage segments precisely. Be specific about what you see. When shirt numbers are not readable, identify pupils by their position on the pitch and map to the squad list. Always respond with valid JSON.`),
     messages: [{ role: 'user', content }],
   })
 
@@ -378,8 +383,9 @@ function getResultScoringContext(context) {
 }
 
 async function synthesiseAnalysis(segmentResults, video, options) {
-  const { squadPlayers = [], context = {} } = options
-  const { videoType, contextBlock, ourTeamLabel } = buildContext(video, options)
+  const { squadPlayers = [], sport = 'football', context = {} } = options
+  const { videoType, contextBlock, ourTeamLabel, taxonomy } = buildContext(video, options)
+  const term = taxonomy.terminology
   const ageFeedbackGuidance = getAgeFeedbackGuidance(context.ageGroup)
   const resultScoringContext = getResultScoringContext(context)
 
@@ -395,21 +401,21 @@ async function synthesiseAnalysis(segmentResults, video, options) {
 
   const totalFrames = segmentResults.reduce((sum, _, i) => sum + (segmentResults[i]?._frameCount || 0), 0)
 
-  const prompt = `You have analysed a full UK grassroots football ${videoType} across ${segmentResults.length} segments. Here are the segment-by-segment findings:
+  const prompt = `You have analysed a full ${term.context} ${videoType} across ${segmentResults.length} segments. Here are the segment-by-segment findings:
 
 ${segmentSummaries}
 
 ${contextBlock}
 
 Now synthesise these into a comprehensive match analysis:
-1. FORMATION & SHAPE: ${context.startingFormation ? `${ourTeamLabel} were SET UP in a ${context.startingFormation} formation. Your formation observation MUST reference this starting formation explicitly — e.g. "Started in a ${context.startingFormation}" — and then describe how the shape looked in practice. Did they maintain it? Did it morph into something different in/out of possession? Were there deviations from the intended shape?` : `What formation is ${ourTeamLabel} playing? Use the squad position data (CB, LB, CM, etc.) to determine the EXPECTED shape.`} If pupils appear to be playing different roles from what is listed, note this — in grassroots football, pupils often fill in wherever needed.
-2. KEY OBSERVATIONS: What stands out tactically? Patterns across the match?
+1. FORMATION & SHAPE: ${context.startingFormation ? `${ourTeamLabel} were SET UP in a ${context.startingFormation} formation. Your formation observation MUST reference this starting formation explicitly — e.g. "Started in a ${context.startingFormation}" — and then describe how the shape looked in practice. Did they maintain it? Did it morph into something different in/out of possession? Were there deviations from the intended shape?` : `What formation is ${ourTeamLabel} playing? Use the squad position data to determine the EXPECTED shape.`} If pupils appear to be playing different roles from what is listed, note this — in school ${term.sport}, pupils often fill in wherever needed.
+2. KEY OBSERVATIONS: What stands out tactically? Patterns across the ${term.matchWord}?
 3. STRENGTHS: What ${ourTeamLabel} does well
 4. AREAS TO IMPROVE: What needs work (be specific and constructive)
-5. INDIVIDUAL NOTES: Evaluate every pupil based on the role they actually played in the match.${squadPlayers.length > 0 ? ' Use actual pupil names from the squad list.' : ''}
+5. INDIVIDUAL NOTES: Evaluate every pupil based on the role they actually played in the ${term.matchWord}.${squadPlayers.length > 0 ? ' Use actual pupil names from the squad list.' : ''}
 6. TRAINING RECOMMENDATIONS: 3-5 specific drills/exercises for next training based on patterns you noticed
 
-Remember this is GRASSROOTS (ages 8-16, volunteer coaches). Keep advice practical and age-appropriate.
+Remember this is school-level ${term.sport} (ages 8-16, PE teachers and school coaches). Keep advice practical and age-appropriate.
 IMPORTANT: Always refer to our team as "${ourTeamLabel}" (not "the blue team" or similar). Focus on ${ourTeamLabel} specifically.
 
 IMPORTANT: Generate playerFeedback FIRST — it is the most valuable part of the analysis.
@@ -417,12 +423,12 @@ IMPORTANT: Generate playerFeedback FIRST — it is the most valuable part of the
 Return JSON:
 {
   "playerFeedback": [
-    { "squad_number": 7, "name": "Pupil Name", "description": "Pupil in red, #7", "feedback": "...", "rating": 7, "capabilities": { "scanning": "Good", "timing": "Very Good", "positioning": "Developing" } }
+    { "squad_number": 7, "name": "Pupil Name", "description": "Pupil in red, #7", "feedback": "...", "rating": 7, "capabilities": { ${taxonomy.capabilities.items.slice(0, 3).map(c => `"${c.key}": "Good"`).join(', ')} } }
   ],
-  "summary": "3-4 sentence overview of the whole match",
-  "formations": ["formations observed across the match"],
+  "summary": "3-4 sentence overview of the whole ${term.matchWord}",
+  "formations": ["formations observed across the ${term.matchWord}"],
   "observations": [
-    { "category": "formation|attack|defence|transition|set_piece", "observation": "...", "timestamp": "2m30s" }
+    { "category": "${taxonomy.observationCategories.join('|')}", "observation": "...", "timestamp": "2m30s" }
   ],
   "recommendations": [
     { "priority": 1, "focus": "...", "drill": "...", "duration": "15 mins" }
@@ -444,7 +450,7 @@ If the segment data identified pupils by POSITION rather than shirt number, map 
 If you have fewer specific observations for a pupil, reference their positioning, their partnership with nearby pupils, or how the team's shape around them worked — but always be concrete.
 
 RULE 2 — EVALUATE AGAINST THE ROLE THEY ACTUALLY PLAYED:
-Some positions above are match-day assignments; others marked "profile position" are the pupil's usual position and they may have played a different role in THIS match. In grassroots football, pupils often fill in wherever needed.
+Some positions above are match-day assignments; others marked "profile position" are the pupil's usual position and they may have played a different role in THIS ${term.matchWord}. In school ${term.sport}, pupils often fill in wherever needed.
 - If a pupil has a MATCH-DAY position assigned (not marked "profile position"), TRUST that position. Do NOT assume they switched to a completely different role (e.g. a pupil assigned LCB did NOT go in goal) unless you have overwhelming visual evidence from MULTIPLE segments showing them clearly in a different position.
 - If a position is marked "profile position", the pupil may or may not be playing that exact role — use segment observations to determine where they operated.
 - Do NOT fabricate substitutions or position changes you didn't clearly observe. If SUBSTITUTIONS MADE data is provided above, USE it — the incoming pupil takes the outgoing pupil's role/position from that minute onward. If no substitution data is provided, assume starters played the full match unless you have specific visual evidence.
@@ -475,20 +481,7 @@ RATING DISTRIBUTION RULES (MANDATORY):
 RULE 4 — POSITION-SPECIFIC EVALUATION:
 Evaluate pupils according to their role. Different positions contribute differently:
 
-GOALKEEPER:
-- Do NOT assume the GK "had a quiet match" or "was rarely tested" unless you have clear evidence of very few shots on target. In grassroots football, goalkeepers are usually busy.
-- Evaluate: shot-stopping, distribution (goal kicks, throws), communication with defenders, positioning for crosses, sweeping behind the defence, bravery in 1v1s.
-- If goals were conceded, assess whether the GK could have done better. If goals were NOT conceded, the GK likely played a significant part in the clean sheet.
-- A busy GK who makes several saves deserves a HIGH rating (8+), not a default 7.
-
-DEFENDERS (CB, LCB, RCB, LB, RB, LWB, RWB):
-- Defenders who rarely appear in highlights may be performing EXCELLENTLY — they are keeping things quiet. Don't mark them down for being "uninvolved."
-- But also assess: did they push forward? Did they contribute to build-up play? Fullbacks/wingbacks who get forward and create chances should be rewarded.
-- A defender who is solid AND dangerous going forward deserves a higher rating than one who just defends.
-
-MIDFIELDERS & ATTACKERS:
-- Evaluate based on their specific role — a holding midfielder shields the defence, an attacking midfielder creates chances.
-- Goals and assists are NOT the only way to stand out — a midfielder who controls the tempo or wins the ball back repeatedly is equally valuable.
+${Object.values(taxonomy.positionGuidance).map(g => g.guidance).join('\n\n')}
 
 RULE 5 — COMPLETENESS:
 - You MUST include feedback for ALL ${starters.length} starting pupils
@@ -496,27 +489,22 @@ RULE 5 — COMPLETENESS:
 - For subs: only include if evidence they came on in later segments
 - Use shirt numbers from the video AND squad list together
 
-RULE 6 — FA CORE CAPABILITIES:
-For each pupil, evaluate against the FA's 6 core capabilities where evidence exists:
-- Scanning: Did they look around before receiving the ball? Were they aware of options/dangers?
-- Timing: Did they choose the right moment to pass, tackle, or make a run?
-- Movement: How did they move on and off the ball — body shape, runs, shielding?
-- Positioning: Where did they place themselves on the pitch? Was their body orientation correct?
-- Deception: Did they use feints, disguise passes, or change direction to deceive opponents?
-- Techniques: Quality of their core technical actions — passing, shooting, tackling, first touch?
+RULE 6 — ${taxonomy.capabilities.label.toUpperCase()}:
+For each pupil, evaluate against these ${taxonomy.capabilities.items.length} core capabilities where evidence exists:
+${taxonomy.capabilities.items.map(c => `- ${c.label}: ${c.description}`).join('\n')}
 
 Include a "capabilities" object for each pupil with only the capabilities you have specific evidence for.
-Set value to one of: "Excellent", "Very Good", "Good", "Developing", "Needs Work", or omit if not observed.
+Set value to one of: ${taxonomy.capabilityScale.map(s => `"${s}"`).join(', ')}, or omit if not observed.
 
 RULE 7 — CAMERA PERSPECTIVE AND DIRECTIONAL ACCURACY:
-The footage is from a fixed sideline camera. Do NOT confidently state "left channel" or "right channel" based on screen position alone — teams switch ends at half-time, so screen-left/right does not reliably correspond to the actual pitch sides. Only reference a specific channel (left/right) if you can confirm it by identifying a known pupil's assigned position (e.g. if the squad's left-back is in the channel, it is the left channel). Otherwise use "wide channel", "out wide", or "from the flank".${resultScoringContext}${ageFeedbackGuidance}`
+The footage is from a fixed sideline camera. Do NOT confidently state "left channel" or "right channel" based on screen position alone — teams switch ends at ${term.periods}, so screen-left/right does not reliably correspond to the actual pitch sides. Only reference a specific channel (left/right) if you can confirm it by identifying a known pupil's assigned position. Otherwise use "wide channel", "out wide", or "from the flank".${resultScoringContext}${ageFeedbackGuidance}`
 })() : ''}`
 
   const params = {
     model: 'claude-sonnet-4-6',
     max_tokens: 16000,
     temperature: 0.3,
-    system: cacheableSystem("You are The Gaffer, Touchline's AI tactical assistant for grassroots football. You synthesise detailed match segment analyses into comprehensive, actionable coaching reports. Be constructive and practical. Always respond with valid JSON."),
+    system: cacheableSystem(`You are The Gaffer, Touchline's AI tactical assistant for ${term.context}. You synthesise detailed ${term.matchWord} segment analyses into comprehensive, actionable coaching reports. Be constructive and practical. Always respond with valid JSON.`),
     messages: [{ role: 'user', content: prompt }],
   }
   let response = await callClaudeWithRetry(params, 3, CLAUDE_SYNTHESIS_TIMEOUT_MS)

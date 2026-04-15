@@ -4,8 +4,15 @@ import { authenticateToken } from '../middleware/auth.js'
 import mux from '../services/mux.js'
 import { analyseVideoWithMux, savePlayerObservations } from '../services/videoAnalysisService.js'
 import { checkAndIncrementUsage, getEntitlements } from '../services/billingService.js'
+import { getTaxonomy, SPORTS } from '../constants/sportTaxonomy.js'
 
 const router = Router()
+
+// GET /api/videos/sport-taxonomy/:sport — return clip categories & capabilities for a sport
+router.get('/sport-taxonomy/:sport', authenticateToken, (req, res) => {
+  const sport = SPORTS.includes(req.params.sport) ? req.params.sport : 'football'
+  res.json(getTaxonomy(sport))
+})
 
 // =============================================
 // Mux Direct Upload
@@ -698,12 +705,13 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
       squadPlayers = playersResult.rows
     }
 
-    // Load team name
-    const teamResult = await pool.query('SELECT name FROM teams WHERE id = $1', [video.team_id])
+    // Load team name and sport
+    const teamResult = await pool.query('SELECT name, sport FROM teams WHERE id = $1', [video.team_id])
     const teamName = teamResult.rows[0]?.name || null
+    const sport = teamResult.rows[0]?.sport || 'football'
 
     // Run in background
-    analyseVideoWithMux(video, { analysisType, pupilId, clipId, context, teamColour, teamName, squadPlayers, userId: req.user.id, depth }).catch(err => {
+    analyseVideoWithMux(video, { analysisType, pupilId, clipId, context, teamColour, teamName, sport, squadPlayers, userId: req.user.id, depth }).catch(err => {
       console.error('Video analysis failed:', err)
     })
   } catch (error) {
