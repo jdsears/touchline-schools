@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "migrate": "node config/migrate.js",
+    "migrate": "node db/migrations.js",
     "seed": "node config/seed.js",
     "create-service-account": "node scripts/create-service-account.js",
     "seed:demo": "node db/demo-seed/index.js",

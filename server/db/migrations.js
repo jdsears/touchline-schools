@@ -3742,5 +3742,7 @@ export async function runMigrations() {
 
 // Run if called directly
 if (process.argv[1].includes('migrations.js')) {
-  runMigrations().then(() => process.exit(0))
+  runMigrations()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1))
 }
