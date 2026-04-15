@@ -3666,6 +3666,74 @@ export async function runMigrations() {
 
     console.log('Phase 15: Match events & pupil stats migration complete')
 
+    // ==========================================
+    // Phase 16: Prospect demo instance
+    // ==========================================
+    console.log('Running Phase 16: Prospect demo instance...')
+
+    // --- 16a: Flag schools as demo tenants ---
+    try {
+      await pool.query(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS is_demo_tenant BOOLEAN DEFAULT false`)
+    } catch (e) {
+      console.warn('Phase 16a schools.is_demo_tenant warning:', e.message)
+    }
+
+    // --- 16b: Flag users as demo users + expiry ---
+    try {
+      await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo_user BOOLEAN DEFAULT false`)
+      await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS demo_expires_at TIMESTAMPTZ`)
+    } catch (e) {
+      console.warn('Phase 16b users demo columns warning:', e.message)
+    }
+
+    // --- 16c: Prospects table — one row per prospective customer ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospects (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      organisation VARCHAR(255),
+      notes TEXT,
+      created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      access_granted_at TIMESTAMPTZ DEFAULT NOW(),
+      access_expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
+      last_login_at TIMESTAMPTZ,
+      is_active BOOLEAN DEFAULT true,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_email ON demo_prospects(email)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_expires ON demo_prospects(access_expires_at)`)
+
+    // --- 16d: Prospect credentials — one row per persona per prospect ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospect_credentials (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      prospect_id UUID NOT NULL REFERENCES demo_prospects(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      persona VARCHAR(50) NOT NULL CHECK (persona IN ('head_of_pe', 'teacher', 'pupil')),
+      temp_password TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(prospect_id, persona)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_creds_prospect ON demo_prospect_credentials(prospect_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_creds_user ON demo_prospect_credentials(user_id)`)
+
+    // --- 16e: Demo telemetry events ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_telemetry_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      prospect_id UUID REFERENCES demo_prospects(id) ON DELETE SET NULL,
+      user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      event_type TEXT NOT NULL,
+      page TEXT,
+      feature TEXT,
+      metadata JSONB DEFAULT '{}',
+      session_id TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_prospect ON demo_telemetry_events(prospect_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_event_type ON demo_telemetry_events(event_type)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_created ON demo_telemetry_events(created_at)`)
+
+    console.log('Phase 16: Prospect demo instance migration complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)

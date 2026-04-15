@@ -7,7 +7,9 @@
     "start": "node index.js",
     "migrate": "node config/migrate.js",
     "seed": "node config/seed.js",
-    "create-service-account": "node scripts/create-service-account.js"
+    "create-service-account": "node scripts/create-service-account.js",
+    "seed:demo": "node db/demo-seed/index.js",
+    "seed:demo:wipe": "node db/demo-seed/index.js --wipe"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",

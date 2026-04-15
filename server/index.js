@@ -58,6 +58,7 @@ import ssoRoutes from './routes/sso.js'
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
 import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
+import { scheduleDemoReset } from './cron/demoReset.js'
 
 // Middleware
 import { errorHandler } from './middleware/errorHandler.js'
@@ -456,6 +457,9 @@ runMigrations().then(() => {
         purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Scheduled scan error:', err))
       }, TWENTY_FOUR_HOURS)
     }, 30_000)
+
+    // Demo tenant nightly reset (03:00 UK time) – only when DEMO_RESET_ENABLED=true
+    scheduleDemoReset()
   })
 })
 
