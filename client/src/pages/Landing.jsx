@@ -372,14 +372,11 @@ function Founder() {
       <section style={{ background: 'var(--mb-warm-white)', padding: '80px 24px' }}>
         <div style={{ maxWidth: 1000, margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: 48, alignItems: 'flex-start' }}>
           <div style={{ flex: '0 0 auto', width: 'clamp(200px, 30vw, 320px)' }}>
-            {/* PLACEHOLDER: replace with John Sears founder photo before launch */}
-            <div style={{
-              width: '100%', aspectRatio: '4/5', background: 'var(--mb-navy)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-              borderRadius: 4,
-            }}>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: 48, color: 'var(--mb-gold)', fontWeight: 700 }}>JS</span>
-            </div>
+            <img
+              src="/john-sears.jpg"
+              alt="John Sears, founder of MoonBoots Sports"
+              style={{ width: '100%', aspectRatio: '4/5', objectFit: 'cover', borderRadius: 4, display: 'block' }}
+            />
           </div>
           <div style={{ flex: '1 1 400px' }}>
             <p style={{ color: 'var(--mb-gold)', fontFamily: 'var(--font-sans)', fontSize: 13, fontWeight: 600, letterSpacing: 3, textTransform: 'uppercase' }}>
