@@ -42,7 +42,7 @@ export async function runMigrations() {
         password_hash VARCHAR(255) NOT NULL,
         role VARCHAR(50) DEFAULT 'parent',
         team_id UUID REFERENCES teams(id) ON DELETE SET NULL,
-        player_id UUID,
+        pupil_id UUID,
         is_admin BOOLEAN DEFAULT false,
         magic_link_token VARCHAR(255),
         magic_link_expires TIMESTAMP,

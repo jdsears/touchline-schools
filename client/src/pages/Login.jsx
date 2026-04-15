@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, Loader2, Brain, Users, TrendingUp, Target, Eye, EyeOff, AlertTriangle } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Loader2, GraduationCap, Trophy, Users, Check, Eye, EyeOff, AlertTriangle } from 'lucide-react'
 import SEO from '../components/common/SEO'
 import api from '../services/api'
 
@@ -137,7 +137,7 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="input pl-10"
-                    placeholder="coach@example.com"
+                    placeholder="name@school.ac.uk"
                     required
                   />
                 </div>
@@ -209,7 +209,7 @@ export default function Login() {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="input pl-10"
-                        placeholder="coach@example.com"
+                        placeholder="name@school.ac.uk"
                         required
                       />
                     </div>
@@ -281,136 +281,35 @@ export default function Login() {
         </motion.div>
       </div>
       
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-navy-900 via-navy-900 to-pitch-950/30 border-l border-navy-800 relative overflow-hidden">
-        {/* Background glow effects */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-pitch-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
+      <div className="hidden lg:flex flex-1 items-center justify-center border-l border-navy-800 relative overflow-hidden" style={{ background: 'var(--mb-navy, #0F1E3D)' }}>
+        {/* Subtle background accents */}
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 rounded-full blur-3xl" style={{ background: 'rgba(201, 169, 97, 0.06)' }} />
+        <div className="absolute bottom-1/3 left-1/3 w-64 h-64 rounded-full blur-3xl" style={{ background: 'rgba(201, 169, 97, 0.04)' }} />
 
         <div className="relative z-10 px-12 max-w-lg">
-          {/* Animated Tactics Board */}
+          {/* Logo */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="relative mb-10"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-10"
           >
-            <svg viewBox="0 0 320 200" className="w-full h-auto drop-shadow-2xl">
-              {/* Pitch background */}
-              <defs>
-                <linearGradient id="pitchGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#166534" />
-                  <stop offset="50%" stopColor="#15803d" />
-                  <stop offset="100%" stopColor="#14532d" />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
-
-              {/* Pitch shape */}
-              <rect x="10" y="10" width="300" height="180" rx="8" fill="url(#pitchGrad)" />
-
-              {/* Pitch markings */}
-              <g stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" fill="none">
-                {/* Outer border */}
-                <rect x="20" y="20" width="280" height="160" rx="2" />
-                {/* Center line */}
-                <line x1="160" y1="20" x2="160" y2="180" />
-                {/* Center circle */}
-                <circle cx="160" cy="100" r="25" />
-                <circle cx="160" cy="100" r="2" fill="rgba(255,255,255,0.3)" />
-                {/* Left penalty area */}
-                <rect x="20" y="55" width="45" height="90" />
-                <rect x="20" y="75" width="18" height="50" />
-                {/* Right penalty area */}
-                <rect x="255" y="55" width="45" height="90" />
-                <rect x="282" y="75" width="18" height="50" />
-              </g>
-
-              {/* Animated pupil positions - 4-3-3 formation */}
-              <g filter="url(#glow)">
-                {/* Goalkeeper */}
-                <motion.circle
-                  cx="40" cy="100" r="6"
-                  fill="#F5A623"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0 }}
-                />
-
-                {/* Defenders */}
-                {[[75, 45], [75, 75], [75, 125], [75, 155]].map(([x, y], i) => (
-                  <motion.circle
-                    key={`def-${i}`}
-                    cx={x} cy={y} r="6"
-                    fill="#2ED573"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.1 * (i + 1) }}
-                  />
-                ))}
-
-                {/* Midfielders */}
-                {[[130, 60], [130, 100], [130, 140]].map(([x, y], i) => (
-                  <motion.circle
-                    key={`mid-${i}`}
-                    cx={x} cy={y} r="6"
-                    fill="#2ED573"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.1 * (i + 5) }}
-                  />
-                ))}
-
-                {/* Forwards */}
-                {[[190, 50], [200, 100], [190, 150]].map(([x, y], i) => (
-                  <motion.circle
-                    key={`fwd-${i}`}
-                    cx={x} cy={y} r="6"
-                    fill="#2ED573"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.1 * (i + 8) }}
-                  />
-                ))}
-              </g>
-
-              {/* Tactical movement arrows */}
-              <g stroke="#F5A623" strokeWidth="1.5" fill="none" opacity="0.6">
-                <motion.path
-                  d="M130,100 Q160,85 190,100"
-                  strokeDasharray="4 4"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.6 }}
-                  transition={{ duration: 2, repeat: Infinity, repeatType: "loop" }}
-                />
-                <motion.path
-                  d="M75,75 Q100,60 130,60"
-                  strokeDasharray="4 4"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.6 }}
-                  transition={{ duration: 2, repeat: Infinity, repeatType: "loop", delay: 0.5 }}
-                />
-              </g>
-            </svg>
+            <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 36 }} />
           </motion.div>
 
           {/* Heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-center mb-8"
+            transition={{ delay: 0.2 }}
+            className="mb-8"
           >
-            <h2 className="font-display text-2xl font-bold text-white mb-3">
-              Football intelligence for grassroots teams
+            <div style={{ width: 48, height: 2, background: 'var(--mb-gold, #C9A961)', marginBottom: 20 }} />
+            <h2 style={{ fontFamily: 'var(--font-serif, "Crimson Pro", Georgia, serif)', fontSize: 32, fontWeight: 700, lineHeight: 1.2, color: 'white' }}>
+              The PE department platform for UK schools.
             </h2>
-            <p className="text-navy-400">
-              The analytical support your coaching deserves
+            <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 15, color: 'rgba(250, 250, 247, 0.7)', lineHeight: 1.6, marginTop: 16 }}>
+              Curriculum PE and extra-curricular sport, in one bespoke platform per school.
             </p>
           </motion.div>
 
@@ -418,29 +317,53 @@ export default function Login() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="grid grid-cols-2 gap-4"
+            transition={{ delay: 0.4 }}
+            style={{ display: 'flex', flexDirection: 'column', gap: 16 }}
           >
             {[
-              { icon: Brain, label: 'AI-Powered Analysis', color: 'pitch' },
-              { icon: Target, label: 'Tactical Planning', color: 'amber' },
-              { icon: Users, label: 'Squad Management', color: 'pitch' },
-              { icon: TrendingUp, label: 'Pupil Development', color: 'amber' },
-            ].map(({ icon: Icon, label, color }, i) => (
+              { icon: GraduationCap, label: 'Curriculum PE', desc: 'Teaching groups, assessment, AI-drafted reports' },
+              { icon: Trophy, label: 'Extra-Curricular Sport', desc: 'Teams, fixtures, sessions, NGB-aligned AI coaching' },
+              { icon: Users, label: 'Pupil Development', desc: 'One profile per pupil across every sport' },
+            ].map(({ icon: Icon, label, desc }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-                className="flex items-center gap-3 p-3 rounded-lg bg-navy-800/50 border border-navy-700/50"
+                transition={{ delay: 0.5 + i * 0.1 }}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 14,
+                  padding: '16px 18px', borderRadius: 6,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(201, 169, 97, 0.15)',
+                }}
               >
-                <div className={`w-8 h-8 rounded-md bg-${color}-500/20 flex items-center justify-center`}>
-                  <Icon className={`w-4 h-4 text-${color}-400`} />
+                <div style={{
+                  width: 36, height: 36, borderRadius: 6, flexShrink: 0,
+                  background: 'rgba(201, 169, 97, 0.12)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon size={18} style={{ color: 'var(--mb-gold, #C9A961)' }} />
                 </div>
-                <span className="text-sm text-navy-200 font-medium">{label}</span>
+                <div>
+                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 14, fontWeight: 600, color: 'white' }}>{label}</p>
+                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 13, color: 'rgba(250, 250, 247, 0.6)', marginTop: 2 }}>{desc}</p>
+                </div>
               </motion.div>
             ))}
           </motion.div>
+
+          {/* Bottom tagline */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            style={{
+              fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 12,
+              color: 'rgba(250, 250, 247, 0.4)', marginTop: 32,
+            }}
+          >
+            Bespoke deployments for primary, prep, secondary, all-through, and multi-academy trusts.
+          </motion.p>
         </div>
       </div>
     </div>
