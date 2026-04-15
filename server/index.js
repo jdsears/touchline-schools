@@ -349,9 +349,11 @@ app.get('/api/trigger-seed', async (req, res) => {
     await ensureDemoPrerequisites()
     log.push('Prerequisites done')
 
-    // Delete existing demo data
-    await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
+    // Delete existing demo data (school first to cascade FKs, then users)
     await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
+    await pool.query(`DELETE FROM safeguarding_incidents WHERE reported_by IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
+    await pool.query(`DELETE FROM audit_log WHERE user_id IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
+    await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
     log.push('Cleared old school and demo users')
 
     const school = await seedSchool()
@@ -558,8 +560,10 @@ async function ensureDemoSchool() {
       }
       // School exists but has no demo data - wipe everything and re-seed
       console.log('[DemoSeed] Demo school exists but is empty, wiping and re-seeding...')
-      await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
       await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
+      await pool.query(`DELETE FROM safeguarding_incidents WHERE reported_by IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
+      await pool.query(`DELETE FROM audit_log WHERE user_id IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
+      await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
     }
 
     console.log('[DemoSeed] Seeding Ashworth Park Academy...')
