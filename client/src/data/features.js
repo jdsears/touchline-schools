@@ -37,14 +37,14 @@ export const features = [
     title: 'Training Session Generator',
     subtitle: 'Plan complete sessions in minutes, not hours',
     seo: {
-      title: 'AI Training Session Planner for Grassroots Football',
-      description: 'Generate complete football training sessions in minutes. Tell the AI what you need — age group, focus area, number of players — and get a full session plan. Built for UK grassroots coaches.',
-      keywords: 'football training session planner, football coaching session generator, grassroots training plans, football drill planner, AI coaching assistant',
+      title: 'AI Training Session Planner for School Sport',
+      description: 'Generate complete football training sessions in minutes. Tell the AI what you need — age group, focus area, number of players — and get a full session plan. Built for UK school coaches.',
+      keywords: 'football training session planner, football coaching session generator, school training plans, football drill planner, AI coaching assistant',
     },
     problem: {
       intro: "It's 10pm on a Friday night. Training is tomorrow morning. You're sat at the kitchen table trying to plan a session for 16 players with mixed ability, and you've got an hour on a half-size pitch.",
       hook: 'Sound familiar?',
-      body: "Most grassroots coaches spend more time planning sessions than running them. You're a volunteer — this shouldn't feel like a second job.",
+      body: "Most school coaches spend more time planning sessions than running them. You've got a full timetable — planning shouldn't eat into your evenings.",
     },
     steps: [
       {
@@ -87,7 +87,7 @@ export const features = [
     ],
     quote: {
       text: "I used to spend Sunday evenings dreading Monday's training. Now I do it in 5 minutes on the bus to work.",
-      author: 'Grassroots coach, U11s',
+      author: 'PE Teacher, Secondary School',
     },
     relatedSlugs: ['tactics-board', 'player-development'],
   },
@@ -97,12 +97,12 @@ export const features = [
     title: 'Player Profiles & IDP',
     subtitle: 'Every player tracked. Every parent answered.',
     seo: {
-      title: 'Player Development Tracking for Grassroots Football',
+      title: 'Player Development Tracking for School Sport',
       description: "Track every player's development with individual profiles, session feedback, skills tracking, and AI-generated development plans. Give parents real answers about their child's progress.",
-      keywords: 'grassroots player development, football player tracking, individual development plan football, youth football player profiles, player progress tracking',
+      keywords: 'school player development, football player tracking, individual development plan football, youth football player profiles, player progress tracking',
     },
     problem: {
-      intro: '"How\'s my daughter doing?" Six words that strike fear into every grassroots coach. You\'ve got 16 players. You see them twice a week. You\'re trying to remember who needs to work on their weak foot while also setting up cones and finding the missing bib.',
+      intro: '"How\'s my daughter doing?" Six words that strike fear into every school coach. You\'ve got 16 players. You see them twice a week. You\'re trying to remember who needs to work on their weak foot while also setting up cones and finding the missing bib.',
       hook: 'Your players deserve individual attention.',
       body: "Elite academies have development officers, analysts, and databases. You've got a good memory and maybe a notebook you lost three weeks ago. Now they can get it.",
     },
@@ -157,9 +157,9 @@ export const features = [
     title: 'Video Analysis',
     subtitle: 'Upload your match footage. Let The Gaffer break it down.',
     seo: {
-      title: 'AI Video Analysis for Grassroots Football',
-      description: 'Upload match footage from your phone or camera, create clips, tag players, and get AI-powered tactical analysis. Built for grassroots coaches, not elite academies.',
-      keywords: 'grassroots football video analysis, football match video review, AI football analysis, youth football video, coaching video analysis tool',
+      title: 'AI Video Analysis for School Sport',
+      description: 'Upload match footage from your phone or camera, create clips, tag players, and get AI-powered tactical analysis. Built for school PE teachers, not elite academies.',
+      keywords: 'school sport video analysis, football match video review, AI football analysis, youth football video, coaching video analysis tool',
     },
     problem: {
       intro: "You filmed the match on your phone. It's sat in your camera roll doing nothing. You know there are moments worth reviewing — that goal you conceded from a corner, the shape when you're pressing — but who has time to scrub through 60 minutes of shaky footage?",
@@ -217,14 +217,14 @@ export const features = [
     title: 'AI Tactical Advisor',
     subtitle: 'Chat with The Gaffer. Get advice that actually makes sense for your team.',
     seo: {
-      title: 'AI Football Tactical Advisor for Grassroots Coaches',
-      description: 'Chat with The Gaffer — an AI that understands football formations, player roles, and match situations. Get tactical advice tailored to your grassroots team.',
-      keywords: 'AI football coaching, football tactics advisor, grassroots coaching help, football formation advice, AI coaching assistant football',
+      title: 'AI Football Tactical Advisor for School Sport Coaches',
+      description: 'Chat with The Gaffer — an AI that understands football formations, player roles, and match situations. Get tactical advice tailored to your school team.',
+      keywords: 'AI football coaching, football tactics advisor, school coaching help, football formation advice, AI coaching assistant football',
     },
     problem: {
       intro: "You've got 13 players available on Saturday but you normally play a 4-3-3. Your best midfielder is injured. The opposition play long balls. What do you do?",
       hook: 'The Gaffer is the assistant coach you never had.',
-      body: "Most grassroots coaches don't have anyone to talk tactics with. You're making it up as you go, Googling \"9v9 formations\" at midnight and hoping for the best.",
+      body: "Most school coaches don't have anyone to talk tactics with. You're making it up as you go, Googling \"9v9 formations\" at midnight and hoping for the best.",
     },
     steps: [
       {
@@ -235,7 +235,7 @@ export const features = [
       {
         icon: Lightbulb,
         title: 'Get practical advice',
-        detail: "The Gaffer gives you formations, player roles, and tactical instructions that make sense for grassroots. No Pep Guardiola theory — just practical advice your players can execute.",
+        detail: "The Gaffer gives you formations, player roles, and tactical instructions that make sense for school. No Pep Guardiola theory — just practical advice your players can execute.",
       },
       {
         icon: Zap,
@@ -251,8 +251,8 @@ export const features = [
       },
       {
         icon: Target,
-        title: 'Grassroots-appropriate',
-        detail: "Advice is calibrated for youth and grassroots football. It won't suggest gegenpressing to your U10s. It understands age-appropriate tactics.",
+        title: 'Age-appropriate',
+        detail: "Advice is calibrated for youth and school sport. It won't suggest gegenpressing to your U10s. It understands age-appropriate tactics.",
       },
       {
         icon: Grip,
@@ -338,13 +338,13 @@ export const features = [
     subtitle: 'Prepare like the pros. Review like an analyst.',
     seo: {
       title: 'AI Match Preparation Tool for Football Coaches',
-      description: 'AI-powered match preparation with focus points, team talks, and post-match reports. Prepare your grassroots team like a professional setup.',
+      description: 'AI-powered match preparation with focus points, team talks, and post-match reports. Prepare your school team like a professional setup.',
       keywords: 'football match preparation, football match analysis tool, pre match preparation football, post match report football, team talk generator football',
     },
     problem: {
       intro: "You arrive at the ground, set up the goals, find the corner flags, greet the ref, deal with the parent who's forgotten shin pads, and suddenly it's kick-off. What was the plan again?",
       hook: 'Even a few minutes of structured prep makes a massive difference.',
-      body: 'Matchday preparation at grassroots level usually means "wing it and hope." But it doesn\'t have to be that way.',
+      body: 'Matchday preparation at school level usually means "wing it and hope." But it doesn\'t have to be that way.',
     },
     steps: [
       {
@@ -399,10 +399,10 @@ export const features = [
     seo: {
       title: 'Safeguarding & DBS Tracking for Football Clubs',
       description: 'Track DBS checks, first aid certificates, and safeguarding qualifications for every coach and volunteer. Automatic expiry alerts, incident reporting, and FA-compliant records.',
-      keywords: 'football club safeguarding, DBS tracking grassroots football, safeguarding compliance football club, welfare officer football, incident reporting football',
+      keywords: 'football club safeguarding, DBS tracking school sport, safeguarding compliance football club, welfare officer football, incident reporting football',
     },
     problem: {
-      intro: "Your club has 12 coaches and 8 volunteers across 6 age groups. Do you know who has an up-to-date DBS? When does your welfare officer's safeguarding certificate expire? Where's that incident report from October?",
+      intro: "Your school has 12 PE staff and 8 sports coaches across year groups. Do you know who has an up-to-date DBS? When does your safeguarding lead's certificate expire? Where's that incident report from October?",
       hook: 'Safeguarding is non-negotiable. But tracking it on spreadsheets is a nightmare.',
       body: "The FA requires every club to maintain safeguarding records, DBS checks, and incident logs. Most clubs do this on spreadsheets, WhatsApp groups, and filing cabinets. Things get missed. Certificates expire. And nobody notices until an audit.",
     },
@@ -464,7 +464,7 @@ export const features = [
     problem: {
       intro: "Half-term camp next week. You've got a Google Form for sign-ups, a spreadsheet to track who's paid, WhatsApp messages from parents asking for details, and no idea if you've hit capacity yet.",
       hook: 'Running events shouldn\'t need five different tools.',
-      body: "Camps and events are a lifeline for grassroots clubs — they bring in revenue, keep players active during holidays, and attract new families. But organising them is painful when registration, payments, and communication are all disconnected.",
+      body: "Camps and events are a lifeline for school clubs — they bring in revenue, keep players active during holidays, and attract new families. But organising them is painful when registration, payments, and communication are all disconnected.",
     },
     steps: [
       {
@@ -517,9 +517,9 @@ export const features = [
     title: 'AI Club Intelligence',
     subtitle: 'Match reports, attendance insights, season summaries, and grant applications — powered by AI.',
     seo: {
-      title: 'AI-Powered Club Intelligence for Grassroots Football',
+      title: 'AI-Powered Club Intelligence for School Sport',
       description: 'AI-generated match reports for parents, attendance trend analysis, season summary reports for your AGM, grant application drafts, and compliance gap analysis. All powered by AI.',
-      keywords: 'AI football club reports, grassroots football AI, football club intelligence, AI match reports parents, football grant application help',
+      keywords: 'AI football club reports, school sport AI, football club intelligence, AI match reports parents, football grant application help',
     },
     problem: {
       intro: "Your AGM is next month. The committee wants a season summary. The council grant application is due Friday. Parents keep asking how the team\'s doing. And you\'re still trying to work out why attendance drops every November.",

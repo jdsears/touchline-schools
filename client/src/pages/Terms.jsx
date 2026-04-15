@@ -48,12 +48,12 @@ function TermsOfService() {
         These Terms of Service ("Terms") govern your access to and use of Touchline (touchline.xyz), operated by MoonBoots Consultancy UK Ltd ("we", "us", "our"), a company registered in England and Wales.
       </p>
       <p className="text-navy-300 mb-8">
-        By accessing or using Touchline, you agree to be bound by these Terms. If you are accepting these Terms on behalf of a football club or organisation, you represent that you have the authority to bind that organisation.
+        By accessing or using Touchline, you agree to be bound by these Terms. If you are accepting these Terms on behalf of a school, sports department, or organisation, you represent that you have the authority to bind that organisation.
       </p>
 
       <h3 className="font-display text-lg font-semibold text-white mt-8 mb-3">1. About Touchline</h3>
       <p className="text-navy-300 mb-4">
-        Touchline is an AI-powered coaching platform designed for grassroots football. It provides session planning, player development insights, video analysis, and communication tools for coaches, clubs, and parents.
+        Touchline is an AI-powered platform designed for school PE departments and sports coaches. It provides lesson and session planning, pupil development insights, video analysis, assessment, and communication tools for teachers, schools, and parents.
       </p>
       <p className="text-navy-300 mb-4">
         Touchline is a coaching support tool. It does not replace qualified coaching, medical advice, or safeguarding procedures. All coaching decisions remain the responsibility of the coach and club.
@@ -86,7 +86,7 @@ function TermsOfService() {
 
       <h3 className="font-display text-lg font-semibold text-white mt-8 mb-3">3. Acceptable Use</h3>
       <p className="text-navy-300 mb-2">
-        You agree to use Touchline only for lawful purposes related to grassroots football coaching and club management. You must not:
+        You agree to use Touchline only for lawful purposes related to school sport, PE teaching, and school administration. You must not:
       </p>
       <ul className="list-disc list-inside text-navy-300 mb-4 space-y-1">
         <li>Use the platform in any way that could harm, endanger, or negatively impact any child or young person</li>
@@ -215,7 +215,7 @@ function PrivacyPolicy() {
         This Privacy Policy explains how MoonBoots Consultancy UK Ltd ("we", "us", "our") collects, uses, stores, and protects personal data through Touchline (touchline.xyz).
       </p>
       <p className="text-navy-300 mb-4">
-        We are committed to protecting the privacy of all our users, with particular care given to data relating to children and young people involved in grassroots football.
+        We are committed to protecting the privacy of all our users, with particular care given to data relating to children and young people in school settings.
       </p>
       <p className="text-navy-300 mb-8">
         We are the data controller for personal data processed through Touchline. We are registered in England and Wales and comply with the UK General Data Protection Regulation (UK GDPR) and the Data Protection Act 2018.
@@ -663,7 +663,7 @@ function AIPolicy() {
 
       <h3 className="font-display text-lg font-semibold text-white mt-8 mb-3">Overview</h3>
       <p className="text-navy-300 mb-4">
-        Touchline uses artificial intelligence to support grassroots football coaches with session planning, player development insights, and video analysis. This policy explains how AI is used within the platform, what safeguards are in place, and the role of human oversight.
+        Touchline uses artificial intelligence to support school PE teachers and sports coaches with lesson planning, pupil development insights, and video analysis. This policy explains how AI is used within the platform, what safeguards are in place, and the role of human oversight.
       </p>
       <p className="text-navy-300 mb-4">
         We believe AI should enhance coaching, not replace it. Every AI feature in Touchline is designed to support the coach's judgement, never to override it.
@@ -869,7 +869,7 @@ export default function Terms() {
       <footer className="py-8 px-4 sm:px-6 lg:px-8 border-t border-navy-900">
         <div className="max-w-4xl mx-auto text-center">
           <p className="text-navy-500 text-sm">
-            &copy; {new Date().getFullYear()} Touchline. Built for grassroots football.
+            &copy; {new Date().getFullYear()} Touchline. Built for school sport.
           </p>
           <p className="text-navy-600 text-xs mt-2">
             Built by <a href="https://moonbootsconsultancy.net" target="_blank" rel="noopener noreferrer" className="hover:text-navy-400 transition-colors underline">MoonBoots Consultancy</a>

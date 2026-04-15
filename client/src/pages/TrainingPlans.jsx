@@ -175,7 +175,7 @@ export default function TrainingPlans() {
     <div className="min-h-screen bg-navy-950">
       <SEO
         title="Football Training Plans & Session Generator"
-        description="Generate complete football training plans in under a minute. AI-powered session planning for grassroots coaches. Warm-ups, drills, and games included."
+        description="Generate complete training plans and lesson plans in under a minute. AI-powered session planning for school PE teachers. Warm-ups, drills, and activities included."
         path="/football-training-plans"
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -380,12 +380,12 @@ export default function TrainingPlans() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-6">
             <Link to="/grassroots-football-coaching" className="card p-6 hover:border-pitch-700/50 transition-colors group">
-              <h3 className="font-display text-lg font-semibold text-white mb-1 group-hover:text-pitch-400 transition-colors">Grassroots Football Coaching Tools →</h3>
-              <p className="text-navy-400 text-sm">AI-powered tools built for the reality of grassroots coaching.</p>
+              <h3 className="font-display text-lg font-semibold text-white mb-1 group-hover:text-pitch-400 transition-colors">School Sport Coaching Tools →</h3>
+              <p className="text-navy-400 text-sm">AI-powered tools built for the reality of school PE and sport.</p>
             </Link>
             <Link to="/youth-football-coaches" className="card p-6 hover:border-pitch-700/50 transition-colors group">
-              <h3 className="font-display text-lg font-semibold text-white mb-1 group-hover:text-pitch-400 transition-colors">Youth Football Coaching App →</h3>
-              <p className="text-navy-400 text-sm">Age-appropriate tools for developing young players from U7s to U18s.</p>
+              <h3 className="font-display text-lg font-semibold text-white mb-1 group-hover:text-pitch-400 transition-colors">School Sport Coaching App →</h3>
+              <p className="text-navy-400 text-sm">Age-appropriate tools for developing pupils from Year 2 to Sixth Form.</p>
             </Link>
           </div>
         </div>
@@ -438,7 +438,7 @@ export default function TrainingPlans() {
             <Logo size="small" />
             <div className="flex items-center gap-4">
               <Link to="/terms" className="text-navy-500 hover:text-navy-400 text-sm transition-colors">Terms & Privacy</Link>
-              <p className="text-navy-500 text-sm">© {new Date().getFullYear()} {APP_NAME}. Built for grassroots football.</p>
+              <p className="text-navy-500 text-sm">© {new Date().getFullYear()} {APP_NAME}. Built for school sport.</p>
             </div>
           </div>
           <p className="text-navy-600 text-xs text-center mt-4">

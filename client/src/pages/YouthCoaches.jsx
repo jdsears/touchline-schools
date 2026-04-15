@@ -323,8 +323,8 @@ export default function YouthCoaches() {
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-2 gap-6">
             <Link to="/grassroots-football-coaching" className="card p-6 hover:border-pitch-700/50 transition-colors group">
-              <h3 className="font-display text-lg font-semibold text-white mb-1 group-hover:text-pitch-400 transition-colors">Grassroots Football Coaching Tools →</h3>
-              <p className="text-navy-400 text-sm">AI-powered tools built for the reality of grassroots coaching.</p>
+              <h3 className="font-display text-lg font-semibold text-white mb-1 group-hover:text-pitch-400 transition-colors">School Sport Coaching Tools →</h3>
+              <p className="text-navy-400 text-sm">AI-powered tools built for the reality of school PE and sport.</p>
             </Link>
             <Link to="/football-training-plans" className="card p-6 hover:border-pitch-700/50 transition-colors group">
               <h3 className="font-display text-lg font-semibold text-white mb-1 group-hover:text-pitch-400 transition-colors">Football Training Plans →</h3>
@@ -381,7 +381,7 @@ export default function YouthCoaches() {
             <Logo size="small" />
             <div className="flex items-center gap-4">
               <Link to="/terms" className="text-navy-500 hover:text-navy-400 text-sm transition-colors">Terms & Privacy</Link>
-              <p className="text-navy-500 text-sm">© {new Date().getFullYear()} {APP_NAME}. Built for grassroots football.</p>
+              <p className="text-navy-500 text-sm">© {new Date().getFullYear()} {APP_NAME}. Built for school sport.</p>
             </div>
           </div>
           <p className="text-navy-600 text-xs text-center mt-4">

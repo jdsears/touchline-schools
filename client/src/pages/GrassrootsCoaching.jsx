@@ -82,58 +82,58 @@ function FAQItem({ question, answer, isOpen, onClick }) {
 }
 
 const whoCards = [
-  { icon: Clock, title: 'Volunteer coaches', description: 'Juggling work, family, and coaching. You need tools that save time, not add to the workload.' },
-  { icon: Users, title: 'Club coaches', description: 'Managing multiple age groups and trying to give every player the attention they deserve.' },
-  { icon: Heart, title: 'Parents who stepped up', description: "You volunteered because nobody else would. Now you need a bit of help figuring it all out." },
-  { icon: Target, title: 'Development-focused coaches', description: "You care more about improving players than the league table. But you still want to be organised." },
+  { icon: Clock, title: 'PE teachers', description: 'Teaching multiple sports across year groups. You need tools that save time on planning and admin.' },
+  { icon: Users, title: 'Heads of PE', description: 'Overseeing the department, tracking pupil progress, and ensuring every child gets quality sport provision.' },
+  { icon: Heart, title: 'School sports coaches', description: 'Running extra-curricular sport alongside a full teaching timetable. You need efficient tools that work.' },
+  { icon: Target, title: 'Development-focused departments', description: 'You care about pupil development across multiple sports, not just match results. But you still want to be organised.' },
 ]
 
 const realityChallenges = [
-  '8 players one week, 14 the next',
-  'Training on a public park with one set of cones',
-  'Planning sessions after a full day at work',
-  'Players with wildly different abilities',
-  'Parents asking questions you don\'t have time to answer',
-  'No assistant coach to bounce ideas off',
+  'Different class sizes every lesson',
+  'Mixed ability groups across year groups',
+  'Planning lessons alongside a full teaching load',
+  'Pupils with vastly different experience levels',
+  'Parents asking about their child\'s progress',
+  'Managing multiple sports with limited time',
 ]
 
 const features = [
-  { icon: ClipboardList, title: 'Training Session Generator', description: "Tell it how many players you have, what you want to work on, and how long you've got. It builds the session for you." },
-  { icon: Brain, title: 'Pep AI Tactical Advisor', description: "Like having an experienced coach to bounce ideas off. Ask about formations, player roles, or how to deal with that team that always parks the bus." },
-  { icon: Target, title: 'Player Development Tracking', description: "See progress over the season, not just match days. Track observations, spot patterns, and create individual development plans." },
-  { icon: Shield, title: 'Match Preparation', description: "Walk into Saturday morning feeling prepared. Formation plans, squad selection, and pre-match notes all in one place." },
-  { icon: Map, title: 'Visual Tactics Board', description: "Explain formations without drawing in the mud. Drag-and-drop tactics board that players can actually understand." },
-  { icon: Users, title: 'Club Management', description: "Running a club? Manage registrations, safeguarding & DBS tracking, events & camps, training schedules, payment collection (0.5% fee), AI intelligence reports, and parent portal — all from one dashboard." },
+  { icon: ClipboardList, title: 'Lesson & Session Planner', description: "Tell it your year group, sport, class size, and learning objectives. It builds the lesson plan for you in under a minute." },
+  { icon: Brain, title: 'AI Teaching Assistant', description: "Like having an experienced Head of PE to bounce ideas off. Ask about differentiation, assessment criteria, or how to adapt a session for mixed abilities." },
+  { icon: Target, title: 'Pupil Development Tracking', description: "Track progress across the year, not just on match days. Record observations, spot patterns, and create individual development plans." },
+  { icon: Shield, title: 'Fixture & Match Preparation', description: "Walk into match day feeling prepared. Squad selection, formation plans, and pre-match notes all in one place." },
+  { icon: Map, title: 'Visual Tactics Board', description: "Explain formations clearly. Drag-and-drop tactics board that pupils can actually understand." },
+  { icon: Users, title: 'School Sport Management', description: "Running a PE department? Manage teams, fixtures, safeguarding, assessments, reports, and parent communication — all from one dashboard." },
 ]
 
 const differences = [
-  'No academy budget required — starts at £9.99/month',
-  'Works with the players you have, not the players you wish you had',
-  'Designed for volunteer time constraints — plan a session in under a minute',
-  'Keeps parents and players connected without flooding your inbox',
-  'Club plans available — safeguarding, events, AI reports, payments (0.5% fee), and full multi-team management from one dashboard',
+  'No expensive academy software — affordable school pricing',
+  'Works across multiple sports, not just football',
+  'Designed for busy teachers — plan a lesson in under a minute',
+  'Keeps parents connected without flooding your inbox',
+  'Full department management — safeguarding, reports, assessments, and multi-sport teams from one dashboard',
 ]
 
 const faqs = [
   {
-    question: 'What is grassroots football coaching software?',
-    answer: 'Grassroots football coaching software helps volunteer and club coaches plan training sessions, track player development, and prepare for matches. Unlike elite-level tools, grassroots software is designed for coaches working with limited time, varying player numbers, and mixed ability groups.',
+    question: 'What is school sport coaching software?',
+    answer: 'School sport coaching software helps PE teachers and sports coaches plan lessons and training sessions, track pupil development, and manage fixtures. Touchline is designed for the reality of school PE — mixed abilities, multiple sports, and busy timetables.',
   },
   {
     question: 'Do I need technical skills to use Touchline?',
-    answer: "Not at all. Touchline is designed for coaches, not tech experts. If you can send a text message, you can use Touchline. Most coaches are planning their first session within 5 minutes of signing up.",
+    answer: "Not at all. Touchline is designed for teachers, not tech experts. If you can send an email, you can use Touchline. Most teachers are planning their first lesson within 5 minutes of signing up.",
   },
   {
-    question: 'How does AI help with coaching grassroots football?',
-    answer: "AI handles the time-consuming parts of coaching — generating session plans, suggesting development areas, preparing match briefings. This gives you more time to actually coach, rather than spending evenings searching for drill ideas.",
+    question: 'How does AI help with teaching PE?',
+    answer: "AI handles the time-consuming parts — generating lesson plans, suggesting differentiation strategies, preparing match briefings, and tracking pupil progress. This gives you more time to actually teach and coach.",
   },
   {
     question: 'Can I use this with mixed ability groups?',
-    answer: "Absolutely. The training session generator asks about your players' abilities and adapts accordingly. You can also track individual development so every player gets appropriate challenges.",
+    answer: "Absolutely. The lesson planner adapts to different ability levels and the assessment tools let you track individual pupil progress so every child gets appropriate challenges.",
   },
   {
-    question: 'What age groups does Touchline work for?',
-    answer: 'Touchline works for all youth age groups from U7s through to U18s. The AI understands age-appropriate development and adjusts its suggestions accordingly.',
+    question: 'What age groups and sports does Touchline cover?',
+    answer: 'Touchline works for all school year groups from Year 2 through to Sixth Form, across football, rugby, cricket, hockey, and netball. The AI understands age-appropriate development and adapts accordingly.',
   },
   {
     question: 'Is Touchline really free?',
@@ -157,8 +157,8 @@ export default function GrassrootsCoaching() {
   return (
     <div className="min-h-screen bg-navy-950">
       <SEO
-        title="Grassroots Football Coaching Tools"
-        description="Coaching tools built for grassroots football volunteers. Plan training sessions, track player development, and prepare for matches with AI-powered assistance."
+        title="School PE & Sport Coaching Tools"
+        description="Coaching tools built for school PE departments. Plan lessons, track pupil development, manage fixtures, and assess progress with AI-powered assistance."
         path="/grassroots-football-coaching"
       />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
@@ -184,16 +184,16 @@ export default function GrassrootsCoaching() {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-pitch-500/10 text-pitch-400 text-sm font-medium mb-6">
               <Sparkles className="w-4 h-4" />
-              Built by a grassroots coach, for grassroots coaches
+              Built for PE teachers and school sport coaches
             </span>
 
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
-              Grassroots Football{' '}
+              School Sport{' '}
               <span className="text-gradient">Coaching Tools</span>
             </h1>
 
             <p className="text-lg sm:text-xl text-navy-300 mb-8 max-w-2xl mx-auto">
-              AI-powered tools that understand the reality of coaching grassroots football.
+              AI-powered tools that understand the reality of teaching PE and coaching school sport.
               Limited time, limited equipment, unlimited enthusiasm.
             </p>
 
@@ -215,7 +215,7 @@ export default function GrassrootsCoaching() {
         <div className="max-w-7xl mx-auto">
           <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Built for coaches like you</h2>
           <p className="text-lg text-navy-300 max-w-2xl mb-12">
-            You don't need a UEFA Pro Licence to use {APP_NAME}. You just need a team and the desire to help them improve.
+            You don't need a coaching badge to use {APP_NAME}. You just need pupils and the desire to help them develop.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -239,15 +239,15 @@ export default function GrassrootsCoaching() {
         </div>
       </section>
 
-      {/* The reality of grassroots coaching */}
+      {/* The reality of school sport */}
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">We understand grassroots football</h2>
+              <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">We understand school sport</h2>
               <p className="text-lg text-navy-300 mb-8">
-                We built {APP_NAME} because we've lived it. The rain, the no-shows, the parent who
-                asks why their kid isn't playing striker every week. We get it.
+                We built {APP_NAME} because we've lived it. The packed timetables, the mixed abilities,
+                the parents asking why their child isn't in the A team. We get it.
               </p>
               <ul className="space-y-4">
                 {realityChallenges.map((challenge) => (
@@ -265,7 +265,7 @@ export default function GrassrootsCoaching() {
                 "I was spending more time planning sessions than actually running them. Now I generate
                 a plan on my lunch break and turn up ready to go. It's changed how I coach."
               </p>
-              <p className="text-pitch-400 mt-4 font-medium">— Grassroots coach, U11s</p>
+              <p className="text-pitch-400 mt-4 font-medium">— Head of PE, Secondary School</p>
             </div>
           </div>
         </div>
@@ -368,7 +368,7 @@ export default function GrassrootsCoaching() {
           <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
             <h2 className="font-display text-3xl sm:text-4xl font-bold text-white mb-4">Ready to coach smarter?</h2>
             <p className="text-lg text-navy-300 mb-8 max-w-2xl mx-auto">
-              Join grassroots coaches already using {APP_NAME} to save time, develop players, and enjoy coaching more.
+              Join PE teachers and school coaches already using {APP_NAME} to save time, develop pupils, and focus on what matters.
             </p>
             <Link to="/register" className="btn-primary btn-lg">
               Get Started Free
@@ -385,7 +385,7 @@ export default function GrassrootsCoaching() {
             <Logo size="small" />
             <div className="flex items-center gap-4">
               <Link to="/terms" className="text-navy-500 hover:text-navy-400 text-sm transition-colors">Terms & Privacy</Link>
-              <p className="text-navy-500 text-sm">© {new Date().getFullYear()} {APP_NAME}. Built for grassroots football.</p>
+              <p className="text-navy-500 text-sm">© {new Date().getFullYear()} {APP_NAME}. Built for school sport.</p>
             </div>
           </div>
           <p className="text-navy-600 text-xs text-center mt-4">
