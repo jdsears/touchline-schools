@@ -62,8 +62,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             }}
           />
           <CookieConsent />
+          {/* Install prompts disabled until branding is fully updated
           <InstallPrompt />
           <IOSInstallInstructions />
+          */}
         </TeamProvider>
       </AuthProvider>
     </BrowserRouter>
