@@ -56,6 +56,15 @@ import gdprRoutes from './routes/gdpr.js'
 import ssoRoutes from './routes/sso.js'
 import demoRequestRoutes from './routes/demoRequests.js'
 
+import { seedSchool } from './db/demo-seed/school.js'
+import { seedStaff } from './db/demo-seed/staff.js'
+import { seedPupils } from './db/demo-seed/pupils.js'
+import { seedTeams } from './db/demo-seed/teams.js'
+import { seedCurriculum } from './db/demo-seed/curriculum.js'
+import { seedFixtures } from './db/demo-seed/fixtures.js'
+import { seedSafeguarding } from './db/demo-seed/safeguarding.js'
+import { seedAuditLog } from './db/demo-seed/auditLog.js'
+
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
 import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
@@ -399,6 +408,30 @@ if (process.env.NODE_ENV === 'production') {
 // Error handler
 app.use(errorHandler)
 
+// Seed demo school if it doesn't exist (runs independently of migrations)
+async function ensureDemoSchool() {
+  try {
+    const exists = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+    if (exists.rows.length > 0) {
+      console.log('[DemoSeed] Demo school already exists.')
+      return
+    }
+
+    console.log('[DemoSeed] Seeding Ashworth Park Academy demo school...')
+    const school = await seedSchool()
+    const staff = await seedStaff(school.id)
+    const pupils = await seedPupils(school.id)
+    const teams = await seedTeams(school.id, staff, pupils)
+    await seedCurriculum(school.id, staff, pupils)
+    await seedFixtures(school.id, teams, staff, pupils)
+    await seedSafeguarding(school.id, staff)
+    await seedAuditLog(school.id, staff)
+    console.log('[DemoSeed] Ashworth Park Academy is ready.')
+  } catch (err) {
+    console.error('[DemoSeed] Failed to seed demo school:', err.message)
+  }
+}
+
 // Ensure admin users exist and are linked to demo school (runs independently of migrations)
 async function seedAdminUsers() {
   const admins = [
@@ -490,8 +523,10 @@ runMigrations().then(() => {
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
     console.log(`⏱️  Upload timeout: 30 minutes`)
 
-    // Seed admin users (independent of migrations)
-    seedAdminUsers().catch(err => console.error('[Admin] Seed error:', err))
+    // Seed demo school and admin users (sequential: school first, then admins link to it)
+    ensureDemoSchool()
+      .then(() => seedAdminUsers())
+      .catch(err => console.error('[Startup] Seed error:', err))
 
     // Run lifecycle scanners on startup (delayed 30s to let DB settle),
     // then every 24 hours
