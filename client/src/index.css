@@ -9,6 +9,12 @@
   --team-accent: #F5A623;       /* Amber - attention, emphasis */
   --team-primary-text: #F5F7FA; /* Text primary */
   --team-accent-text: #F5F7FA;  /* Text on accent */
+
+  /* School branding - set by useSchoolBranding hook */
+  --school-primary: #1a365d;
+  --school-secondary: #38a169;
+  --school-primary-text: #F5F7FA;
+  --school-secondary-text: #F5F7FA;
 }
 
 @layer base {

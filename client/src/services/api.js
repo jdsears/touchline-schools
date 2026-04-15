@@ -384,6 +384,11 @@ export const streamingService = {
   verifyPin: (shareCode, pin) => api.post(`/streaming/watch/${shareCode}`, { pin }),
 }
 
+// School branding (lightweight, for any authenticated user)
+export const schoolBrandingService = {
+  getMyBranding: () => api.get('/schools/my-branding'),
+}
+
 // School service (CRM & school management)
 export const clubService = {
   // My schools

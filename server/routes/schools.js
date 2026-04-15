@@ -26,6 +26,38 @@ const router = Router()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
+// GET /schools/my-branding — return the current user's school branding (logo, colours, name)
+router.get('/my-branding', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT s.id, s.name, s.slug, s.logo_url, s.primary_color, s.secondary_color
+       FROM school_members sm
+       JOIN schools s ON sm.school_id = s.id
+       WHERE sm.user_id = $1
+       ORDER BY sm.joined_at ASC
+       LIMIT 1`,
+      [req.user.id]
+    )
+    if (result.rows.length === 0) {
+      return res.json({ branding: null })
+    }
+    const school = result.rows[0]
+    res.json({
+      branding: {
+        schoolId: school.id,
+        schoolName: school.name,
+        slug: school.slug,
+        logoUrl: school.logo_url || null,
+        primaryColor: school.primary_color || '#1a365d',
+        secondaryColor: school.secondary_color || '#38a169',
+      },
+    })
+  } catch (error) {
+    console.error('Branding fetch error:', error)
+    res.status(500).json({ error: 'Failed to load branding' })
+  }
+})
+
 // ==========================================
 // MULTER CONFIG FOR REGISTRATION UPLOADS
 // ==========================================

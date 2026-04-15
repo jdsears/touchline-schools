@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import { hodService, voiceObservationService } from '../../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
+import { useSchoolBranding } from '../../hooks/useSchoolBranding'
 import {
   LayoutDashboard,
   Users,
@@ -88,7 +89,7 @@ const ROLE_DISPLAY = {
   parent: 'Parent',
 }
 
-function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEnabled, schoolRole }) {
+function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEnabled, schoolRole, schoolBranding }) {
   const basePath = '/teacher'
   const roleDisplay = ROLE_DISPLAY[schoolRole] || ROLE_DISPLAY[user?.role] || user?.role
 
@@ -122,12 +123,16 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
       {/* Header */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-navy-800">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-pitch-600 flex items-center justify-center">
-            <GraduationCap className="w-5 h-5 text-white" />
-          </div>
+          {schoolBranding?.logoUrl ? (
+            <img src={schoolBranding.logoUrl} alt="" className="w-8 h-8 rounded-lg object-cover" />
+          ) : (
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: schoolBranding?.primaryColor || '#16a34a' }}>
+              <GraduationCap className="w-5 h-5 text-white" />
+            </div>
+          )}
           <div>
-            <div className="text-sm font-semibold text-white">Teacher Hub</div>
-            <div className="text-xs text-navy-400">{user?.name}</div>
+            <div className="text-sm font-semibold text-white">{schoolBranding?.schoolName || 'Teacher Hub'}</div>
+            <div className="text-xs text-navy-400">{roleDisplay || user?.name}</div>
           </div>
         </div>
         <button
@@ -215,6 +220,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
 export default function TeacherLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
+  const schoolBranding = useSchoolBranding()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isHoD, setIsHoD] = useState(false)
   const [schoolRole, setSchoolRole] = useState(null)
@@ -271,6 +277,7 @@ export default function TeacherLayout() {
           isHoD={isHoD}
           voiceEnabled={voiceEnabled}
           schoolRole={schoolRole}
+          schoolBranding={schoolBranding}
         />
       </aside>
 
