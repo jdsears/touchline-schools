@@ -44,11 +44,27 @@ export async function runMigrations() {
         team_id UUID REFERENCES teams(id) ON DELETE SET NULL,
         pupil_id UUID,
         is_admin BOOLEAN DEFAULT false,
+        has_completed_onboarding BOOLEAN DEFAULT false,
         magic_link_token VARCHAR(255),
         magic_link_expires TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
+
+    // Ensure critical columns exist on users table (for existing DBs where later phases didn't run)
+    const earlyUserColumns = [
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS has_completed_onboarding BOOLEAN DEFAULT false`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo_user BOOLEAN DEFAULT false`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS demo_expires_at TIMESTAMPTZ`,
+    ]
+    for (const sql of earlyUserColumns) {
+      try { await pool.query(sql) } catch (e) { /* already exists */ }
+    }
+
+    // Ensure critical columns exist on schools table
+    try {
+      await pool.query(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS is_demo_tenant BOOLEAN DEFAULT false`)
+    } catch (e) { /* table or column may not exist yet on fresh DB */ }
 
     // Early rename: player_id -> pupil_id across all tables (mirrors Phase 8d for existing DBs
     // where the migration previously failed before reaching that phase)
