@@ -1,7 +1,7 @@
 /**
  * Nightly demo tenant reset.
  *
- * Runs at 03:00 UK time (Europe/London). Wipes and re-seeds the Greenfield Academy
+ * Runs at 03:00 UK time (Europe/London). Wipes and re-seeds the Ashworth Park Academy
  * demo tenant so it is always in a clean, consistent state for prospects.
  *
  * Also expires any prospect access that has passed its access_expires_at date.

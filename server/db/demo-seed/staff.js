@@ -1,5 +1,5 @@
 /**
- * Seed staff accounts for Greenfield Academy demo tenant.
+ * Seed staff accounts for Ashworth Park Academy demo tenant.
  *
  * Personas:
  *  - hodPe: Head of PE (the primary demo persona for SLT-level prospects)
@@ -60,8 +60,8 @@ export async function seedStaff(schoolId) {
   // Head of PE
   const hodPe = await createUser({
     name: 'Mr James Okonkwo',
-    email: 'j.okonkwo.demo@greenfieldacademy.norfolk.sch.uk',
-    tempPassword: 'GreenHoD2025!',
+    email: 'j.okonkwo.demo@ashworthpark.norfolk.sch.uk',
+    tempPassword: 'AshworthHoD2025!',
   })
   await addSchoolMember(schoolId, hodPe.id, 'head_of_pe', {
     viewAllClasses: true, viewAllTeams: true,
@@ -77,8 +77,8 @@ export async function seedStaff(schoolId) {
   // Director of Sport
   const directorOfSport = await createUser({
     name: 'Ms Sarah Whitfield',
-    email: 's.whitfield.demo@greenfieldacademy.norfolk.sch.uk',
-    tempPassword: 'GreenDoS2025!',
+    email: 's.whitfield.demo@ashworthpark.norfolk.sch.uk',
+    tempPassword: 'AshworthDoS2025!',
   })
   await addSchoolMember(schoolId, directorOfSport.id, 'head_of_pe', {
     viewAllClasses: true, viewAllTeams: true,
@@ -93,8 +93,8 @@ export async function seedStaff(schoolId) {
   // PE Teacher 1 – football & rugby specialist
   const teacher1 = await createUser({
     name: 'Mr Daniel Brennan',
-    email: 'd.brennan.demo@greenfieldacademy.norfolk.sch.uk',
-    tempPassword: 'GreenPE12025!',
+    email: 'd.brennan.demo@ashworthpark.norfolk.sch.uk',
+    tempPassword: 'AshworthPE12025!',
   })
   await addSchoolMember(schoolId, teacher1.id, 'teacher', {
     viewAllTeams: false, manageCurriculum: false, viewReports: true,
@@ -108,8 +108,8 @@ export async function seedStaff(schoolId) {
   // PE Teacher 2 – hockey & netball specialist
   const teacher2 = await createUser({
     name: 'Miss Priya Sharma',
-    email: 'p.sharma.demo@greenfieldacademy.norfolk.sch.uk',
-    tempPassword: 'GreenPE22025!',
+    email: 'p.sharma.demo@ashworthpark.norfolk.sch.uk',
+    tempPassword: 'AshworthPE22025!',
   })
   await addSchoolMember(schoolId, teacher2.id, 'teacher', {
     viewAllTeams: false, manageCurriculum: false, viewReports: true,
@@ -123,8 +123,8 @@ export async function seedStaff(schoolId) {
   // Non-specialist 1 – runs Year 7 morning enrichment football
   const nonSpec1 = await createUser({
     name: 'Mr Tom Ellis',
-    email: 't.ellis.demo@greenfieldacademy.norfolk.sch.uk',
-    tempPassword: 'GreenNS12025!',
+    email: 't.ellis.demo@ashworthpark.norfolk.sch.uk',
+    tempPassword: 'AshworthNS12025!',
   })
   await addSchoolMember(schoolId, nonSpec1.id, 'teacher', {
     viewReports: false,
@@ -133,8 +133,8 @@ export async function seedStaff(schoolId) {
   // Non-specialist 2 – covers PE occasionally, reads reports
   const nonSpec2 = await createUser({
     name: 'Mrs Fatima Al-Hassan',
-    email: 'f.alhassan.demo@greenfieldacademy.norfolk.sch.uk',
-    tempPassword: 'GreenNS22025!',
+    email: 'f.alhassan.demo@ashworthpark.norfolk.sch.uk',
+    tempPassword: 'AshworthNS22025!',
   })
   await addSchoolMember(schoolId, nonSpec2.id, 'read_only', {
     viewReports: true,

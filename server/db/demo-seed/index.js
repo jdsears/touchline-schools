@@ -1,11 +1,11 @@
 /**
- * Demo seed orchestrator for Greenfield Academy prospect demo instance.
+ * Demo seed orchestrator for Ashworth Park Academy prospect demo instance.
  *
  * Usage:
  *   node server/db/demo-seed/index.js          # seed (idempotent – wipes first)
  *   node server/db/demo-seed/index.js --wipe   # wipe only, no re-seed
  *
- * IMPORTANT: Before using "Greenfield Academy" as the school name, verify no
+ * IMPORTANT: Before using "Ashworth Park Academy" as the school name, verify no
  * real UK school uses this name in a relevant catchment area. A web search
  * is required before this goes into production.
  */
@@ -23,7 +23,7 @@ import { seedAuditLog } from './auditLog.js'
 
 dotenv.config()
 
-const DEMO_SCHOOL_SLUG = 'greenfield-academy-demo'
+const DEMO_SCHOOL_SLUG = 'ashworth-park-demo'
 
 export async function wipeDemoTenant() {
   const schoolResult = await pool.query(
@@ -81,7 +81,7 @@ async function runSeed() {
       process.exit(0)
     }
 
-    console.log('[demo-seed] Seeding Greenfield Academy...')
+    console.log('[demo-seed] Seeding Ashworth Park Academy...')
 
     const school = await seedSchool()
     console.log(`[demo-seed] School: ${school.id}`)
@@ -107,7 +107,7 @@ async function runSeed() {
     await seedAuditLog(school.id, staff)
     console.log('[demo-seed] Audit log seeded')
 
-    console.log('[demo-seed] Greenfield Academy demo tenant is ready.')
+    console.log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
     process.exit(0)
   } catch (err) {
     console.error('[demo-seed] Error:', err)

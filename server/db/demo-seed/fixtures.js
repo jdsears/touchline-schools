@@ -1,5 +1,5 @@
 /**
- * Seed fixtures (matches) and training sessions for Greenfield Academy teams.
+ * Seed fixtures (matches) and training sessions for Ashworth Park Academy teams.
  * Includes past fixtures with results and upcoming scheduled fixtures.
  * Also seeds a selection of voice observations.
  */
@@ -43,7 +43,7 @@ async function insertMatch(teamId, opponent, matchDate, homeAway, scoreFor, scor
     INSERT INTO matches (team_id, opponent, match_date, match_time, home_away, score_for, score_against, location, created_at)
     VALUES ($1, $2, $3, '14:00', $4, $5, $6, $7, NOW())
     RETURNING *
-  `, [teamId, opponent, matchDate, homeAway, scoreFor, scoreAgainst, location || 'Greenfield Academy Sports Ground'])
+  `, [teamId, opponent, matchDate, homeAway, scoreFor, scoreAgainst, location || 'Ashworth Park Academy Sports Ground'])
   return result.rows[0]
 }
 
@@ -52,7 +52,7 @@ async function insertTrainingSession(teamId, sessionDate, focus, location) {
     INSERT INTO training_sessions (team_id, date, time, location, focus_areas, created_at)
     VALUES ($1, $2, '15:30', $3, $4, NOW())
     RETURNING *
-  `, [teamId, sessionDate, location || 'Greenfield Academy Sports Ground', [focus]])
+  `, [teamId, sessionDate, location || 'Ashworth Park Academy Sports Ground', [focus]])
   return result.rows[0]
 }
 

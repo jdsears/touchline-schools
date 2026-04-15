@@ -1,5 +1,5 @@
 /**
- * Seed audit log entries for Greenfield Academy demo tenant.
+ * Seed audit log entries for Ashworth Park Academy demo tenant.
  * Demonstrates the audit trail feature to prospects.
  */
 
@@ -83,7 +83,7 @@ export async function seedAuditLog(schoolId, staff) {
       userId: hodPe.id,
       action: 'staff.member.invited',
       entityType: 'user',
-      details: { invitedEmail: 't.ellis.demo@greenfieldacademy.norfolk.sch.uk', role: 'teacher' },
+      details: { invitedEmail: 't.ellis.demo@ashworthpark.norfolk.sch.uk', role: 'teacher' },
       ts: pastTs(55),
     },
     {

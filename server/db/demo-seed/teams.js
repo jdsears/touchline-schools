@@ -1,5 +1,5 @@
 /**
- * Seed teams for Greenfield Academy.
+ * Seed teams for Ashworth Park Academy.
  * 12 teams covering football, rugby, cricket, hockey, netball across year groups.
  */
 

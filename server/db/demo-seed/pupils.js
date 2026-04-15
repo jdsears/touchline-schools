@@ -1,5 +1,5 @@
 /**
- * Seed ~60 pupils across Years 7, 9, 11 and 13 for Greenfield Academy.
+ * Seed ~60 pupils across Years 7, 9, 11 and 13 for Ashworth Park Academy.
  *
  * Names are invented UK-plausible diverse names with no real individuals.
  * Each pupil is flagged is_demo_user=true and gets demo_expires_at.
@@ -99,7 +99,7 @@ const YEAR_13_PUPILS = [
 
 async function insertPupil(schoolId, { name, house, yearGroup }) {
   const passwordHash = await getDemoPasswordHash()
-  const email = `${name.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z.]/g, '')}.demo@greenfieldacademy.norfolk.sch.uk`
+  const email = `${name.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z.]/g, '')}.demo@ashworthpark.norfolk.sch.uk`
 
   // Create a user account for pupil portal access
   const userResult = await pool.query(`

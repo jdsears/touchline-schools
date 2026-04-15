@@ -1,5 +1,5 @@
 /**
- * Seed curriculum data for Greenfield Academy:
+ * Seed curriculum data for Ashworth Park Academy:
  * - Teaching groups (timetabled PE classes)
  * - Sport units per group
  * - Sample pupil assessments

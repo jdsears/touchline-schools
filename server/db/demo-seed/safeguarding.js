@@ -1,5 +1,5 @@
 /**
- * Seed safeguarding incidents for Greenfield Academy demo tenant.
+ * Seed safeguarding incidents for Ashworth Park Academy demo tenant.
  *
  * All incidents are deliberately benign / workflow-demonstration entries.
  * No real pupils are referenced — all names are from the fictional seed set.

@@ -1,5 +1,5 @@
 /**
- * Seed the Greenfield Academy school tenant record.
+ * Seed the Ashworth Park Academy school tenant record.
  */
 
 import pool from '../../config/database.js'
@@ -20,14 +20,14 @@ export async function seedSchool() {
       created_at, updated_at
     )
     VALUES (
-      'Greenfield Academy',
-      'greenfield-academy-demo',
+      'Ashworth Park Academy',
+      'ashworth-park-demo',
       'academy',
       '137492',
-      'pe@greenfieldacademy.norfolk.sch.uk',
+      'pe@ashworthpark.norfolk.sch.uk',
       '01603 555 0192',
-      'https://www.greenfieldacademy.norfolk.sch.uk',
-      'Greenfield Road',
+      'https://www.ashworthpark.norfolk.sch.uk',
+      'Ashworth Park Road',
       '',
       'Norwich',
       'Norfolk',
