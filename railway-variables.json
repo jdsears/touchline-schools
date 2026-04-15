@@ -1,0 +1,33 @@
+{
+  "$comment": "Railway environment variables — paste these into your Railway service's Variables tab. Replace placeholder values with your actual credentials.",
+
+  "NODE_ENV": "production",
+  "PORT": "3001",
+
+  "JWT_SECRET": "GENERATE_A_SECURE_RANDOM_STRING_HERE",
+
+  "FRONTEND_URL": "https://schools.touchline.xyz",
+
+  "ANTHROPIC_API_KEY": "",
+
+  "RESEND_API_KEY": "",
+  "EMAIL_FROM": "Touchline for Schools <noreply@send.schools.touchline.xyz>",
+
+  "MUX_TOKEN_ID": "",
+  "MUX_TOKEN_SECRET": "",
+
+  "AWS_ACCESS_KEY_ID": "",
+  "AWS_SECRET_ACCESS_KEY": "",
+  "AWS_S3_BUCKET": "touchline-schools",
+  "AWS_REGION": "eu-west-2",
+
+  "TRANSCRIPTION_PROVIDER": "assemblyai",
+  "ASSEMBLYAI_API_KEY": "",
+
+  "MICROSOFT_CLIENT_ID": "",
+  "MICROSOFT_CLIENT_SECRET": "",
+  "MICROSOFT_TENANT_ID": "common",
+
+  "GOOGLE_CLIENT_ID": "",
+  "GOOGLE_CLIENT_SECRET": ""
+}

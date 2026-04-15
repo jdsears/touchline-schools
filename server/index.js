@@ -280,9 +280,14 @@ app.get('/api/feature-screenshots', async (req, res) => {
   }
 })
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+// Health check (verifies DB connectivity)
+app.get('/api/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1')
+    res.json({ status: 'ok', db: 'connected', timestamp: new Date().toISOString() })
+  } catch {
+    res.status(503).json({ status: 'unhealthy', db: 'disconnected', timestamp: new Date().toISOString() })
+  }
 })
 
 // Sitemap - dynamic, pulls blog posts from DB
