@@ -117,6 +117,17 @@ export const teamService = {
   addMatchSubstitution: (matchId, data) => api.post(`/matches/${matchId}/substitutions`, data),
   deleteMatchSubstitution: (matchId, subId) => api.delete(`/matches/${matchId}/substitutions/${subId}`),
 
+  // Match events (sport-specific)
+  getMatchEvents: (matchId) => api.get(`/matches/${matchId}/events`),
+  addMatchEvent: (matchId, data) => api.post(`/matches/${matchId}/events`, data),
+  deleteMatchEvent: (matchId, eventId) => api.delete(`/matches/${matchId}/events/${eventId}`),
+
+  // Pupil match stats
+  getMatchPupilStats: (matchId) => api.get(`/matches/${matchId}/pupil-stats`),
+  updatePupilStats: (matchId, pupilId, data) => api.put(`/matches/${matchId}/pupil-stats/${pupilId}`, data),
+  bulkUpdatePupilStats: (matchId, entries) => api.put(`/matches/${matchId}/pupil-stats`, { entries }),
+  getPupilSeasonStats: (pupilId, teamId) => api.get(`/matches/pupil/${pupilId}/season-stats${teamId ? `?team_id=${teamId}` : ''}`),
+
   // Availability
   getMatchAvailability: (matchId) => api.get(`/matches/${matchId}/availability`),
   updateAvailability: (matchId, data) => api.post(`/matches/${matchId}/availability`, data),

@@ -337,6 +337,113 @@ export const TERMINOLOGY = {
   },
 }
 
+// ─── Match event types per sport ──────────────────────────────────────────
+
+export const MATCH_EVENT_TYPES = {
+  football: [
+    { key: 'goal', label: 'Goal', icon: 'goal', points: 1, hasSecondary: true, secondaryLabel: 'Assist' },
+    { key: 'penalty_goal', label: 'Penalty Goal', icon: 'goal', points: 1 },
+    { key: 'free_kick_goal', label: 'Free Kick Goal', icon: 'goal', points: 1 },
+    { key: 'own_goal', label: 'Own Goal', icon: 'own_goal', points: 1 },
+    { key: 'yellow_card', label: 'Yellow Card', icon: 'card', points: 0 },
+    { key: 'red_card', label: 'Red Card', icon: 'card', points: 0 },
+    { key: 'penalty_save', label: 'Penalty Save', icon: 'save', points: 0 },
+  ],
+  rugby: [
+    { key: 'try', label: 'Try', icon: 'try', points: 5, hasSecondary: true, secondaryLabel: 'Try Assist' },
+    { key: 'conversion', label: 'Conversion', icon: 'kick', points: 2 },
+    { key: 'penalty_kick', label: 'Penalty Kick', icon: 'kick', points: 3 },
+    { key: 'drop_goal', label: 'Drop Goal', icon: 'kick', points: 3 },
+    { key: 'yellow_card', label: 'Yellow Card (Sin Bin)', icon: 'card', points: 0 },
+    { key: 'red_card', label: 'Red Card', icon: 'card', points: 0 },
+  ],
+  cricket: [
+    { key: 'wicket', label: 'Wicket', icon: 'wicket', points: 0, hasSecondary: true, secondaryLabel: 'Caught By',
+      subtypes: ['bowled', 'caught', 'lbw', 'run_out', 'stumped', 'hit_wicket'] },
+    { key: 'boundary_four', label: 'Boundary (4)', icon: 'bat', points: 4 },
+    { key: 'boundary_six', label: 'Six', icon: 'bat', points: 6 },
+    { key: 'catch', label: 'Catch', icon: 'catch', points: 0 },
+    { key: 'run_out', label: 'Run Out', icon: 'fielding', points: 0 },
+    { key: 'stumping', label: 'Stumping', icon: 'fielding', points: 0 },
+  ],
+  hockey: [
+    { key: 'goal', label: 'Goal', icon: 'goal', points: 1, hasSecondary: true, secondaryLabel: 'Assist' },
+    { key: 'penalty_corner_goal', label: 'Penalty Corner Goal', icon: 'goal', points: 1 },
+    { key: 'penalty_stroke_goal', label: 'Penalty Stroke Goal', icon: 'goal', points: 1 },
+    { key: 'green_card', label: 'Green Card', icon: 'card', points: 0 },
+    { key: 'yellow_card', label: 'Yellow Card', icon: 'card', points: 0 },
+    { key: 'red_card', label: 'Red Card', icon: 'card', points: 0 },
+  ],
+  netball: [
+    { key: 'goal', label: 'Goal', icon: 'goal', points: 1 },
+    { key: 'interception', label: 'Interception', icon: 'defence', points: 0 },
+    { key: 'turnover_won', label: 'Turnover Won', icon: 'defence', points: 0 },
+    { key: 'centre_pass_receive', label: 'Centre Pass Receive', icon: 'pass', points: 0 },
+  ],
+}
+
+// ─── Per-pupil stat fields per sport (for match_pupil_stats) ──────────────
+
+export const PUPIL_STAT_FIELDS = {
+  football: [
+    { key: 'minutes_played', label: 'Minutes Played', type: 'number' },
+    { key: 'goals', label: 'Goals', type: 'number' },
+    { key: 'assists', label: 'Assists', type: 'number' },
+    { key: 'shots', label: 'Shots', type: 'number' },
+    { key: 'shots_on_target', label: 'Shots on Target', type: 'number' },
+    { key: 'passes', label: 'Passes', type: 'number' },
+    { key: 'tackles', label: 'Tackles', type: 'number' },
+    { key: 'saves', label: 'Saves', type: 'number', positionFilter: ['GK'] },
+  ],
+  rugby: [
+    { key: 'minutes_played', label: 'Minutes Played', type: 'number' },
+    { key: 'tries', label: 'Tries', type: 'number' },
+    { key: 'conversions', label: 'Conversions', type: 'number' },
+    { key: 'tackles', label: 'Tackles', type: 'number' },
+    { key: 'tackles_missed', label: 'Tackles Missed', type: 'number' },
+    { key: 'carries', label: 'Carries', type: 'number' },
+    { key: 'metres_gained', label: 'Metres Gained', type: 'number' },
+    { key: 'passes', label: 'Passes', type: 'number' },
+    { key: 'turnovers_won', label: 'Turnovers Won', type: 'number' },
+    { key: 'lineout_wins', label: 'Lineout Wins', type: 'number' },
+    { key: 'penalties_conceded', label: 'Penalties Conceded', type: 'number' },
+  ],
+  cricket: [
+    { key: 'runs_scored', label: 'Runs Scored', type: 'number' },
+    { key: 'balls_faced', label: 'Balls Faced', type: 'number' },
+    { key: 'fours', label: 'Fours', type: 'number' },
+    { key: 'sixes', label: 'Sixes', type: 'number' },
+    { key: 'how_out', label: 'How Out', type: 'select', options: ['not out', 'bowled', 'caught', 'lbw', 'run out', 'stumped', 'hit wicket', 'retired'] },
+    { key: 'overs_bowled', label: 'Overs Bowled', type: 'number', step: 0.1 },
+    { key: 'runs_conceded', label: 'Runs Conceded', type: 'number' },
+    { key: 'wickets_taken', label: 'Wickets Taken', type: 'number' },
+    { key: 'maidens', label: 'Maidens', type: 'number' },
+    { key: 'catches', label: 'Catches', type: 'number' },
+    { key: 'run_outs', label: 'Run Outs', type: 'number' },
+  ],
+  hockey: [
+    { key: 'minutes_played', label: 'Minutes Played', type: 'number' },
+    { key: 'goals', label: 'Goals', type: 'number' },
+    { key: 'assists', label: 'Assists', type: 'number' },
+    { key: 'shots', label: 'Shots', type: 'number' },
+    { key: 'tackles', label: 'Tackles', type: 'number' },
+    { key: 'interceptions', label: 'Interceptions', type: 'number' },
+    { key: 'penalty_corners', label: 'Penalty Corners', type: 'number' },
+    { key: 'saves', label: 'Saves', type: 'number', positionFilter: ['GK'] },
+    { key: 'green_cards', label: 'Green Cards', type: 'number' },
+  ],
+  netball: [
+    { key: 'goals_scored', label: 'Goals Scored', type: 'number' },
+    { key: 'goals_attempted', label: 'Goals Attempted', type: 'number' },
+    { key: 'interceptions', label: 'Interceptions', type: 'number' },
+    { key: 'deflections', label: 'Deflections', type: 'number' },
+    { key: 'centre_pass_receives', label: 'Centre Pass Receives', type: 'number' },
+    { key: 'turnovers', label: 'Turnovers', type: 'number' },
+    { key: 'rebounds', label: 'Rebounds', type: 'number' },
+    { key: 'penalties', label: 'Penalties', type: 'number' },
+  ],
+}
+
 // ─── Helper: get taxonomy for a sport (with football fallback) ────────────
 
 export function getTaxonomy(sport) {
@@ -349,5 +456,7 @@ export function getTaxonomy(sport) {
     capabilityScale: CAPABILITY_SCALE,
     positionGuidance: POSITION_GUIDANCE[s],
     terminology: TERMINOLOGY[s],
+    matchEventTypes: MATCH_EVENT_TYPES[s],
+    pupilStatFields: PUPIL_STAT_FIELDS[s],
   }
 }

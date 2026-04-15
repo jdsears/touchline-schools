@@ -1000,6 +1000,184 @@ router.delete('/:id/substitutions/:subId', authenticateToken, async (req, res, n
   }
 })
 
+// ============== MATCH EVENTS (Sport-Specific) ==============
+
+// GET /matches/:id/events — list events for a match
+router.get('/:id/events', authenticateToken, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT me.*, p.name AS pupil_name, p.squad_number AS pupil_number,
+              sp.name AS secondary_pupil_name, sp.squad_number AS secondary_pupil_number
+       FROM match_events me
+       LEFT JOIN pupils p ON me.pupil_id = p.id
+       LEFT JOIN pupils sp ON me.secondary_pupil_id = sp.id
+       WHERE me.match_id = $1
+       ORDER BY me.minute ASC NULLS LAST, me.created_at ASC`,
+      [req.params.id]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// POST /matches/:id/events — add a match event
+router.post('/:id/events', authenticateToken, async (req, res, next) => {
+  try {
+    const { event_type, pupil_id, secondary_pupil_id, minute, value, details, notes } = req.body
+    if (!event_type) return res.status(400).json({ error: 'event_type is required' })
+    const result = await pool.query(
+      `INSERT INTO match_events (match_id, event_type, pupil_id, secondary_pupil_id, minute, value, details, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [req.params.id, event_type, pupil_id || null, secondary_pupil_id || null, minute || null, value || 1, details ? JSON.stringify(details) : '{}', notes || null]
+    )
+    res.status(201).json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// DELETE /matches/:id/events/:eventId — remove a match event
+router.delete('/:id/events/:eventId', authenticateToken, async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM match_events WHERE id = $1 AND match_id = $2', [req.params.eventId, req.params.id])
+    res.json({ message: 'Event removed' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============== PUPIL MATCH STATS ==============
+
+// GET /matches/:id/pupil-stats — get all pupil stats for a match
+router.get('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT mps.*, p.name AS pupil_name, p.squad_number
+       FROM match_pupil_stats mps
+       JOIN pupils p ON mps.pupil_id = p.id
+       WHERE mps.match_id = $1
+       ORDER BY p.squad_number NULLS LAST, p.name`,
+      [req.params.id]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// PUT /matches/:id/pupil-stats/:pupilId — upsert stats for a pupil in a match
+router.put('/:id/pupil-stats/:pupilId', authenticateToken, async (req, res, next) => {
+  try {
+    const { stats, rating, notes } = req.body
+    const result = await pool.query(
+      `INSERT INTO match_pupil_stats (match_id, pupil_id, stats, rating, notes)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (match_id, pupil_id)
+       DO UPDATE SET stats = $3, rating = $4, notes = $5, updated_at = NOW()
+       RETURNING *`,
+      [req.params.id, req.params.pupilId, JSON.stringify(stats || {}), rating || null, notes || null]
+    )
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// PUT /matches/:id/pupil-stats — bulk upsert stats for all pupils in a match
+router.put('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
+  try {
+    const { entries } = req.body
+    if (!Array.isArray(entries)) return res.status(400).json({ error: 'entries array required' })
+    const results = []
+    for (const entry of entries) {
+      const { pupil_id, stats, rating, notes } = entry
+      if (!pupil_id) continue
+      const r = await pool.query(
+        `INSERT INTO match_pupil_stats (match_id, pupil_id, stats, rating, notes)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (match_id, pupil_id)
+         DO UPDATE SET stats = $3, rating = $4, notes = $5, updated_at = NOW()
+         RETURNING *`,
+        [req.params.id, pupil_id, JSON.stringify(stats || {}), rating || null, notes || null]
+      )
+      results.push(r.rows[0])
+    }
+    res.json(results)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// GET /matches/pupil/:pupilId/season-stats — aggregate stats across all matches
+router.get('/pupil/:pupilId/season-stats', authenticateToken, async (req, res, next) => {
+  try {
+    const { pupilId } = req.params
+    const { team_id } = req.query
+
+    const teamFilter = team_id ? 'AND m.team_id = $2' : ''
+    const params = team_id ? [pupilId, team_id] : [pupilId]
+
+    const appearances = await pool.query(
+      `SELECT COUNT(DISTINCT ms.match_id) AS total,
+              COUNT(DISTINCT CASE WHEN ms.is_starting THEN ms.match_id END) AS starts,
+              COUNT(DISTINCT CASE WHEN NOT ms.is_starting THEN ms.match_id END) AS sub_appearances
+       FROM match_squads ms
+       JOIN matches m ON ms.match_id = m.id
+       WHERE ms.pupil_id = $1 ${teamFilter}`,
+      params
+    )
+
+    const events = await pool.query(
+      `SELECT me.event_type, COUNT(*) AS count, SUM(me.value) AS total_value
+       FROM match_events me
+       JOIN matches m ON me.match_id = m.id
+       WHERE me.pupil_id = $1 ${teamFilter}
+       GROUP BY me.event_type`,
+      params
+    )
+
+    const secondaryEvents = await pool.query(
+      `SELECT me.event_type, COUNT(*) AS count
+       FROM match_events me
+       JOIN matches m ON me.match_id = m.id
+       WHERE me.secondary_pupil_id = $1 ${teamFilter}
+       GROUP BY me.event_type`,
+      params
+    )
+
+    const ratings = await pool.query(
+      `SELECT AVG(mps.rating) AS avg_rating, COUNT(mps.rating) AS rated_matches
+       FROM match_pupil_stats mps
+       JOIN matches m ON mps.match_id = m.id
+       WHERE mps.pupil_id = $1 AND mps.rating IS NOT NULL ${teamFilter}`,
+      params
+    )
+
+    const legacyGoals = await pool.query(
+      `SELECT COUNT(*) AS goals FROM match_goals WHERE scorer_pupil_id = $1`, [pupilId]
+    )
+    const legacyAssists = await pool.query(
+      `SELECT COUNT(*) AS assists FROM match_goals WHERE assist_pupil_id = $1`, [pupilId]
+    )
+
+    res.json({
+      appearances: appearances.rows[0],
+      events: events.rows,
+      secondaryEvents: secondaryEvents.rows,
+      avgRating: ratings.rows[0]?.avg_rating ? parseFloat(ratings.rows[0].avg_rating).toFixed(1) : null,
+      ratedMatches: parseInt(ratings.rows[0]?.rated_matches || 0),
+      legacy: {
+        goals: parseInt(legacyGoals.rows[0]?.goals || 0),
+        assists: parseInt(legacyAssists.rows[0]?.assists || 0),
+      },
+    })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // ============== PLAYER OF THE MATCH ==============
 
 // Set pupil of the match

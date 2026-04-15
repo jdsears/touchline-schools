@@ -3627,6 +3627,45 @@ export async function runMigrations() {
 
     console.log('Phase 14: SSO migration complete')
 
+    // ==========================================
+    // Phase 15: Sport-specific match events & pupil stats
+    // ==========================================
+    console.log('Running Phase 15: Match events & pupil stats...')
+
+    // --- 15a: match_events — flexible sport-agnostic event log ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS match_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+      event_type TEXT NOT NULL,
+      pupil_id UUID REFERENCES pupils(id) ON DELETE SET NULL,
+      secondary_pupil_id UUID REFERENCES pupils(id) ON DELETE SET NULL,
+      minute INTEGER,
+      value INTEGER DEFAULT 1,
+      details JSONB DEFAULT '{}',
+      notes TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_match ON match_events(match_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_pupil ON match_events(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_type ON match_events(event_type)`)
+
+    // --- 15b: match_pupil_stats — per-pupil per-match flexible stats ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS match_pupil_stats (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      stats JSONB DEFAULT '{}',
+      rating INTEGER CHECK (rating >= 1 AND rating <= 10),
+      notes TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(match_id, pupil_id)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_match ON match_pupil_stats(match_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_pupil ON match_pupil_stats(pupil_id)`)
+
+    console.log('Phase 15: Match events & pupil stats migration complete')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
