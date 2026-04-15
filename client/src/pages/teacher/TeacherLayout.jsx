@@ -39,6 +39,8 @@ const hodNav = [
   { name: 'All Teams', href: '/hod/teams', icon: Shield },
   { name: 'All Classes', href: '/hod/classes', icon: GraduationCap },
   { name: 'Reporting', href: '/hod/reporting', icon: BarChart3 },
+  { name: 'Voice Safeguarding', href: '/hod/voice-safeguarding', icon: Shield, voiceOnly: true },
+  { name: 'Voice Settings', href: '/hod/voice-settings', icon: Mic, voiceOnly: true },
 ]
 
 const curriculumNav = [
@@ -66,7 +68,7 @@ const sharedNav = [
   { name: 'Settings', href: '/settings', icon: Settings },
 ]
 
-function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD }) {
+function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEnabled }) {
   const basePath = '/teacher'
 
   function NavItem({ item }) {
@@ -125,7 +127,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD }) {
               </span>
             </div>
             <div className="space-y-1 mb-6">
-              {hodNav.map(item => (
+              {hodNav.filter(item => !item.voiceOnly || voiceEnabled).map(item => (
                 <NavItem key={item.href} item={item} />
               ))}
             </div>
@@ -242,6 +244,7 @@ export default function TeacherLayout() {
           setSidebarOpen={setSidebarOpen}
           pathname={location.pathname}
           isHoD={isHoD}
+          voiceEnabled={voiceEnabled}
         />
       </aside>
 

@@ -51,9 +51,11 @@ import pupilManagementRoutes from './routes/pupilManagement.js'
 import reportingRoutes from './routes/reporting.js'
 import enterpriseBillingRoutes from './routes/enterpriseBilling.js'
 import voiceObservationRoutes from './routes/voiceObservations.js'
+import voiceSafeguardingRoutes from './routes/voiceSafeguarding.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
+import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
 
 // Middleware
 import { errorHandler } from './middleware/errorHandler.js'
@@ -215,6 +217,7 @@ app.use('/api/pupil-management', pupilManagementRoutes)
 app.use('/api/reporting', reportingRoutes)
 app.use('/api/enterprise-billing', enterpriseBillingRoutes)
 app.use('/api/voice-observations', voiceObservationRoutes)
+app.use('/api/voice-safeguarding', voiceSafeguardingRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -437,8 +440,10 @@ runMigrations().then(() => {
     const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000
     setTimeout(() => {
       scanTrialLifecycle().catch(err => console.error('[TrialLifecycle] Startup scan error:', err))
+      purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Startup scan error:', err))
       setInterval(() => {
         scanTrialLifecycle().catch(err => console.error('[TrialLifecycle] Scheduled scan error:', err))
+        purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Scheduled scan error:', err))
       }, TWENTY_FOUR_HOURS)
     }, 30_000)
   })
