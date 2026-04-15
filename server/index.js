@@ -495,6 +495,11 @@ async function ensureDemoPrerequisites() {
     // Rename club_members -> school_members if needed
     `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'school_members') THEN IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_members') THEN ALTER TABLE club_members RENAME TO school_members; END IF; END IF; END $$`,
   ]
+  // Rename club_id -> school_id in all tables that still have the old column name
+  const clubIdTables = ['school_members', 'teams', 'school_announcements', 'school_comms_log', 'compliance_records', 'safeguarding_roles', 'safeguarding_incidents', 'compliance_alerts', 'school_events', 'event_registrations', 'session_schedule', 'match_reports', 'ai_insights', 'ai_usage', 'grant_drafts', 'teaching_groups', 'pupils']
+  for (const t of clubIdTables) {
+    stmts.push(`DO $$ BEGIN IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${t}' AND column_name = 'club_id') THEN ALTER TABLE ${t} RENAME COLUMN club_id TO school_id; END IF; END $$`)
+  }
   // Add missing columns on schools (if table exists)
   const schoolCols = ['school_type TEXT', 'urn TEXT', 'voice_observations_enabled BOOLEAN DEFAULT false', 'audio_retention_days INTEGER DEFAULT 7', 'transcript_retention_days INTEGER DEFAULT 30', 'is_demo_tenant BOOLEAN DEFAULT false']
   for (const col of schoolCols) stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS ${col}`)
