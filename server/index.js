@@ -605,6 +605,9 @@ async function ensureDemoPrerequisites() {
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS group_identifier TEXT`)
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS academic_year TEXT`)
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS key_stage TEXT DEFAULT 'KS3'`)
+  // Add 'date' column to matches (many queries use m.date, table has match_date)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS date DATE`)
+  stmts.push(`UPDATE matches SET date = match_date WHERE date IS NULL AND match_date IS NOT NULL`)
   // Add missing columns on observations
   stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT`)
   stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT`)

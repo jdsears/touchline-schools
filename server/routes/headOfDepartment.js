@@ -121,7 +121,7 @@ router.get('/overview', requireHoD, async (req, res) => {
       pool.query(
         `SELECT COUNT(*) FROM matches m
          JOIN teams t ON m.team_id = t.id
-         WHERE t.school_id = $1 AND m.date > NOW() - INTERVAL '3 months'`,
+         WHERE t.school_id = $1 AND COALESCE(m.date, m.match_date) > NOW() - INTERVAL '3 months'`,
         [schoolId]
       ),
       // Assessments this term

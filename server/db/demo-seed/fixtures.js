@@ -40,8 +40,8 @@ function futureDate(daysAhead) {
 
 async function insertMatch(teamId, opponent, matchDate, homeAway, scoreFor, scoreAgainst, location) {
   const result = await pool.query(`
-    INSERT INTO matches (team_id, opponent, match_date, match_time, home_away, score_for, score_against, location, created_at)
-    VALUES ($1, $2, $3, '14:00', $4, $5, $6, $7, NOW())
+    INSERT INTO matches (team_id, opponent, match_date, date, match_time, home_away, score_for, score_against, location, created_at)
+    VALUES ($1, $2, $3, $3, '14:00', $4, $5, $6, $7, NOW())
     RETURNING *
   `, [teamId, opponent, matchDate, homeAway, scoreFor, scoreAgainst, location || 'Ashworth Park Academy Sports Ground'])
   return result.rows[0]

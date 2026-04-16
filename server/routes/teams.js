@@ -100,13 +100,13 @@ router.get('/mine/fixtures', authenticateToken, async (req, res, next) => {
     const userId = req.user.id
 
     const result = await pool.query(
-      `SELECT m.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+      `SELECT m.*, COALESCE(m.date, m.match_date) AS date, t.name AS team_name, t.sport, t.age_group, t.gender,
               t.primary_color AS team_color
        FROM matches m
        JOIN teams t ON m.team_id = t.id
        LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
        WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
-       ORDER BY m.date DESC
+       ORDER BY COALESCE(m.date, m.match_date) DESC
        LIMIT 50`,
       [userId]
     )
@@ -626,7 +626,7 @@ router.get('/:id/matches', authenticateToken, requireTeamAccess, async (req, res
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'available') as available_count,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'unavailable') as unavailable_count,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'maybe') as maybe_count
-      FROM matches m WHERE m.team_id = $1 ORDER BY m.date DESC`,
+      FROM matches m WHERE m.team_id = $1 ORDER BY COALESCE(m.date, m.match_date) DESC`,
       [id]
     )
     
