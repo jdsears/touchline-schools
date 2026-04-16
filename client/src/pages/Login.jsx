@@ -70,7 +70,7 @@ export default function Login() {
     if (result.success) {
       const userRole = result.user?.role
       if (userRole === 'pupil' || userRole === 'parent') {
-        navigate('/pupil')
+        navigate('/pupil-lounge')
       } else {
         navigate('/teacher')
       }

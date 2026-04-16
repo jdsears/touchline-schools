@@ -45,7 +45,7 @@ export default function HoDTestPersonas() {
     try {
       const res = await hodService.impersonateTestPersona(persona.id)
       startImpersonation(res.data.token, res.data.user)
-      navigate('/pupil')
+      navigate('/pupil-lounge')
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to impersonate')
       setImpersonating(null)

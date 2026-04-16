@@ -338,20 +338,9 @@ export default function App() {
           <Route path="settings/:tab" element={<TeacherSettings />} />
         </Route>
 
-        {/* Pupil Portal */}
-        <Route path="/pupil" element={
-          <ProtectedRoute allowedRoles={['player']}>
-            <PupilLayout />
-          </ProtectedRoute>
-        }>
-          <Route index element={<PupilSports />} />
-          <Route path="week" element={<PupilWeek />} />
-          <Route path="development" element={<PupilDevelopmentPage />} />
-          <Route path="training" element={<PupilTrainingPage />} />
-          <Route path="clips" element={<PupilClipsPage />} />
-          <Route path="assistant" element={<PupilAssistantPage />} />
-          <Route path="achievements" element={<PupilAchievements />} />
-        </Route>
+        {/* Old Pupil Portal redirects to Sports Lounge */}
+        <Route path="/pupil/*" element={<Navigate to="/pupil-lounge/today" replace />} />
+        <Route path="/pupil" element={<Navigate to="/pupil-lounge/today" replace />} />
 
         {/* Sports Lounge (v1.8 mobile-first pupil portal) */}
         <Route path="/pupil-lounge" element={
