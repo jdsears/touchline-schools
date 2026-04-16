@@ -64,6 +64,7 @@ import { seedStaff } from './db/demo-seed/staff.js'
 import { seedPupils } from './db/demo-seed/pupils.js'
 import { seedTeams } from './db/demo-seed/teams.js'
 import { seedCurriculum } from './db/demo-seed/curriculum.js'
+import { seedLessons } from './db/demo-seed/lessons.js'
 import { seedFixtures } from './db/demo-seed/fixtures.js'
 import { seedSafeguarding } from './db/demo-seed/safeguarding.js'
 import { seedAuditLog } from './db/demo-seed/auditLog.js'
@@ -444,6 +445,7 @@ app.get('/api/trigger-seed', async (req, res) => {
     log.push(`Teams created: ${teams.length}`)
 
     try { await seedCurriculum(school.id, staff, pupils); log.push('Curriculum done') } catch (e) { log.push(`Curriculum FAILED: ${e.message}`) }
+    try { await seedLessons(school.id, staff); log.push('Lessons done') } catch (e) { log.push(`Lessons FAILED: ${e.message}`) }
     try { await seedFixtures(school.id, teams, staff, pupils); log.push('Fixtures done') } catch (e) { log.push(`Fixtures FAILED: ${e.message}`) }
     try { await seedSafeguarding(school.id, staff); log.push('Safeguarding done') } catch (e) { log.push(`Safeguarding FAILED: ${e.message}`) }
     try { await seedAuditLog(school.id, staff); log.push('AuditLog done') } catch (e) { log.push(`AuditLog FAILED: ${e.message}`) }
@@ -752,6 +754,7 @@ async function ensureDemoSchool() {
     const teams = await seedTeams(school.id, staff, pupils)
     console.log('[DemoSeed] Teams:', teams.length)
     await seedCurriculum(school.id, staff, pupils).catch(e => console.error('[DemoSeed] Curriculum:', e.message))
+    await seedLessons(school.id, staff).catch(e => console.error('[DemoSeed] Lessons:', e.message))
     await seedFixtures(school.id, teams, staff, pupils).catch(e => console.error('[DemoSeed] Fixtures:', e.message))
     await seedSafeguarding(school.id, staff).catch(e => console.error('[DemoSeed] Safeguarding:', e.message))
     await seedAuditLog(school.id, staff).catch(e => console.error('[DemoSeed] AuditLog:', e.message))
