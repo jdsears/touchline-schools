@@ -118,6 +118,116 @@ router.get('/me/development', authenticateToken, async (req, res) => {
   }
 })
 
+// GET /me/schedule - unified schedule: fixtures, training, lessons for a date range
+router.get('/me/schedule', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) return res.json([])
+    const pupilId = pupilRes.rows[0].id
+
+    const from = req.query.from || new Date().toISOString().split('T')[0]
+    const to = req.query.to || (() => {
+      const d = new Date()
+      d.setDate(d.getDate() + 14)
+      return d.toISOString().split('T')[0]
+    })()
+
+    // 1. Fixtures: pupil is on a team that has matches in the date range
+    const fixturesRes = await pool.query(`
+      SELECT m.id, 'fixture' AS type,
+        COALESCE(m.opponent, 'TBC') AS title,
+        COALESCE(m.date, m.match_date) AS date,
+        m.match_time AS start_time,
+        NULL::TIME AS end_time,
+        m.location AS venue,
+        jsonb_build_object(
+          'opponent', m.opponent,
+          'home_away', m.home_away,
+          'kit_type', m.kit_type,
+          'meet_time', m.meet_time,
+          'team_name', t.name,
+          'team_id', t.id,
+          'sport', t.sport,
+          'score_for', m.score_for,
+          'score_against', m.score_against
+        ) AS extra
+      FROM matches m
+      JOIN teams t ON t.id = m.team_id
+      JOIN team_memberships tm ON tm.team_id = t.id AND tm.pupil_id = $1
+      WHERE COALESCE(m.date, m.match_date) BETWEEN $2 AND $3
+      ORDER BY COALESCE(m.date, m.match_date), m.match_time NULLS LAST
+    `, [pupilId, from, to])
+
+    // 2. Training: pupil is on a team that has training sessions
+    const trainingRes = await pool.query(`
+      SELECT ts.id, 'training' AS type,
+        COALESCE(ts.focus_areas, ts.focus, 'Training') AS title,
+        ts.date,
+        ts.time AS start_time,
+        NULL::TIME AS end_time,
+        ts.location AS venue,
+        jsonb_build_object(
+          'session_type', ts.session_type,
+          'duration', ts.duration,
+          'meet_time', ts.meet_time,
+          'team_name', t.name,
+          'team_id', t.id,
+          'sport', t.sport,
+          'share_plan', COALESCE(ts.share_plan_with_players, false)
+        ) AS extra
+      FROM training_sessions ts
+      JOIN teams t ON t.id = ts.team_id
+      JOIN team_memberships tm ON tm.team_id = t.id AND tm.pupil_id = $1
+      WHERE ts.date BETWEEN $2 AND $3
+      ORDER BY ts.date, ts.time NULLS LAST
+    `, [pupilId, from, to])
+
+    // 3. Lessons: pupil is in a teaching group that has lesson plans scheduled
+    const lessonsRes = await pool.query(`
+      SELECT lp.id, 'lesson' AS type,
+        lp.title,
+        lp.lesson_date AS date,
+        NULL::TIME AS start_time,
+        NULL::TIME AS end_time,
+        NULL AS venue,
+        jsonb_build_object(
+          'duration', lp.duration,
+          'status', lp.status,
+          'group_name', tg.name,
+          'group_id', tg.id,
+          'sport', su.sport,
+          'unit_name', su.unit_name
+        ) AS extra
+      FROM lesson_plans lp
+      JOIN teaching_groups tg ON tg.id = lp.teaching_group_id
+      JOIN teaching_group_pupils tgp ON tgp.teaching_group_id = tg.id AND tgp.pupil_id = $1
+      LEFT JOIN sport_units su ON su.id = lp.sport_unit_id
+      WHERE lp.lesson_date BETWEEN $2 AND $3
+      ORDER BY lp.lesson_date
+    `, [pupilId, from, to])
+
+    // Merge and sort chronologically
+    const events = [
+      ...fixturesRes.rows,
+      ...trainingRes.rows,
+      ...lessonsRes.rows,
+    ].sort((a, b) => {
+      const dateComp = (a.date || '').localeCompare(b.date || '')
+      if (dateComp !== 0) return dateComp
+      return (a.start_time || '').localeCompare(b.start_time || '')
+    })
+
+    res.json(events)
+  } catch (err) {
+    console.error('Error in /pupils/me/schedule:', err)
+    res.status(500).json({ error: 'Failed to load schedule' })
+  }
+})
+
 // Get pupil
 router.get('/:id', authenticateToken, async (req, res, next) => {
   try {
