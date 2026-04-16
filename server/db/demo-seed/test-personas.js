@@ -97,18 +97,20 @@ async function findCriteria(unitId) {
 }
 
 // ── Observation helpers ────────────────────────────────────────────
-async function addObs(pupilId, observerId, { type, content, contextType, sport, source, createdAt, matchId, teachingGroupId }) {
+async function addObs(pupilId, observerId, { type, content, contextType, sport, source, createdAt, matchId, teachingGroupId, visibleToPupil }) {
   await pool.query(`
     INSERT INTO observations (
       pupil_id, observer_id, type, content,
       context_type, sport, source, review_state,
-      match_id, teaching_group_id, created_at
+      match_id, teaching_group_id, visible_to_pupil, created_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, 'confirmed', $8, $9, $10)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, 'confirmed', $8, $9, $10, $11)
   `, [
     pupilId, observerId, type, content,
     contextType || 'general', sport || null, source || 'typed',
-    matchId || null, teachingGroupId || null, createdAt || daysAgo(3),
+    matchId || null, teachingGroupId || null,
+    visibleToPupil || false,
+    createdAt || daysAgo(3),
   ])
 }
 
@@ -245,12 +247,12 @@ async function seedJamie(schoolId) {
     await addObs(jamie.id, observerId, {
       type: 'attitude_effort', contextType: 'pe_lesson', sport: 'football', source: 'voice',
       content: 'Jamie volunteered to demonstrate the turn-and-shoot drill in front of the class today. Huge step forward in confidence. Technique was decent — encouraged him to keep practising at break.',
-      createdAt: daysAgo(42), teachingGroupId: groupId,
+      createdAt: daysAgo(42), teachingGroupId: groupId, visibleToPupil: true,
     })
     await addObs(jamie.id, observerId, {
       type: 'match_performance', contextType: 'match', sport: 'football', source: 'typed',
       content: 'First competitive fixture vs Northgate High (home, 4-0 win). Jamie came on at half-time and scored within 10 minutes — a tidy finish from the edge of the box. Looked composed under pressure for his first game.',
-      createdAt: daysAgo(32),
+      createdAt: daysAgo(32), visibleToPupil: true,
     })
     await addObs(jamie.id, observerId, {
       type: 'technical_skill', contextType: 'training_session', sport: 'football', source: 'voice',
@@ -260,7 +262,7 @@ async function seedJamie(schoolId) {
     await addObs(jamie.id, hodPeId || observerId, {
       type: 'development', contextType: 'general', sport: 'football', source: 'typed',
       content: 'Mid-year review: Jamie has made excellent progress since September. From a shy, quiet starter to one of our most improved Year 7 pupils. Technically developing well; his confidence on the ball has grown noticeably. Recommend for district development programme trials in the spring.',
-      createdAt: daysAgo(5),
+      createdAt: daysAgo(5), visibleToPupil: true,
     })
 
     // Gymnastics lesson observation (cross-curricular)
@@ -318,12 +320,12 @@ async function seedAmelia(schoolId) {
     await addObs(amelia.id, observerId, {
       type: 'match_performance', contextType: 'match', sport: 'netball', source: 'typed',
       content: 'County Cup round 2 vs Sacred Heart (away, 32-29 win). Amelia played GA and was our top scorer with 14 goals. Her movement in the circle was outstanding — sharp changes of direction that the defence couldn\'t handle. Converted 14/17 attempts.',
-      createdAt: daysAgo(56),
+      createdAt: daysAgo(56), visibleToPupil: true,
     })
     await addObs(amelia.id, observerId, {
       type: 'leadership', contextType: 'training_session', sport: 'netball', source: 'voice',
       content: 'Amelia took the initiative to organise warm-up when I was delayed setting up equipment. Led the group through a structured passing warm-up without being asked. Natural leader — considering her for vice-captain next season.',
-      createdAt: daysAgo(35),
+      createdAt: daysAgo(35), visibleToPupil: true,
     })
     await addObs(amelia.id, observerId, {
       type: 'match_performance', contextType: 'match', sport: 'netball', source: 'typed',
@@ -352,7 +354,7 @@ async function seedAmelia(schoolId) {
     await addObs(amelia.id, directorId || hodPeId || observerId, {
       type: 'development', contextType: 'general', source: 'typed',
       content: 'Multi-sport review: Amelia is one of our strongest Year 9 athletes across both netball and hockey. Her transferable skills (court/pitch awareness, composure, fitness) are evident in both sports. She has expressed interest in trying athletics in the summer term. Recommend for the Norfolk School Games netball squad selection.',
-      createdAt: daysAgo(7),
+      createdAt: daysAgo(7), visibleToPupil: true,
     })
   }
 
@@ -387,6 +389,12 @@ async function seedToby(schoolId) {
     gender: 'male',
   })
 
+  // Toby is a GCSE PE candidate
+  await pool.query(
+    `UPDATE pupils SET gcse_pe_candidate = TRUE WHERE id = $1`,
+    [toby.id]
+  )
+
   const footballId = await findTeam(schoolId, 'Year 11 Boys Football')
   const rugbyId = await findTeam(schoolId, 'Year 11 Boys Rugby')
   await linkToTeam(toby, footballId)
@@ -410,7 +418,7 @@ async function seedToby(schoolId) {
     await addObs(toby.id, observerId, {
       type: 'match_performance', contextType: 'match', sport: 'football', source: 'typed',
       content: 'District Cup semi-final vs Riverside Academy (away, 2-2 draw). Toby was captain and put in a commanding performance at CB. Won every aerial duel and made a crucial last-ditch tackle in the 70th minute. His composure on the ball allowed us to play out from the back effectively.',
-      createdAt: daysAgo(50),
+      createdAt: daysAgo(50), visibleToPupil: true,
     })
     await addObs(toby.id, observerId, {
       type: 'leadership', contextType: 'match', sport: 'football', source: 'voice',
@@ -442,7 +450,7 @@ async function seedToby(schoolId) {
     await addObs(toby.id, teacher1Id || observerId, {
       type: 'match_performance', contextType: 'match', sport: 'rugby', source: 'typed',
       content: 'Home fixture vs Sprowston Academy (34-7 win). Toby was outstanding — scored two tries, one from a turnover at the breakdown and one from a powerful 20m carry through three tacklers. His work rate at the breakdown was relentless.',
-      createdAt: daysAgo(17),
+      createdAt: daysAgo(17), visibleToPupil: true,
     })
 
     // ── GCSE PE specific observations ──
@@ -461,7 +469,7 @@ async function seedToby(schoolId) {
     await addObs(toby.id, hodPeId || observerId, {
       type: 'development', contextType: 'general', source: 'typed',
       content: 'Year 11 progress review: Toby is one of the most complete sportsmen in his year group. He captains both the football and rugby teams with distinction. His GCSE PE is on track for a grade 7+ with potential to push higher if theory revision is consistent. Selected for Norfolk County rugby trials in February. Strong candidate for Sports Personality of the Year award.',
-      createdAt: daysAgo(3),
+      createdAt: daysAgo(3), visibleToPupil: true,
     })
   }
 
