@@ -138,7 +138,7 @@ export default function TeacherDashboard() {
               {teams.slice(0, 5).map(team => (
                 <Link
                   key={team.id}
-                  to="/teacher/teams"
+                  to={`/teacher/teams/${team.id}`}
                   className="flex items-center justify-between p-3 rounded-lg hover:bg-navy-800/50 transition-colors"
                 >
                   <div className="flex items-center gap-3">

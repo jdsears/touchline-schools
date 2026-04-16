@@ -92,6 +92,7 @@ const TeacherAssessment = lazy(() => import('./pages/teacher/TeacherAssessment')
 const TeacherReports = lazy(() => import('./pages/teacher/TeacherReports'))
 const TeacherCurriculum = lazy(() => import('./pages/teacher/TeacherCurriculum'))
 const TeacherTeams = lazy(() => import('./pages/teacher/TeacherTeams'))
+const TeacherTeamDetail = lazy(() => import('./pages/teacher/TeacherTeamDetail'))
 const TeacherFixtures = lazy(() => import('./pages/teacher/TeacherFixtures'))
 const TeacherSessions = lazy(() => import('./pages/teacher/TeacherSessions'))
 const TeacherDevelopment = lazy(() => import('./pages/teacher/TeacherDevelopment'))
@@ -293,6 +294,7 @@ export default function App() {
           <Route path="reports" element={<TeacherReports />} />
           <Route path="curriculum" element={<TeacherCurriculum />} />
           <Route path="teams" element={<TeacherTeams />} />
+          <Route path="teams/:teamId" element={<TeacherTeamDetail />} />
           <Route path="fixtures" element={<TeacherFixtures />} />
           <Route path="sessions" element={<TeacherSessions />} />
           <Route path="development" element={<TeacherDevelopment />} />

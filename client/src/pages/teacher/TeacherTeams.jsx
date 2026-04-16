@@ -95,7 +95,7 @@ export default function TeacherTeams() {
           {filtered.map(team => (
             <Link
               key={team.id}
-              to={`/pupils`}
+              to={`/teacher/teams/${team.id}`}
               className="bg-navy-900 rounded-xl border border-navy-800 p-5 hover:border-navy-600 transition-colors"
             >
               <div className="flex items-start gap-4">
