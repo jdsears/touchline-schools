@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { generatePlayerIDP, analyzePlayerAttributes, extractPlayerAttributes } from '../services/claudeService.js'
+import { getQuoteForPupil } from '../services/motivationalQuoteService.js'
 import { normalizePlayerPositions, normalizePositions } from '../utils/pupilUtils.js'
 import { sendParentInviteEmail, sendAchievementEmail } from '../services/emailService.js'
 import { getFrontendUrl } from '../utils/urlUtils.js'
@@ -226,6 +227,27 @@ router.get('/me/schedule', authenticateToken, async (req, res) => {
   } catch (err) {
     console.error('Error in /pupils/me/schedule:', err)
     res.status(500).json({ error: 'Failed to load schedule' })
+  }
+})
+
+// GET /me/quote - daily motivational quote based on year group
+router.get('/me/quote', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id, year_group FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) {
+      return res.json({ text: '', attribution: '' })
+    }
+    const { id, year_group } = pupilRes.rows[0]
+    const today = new Date().toISOString().split('T')[0]
+    const quote = getQuoteForPupil(id, today, year_group || 8)
+    res.json(quote)
+  } catch (err) {
+    console.error('Error in /pupils/me/quote:', err)
+    res.status(500).json({ error: 'Failed to load quote' })
   }
 })
 
