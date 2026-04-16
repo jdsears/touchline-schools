@@ -248,9 +248,8 @@ router.get('/dashboard', async (req, res) => {
       assessmentsResult = await pool.query(
         `SELECT COUNT(*)
          FROM pupil_assessments pa
-         JOIN teaching_groups tg ON pa.sport_unit_id IN (
-           SELECT su.id FROM sport_units su WHERE su.teaching_group_id = tg.id
-         )
+         JOIN sport_units su ON pa.unit_id = su.id
+         JOIN teaching_groups tg ON su.teaching_group_id = tg.id
          WHERE tg.school_id = $1
            AND pa.assessed_at > NOW() - INTERVAL '3 months'`,
         [schoolId]

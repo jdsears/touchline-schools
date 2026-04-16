@@ -612,7 +612,11 @@ async function ensureDemoPrerequisites() {
   stmts.push(`ALTER TABLE reporting_windows ADD COLUMN IF NOT EXISTS year_groups TEXT`)
   // Add missing columns on pupil_assessments and pupil_reports
   stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS assessed_by UUID`)
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS unit_id UUID`)
+  // Rename sport_unit_id to unit_id if it exists (schema fix)
+  stmts.push(`DO $$ BEGIN IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pupil_assessments' AND column_name = 'sport_unit_id') AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pupil_assessments' AND column_name = 'unit_id') THEN ALTER TABLE pupil_assessments RENAME COLUMN sport_unit_id TO unit_id; END IF; END $$`)
   stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS unit_id UUID`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS sport TEXT`)
   // Create all tables the demo seed needs (Phases 8-12 of migration that may not have run)
   const createTables = [
     `CREATE TABLE IF NOT EXISTS teacher_sports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, sport TEXT NOT NULL, role TEXT DEFAULT 'coach', created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teacher_id, sport))`,
@@ -623,7 +627,7 @@ async function ensureDemoPrerequisites() {
     `CREATE TABLE IF NOT EXISTS assessment_scales (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, key_stage TEXT, scale_type TEXT DEFAULT 'descriptive', grades JSONB, is_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS curriculum_strands (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, key_stage TEXT, strand_name TEXT NOT NULL, description TEXT, display_order INTEGER DEFAULT 0, is_system_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS assessment_criteria (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), strand_id UUID, sport TEXT, criterion_name TEXT NOT NULL, description TEXT, display_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW())`,
-    `CREATE TABLE IF NOT EXISTS pupil_assessments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID, sport_unit_id UUID, strand_id UUID, criterion_id UUID, grade TEXT, teacher_id UUID, assessed_at TIMESTAMPTZ DEFAULT NOW(), created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS pupil_assessments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID, unit_id UUID, strand_id UUID, criterion_id UUID, grade TEXT, teacher_id UUID, assessed_at TIMESTAMPTZ DEFAULT NOW(), created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS reporting_windows (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, academic_year TEXT, term TEXT, opens_at TIMESTAMPTZ, closes_at TIMESTAMPTZ, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS pupil_reports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID NOT NULL, reporting_window_id UUID, teaching_group_id UUID, teacher_id UUID, unit_id UUID, overall_grade TEXT, effort_grade TEXT, comment TEXT, ai_draft TEXT, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS lesson_plans (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, sport_unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL, teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, lesson_date DATE, duration INTEGER DEFAULT 60, learning_objectives TEXT, activities TEXT, equipment TEXT, differentiation TEXT, homework TEXT, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,

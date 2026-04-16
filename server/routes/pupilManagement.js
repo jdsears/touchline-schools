@@ -25,8 +25,15 @@ router.get('/', async (req, res) => {
     const limit = Math.min(parseInt(lim) || 50, 200)
     const offset = parseInt(off) || 0
 
+    // Derive first_name/last_name from the guaranteed 'name' column
     let query = `
-      SELECT DISTINCT p.id, p.first_name, p.last_name, p.year_group, p.house,
+      SELECT p.id,
+             split_part(COALESCE(p.name, ''), ' ', 1) AS first_name,
+             CASE WHEN position(' ' in COALESCE(p.name, '')) > 0
+                  THEN substring(COALESCE(p.name, '') from position(' ' in COALESCE(p.name, '')) + 1)
+                  ELSE '' END AS last_name,
+             p.name,
+             p.year_group, p.house,
              p.date_of_birth, p.is_active, p.created_at,
              t.name AS team_name, t.sport AS team_sport,
              (SELECT json_agg(DISTINCT su.sport)
@@ -37,17 +44,18 @@ router.get('/', async (req, res) => {
              (SELECT COUNT(*) FROM pupil_assessments pa WHERE pa.pupil_id = p.id) AS assessment_count
       FROM pupils p
       LEFT JOIN teams t ON p.team_id = t.id
-      LEFT JOIN school_members sm ON sm.user_id = p.user_id AND sm.school_id = $1
-      LEFT JOIN teaching_group_pupils tgp2 ON tgp2.pupil_id = p.id
-      LEFT JOIN teaching_groups tg2 ON tgp2.teaching_group_id = tg2.id AND tg2.school_id = $1
       WHERE p.is_active = true
-        AND (t.school_id = $1 OR sm.school_id = $1 OR tg2.school_id = $1)`
+        AND (t.school_id = $1 OR p.id IN (
+          SELECT tgp2.pupil_id FROM teaching_group_pupils tgp2
+          JOIN teaching_groups tg2 ON tgp2.teaching_group_id = tg2.id
+          WHERE tg2.school_id = $1
+        ))`
 
     const params = [schoolId]
     let paramIndex = 2
 
     if (search) {
-      query += ` AND (p.first_name ILIKE $${paramIndex} OR p.last_name ILIKE $${paramIndex})`
+      query += ` AND p.name ILIKE $${paramIndex}`
       params.push(`%${search}%`)
       paramIndex++
     }
@@ -68,7 +76,7 @@ router.get('/', async (req, res) => {
     const countQuery = `SELECT COUNT(*) FROM (${query}) AS _count`
     const countResult = await pool.query(countQuery, params)
 
-    query += ` ORDER BY p.year_group ASC, p.last_name ASC, p.first_name ASC`
+    query += ` ORDER BY p.year_group ASC, p.name ASC`
     query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`
     params.push(limit, offset)
 
