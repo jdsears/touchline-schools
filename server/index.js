@@ -611,6 +611,8 @@ async function ensureDemoPrerequisites() {
   // Add missing columns on observations
   stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT`)
   stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT`)
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS sport TEXT`)
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS teaching_group_id UUID`)
   // Add missing columns on reporting_windows
   stmts.push(`ALTER TABLE reporting_windows ADD COLUMN IF NOT EXISTS year_groups TEXT`)
   // Add missing columns on pupil_assessments and pupil_reports

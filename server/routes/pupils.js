@@ -166,11 +166,13 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
     const result = await pool.query(
       `SELECT o.*, u.name as observer_name,
               m.opponent as match_opponent, COALESCE(m.date, m.match_date) as match_date,
-              ts.session_date as training_date, ts.focus as training_focus
+              ts.session_date as training_date, ts.focus as training_focus,
+              tg.name as teaching_group_name
        FROM observations o
        JOIN users u ON o.observer_id = u.id
        LEFT JOIN matches m ON o.match_id = m.id
        LEFT JOIN training_sessions ts ON o.training_session_id = ts.id
+       LEFT JOIN teaching_groups tg ON o.teaching_group_id = tg.id
        WHERE o.pupil_id = $1 ORDER BY o.created_at DESC`,
       [id]
     )
@@ -199,16 +201,16 @@ router.post('/:id/observations', authenticateToken, async (req, res, next) => {
       if (schoolCheck.rows.length === 0) return res.status(403).json({ message: 'Access denied' })
     }
 
-    const { type, content, context, contextType, matchId, trainingSessionId } = req.body
+    const { type, content, context, contextType, matchId, trainingSessionId, sport, teachingGroupId } = req.body
 
     if (!type || !content) {
       return res.status(400).json({ message: 'Type and content are required' })
     }
 
     const result = await pool.query(
-      `INSERT INTO observations (pupil_id, observer_id, type, content, context, context_type, match_id, training_session_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [id, req.user.id, type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null]
+      `INSERT INTO observations (pupil_id, observer_id, type, content, context, context_type, match_id, training_session_id, sport, teaching_group_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+      [id, req.user.id, type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, sport || null, teachingGroupId || null]
     )
 
     res.status(201).json(result.rows[0])

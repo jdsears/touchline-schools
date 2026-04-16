@@ -28,7 +28,7 @@ export default function HoDPupilProfile() {
   const [editForm, setEditForm] = useState({})
   const [observations, setObservations] = useState([])
   const [showAddObs, setShowAddObs] = useState(false)
-  const [obsForm, setObsForm] = useState({ type: 'development', content: '' })
+  const [obsForm, setObsForm] = useState({ type: 'development', content: '', contextType: 'general', sport: '' })
   const [savingObs, setSavingObs] = useState(false)
   const [deletingObsId, setDeletingObsId] = useState(null)
 
@@ -54,10 +54,11 @@ export default function HoDPupilProfile() {
       await teamService.addObservation(id, {
         type: obsForm.type,
         content: obsForm.content.trim(),
-        contextType: 'general',
+        contextType: obsForm.contextType || 'general',
+        sport: obsForm.sport || null,
       })
       toast.success('Observation added')
-      setObsForm({ type: 'development', content: '' })
+      setObsForm({ type: 'development', content: '', contextType: 'general', sport: '' })
       setShowAddObs(false)
       loadObservations()
     } catch (err) {
@@ -264,17 +265,76 @@ export default function HoDPupilProfile() {
 
             {showAddObs && (
               <form onSubmit={handleAddObservation} className="mb-4 p-3 bg-navy-800/50 rounded-lg space-y-3">
-                <select
-                  value={obsForm.type}
-                  onChange={e => setObsForm(f => ({ ...f, type: e.target.value }))}
-                  className="input w-full text-sm"
-                >
-                  <option value="development">Development</option>
-                  <option value="technical">Technical</option>
-                  <option value="tactical">Tactical</option>
-                  <option value="physical">Physical</option>
-                  <option value="mental">Mental / Character</option>
-                </select>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="block text-xs text-navy-400 mb-1">Category</label>
+                    <select
+                      value={obsForm.type}
+                      onChange={e => setObsForm(f => ({ ...f, type: e.target.value }))}
+                      className="input w-full text-sm"
+                    >
+                      <optgroup label="Skills">
+                        <option value="technical">Technical</option>
+                        <option value="tactical">Tactical</option>
+                        <option value="physical">Physical</option>
+                      </optgroup>
+                      <optgroup label="Personal Development">
+                        <option value="development">Development</option>
+                        <option value="mental">Mental / Character</option>
+                        <option value="effort">Effort / Attitude</option>
+                        <option value="leadership">Leadership</option>
+                      </optgroup>
+                      <optgroup label="Context-Specific">
+                        <option value="lesson">Curriculum PE</option>
+                        <option value="match">Match Performance</option>
+                        <option value="training">Training / Practice</option>
+                        <option value="extracurricular">Extra-curricular</option>
+                      </optgroup>
+                      <optgroup label="Welfare">
+                        <option value="wellbeing">Wellbeing / Pastoral</option>
+                        <option value="safeguarding">Safeguarding Concern</option>
+                      </optgroup>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs text-navy-400 mb-1">Context</label>
+                    <select
+                      value={obsForm.contextType}
+                      onChange={e => setObsForm(f => ({ ...f, contextType: e.target.value }))}
+                      className="input w-full text-sm"
+                    >
+                      <option value="general">General</option>
+                      <option value="lesson">PE Lesson</option>
+                      <option value="match">Match</option>
+                      <option value="training">Training Session</option>
+                      <option value="extracurricular">Extra-curricular</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs text-navy-400 mb-1">Sport (optional)</label>
+                  <select
+                    value={obsForm.sport}
+                    onChange={e => setObsForm(f => ({ ...f, sport: e.target.value }))}
+                    className="input w-full text-sm"
+                  >
+                    <option value="">-- Any / N/A --</option>
+                    <option value="football">Football</option>
+                    <option value="rugby">Rugby</option>
+                    <option value="cricket">Cricket</option>
+                    <option value="hockey">Hockey</option>
+                    <option value="netball">Netball</option>
+                    <option value="basketball">Basketball</option>
+                    <option value="athletics">Athletics</option>
+                    <option value="gymnastics">Gymnastics</option>
+                    <option value="swimming">Swimming</option>
+                    <option value="tennis">Tennis</option>
+                    <option value="badminton">Badminton</option>
+                    <option value="dance">Dance</option>
+                    <option value="rounders">Rounders</option>
+                    <option value="fitness">Fitness</option>
+                  </select>
+                </div>
                 <textarea
                   value={obsForm.content}
                   onChange={e => setObsForm(f => ({ ...f, content: e.target.value }))}
@@ -297,30 +357,63 @@ export default function HoDPupilProfile() {
 
             {observations.length > 0 ? (
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
-                {observations.map(obs => (
-                  <div key={obs.id} className="p-3 rounded-lg bg-navy-800/50 group">
-                    <div className="flex items-start justify-between gap-2">
-                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium capitalize flex-shrink-0 ${
-                        obs.type === 'technical' ? 'bg-blue-500/20 text-blue-400' :
-                        obs.type === 'tactical' ? 'bg-purple-500/20 text-purple-400' :
-                        obs.type === 'physical' ? 'bg-amber-400/20 text-amber-400' :
-                        obs.type === 'mental' ? 'bg-pink-500/20 text-pink-400' :
-                        'bg-pitch-600/20 text-pitch-400'
-                      }`}>{obs.type}</span>
-                      <button
-                        onClick={() => handleDeleteObs(obs.id)}
-                        disabled={deletingObsId === obs.id}
-                        className="opacity-0 group-hover:opacity-100 p-1 text-navy-600 hover:text-red-400 transition-all"
-                      >
-                        {deletingObsId === obs.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
-                      </button>
+                {observations.map(obs => {
+                  const typeColors = {
+                    technical: 'bg-blue-500/20 text-blue-400',
+                    tactical: 'bg-purple-500/20 text-purple-400',
+                    physical: 'bg-amber-400/20 text-amber-400',
+                    mental: 'bg-pink-500/20 text-pink-400',
+                    development: 'bg-pitch-600/20 text-pitch-400',
+                    effort: 'bg-orange-400/20 text-orange-400',
+                    leadership: 'bg-indigo-400/20 text-indigo-400',
+                    lesson: 'bg-teal-400/20 text-teal-400',
+                    match: 'bg-green-400/20 text-green-400',
+                    training: 'bg-cyan-400/20 text-cyan-400',
+                    extracurricular: 'bg-violet-400/20 text-violet-400',
+                    wellbeing: 'bg-rose-400/20 text-rose-400',
+                    safeguarding: 'bg-red-500/20 text-red-400',
+                  }
+                  const typeLabels = {
+                    mental: 'Mental / Character',
+                    effort: 'Effort / Attitude',
+                    lesson: 'Curriculum PE',
+                    match: 'Match',
+                    training: 'Training',
+                    extracurricular: 'Extra-curricular',
+                    wellbeing: 'Wellbeing',
+                    safeguarding: 'Safeguarding',
+                  }
+                  return (
+                    <div key={obs.id} className="p-3 rounded-lg bg-navy-800/50 group">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className={`px-1.5 py-0.5 rounded text-xs font-medium capitalize flex-shrink-0 ${
+                            typeColors[obs.type] || 'bg-navy-700 text-navy-300'
+                          }`}>{typeLabels[obs.type] || obs.type}</span>
+                          {obs.sport && (
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-navy-700 text-navy-300 capitalize">{obs.sport}</span>
+                          )}
+                          {obs.context_type && obs.context_type !== 'general' && (
+                            <span className="text-xs text-navy-500 capitalize">{obs.context_type}</span>
+                          )}
+                        </div>
+                        <button
+                          onClick={() => handleDeleteObs(obs.id)}
+                          disabled={deletingObsId === obs.id}
+                          className="opacity-0 group-hover:opacity-100 p-1 text-navy-600 hover:text-red-400 transition-all"
+                        >
+                          {deletingObsId === obs.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                        </button>
+                      </div>
+                      <p className="text-sm text-navy-200 mt-1.5 leading-relaxed">{obs.content}</p>
+                      <div className="text-xs text-navy-500 mt-2">
+                        {obs.observer_name} · {new Date(obs.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        {obs.match_opponent && ` · vs ${obs.match_opponent}`}
+                        {obs.teaching_group_name && ` · ${obs.teaching_group_name}`}
+                      </div>
                     </div>
-                    <p className="text-sm text-navy-200 mt-1.5 leading-relaxed">{obs.content}</p>
-                    <div className="text-xs text-navy-500 mt-2">
-                      {obs.observer_name} · {new Date(obs.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                    </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             ) : (
               <p className="text-xs text-navy-500 text-center py-4">No observations recorded yet. Click + Add to get started.</p>

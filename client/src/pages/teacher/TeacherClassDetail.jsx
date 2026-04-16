@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { teachingGroupService } from '../../services/api'
+import { teachingGroupService, pupilManagementService } from '../../services/api'
 import {
   GraduationCap, Users, BookOpen, Plus, Trash2, ChevronLeft,
-  X, ClipboardCheck,
+  X, ClipboardCheck, Search, Loader2, UserPlus, UserMinus,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -41,6 +41,14 @@ export default function TeacherClassDetail() {
   const [showAddUnit, setShowAddUnit] = useState(false)
   const [addingUnit, setAddingUnit] = useState(false)
   const [unitForm, setUnitForm] = useState({ sport: 'football', unit_name: '', term: 'autumn', lesson_count: '' })
+
+  // Add pupils
+  const [showAddPupils, setShowAddPupils] = useState(false)
+  const [allPupils, setAllPupils] = useState([])
+  const [pupilSearch, setPupilSearch] = useState('')
+  const [loadingPupils, setLoadingPupils] = useState(false)
+  const [addingPupilIds, setAddingPupilIds] = useState(new Set())
+  const [removingPupilId, setRemovingPupilId] = useState(null)
 
   useEffect(() => {
     loadGroup()
@@ -96,6 +104,49 @@ export default function TeacherClassDetail() {
       loadGroup()
     } catch (err) {
       toast.error('Failed to remove unit')
+    }
+  }
+
+  async function openAddPupils() {
+    setShowAddPupils(true)
+    setPupilSearch('')
+    if (allPupils.length === 0) {
+      setLoadingPupils(true)
+      try {
+        const res = await pupilManagementService.list({ limit: 200 })
+        setAllPupils(res.data.pupils || [])
+      } catch (err) {
+        console.error('Failed to load pupils:', err)
+      } finally {
+        setLoadingPupils(false)
+      }
+    }
+  }
+
+  async function handleAddPupils(pupilIds) {
+    setAddingPupilIds(new Set(pupilIds))
+    try {
+      await teachingGroupService.addPupils(id, pupilIds)
+      toast.success(`${pupilIds.length} pupil${pupilIds.length > 1 ? 's' : ''} added`)
+      loadGroup()
+    } catch (err) {
+      toast.error('Failed to add pupils')
+    } finally {
+      setAddingPupilIds(new Set())
+    }
+  }
+
+  async function handleRemovePupil(pupilId, pupilName) {
+    if (!confirm(`Remove ${pupilName} from this class?`)) return
+    setRemovingPupilId(pupilId)
+    try {
+      await teachingGroupService.removePupil(id, pupilId)
+      toast.success('Pupil removed')
+      loadGroup()
+    } catch (err) {
+      toast.error('Failed to remove pupil')
+    } finally {
+      setRemovingPupilId(null)
     }
   }
 
@@ -240,30 +291,145 @@ export default function TeacherClassDetail() {
               <Users className="w-5 h-5 text-pitch-400" />
               Pupils ({group.pupils?.length || 0})
             </h2>
+            <button
+              onClick={openAddPupils}
+              className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-xs transition-colors"
+            >
+              <UserPlus className="w-3.5 h-3.5" />
+              Add
+            </button>
           </div>
 
           <div className="bg-navy-900 rounded-xl border border-navy-800 p-4">
             {group.pupils && group.pupils.length > 0 ? (
-              <div className="space-y-2">
+              <div className="space-y-1 max-h-[500px] overflow-y-auto">
                 {group.pupils.map(pupil => (
-                  <div key={pupil.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-navy-800/50">
-                    <div>
-                      <span className="text-sm text-white">{pupil.last_name}, {pupil.first_name}</span>
+                  <div key={pupil.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-navy-800/50 group">
+                    <Link to={`/teacher/hod/pupils/${pupil.id}`} className="flex-1 min-w-0">
+                      <span className="text-sm text-white hover:text-pitch-400 transition-colors">
+                        {pupil.last_name ? `${pupil.last_name}, ${pupil.first_name}` : pupil.name || pupil.first_name}
+                      </span>
                       {pupil.house && (
                         <span className="ml-2 text-xs text-navy-500">{pupil.house}</span>
                       )}
-                    </div>
+                    </Link>
+                    <button
+                      onClick={() => handleRemovePupil(pupil.id, pupil.name || `${pupil.first_name} ${pupil.last_name}`)}
+                      disabled={removingPupilId === pupil.id}
+                      className="opacity-0 group-hover:opacity-100 p-1 text-navy-600 hover:text-red-400 transition-all ml-2 flex-shrink-0"
+                      title="Remove from class"
+                    >
+                      {removingPupilId === pupil.id
+                        ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        : <UserMinus className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-navy-400 text-sm text-center py-4">
-                No pupils in this class yet. Pupils can be added from the school admin panel.
-              </p>
+              <div className="text-center py-6">
+                <p className="text-navy-400 text-sm mb-3">
+                  No pupils in this class yet.
+                </p>
+                <button
+                  onClick={openAddPupils}
+                  className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm mx-auto transition-colors"
+                >
+                  <UserPlus className="w-4 h-4" />
+                  Add Pupils
+                </button>
+              </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Add Pupils Modal */}
+      {showAddPupils && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+          <div className="bg-navy-900 rounded-xl border border-navy-700 w-full max-w-md mx-4 p-6 max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-white">Add Pupils to {group.name}</h2>
+              <button onClick={() => setShowAddPupils(false)} className="text-navy-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="relative mb-4">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-500" />
+              <input
+                type="text"
+                placeholder="Search by name..."
+                value={pupilSearch}
+                onChange={e => setPupilSearch(e.target.value)}
+                className="w-full pl-9 pr-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                autoFocus
+              />
+            </div>
+
+            {loadingPupils ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+              </div>
+            ) : (
+              <div className="flex-1 overflow-y-auto space-y-1 min-h-0">
+                {(() => {
+                  const existingIds = new Set((group.pupils || []).map(p => p.id))
+                  const filtered = allPupils
+                    .filter(p => !existingIds.has(p.id))
+                    .filter(p => {
+                      if (!pupilSearch) return true
+                      const q = pupilSearch.toLowerCase()
+                      const name = (p.name || `${p.first_name || ''} ${p.last_name || ''}`).toLowerCase()
+                      return name.includes(q)
+                    })
+
+                  if (filtered.length === 0) {
+                    return (
+                      <p className="text-navy-500 text-sm text-center py-6">
+                        {pupilSearch ? 'No matching pupils found.' : 'All pupils are already in this class.'}
+                      </p>
+                    )
+                  }
+
+                  return filtered.map(p => {
+                    const displayName = p.name || `${p.first_name || ''} ${p.last_name || ''}`.trim()
+                    const isAdding = addingPupilIds.has(p.id)
+                    return (
+                      <div key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-navy-800/50">
+                        <div>
+                          <span className="text-sm text-white">{displayName}</span>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            {p.year_group && <span className="text-xs text-navy-500">Year {p.year_group}</span>}
+                            {p.house && <span className="text-xs text-navy-500">{p.house}</span>}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleAddPupils([p.id])}
+                          disabled={isAdding}
+                          className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-xs transition-colors disabled:opacity-50"
+                        >
+                          {isAdding ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
+                          Add
+                        </button>
+                      </div>
+                    )
+                  })
+                })()}
+              </div>
+            )}
+
+            <div className="flex justify-end pt-4 border-t border-navy-800 mt-4">
+              <button
+                onClick={() => setShowAddPupils(false)}
+                className="px-4 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm transition-colors"
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Add Unit Modal */}
       {showAddUnit && (
