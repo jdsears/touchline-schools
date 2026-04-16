@@ -344,6 +344,52 @@ app.get('/api/debug-db', async (req, res) => {
       checks.demo_teams = demoTeams.rows.length > 0 ? demoTeams.rows.map(t => ({ id: t.id, name: t.name, sport: t.sport })) : 'NO TEAMS FOUND for school'
     }
 
+    // Test the actual /teams/mine query for the first admin
+    if (checks.admins?.[0]?.team_id) {
+      const adminId = checks.admins.find(a => a.email === 'js@moonbootsconsultancy.net')
+      if (adminId) {
+        try {
+          const teamsTest = await pool.query(
+            `SELECT t.id, t.name, t.sport FROM teams t
+             LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+             WHERE tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')`,
+            [adminId.team_id] // using team_id as a proxy - need actual user id
+          )
+          checks.teams_query_test = teamsTest.rows
+        } catch (e) {
+          checks.teams_query_error = e.message
+        }
+        // Get actual user ID
+        try {
+          const uid = await pool.query(`SELECT id FROM users WHERE email = 'js@moonbootsconsultancy.net'`)
+          if (uid.rows.length > 0) {
+            const userId = uid.rows[0].id
+            checks.admin_user_id = userId
+            const teamsTest2 = await pool.query(
+              `SELECT t.id, t.name, t.sport, tm.role FROM teams t
+               JOIN team_memberships tm ON tm.team_id = t.id
+               WHERE tm.user_id = $1`,
+              [userId]
+            )
+            checks.admin_teams_direct = teamsTest2.rows
+            // Test the full /teams/mine query
+            try {
+              const fullTest = await pool.query(
+                `SELECT DISTINCT t.id, t.name, t.sport
+                 FROM teams t
+                 LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+                 WHERE t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))`,
+                [userId]
+              )
+              checks.full_teams_query = fullTest.rows
+            } catch (e) {
+              checks.full_teams_query_error = e.message
+            }
+          }
+        } catch (e) { checks.user_lookup_error = e.message }
+      }
+    }
+
     res.json({ tables: tableNames, checks })
   } catch (err) {
     res.status(500).json({ error: err.message })
