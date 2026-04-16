@@ -533,7 +533,9 @@ async function ensureDemoPrerequisites() {
   const smCols = ['school_role TEXT', 'can_view_all_classes BOOLEAN DEFAULT false', 'can_view_all_teams BOOLEAN DEFAULT false', 'can_manage_curriculum BOOLEAN DEFAULT false', 'can_view_reports BOOLEAN DEFAULT false', 'can_manage_safeguarding BOOLEAN DEFAULT false']
   for (const col of smCols) stmts.push(`ALTER TABLE school_members ADD COLUMN IF NOT EXISTS ${col}`)
   // Add missing columns on teams
-  stmts.push(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS school_id UUID`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS sport TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS gender TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS season_type TEXT`)
+  stmts.push(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS school_id UUID`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS sport TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS gender TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS season_type TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS owner_id UUID`)
+  // Ensure pupils has team_id column (needed by team queries)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS team_id UUID`)
   // Ensure team_memberships exists
   stmts.push(`CREATE TABLE IF NOT EXISTS team_memberships (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), team_id UUID REFERENCES teams(id) ON DELETE CASCADE, user_id UUID REFERENCES users(id) ON DELETE CASCADE, pupil_id UUID, role TEXT DEFAULT 'player', is_primary BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(user_id, team_id))`)
   // Ensure pupils table exists (may still be named players)
@@ -548,8 +550,13 @@ async function ensureDemoPrerequisites() {
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS group_identifier TEXT`)
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS academic_year TEXT`)
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS key_stage TEXT DEFAULT 'KS3'`)
-  // Add missing column on observations
+  // Add missing columns on observations
   stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT`)
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT`)
+  // Add missing columns on reporting_windows
+  stmts.push(`ALTER TABLE reporting_windows ADD COLUMN IF NOT EXISTS year_groups TEXT`)
+  // Add missing columns on pupil_assessments
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS assessed_by UUID`)
   // Create all tables the demo seed needs (Phases 8-12 of migration that may not have run)
   const createTables = [
     `CREATE TABLE IF NOT EXISTS teacher_sports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, sport TEXT NOT NULL, role TEXT DEFAULT 'coach', created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teacher_id, sport))`,
