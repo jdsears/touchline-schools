@@ -3842,6 +3842,26 @@ export async function runMigrations() {
 
     console.log('Phase 18: Admin users seeded')
 
+    // ================================================
+    // PHASE 19: Pupil-facing visibility on observations
+    // ================================================
+    // visible_to_pupil defaults to FALSE so existing and new observations
+    // are teacher-only unless explicitly opted in. This is a safeguarding
+    // requirement: internal notes must never leak to pupils.
+
+    await pool.query(`
+      ALTER TABLE observations
+      ADD COLUMN IF NOT EXISTS visible_to_pupil BOOLEAN NOT NULL DEFAULT FALSE
+    `)
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_observations_pupil_visible
+      ON observations (pupil_id, visible_to_pupil)
+      WHERE visible_to_pupil = TRUE
+    `)
+
+    console.log('Phase 19: visible_to_pupil column and index on observations')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
