@@ -49,7 +49,7 @@ async function insertMatch(teamId, opponent, matchDate, homeAway, scoreFor, scor
 
 async function insertTrainingSession(teamId, sessionDate, focus, location) {
   const result = await pool.query(`
-    INSERT INTO training_sessions (team_id, session_date, time, location, focus, created_at)
+    INSERT INTO training_sessions (team_id, date, time, location, focus_areas, created_at)
     VALUES ($1, $2, '15:30', $3, $4, NOW())
     RETURNING *
   `, [teamId, sessionDate, location || 'Ashworth Park Academy Sports Ground', focus])

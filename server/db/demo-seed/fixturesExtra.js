@@ -37,7 +37,7 @@ async function addMatch(teamId, opponent, date, homeAway, scoreFor, scoreAgainst
 
 async function addTraining(teamId, date, focus, location, time) {
   await pool.query(`
-    INSERT INTO training_sessions (team_id, date, time, meet_time, location, focus, session_type, duration, created_at)
+    INSERT INTO training_sessions (team_id, date, time, meet_time, location, focus_areas, session_type, duration, created_at)
     VALUES ($1,$2,$3,$4,$5,$6,'training',75,NOW())
   `, [teamId, date, time || '16:00', time || '15:45', location || 'Ashworth Park Academy', focus])
 }
