@@ -115,7 +115,7 @@ const HoDSSOSettings = lazy(() => import('./pages/teacher/HoDSSOSettings'))
 const HoDTestPersonas = lazy(() => import('./pages/teacher/HoDTestPersonas'))
 const TeacherSettings = lazy(() => import('./pages/teacher/TeacherSettings'))
 
-// Pupil Portal pages
+// Pupil Portal pages (legacy sidebar layout)
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
 const PupilSports = lazy(() => import('./pages/pupil/PupilSports'))
 const PupilWeek = lazy(() => import('./pages/pupil/PupilWeek'))
@@ -124,6 +124,14 @@ const PupilTrainingPage = lazy(() => import('./pages/pupil/PupilTraining'))
 const PupilClipsPage = lazy(() => import('./pages/pupil/PupilClipsPage'))
 const PupilAssistantPage = lazy(() => import('./pages/pupil/PupilAssistantPage'))
 const PupilAchievements = lazy(() => import('./pages/pupil/PupilAchievements'))
+
+// Sports Lounge (v1.8 mobile-first pupil portal)
+const SportsLoungeLayout = lazy(() => import('./pages/pupil-lounge/SportsLoungeLayout'))
+const SLTodayPage = lazy(() => import('./pages/pupil-lounge/TodayPage'))
+const SLSchedulePage = lazy(() => import('./pages/pupil-lounge/SchedulePage'))
+const SLMySportsPage = lazy(() => import('./pages/pupil-lounge/MySportsPage'))
+const SLProgressPage = lazy(() => import('./pages/pupil-lounge/ProgressPage'))
+const SLMePage = lazy(() => import('./pages/pupil-lounge/MePage'))
 
 // Protected route wrapper
 function ProtectedRoute({ children, allowedRoles = [] }) {
@@ -144,7 +152,7 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil" replace />
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/teacher" replace />
   }
@@ -162,7 +170,7 @@ function PublicRoute({ children }) {
 
   if (user) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil" replace />
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/teacher" replace />
   }
@@ -180,7 +188,7 @@ function CatchAllRedirect() {
 
   if (user) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil" replace />
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/teacher" replace />
   }
@@ -344,9 +352,22 @@ export default function App() {
           <Route path="achievements" element={<PupilAchievements />} />
         </Route>
 
+        {/* Sports Lounge (v1.8 mobile-first pupil portal) */}
+        <Route path="/pupil-lounge" element={
+          <ProtectedRoute allowedRoles={['player']}>
+            <SportsLoungeLayout />
+          </ProtectedRoute>
+        }>
+          <Route index element={<Navigate to="today" replace />} />
+          <Route path="today" element={<SLTodayPage />} />
+          <Route path="schedule" element={<SLSchedulePage />} />
+          <Route path="sports" element={<SLMySportsPage />} />
+          <Route path="progress" element={<SLProgressPage />} />
+          <Route path="me" element={<SLMePage />} />
+        </Route>
+
         {/* Legacy redirects */}
-        <Route path="/pupil-lounge" element={<Navigate to="/pupil" replace />} />
-        <Route path="/player-lounge" element={<Navigate to="/pupil" replace />} />
+        <Route path="/player-lounge" element={<Navigate to="/pupil-lounge" replace />} />
         <Route path="/dashboard" element={<Navigate to="/teacher" replace />} />
         {/* Old Settings tab redirects */}
         <Route path="/settings/profile"      element={<Navigate to="/teacher/settings/profile" replace />} />
