@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { TrendingUp, Award } from 'lucide-react'
 import api from '../../services/api'
-import { usePupilProfile } from '../../hooks/usePupilProfile'
+import { useAgeMode } from '../../hooks/useAgeMode'
 
 const GRADE_COLOURS = {
   'Exc': { bg: 'bg-green-500', w: '100%', label: 'Exceeding' },
@@ -82,7 +82,7 @@ function AchievementsList() {
 export default function ProgressPage() {
   const [assessments, setAssessments] = useState([])
   const [loading, setLoading] = useState(true)
-  const { pupil } = usePupilProfile()
+  const { showGCSEEvidence } = useAgeMode()
 
   useEffect(() => {
     api.get('/pupils/me/assessments')
@@ -138,7 +138,7 @@ export default function ProgressPage() {
         ))
       )}
 
-      {pupil?.gcse_pe_candidate && (
+      {showGCSEEvidence && (
         <div className="mt-5 bg-navy-900 border border-gold-500/30 rounded-xl p-4">
           <h2 className="text-sm font-bold text-gold-400 mb-1">GCSE PE Portfolio</h2>
           <p className="text-xs text-navy-400">

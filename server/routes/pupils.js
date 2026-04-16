@@ -42,7 +42,8 @@ router.get('/me', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id
     const pupilRes = await pool.query(
-      `SELECT p.id, p.name, p.first_name, p.last_name, p.year_group, p.house, p.school_id
+      `SELECT p.id, p.name, p.first_name, p.last_name, p.year_group, p.house, p.school_id,
+              p.gcse_pe_candidate
        FROM pupils p WHERE p.user_id = $1 LIMIT 1`,
       [userId]
     )
