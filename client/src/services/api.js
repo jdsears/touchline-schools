@@ -670,6 +670,14 @@ export const teachingGroupService = {
   removeUnit: (id, unitId) => api.delete(`/teaching-groups/${id}/units/${unitId}`),
 }
 
+// Lesson plans service
+export const lessonService = {
+  list: () => api.get('/lessons'),
+  create: (data) => api.post('/lessons', data),
+  update: (id, data) => api.put(`/lessons/${id}`, data),
+  remove: (id) => api.delete(`/lessons/${id}`),
+}
+
 // Assessment service (curriculum PE assessment)
 export const assessmentService = {
   getStrands: (keyStage) => api.get('/assessments/strands', { params: { key_stage: keyStage } }),

@@ -43,6 +43,7 @@ import knowledgeBaseRoutes from './routes/knowledgeBase.js'
 import seasonDevelopmentRoutes from './routes/seasonDevelopment.js'
 import videoLibraryRoutes from './routes/videoLibrary.js'
 import teachingGroupRoutes from './routes/teachingGroups.js'
+import lessonRoutes from './routes/lessons.js'
 import assessmentRoutes from './routes/assessments.js'
 import sportKnowledgeBaseRoutes from './routes/sportKnowledgeBase.js'
 import hodRoutes from './routes/headOfDepartment.js'
@@ -225,6 +226,7 @@ app.use('/api/knowledge-base', knowledgeBaseRoutes)
 app.use('/api/teams', seasonDevelopmentRoutes)
 app.use('/api/video-library', videoLibraryRoutes)
 app.use('/api/teaching-groups', teachingGroupRoutes)
+app.use('/api/lessons', lessonRoutes)
 app.use('/api/assessments', assessmentRoutes)
 app.use('/api/sport-knowledge', sportKnowledgeBaseRoutes)
 app.use('/api/hod', hodRoutes)
@@ -617,6 +619,7 @@ async function ensureDemoPrerequisites() {
     `CREATE TABLE IF NOT EXISTS pupil_assessments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID, sport_unit_id UUID, strand_id UUID, criterion_id UUID, grade TEXT, teacher_id UUID, assessed_at TIMESTAMPTZ DEFAULT NOW(), created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS reporting_windows (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, academic_year TEXT, term TEXT, opens_at TIMESTAMPTZ, closes_at TIMESTAMPTZ, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS pupil_reports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID NOT NULL, reporting_window_id UUID, teaching_group_id UUID, teacher_id UUID, unit_id UUID, overall_grade TEXT, effort_grade TEXT, comment TEXT, ai_draft TEXT, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS lesson_plans (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, sport_unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL, teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, lesson_date DATE, duration INTEGER DEFAULT 60, learning_objectives TEXT, activities TEXT, equipment TEXT, differentiation TEXT, homework TEXT, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
   ]
   for (const sql of createTables) stmts.push(sql)
 
