@@ -34,6 +34,90 @@ router.get('/badge-types', authenticateToken, async (req, res) => {
   res.json(BADGE_TYPES)
 })
 
+// ── Pupil self-service (used by pupil portal) ──────────────────────
+
+// GET /me - own profile: pupil record + sports + teams + teaching groups
+router.get('/me', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT p.id, p.name, p.first_name, p.last_name, p.year_group, p.house, p.school_id
+       FROM pupils p WHERE p.user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) {
+      return res.json({ pupil: null, sports: [], teams: [], teachingGroups: [] })
+    }
+    const pupil = pupilRes.rows[0]
+
+    const teamsRes = await pool.query(
+      `SELECT t.id, t.name, t.sport, t.gender, t.age_group
+       FROM teams t
+       JOIN team_memberships tm ON tm.team_id = t.id
+       WHERE tm.pupil_id = $1
+       ORDER BY t.sport, t.name`,
+      [pupil.id]
+    )
+    const groupsRes = await pool.query(
+      `SELECT tg.id, tg.name, tg.year_group, tg.key_stage
+       FROM teaching_groups tg
+       JOIN teaching_group_pupils tgp ON tgp.teaching_group_id = tg.id
+       WHERE tgp.pupil_id = $1
+       ORDER BY tg.name`,
+      [pupil.id]
+    )
+    // Distinct sports from teams + observations
+    const sportsRes = await pool.query(
+      `SELECT DISTINCT sport FROM (
+         SELECT t.sport FROM teams t
+         JOIN team_memberships tm ON tm.team_id = t.id WHERE tm.pupil_id = $1 AND t.sport IS NOT NULL
+         UNION
+         SELECT sport FROM observations WHERE pupil_id = $1 AND sport IS NOT NULL
+       ) s ORDER BY sport`,
+      [pupil.id]
+    )
+
+    res.json({
+      pupil,
+      sports: sportsRes.rows.map(r => r.sport),
+      teams: teamsRes.rows,
+      teachingGroups: groupsRes.rows,
+    })
+  } catch (err) {
+    console.error('Error in /pupils/me:', err)
+    res.status(500).json({ error: 'Failed to load profile' })
+  }
+})
+
+// GET /me/development - own confirmed observations (newest first)
+router.get('/me/development', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) return res.json([])
+    const pupilId = pupilRes.rows[0].id
+
+    const obsRes = await pool.query(
+      `SELECT o.id, o.type, o.content, o.sport, o.context_type, o.created_at,
+              u.name AS observer_name
+       FROM observations o
+       LEFT JOIN users u ON u.id = o.observer_id
+       WHERE o.pupil_id = $1
+         AND COALESCE(o.review_state, 'confirmed') = 'confirmed'
+       ORDER BY o.created_at DESC
+       LIMIT 50`,
+      [pupilId]
+    )
+    res.json(obsRes.rows)
+  } catch (err) {
+    console.error('Error in /pupils/me/development:', err)
+    res.status(500).json({ error: 'Failed to load development data' })
+  }
+})
+
 // Get pupil
 router.get('/:id', authenticateToken, async (req, res, next) => {
   try {
