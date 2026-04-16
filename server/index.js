@@ -349,10 +349,25 @@ app.get('/api/trigger-seed', async (req, res) => {
     await ensureDemoPrerequisites()
     log.push('Prerequisites done')
 
-    // Delete existing demo data (school first to cascade FKs, then users)
+    // Comprehensive cleanup of demo data (delete all FK-dependent records before users)
+    const demoUserIds = `(SELECT id FROM users WHERE is_demo_user = true)`
     await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
-    await pool.query(`DELETE FROM safeguarding_incidents WHERE reported_by IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
-    await pool.query(`DELETE FROM audit_log WHERE user_id IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
+    const cleanupTables = [
+      `DELETE FROM pupils WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM team_memberships WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM school_members WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM safeguarding_incidents WHERE reported_by IN ${demoUserIds}`,
+      `DELETE FROM audit_log WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM observations WHERE observer_id IN ${demoUserIds}`,
+      `DELETE FROM training_sessions WHERE coach_id IN ${demoUserIds}`,
+      `DELETE FROM matches WHERE created_by IN ${demoUserIds}`,
+      `DELETE FROM invites WHERE invited_by IN ${demoUserIds}`,
+      `DELETE FROM notifications WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM messages WHERE user_id IN ${demoUserIds}`,
+    ]
+    for (const sql of cleanupTables) {
+      try { await pool.query(sql) } catch (e) { /* table/column may not exist */ }
+    }
     await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
     log.push('Cleared old school and demo users')
 
@@ -560,9 +575,17 @@ async function ensureDemoSchool() {
       }
       // School exists but has no demo data - wipe everything and re-seed
       console.log('[DemoSeed] Demo school exists but is empty, wiping and re-seeding...')
+      const dui = `(SELECT id FROM users WHERE is_demo_user = true)`
       await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
-      await pool.query(`DELETE FROM safeguarding_incidents WHERE reported_by IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
-      await pool.query(`DELETE FROM audit_log WHERE user_id IN (SELECT id FROM users WHERE is_demo_user = true)`).catch(() => {})
+      for (const sql of [
+        `DELETE FROM pupils WHERE user_id IN ${dui}`,
+        `DELETE FROM team_memberships WHERE user_id IN ${dui}`,
+        `DELETE FROM school_members WHERE user_id IN ${dui}`,
+        `DELETE FROM safeguarding_incidents WHERE reported_by IN ${dui}`,
+        `DELETE FROM audit_log WHERE user_id IN ${dui}`,
+        `DELETE FROM observations WHERE observer_id IN ${dui}`,
+        `DELETE FROM notifications WHERE user_id IN ${dui}`,
+      ]) { try { await pool.query(sql) } catch (e) { /* ok */ } }
       await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
     }
 
