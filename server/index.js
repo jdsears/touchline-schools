@@ -617,6 +617,19 @@ async function ensureDemoPrerequisites() {
   stmts.push(`DO $$ BEGIN IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pupil_assessments' AND column_name = 'sport_unit_id') AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pupil_assessments' AND column_name = 'unit_id') THEN ALTER TABLE pupil_assessments RENAME COLUMN sport_unit_id TO unit_id; END IF; END $$`)
   stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS unit_id UUID`)
   stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS sport TEXT`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS attainment_grade TEXT`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teacher_comment TEXT`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS generated_by UUID`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teaching_group_id UUID`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teacher_id UUID`)
+  // assessment_criteria: seed uses 'criterion' and 'key_stage' columns
+  stmts.push(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS criterion TEXT`)
+  stmts.push(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS key_stage TEXT`)
+  // pupil_assessments: seed uses 'criteria_id' and 'assessment_type' and 'teacher_notes'
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS criteria_id UUID`)
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS assessment_type TEXT DEFAULT 'formative'`)
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS teacher_notes TEXT`)
   // Create all tables the demo seed needs (Phases 8-12 of migration that may not have run)
   const createTables = [
     `CREATE TABLE IF NOT EXISTS teacher_sports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, sport TEXT NOT NULL, role TEXT DEFAULT 'coach', created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teacher_id, sport))`,
