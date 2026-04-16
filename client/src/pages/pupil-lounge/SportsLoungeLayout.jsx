@@ -39,7 +39,9 @@ export default function SportsLoungeLayout() {
             paddingBottom: 'calc(60px + env(safe-area-inset-bottom, 0px))',
           }}
         >
-          <Outlet />
+          <div className="animate-page-in">
+            <Outlet />
+          </div>
         </main>
 
         <BottomTabBar />

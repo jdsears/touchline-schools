@@ -68,9 +68,28 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Fetch - network first, fallback to cache
+// Pupil API endpoints safe to cache for offline viewing
+const PUPIL_CACHE = 'moonboots-pupil-v1';
+const CACHEABLE_API = ['/api/pupils/me', '/api/pupils/me/development', '/api/pupils/me/quote'];
+
+// Cache pupil API responses (network first, stale fallback)
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests and API calls
+  if (event.request.method === 'GET' && CACHEABLE_API.some(p => event.request.url.includes(p))) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(PUPIL_CACHE).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Skip non-GET requests and other API calls
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('/api/')) return;
 
