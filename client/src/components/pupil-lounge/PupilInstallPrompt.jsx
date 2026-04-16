@@ -12,7 +12,7 @@ export default function PupilInstallPrompt() {
   if (!showPrompt) return null
 
   return (
-    <div className="fixed bottom-20 left-3 right-3 z-50 bg-navy-800 border border-gold-500/30 text-white p-4 rounded-xl shadow-xl max-w-md mx-auto">
+    <div className="absolute bottom-16 left-3 right-3 z-50 bg-navy-800 border border-gold-500/30 text-white p-4 rounded-xl shadow-xl">
       <button
         onClick={dismiss}
         className="absolute top-2 right-2 text-white/60 hover:text-white p-1"
