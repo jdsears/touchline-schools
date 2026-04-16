@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Star, AlertTriangle, FileText, TrendingUp } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
-import { api } from '../../services/api'
+import api from '../../services/api'
 
 const OBS_TYPE = {
   praise: {

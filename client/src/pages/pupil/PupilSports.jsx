@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Home } from 'lucide-react'
-import { api } from '../../services/api'
+import api from '../../services/api'
 
 const SPORT_EMOJI = {
   football: '⚽',
