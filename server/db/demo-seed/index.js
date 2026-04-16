@@ -20,6 +20,7 @@ import { seedCurriculum } from './curriculum.js'
 import { seedFixtures } from './fixtures.js'
 import { seedSafeguarding } from './safeguarding.js'
 import { seedAuditLog } from './auditLog.js'
+import { seedTestPersonas } from './test-personas.js'
 
 dotenv.config()
 
@@ -106,6 +107,9 @@ async function runSeed() {
 
     await seedAuditLog(school.id, staff)
     console.log('[demo-seed] Audit log seeded')
+
+    const testPersonas = await seedTestPersonas(school.id)
+    console.log(`[demo-seed] Test personas: ${Object.keys(testPersonas).join(', ')}`)
 
     console.log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
     process.exit(0)
