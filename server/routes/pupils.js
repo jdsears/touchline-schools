@@ -251,6 +251,39 @@ router.get('/me/quote', authenticateToken, async (req, res) => {
   }
 })
 
+// GET /me/assessments - own assessment grades grouped by sport/strand
+router.get('/me/assessments', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) return res.json([])
+    const pupilId = pupilRes.rows[0].id
+
+    const result = await pool.query(`
+      SELECT pa.id, pa.grade, pa.score, pa.teacher_notes, pa.assessed_at,
+             pa.assessment_type,
+             su.sport, su.unit_name,
+             cs.strand_name,
+             ac.criterion_name
+      FROM pupil_assessments pa
+      LEFT JOIN sport_units su ON su.id = pa.unit_id
+      LEFT JOIN assessment_criteria ac ON ac.id = pa.criteria_id
+      LEFT JOIN curriculum_strands cs ON cs.id = ac.strand_id
+      WHERE pa.pupil_id = $1
+      ORDER BY pa.assessed_at DESC NULLS LAST
+      LIMIT 50
+    `, [pupilId])
+
+    res.json(result.rows)
+  } catch (err) {
+    console.error('Error in /pupils/me/assessments:', err)
+    res.status(500).json({ error: 'Failed to load assessments' })
+  }
+})
+
 // Get pupil
 router.get('/:id', authenticateToken, async (req, res, next) => {
   try {
