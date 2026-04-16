@@ -70,21 +70,22 @@ export default function SportDetailPage() {
   return (
     <div className="pb-4">
       {/* Sport identity header */}
-      <div className={`bg-gradient-to-br ${gradient} px-4 pt-3 pb-5`}>
+      <div className={`bg-gradient-to-br ${gradient} px-4 pt-3 pb-6 relative overflow-hidden`}>
+        <span className="absolute -right-6 -bottom-6 text-[120px] opacity-[0.06] leading-none select-none">{emoji}</span>
         <button
           onClick={() => navigate('/pupil-lounge/sports')}
-          className="flex items-center gap-1 text-white/60 hover:text-white text-xs mb-3 transition-colors"
+          className="relative flex items-center gap-1 text-white/60 hover:text-white text-[11px] mb-3 transition-colors"
         >
-          <ArrowLeft size={14} />
-          Back to sports
+          <ArrowLeft size={13} />
+          Sports
         </button>
-        <div className="flex items-center gap-3">
+        <div className="relative flex items-center gap-3">
           <span className="text-4xl">{emoji}</span>
           <div>
-            <h1 className="text-xl font-bold text-white capitalize">{sportKey}</h1>
+            <h1 className="text-[22px] font-bold text-white capitalize leading-tight">{sportKey}</h1>
             {sportTeams.length > 0 && (
-              <p className="text-white/60 text-xs mt-0.5">
-                {sportTeams.map(t => t.name).join(' / ')}
+              <p className="text-white/50 text-[11px] mt-0.5">
+                {sportTeams.map(t => t.name).join(' \u00B7 ')}
               </p>
             )}
           </div>
@@ -105,7 +106,7 @@ export default function SportDetailPage() {
               const extra = e.extra || {}
               const eventDate = e.date ? new Date(e.date + 'T00:00:00') : null
               return (
-                <div key={e.id} className="bg-navy-900 border border-navy-800 rounded-lg px-3 py-2.5">
+                <div key={e.id} className="bg-navy-900/60 border border-navy-800/50 rounded-xl px-3 py-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-white font-medium">
                       {e.type === 'fixture' ? `vs ${e.title}` : e.title}
@@ -137,7 +138,7 @@ export default function SportDetailPage() {
         ) : (
           <div className="space-y-2">
             {feedback.map(obs => (
-              <div key={obs.id} className="bg-navy-900 border border-navy-800 rounded-lg px-3 py-2.5">
+              <div key={obs.id} className="bg-navy-900/60 border border-navy-800/50 rounded-xl px-3 py-2.5">
                 <p className="text-sm text-white leading-relaxed line-clamp-3">{obs.content}</p>
                 <p className="text-[10px] text-navy-500 mt-1.5">
                   {obs.observer_name} - {formatDistanceToNow(new Date(obs.created_at), { addSuffix: true })}

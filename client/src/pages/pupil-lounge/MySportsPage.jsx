@@ -1,4 +1,4 @@
-import { Trophy } from 'lucide-react'
+import { Trophy, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { usePupilProfile } from '../../hooks/usePupilProfile'
 
@@ -25,24 +25,22 @@ function SportCard({ sport, teams, teachingGroups, onClick }) {
   const gradient = SPORT_GRADIENT[sport] || 'from-navy-700 to-navy-900'
   const emoji = SPORT_EMOJI[sport] || '🏅'
   const teamNames = (teams || []).map(t => t.name).filter(Boolean)
-  const groupNames = (teachingGroups || []).map(g => g.name).filter(Boolean)
 
   return (
     <button
       onClick={onClick}
-      className={`w-full rounded-xl bg-gradient-to-br ${gradient} border border-white/10 p-4 text-left active:scale-[0.98] transition-transform`}
+      className={`w-full rounded-2xl bg-gradient-to-br ${gradient} border border-white/10 p-4 text-left active:scale-[0.97] transition-all duration-150 overflow-hidden relative`}
     >
-      <div className="flex items-start gap-3">
+      <span className="absolute -right-3 -bottom-3 text-[80px] opacity-[0.08] leading-none select-none">{emoji}</span>
+      <div className="relative flex items-center gap-3">
         <span className="text-3xl">{emoji}</span>
         <div className="flex-1 min-w-0">
-          <h3 className="text-white font-bold capitalize">{sport}</h3>
+          <h3 className="text-white font-bold text-[15px] capitalize">{sport}</h3>
           {teamNames.length > 0 && (
-            <p className="text-white/60 text-xs mt-0.5">{teamNames.join(' / ')}</p>
-          )}
-          {groupNames.length > 0 && (
-            <p className="text-white/50 text-[10px] mt-0.5">{groupNames.join(', ')}</p>
+            <p className="text-white/50 text-[11px] mt-0.5 truncate">{teamNames.join(' \u00B7 ')}</p>
           )}
         </div>
+        <ChevronRight size={18} className="text-white/20 flex-shrink-0" />
       </div>
     </button>
   )
