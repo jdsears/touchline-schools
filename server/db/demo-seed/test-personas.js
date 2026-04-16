@@ -16,6 +16,20 @@
 import pool from '../../config/database.js'
 import bcrypt from 'bcryptjs'
 
+// Ensure required columns exist (in case seed runs before server startup)
+async function ensureColumns() {
+  const stmts = [
+    `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_test_persona BOOLEAN DEFAULT false`,
+    `ALTER TABLE users ADD COLUMN IF NOT EXISTS protected_from_reset BOOLEAN DEFAULT false`,
+    `ALTER TABLE pupils ADD COLUMN IF NOT EXISTS protected_from_reset BOOLEAN DEFAULT false`,
+    `ALTER TABLE observations ADD COLUMN IF NOT EXISTS sport TEXT`,
+    `ALTER TABLE observations ADD COLUMN IF NOT EXISTS teaching_group_id UUID`,
+  ]
+  for (const sql of stmts) {
+    await pool.query(sql).catch(() => {})
+  }
+}
+
 let _hash
 async function getHash() {
   if (!_hash) _hash = await bcrypt.hash('pupil-demo-no-login', 10)
@@ -463,6 +477,8 @@ async function seedToby(schoolId) {
 
 // ── Public entry point ─────────────────────────────────────────────
 export async function seedTestPersonas(schoolId) {
+  await ensureColumns()
+
   const jamie = await seedJamie(schoolId)
   const amelia = await seedAmelia(schoolId)
   const toby = await seedToby(schoolId)
