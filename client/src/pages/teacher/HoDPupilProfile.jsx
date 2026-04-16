@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { pupilManagementService } from '../../services/api'
+import { pupilManagementService, teamService } from '../../services/api'
 import {
   User, ChevronLeft, GraduationCap, Shield, ClipboardCheck,
-  BookOpen, TrendingUp, Edit3, Save, X,
+  BookOpen, TrendingUp, Edit3, Save, X, MessageSquare,
+  Plus, Trash2, Loader2, Eye, Brain, Dumbbell, Heart, Zap,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -25,10 +26,60 @@ export default function HoDPupilProfile() {
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({})
+  const [observations, setObservations] = useState([])
+  const [showAddObs, setShowAddObs] = useState(false)
+  const [obsForm, setObsForm] = useState({ type: 'development', content: '' })
+  const [savingObs, setSavingObs] = useState(false)
+  const [deletingObsId, setDeletingObsId] = useState(null)
 
   useEffect(() => {
     loadProfile()
+    loadObservations()
   }, [id])
+
+  async function loadObservations() {
+    try {
+      const res = await teamService.getObservations(id)
+      setObservations(Array.isArray(res.data) ? res.data : [])
+    } catch (err) {
+      console.warn('Observations not available:', err.message)
+    }
+  }
+
+  async function handleAddObservation(e) {
+    e.preventDefault()
+    if (!obsForm.content.trim()) return toast.error('Please enter your observation')
+    setSavingObs(true)
+    try {
+      await teamService.addObservation(id, {
+        type: obsForm.type,
+        content: obsForm.content.trim(),
+        contextType: 'general',
+      })
+      toast.success('Observation added')
+      setObsForm({ type: 'development', content: '' })
+      setShowAddObs(false)
+      loadObservations()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to add observation')
+    } finally {
+      setSavingObs(false)
+    }
+  }
+
+  async function handleDeleteObs(obsId) {
+    if (!confirm('Delete this observation?')) return
+    setDeletingObsId(obsId)
+    try {
+      await teamService.deleteObservation(id, obsId)
+      setObservations(prev => prev.filter(o => o.id !== obsId))
+      toast.success('Observation deleted')
+    } catch (err) {
+      toast.error('Failed to delete')
+    } finally {
+      setDeletingObsId(null)
+    }
+  }
 
   async function loadProfile() {
     try {
@@ -148,7 +199,7 @@ export default function HoDPupilProfile() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column: classes and teams */}
+        {/* Left column: classes, teams, observations */}
         <div className="space-y-6">
           {/* Teaching groups */}
           <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
@@ -195,6 +246,84 @@ export default function HoDPupilProfile() {
               </div>
             ) : (
               <p className="text-xs text-navy-500">Not in any extra-curricular teams.</p>
+            )}
+          </div>
+          {/* Observations */}
+          <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-blue-400" /> Observations ({observations.length})
+              </h2>
+              <button
+                onClick={() => setShowAddObs(!showAddObs)}
+                className="flex items-center gap-1 px-2 py-1 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-xs transition-colors"
+              >
+                <Plus className="w-3 h-3" /> Add
+              </button>
+            </div>
+
+            {showAddObs && (
+              <form onSubmit={handleAddObservation} className="mb-4 p-3 bg-navy-800/50 rounded-lg space-y-3">
+                <select
+                  value={obsForm.type}
+                  onChange={e => setObsForm(f => ({ ...f, type: e.target.value }))}
+                  className="input w-full text-sm"
+                >
+                  <option value="development">Development</option>
+                  <option value="technical">Technical</option>
+                  <option value="tactical">Tactical</option>
+                  <option value="physical">Physical</option>
+                  <option value="mental">Mental / Character</option>
+                </select>
+                <textarea
+                  value={obsForm.content}
+                  onChange={e => setObsForm(f => ({ ...f, content: e.target.value }))}
+                  placeholder="Write your observation..."
+                  rows={3}
+                  className="input w-full text-sm resize-none"
+                  autoFocus
+                />
+                <div className="flex gap-2 justify-end">
+                  <button type="button" onClick={() => setShowAddObs(false)}
+                    className="px-3 py-1.5 text-xs text-navy-400 hover:text-white">Cancel</button>
+                  <button type="submit" disabled={savingObs}
+                    className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-xs disabled:opacity-50">
+                    {savingObs ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
+                    Save
+                  </button>
+                </div>
+              </form>
+            )}
+
+            {observations.length > 0 ? (
+              <div className="space-y-2 max-h-[400px] overflow-y-auto">
+                {observations.map(obs => (
+                  <div key={obs.id} className="p-3 rounded-lg bg-navy-800/50 group">
+                    <div className="flex items-start justify-between gap-2">
+                      <span className={`px-1.5 py-0.5 rounded text-xs font-medium capitalize flex-shrink-0 ${
+                        obs.type === 'technical' ? 'bg-blue-500/20 text-blue-400' :
+                        obs.type === 'tactical' ? 'bg-purple-500/20 text-purple-400' :
+                        obs.type === 'physical' ? 'bg-amber-400/20 text-amber-400' :
+                        obs.type === 'mental' ? 'bg-pink-500/20 text-pink-400' :
+                        'bg-pitch-600/20 text-pitch-400'
+                      }`}>{obs.type}</span>
+                      <button
+                        onClick={() => handleDeleteObs(obs.id)}
+                        disabled={deletingObsId === obs.id}
+                        className="opacity-0 group-hover:opacity-100 p-1 text-navy-600 hover:text-red-400 transition-all"
+                      >
+                        {deletingObsId === obs.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
+                      </button>
+                    </div>
+                    <p className="text-sm text-navy-200 mt-1.5 leading-relaxed">{obs.content}</p>
+                    <div className="text-xs text-navy-500 mt-2">
+                      {obs.observer_name} · {new Date(obs.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-navy-500 text-center py-4">No observations recorded yet. Click + Add to get started.</p>
             )}
           </div>
         </div>

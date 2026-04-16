@@ -128,15 +128,16 @@ export default function TeacherTeamDetail() {
           {pupils.length > 0 ? (
             <div className="space-y-2 max-h-[400px] overflow-y-auto">
               {pupils.map(p => (
-                <div key={p.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-navy-800/50">
+                <Link key={p.id} to={`/teacher/hod/pupils/${p.id}`}
+                  className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-navy-800/50 transition-colors">
                   <div>
-                    <span className="text-sm text-white">{p.name || `${p.first_name || ''} ${p.last_name || ''}`.trim()}</span>
+                    <span className="text-sm text-white hover:text-pitch-400 transition-colors">{p.name || `${p.first_name || ''} ${p.last_name || ''}`.trim()}</span>
                     {p.position && <span className="text-xs text-navy-500 ml-2">{p.position}</span>}
                   </div>
                   {p.jersey_number && (
                     <span className="text-xs text-navy-500 font-mono">#{p.jersey_number}</span>
                   )}
-                </div>
+                </Link>
               ))}
             </div>
           ) : (

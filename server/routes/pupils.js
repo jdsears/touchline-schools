@@ -142,19 +142,31 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
 
-    // Verify the pupil belongs to the user's team
     const playerCheck = await pool.query('SELECT team_id FROM pupils WHERE id = $1', [id])
     if (playerCheck.rows.length === 0) {
       return res.status(404).json({ message: 'Pupil not found' })
     }
-    if (playerCheck.rows[0].team_id !== req.user.team_id && !req.user.is_admin) {
+
+    // Allow: admin, same team, or school member with HoD access
+    const isOwnTeam = playerCheck.rows[0].team_id === req.user.team_id
+    let hasSchoolAccess = false
+    if (!isOwnTeam && !req.user.is_admin) {
+      const schoolCheck = await pool.query(
+        `SELECT 1 FROM school_members sm
+         JOIN teams t ON t.school_id = sm.school_id
+         WHERE sm.user_id = $1 AND t.id = $2 LIMIT 1`,
+        [req.user.id, playerCheck.rows[0].team_id]
+      )
+      hasSchoolAccess = schoolCheck.rows.length > 0
+    }
+    if (!isOwnTeam && !req.user.is_admin && !hasSchoolAccess) {
       return res.status(403).json({ message: 'Access denied' })
     }
 
     const result = await pool.query(
       `SELECT o.*, u.name as observer_name,
-              m.opponent as match_opponent, m.date as match_date,
-              ts.date as training_date, ts.focus_areas as training_focus
+              m.opponent as match_opponent, COALESCE(m.date, m.match_date) as match_date,
+              ts.session_date as training_date, ts.focus as training_focus
        FROM observations o
        JOIN users u ON o.observer_id = u.id
        LEFT JOIN matches m ON o.match_id = m.id
@@ -174,13 +186,17 @@ router.post('/:id/observations', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
 
-    // Verify the pupil belongs to the user's team
     const playerCheck = await pool.query('SELECT team_id FROM pupils WHERE id = $1', [id])
     if (playerCheck.rows.length === 0) {
       return res.status(404).json({ message: 'Pupil not found' })
     }
-    if (playerCheck.rows[0].team_id !== req.user.team_id && !req.user.is_admin) {
-      return res.status(403).json({ message: 'Access denied' })
+    const isOwnTeam = playerCheck.rows[0].team_id === req.user.team_id
+    if (!isOwnTeam && !req.user.is_admin) {
+      const schoolCheck = await pool.query(
+        `SELECT 1 FROM school_members sm JOIN teams t ON t.school_id = sm.school_id WHERE sm.user_id = $1 AND t.id = $2 LIMIT 1`,
+        [req.user.id, playerCheck.rows[0].team_id]
+      )
+      if (schoolCheck.rows.length === 0) return res.status(403).json({ message: 'Access denied' })
     }
 
     const { type, content, context, contextType, matchId, trainingSessionId } = req.body

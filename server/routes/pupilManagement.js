@@ -139,9 +139,14 @@ router.get('/:id/profile', async (req, res) => {
 
     // Pupil details
     const pupilResult = await pool.query(
-      `SELECT p.*, t.name AS team_name, t.sport AS team_sport
+      `SELECT p.*,
+              split_part(COALESCE(p.name, ''), ' ', 1) AS first_name,
+              CASE WHEN position(' ' in COALESCE(p.name, '')) > 0
+                   THEN substring(COALESCE(p.name, '') from position(' ' in COALESCE(p.name, '')) + 1)
+                   ELSE '' END AS last_name,
+              t.name AS team_name, t.sport AS team_sport
        FROM pupils p
-       JOIN teams t ON p.team_id = t.id
+       LEFT JOIN teams t ON p.team_id = t.id
        WHERE p.id = $1`,
       [id]
     )
