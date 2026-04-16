@@ -5,6 +5,7 @@ import {
   eachDayOfInterval, isToday, isSameWeek,
 } from 'date-fns'
 import api from '../../services/api'
+import EventDetailModal from '../../components/pupil-lounge/EventDetailModal'
 
 const EVENT_STYLE = {
   fixture: { bg: 'bg-gold-500/20', text: 'text-gold-400', dot: 'bg-gold-400' },
@@ -18,7 +19,7 @@ const SPORT_EMOJI = {
   netball: '🤾', athletics: '🏃', swimming: '🏊', tennis: '🎾',
 }
 
-function EventPill({ event }) {
+function EventPill({ event, onTap }) {
   const style = EVENT_STYLE[event.type] || EVENT_STYLE.training
   const extra = event.extra || {}
   const time = event.start_time ? event.start_time.slice(0, 5) : ''
@@ -28,7 +29,7 @@ function EventPill({ event }) {
     : event.title
 
   return (
-    <div className={`${style.bg} rounded-lg px-3 py-2 flex items-start gap-2`}>
+    <button onClick={() => onTap(event)} className={`${style.bg} rounded-lg px-3 py-2 flex items-start gap-2 w-full text-left`}>
       <div className={`w-1.5 h-1.5 rounded-full ${style.dot} mt-1.5 flex-shrink-0`} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-1.5">
@@ -39,11 +40,11 @@ function EventPill({ event }) {
           <span className="text-[10px] text-navy-500">{time}</span>
         )}
       </div>
-    </div>
+    </button>
   )
 }
 
-function DayCard({ date, events }) {
+function DayCard({ date, events, onEventTap }) {
   const today = isToday(date)
   const dayName = format(date, 'EEE')
   const dayNum = format(date, 'd')
@@ -71,7 +72,7 @@ function DayCard({ date, events }) {
 
       {events.length > 0 ? (
         <div className="space-y-1.5">
-          {events.map(e => <EventPill key={e.id} event={e} />)}
+          {events.map(e => <EventPill key={e.id} event={e} onTap={onEventTap} />)}
         </div>
       ) : (
         <p className="text-[10px] text-navy-600 italic">Rest day</p>
@@ -86,6 +87,7 @@ export default function SchedulePage() {
   )
   const [events, setEvents] = useState([])
   const [loading, setLoading] = useState(true)
+  const [selectedEvent, setSelectedEvent] = useState(null)
 
   const weekEnd = endOfWeek(weekStart, { weekStartsOn: 1 })
   const days = eachDayOfInterval({ start: weekStart, end: weekEnd })
@@ -157,9 +159,17 @@ export default function SchedulePage() {
               key={day.toISOString()}
               date={day}
               events={eventsForDay(day)}
+              onEventTap={setSelectedEvent}
             />
           ))}
         </div>
+      )}
+
+      {selectedEvent && (
+        <EventDetailModal
+          event={selectedEvent}
+          onClose={() => setSelectedEvent(null)}
+        />
       )}
     </div>
   )
