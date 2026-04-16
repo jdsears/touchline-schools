@@ -127,7 +127,7 @@ const PupilAchievements = lazy(() => import('./pages/pupil/PupilAchievements'))
 
 // Protected route wrapper
 function ProtectedRoute({ children, allowedRoles = [] }) {
-  const { user, loading } = useAuth()
+  const { user, loading, impersonating } = useAuth()
 
   if (loading) {
     return <PageLoader />
@@ -135,6 +135,11 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
 
   if (!user) {
     return <Navigate to="/login" replace />
+  }
+
+  // Allow impersonating users through role gates (HoD viewing as pupil)
+  if (impersonating) {
+    return children
   }
 
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {

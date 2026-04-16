@@ -739,6 +739,7 @@ export const hodService = {
   updateTeacherRole: (schoolId, memberId, role) => api.put(`/schools/${schoolId}/members/${memberId}`, { role }),
   getSchoolMembers: (schoolId) => api.get(`/schools/${schoolId}/members`),
   getTestPersonas: () => api.get('/hod/test-personas'),
+  impersonateTestPersona: (pupilId) => api.post(`/hod/test-personas/${pupilId}/impersonate`),
 }
 
 // Voice Observations service

@@ -81,9 +81,35 @@ export function AuthProvider({ children }) {
   
   async function logout() {
     localStorage.removeItem('fam_token')
+    localStorage.removeItem('fam_original_token')
+    localStorage.removeItem('fam_impersonating')
     setUser(null)
     toast.success('Logged out successfully')
   }
+
+  // Impersonation: swap to a test persona's token
+  function startImpersonation(token, personaUser) {
+    const currentToken = localStorage.getItem('fam_token')
+    localStorage.setItem('fam_original_token', currentToken)
+    localStorage.setItem('fam_impersonating', personaUser.name)
+    localStorage.setItem('fam_token', token)
+    setUser(personaUser)
+  }
+
+  function endImpersonation() {
+    const originalToken = localStorage.getItem('fam_original_token')
+    if (originalToken) {
+      localStorage.setItem('fam_token', originalToken)
+      localStorage.removeItem('fam_original_token')
+      localStorage.removeItem('fam_impersonating')
+      // Re-check auth to restore original user
+      checkAuth()
+    }
+  }
+
+  const impersonating = typeof window !== 'undefined'
+    ? localStorage.getItem('fam_impersonating')
+    : null
   
   async function sendMagicLink(email) {
     try {
@@ -175,7 +201,10 @@ export function AuthProvider({ children }) {
     isAdmin,
     hasFullAccess,
     subscriptionStatus,
-  }), [user, loading, isAdmin, hasFullAccess, subscriptionStatus])
+    startImpersonation,
+    endImpersonation,
+    impersonating,
+  }), [user, loading, isAdmin, hasFullAccess, subscriptionStatus, impersonating])
 
   return (
     <AuthContext.Provider value={value}>

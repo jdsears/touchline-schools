@@ -1,4 +1,5 @@
 import express from 'express'
+import jwt from 'jsonwebtoken'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { HOD_ROLES } from '../middleware/schoolAuth.js'
@@ -304,6 +305,74 @@ router.delete('/teachers/:userId/sports/:sport', requireHoD, async (req, res) =>
 })
 
 // ── Test Personas (HoD-level) ──────────────────────────────────────
+
+// POST /test-personas/:pupilId/impersonate - Generate a short-lived pupil portal token
+router.post('/test-personas/:pupilId/impersonate', requireHoD, async (req, res) => {
+  try {
+    // Only allow impersonation of test personas
+    const pupilResult = await pool.query(`
+      SELECT p.id, p.name, p.user_id, u.is_test_persona, u.email
+      FROM pupils p
+      JOIN users u ON u.id = p.user_id
+      WHERE p.id = $1 AND u.is_test_persona = true
+    `, [req.params.pupilId])
+
+    if (pupilResult.rows.length === 0) {
+      return res.status(404).json({ error: 'Test persona not found' })
+    }
+
+    const persona = pupilResult.rows[0]
+
+    // Get the persona's first team membership for team context
+    const teamResult = await pool.query(`
+      SELECT tm.team_id FROM team_memberships tm
+      WHERE tm.user_id = $1 LIMIT 1
+    `, [persona.user_id])
+
+    const teamId = teamResult.rows[0]?.team_id || null
+
+    // Generate a short-lived token (1 hour) for the pupil portal
+    const JWT_SECRET = process.env.JWT_SECRET
+    const token = jwt.sign(
+      { userId: persona.user_id, teamId, impersonatedBy: req.user.id },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    )
+
+    // Audit log the impersonation
+    try {
+      await pool.query(`
+        INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details, created_at)
+        VALUES ($1, $2, 'impersonate_test_persona', 'pupil', $3, $4, NOW())
+      `, [
+        req.schoolId, req.user.id, persona.id,
+        JSON.stringify({ persona_name: persona.name, persona_email: persona.email }),
+      ])
+    } catch (auditErr) {
+      // Non-critical — don't fail the impersonation if audit logging fails
+      console.error('Audit log failed:', auditErr.message)
+    }
+
+    res.json({
+      token,
+      user: {
+        id: persona.user_id,
+        name: persona.name,
+        email: persona.email,
+        role: 'player',
+        team_id: teamId,
+        pupil_id: persona.id,
+        is_admin: false,
+        hasFullAccess: true,
+        subscriptionStatus: 'free',
+      },
+      expiresIn: 3600,
+    })
+  } catch (error) {
+    console.error('Error impersonating test persona:', error)
+    res.status(500).json({ error: 'Failed to impersonate' })
+  }
+})
 
 // GET /test-personas - List test persona pupils with summary data
 router.get('/test-personas', requireHoD, async (req, res) => {

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { hodService } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 import {
-  Users, Shield, ShieldCheck, Eye,
+  Users, Shield, ShieldCheck, Eye, LogIn,
   GraduationCap, Trophy, BookOpen, ClipboardCheck,
   Loader2, RefreshCw,
 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 const YEAR_COLORS = {
   7: 'bg-blue-500/20 text-blue-400',
@@ -31,9 +33,24 @@ function StatBadge({ icon: Icon, label, value, color = 'text-navy-300' }) {
 }
 
 export default function HoDTestPersonas() {
+  const { startImpersonation } = useAuth()
+  const navigate = useNavigate()
   const [personas, setPersonas] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [impersonating, setImpersonating] = useState(null)
+
+  async function handleQuickLogin(persona) {
+    setImpersonating(persona.id)
+    try {
+      const res = await hodService.impersonateTestPersona(persona.id)
+      startImpersonation(res.data.token, res.data.user)
+      navigate('/pupil')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to impersonate')
+      setImpersonating(null)
+    }
+  }
 
   async function loadPersonas() {
     setLoading(true)
@@ -135,13 +152,27 @@ export default function HoDTestPersonas() {
                     </div>
                   </div>
                 </div>
-                <Link
-                  to={`/teacher/hod/pupils/${p.id}`}
-                  className="flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white rounded-lg text-sm transition-colors"
-                >
-                  <Eye className="w-4 h-4" />
-                  View Profile
-                </Link>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleQuickLogin(p)}
+                    disabled={impersonating === p.id}
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+                  >
+                    {impersonating === p.id ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <LogIn className="w-4 h-4" />
+                    )}
+                    Quick Login
+                  </button>
+                  <Link
+                    to={`/teacher/hod/pupils/${p.id}`}
+                    className="flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white rounded-lg text-sm transition-colors"
+                  >
+                    <Eye className="w-4 h-4" />
+                    View Profile
+                  </Link>
+                </div>
               </div>
 
               {/* Stats row */}

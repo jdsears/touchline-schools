@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
@@ -17,6 +17,7 @@ import {
   X,
   ChevronRight,
   User,
+  ArrowLeft,
 } from 'lucide-react'
 
 const pupilNav = [
@@ -112,14 +113,40 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding
   )
 }
 
+function ImpersonationBanner() {
+  const { impersonating, endImpersonation } = useAuth()
+  const navigate = useNavigate()
+
+  if (!impersonating) return null
+
+  function handleEnd() {
+    endImpersonation()
+    navigate('/teacher/hod/test-personas')
+  }
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-black px-4 py-1.5 flex items-center justify-between text-sm font-medium">
+      <span>Viewing as: {impersonating} (test persona)</span>
+      <button
+        onClick={handleEnd}
+        className="flex items-center gap-1.5 px-3 py-1 bg-black/20 hover:bg-black/30 rounded text-xs font-semibold transition-colors"
+      >
+        <ArrowLeft className="w-3 h-3" />
+        Return to HoD
+      </button>
+    </div>
+  )
+}
+
 export default function PupilLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout, impersonating } = useAuth()
   const location = useLocation()
   const schoolBranding = useSchoolBranding()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className={`min-h-screen bg-navy-950 ${impersonating ? 'pt-9' : ''}`}>
+      <ImpersonationBanner />
       {/* Mobile backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
