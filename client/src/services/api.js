@@ -794,4 +794,36 @@ export const gdprService = {
   batchConsent: (data) => api.post('/gdpr/consent/batch', data),
 }
 
+// Three-tier school settings
+export const settingsService = {
+  // Meta
+  getTiers: () => api.get('/settings/tiers'),
+  // School
+  getSchoolProfile: () => api.get('/settings/school/profile'),
+  updateSchoolProfile: (data) => api.put('/settings/school/profile', data),
+  getSchoolBranding: () => api.get('/settings/school/branding'),
+  getSportsConfig: () => api.get('/settings/school/sports'),
+  updateSportsConfig: (sports) => api.put('/settings/school/sports', { sports }),
+  getAcademicStructure: () => api.get('/settings/school/academic'),
+  updateAcademicStructure: (data) => api.put('/settings/school/academic', data),
+  getStaffDirectory: () => api.get('/settings/school/staff'),
+  getLicence: () => api.get('/settings/school/licence'),
+  getAuditLog: (params) => api.get('/settings/school/audit', { params }),
+  // Department
+  getFixtureDefaults: () => api.get('/settings/department/fixture-defaults'),
+  updateFixtureDefaults: (data) => api.put('/settings/department/fixture-defaults', data),
+  getReportingTemplates: () => api.get('/settings/department/reporting-templates'),
+  createReportingTemplate: (data) => api.post('/settings/department/reporting-templates', data),
+  // Personal
+  getNotifications: () => api.get('/settings/personal/notifications'),
+  updateNotifications: (data) => api.put('/settings/personal/notifications', data),
+  getAccessibility: () => api.get('/settings/personal/accessibility'),
+  updateAccessibility: (data) => api.put('/settings/personal/accessibility', data),
+  getQualifications: () => api.get('/settings/personal/qualifications'),
+  addQualification: (data) => api.post('/settings/personal/qualifications', data),
+  removeQualification: (id) => api.delete(`/settings/personal/qualifications/${id}`),
+  // Admin
+  updateAdminBranding: (schoolId, data) => api.put(`/settings/admin/branding/${schoolId}`, data),
+}
+
 export default api

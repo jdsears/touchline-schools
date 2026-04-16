@@ -56,6 +56,7 @@ import voiceSafeguardingRoutes from './routes/voiceSafeguarding.js'
 import gdprRoutes from './routes/gdpr.js'
 import ssoRoutes from './routes/sso.js'
 import demoRequestRoutes from './routes/demoRequests.js'
+import schoolSettingsRoutes from './routes/schoolSettings.js'
 
 // Demo seed
 import { seedSchool } from './db/demo-seed/school.js'
@@ -239,6 +240,7 @@ app.use('/api/voice-safeguarding', voiceSafeguardingRoutes)
 app.use('/api/gdpr', gdprRoutes)
 app.use('/api/sso', ssoRoutes)
 app.use('/api/demo-requests', demoRequestRoutes)
+app.use('/api/settings', schoolSettingsRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -608,6 +610,9 @@ async function ensureDemoPrerequisites() {
   // Add 'date' column to matches (many queries use m.date, table has match_date)
   stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS date DATE`)
   stmts.push(`UPDATE matches SET date = match_date WHERE date IS NULL AND match_date IS NOT NULL`)
+  // v1.6 school profile columns
+  const schoolProfileCols = ['school_type TEXT', 'urn TEXT', 'head_teacher_name TEXT', 'head_teacher_email TEXT', 'safeguarding_lead_name TEXT', 'safeguarding_lead_email TEXT', 'dpo_name TEXT', 'dpo_email TEXT', 'accent_color TEXT']
+  for (const col of schoolProfileCols) stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS ${col}`)
   // Add missing columns on observations
   stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT`)
   stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT`)
@@ -652,6 +657,16 @@ async function ensureDemoPrerequisites() {
     `CREATE TABLE IF NOT EXISTS data_export_requests (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, pupil_id UUID, request_type TEXT NOT NULL, status TEXT DEFAULT 'pending', created_at TIMESTAMPTZ DEFAULT NOW(), completed_at TIMESTAMPTZ)`,
     `CREATE TABLE IF NOT EXISTS data_deletion_log (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, pupil_reference TEXT, reason TEXT, created_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS gdpr_consent_records (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, pupil_id UUID, consent_type TEXT NOT NULL, granted BOOLEAN DEFAULT false, withdrawn_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    // v1.6 Settings restructure tables
+    `CREATE TABLE IF NOT EXISTS school_sports_configuration (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, sport_key TEXT NOT NULL, active BOOLEAN DEFAULT true, ngb_framework_key TEXT, grading_scale_override_id UUID, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(school_id, sport_key))`,
+    `CREATE TABLE IF NOT EXISTS school_academic_structure (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL UNIQUE, year_groups_offered JSONB DEFAULT '[]', house_system JSONB, term_dates JSONB DEFAULT '[]', assessment_windows JSONB DEFAULT '[]', reporting_windows_config JSONB DEFAULT '[]', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS school_licence (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL UNIQUE, term_start DATE, term_end DATE, seat_count INTEGER DEFAULT 0, sport_count INTEGER DEFAULT 0, commercial_contact_name TEXT, commercial_contact_email TEXT, notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS staff_qualifications (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL, school_id UUID, qualification_type TEXT NOT NULL, qualification_name TEXT NOT NULL, issue_date DATE, expiry_date DATE, reference_number TEXT, document_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS knowledge_base_resources (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, uploader_id UUID, title TEXT NOT NULL, file_url TEXT, file_type TEXT, file_size INTEGER, sports JSONB DEFAULT '[]', year_groups JSONB DEFAULT '[]', description TEXT, visibility TEXT DEFAULT 'all', created_at TIMESTAMPTZ DEFAULT NOW(), archived_at TIMESTAMPTZ)`,
+    `CREATE TABLE IF NOT EXISTS reporting_templates (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, template_type TEXT NOT NULL, name TEXT NOT NULL, structure JSONB DEFAULT '{}', tone_guidance TEXT, is_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS fixture_defaults (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, sport_key TEXT, age_group TEXT, match_duration_minutes INTEGER, default_home_ground_address TEXT, default_travel_arrangement TEXT, default_kit_config JSONB DEFAULT '{}', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(school_id, sport_key, age_group))`,
+    `CREATE TABLE IF NOT EXISTS notification_preferences (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL UNIQUE, fixture_reminders BOOLEAN DEFAULT true, assessment_deadlines BOOLEAN DEFAULT true, report_due_dates BOOLEAN DEFAULT true, pupil_observations BOOLEAN DEFAULT true, safeguarding_concerns BOOLEAN DEFAULT true, weekly_digest BOOLEAN DEFAULT false, monthly_summary BOOLEAN DEFAULT false, product_updates BOOLEAN DEFAULT false, email_enabled BOOLEAN DEFAULT true, push_enabled BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS user_accessibility (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL UNIQUE, font_size TEXT DEFAULT 'medium', reduced_motion BOOLEAN DEFAULT false, high_contrast BOOLEAN DEFAULT false, screen_reader_optimised BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
   ]
   for (const sql of createTables) stmts.push(sql)
 
