@@ -2,6 +2,7 @@ import IdentityBlock from '../../components/pupil-lounge/IdentityBlock'
 import TodayStrip from '../../components/pupil-lounge/TodayStrip'
 import NextEventCard from '../../components/pupil-lounge/NextEventCard'
 import RecentFeedbackCard from '../../components/pupil-lounge/RecentFeedbackCard'
+import SportTilesGrid from '../../components/pupil-lounge/SportTilesGrid'
 
 export default function TodayPage() {
   return (
@@ -10,9 +11,7 @@ export default function TodayPage() {
       <TodayStrip />
       <NextEventCard />
       <RecentFeedbackCard />
-      <div className="px-4 pb-4">
-        <p className="text-navy-500 text-xs">More sections coming in 2.5-2.6</p>
-      </div>
+      <SportTilesGrid />
     </div>
   )
 }
