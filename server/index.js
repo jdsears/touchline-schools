@@ -603,6 +603,10 @@ async function ensureDemoPrerequisites() {
   stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS first_name TEXT`)
   stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS last_name TEXT`)
   stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS protected_from_reset BOOLEAN DEFAULT false`)
+  // v1.7 test persona columns
+  stmts.push(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_test_persona BOOLEAN DEFAULT false`)
+  stmts.push(`ALTER TABLE users ADD COLUMN IF NOT EXISTS protected_from_reset BOOLEAN DEFAULT false`)
   // Add missing columns on teaching_groups
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS group_identifier TEXT`)
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS academic_year TEXT`)
