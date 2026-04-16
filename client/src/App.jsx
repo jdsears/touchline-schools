@@ -112,6 +112,7 @@ const VoiceSafeguardingReview = lazy(() => import('./pages/teacher/VoiceSafeguar
 const HoDVoiceSettings = lazy(() => import('./pages/teacher/HoDVoiceSettings'))
 const GDPRDashboard = lazy(() => import('./pages/teacher/GDPRDashboard'))
 const HoDSSOSettings = lazy(() => import('./pages/teacher/HoDSSOSettings'))
+const HoDTestPersonas = lazy(() => import('./pages/teacher/HoDTestPersonas'))
 const TeacherSettings = lazy(() => import('./pages/teacher/TeacherSettings'))
 
 // Pupil Portal pages
@@ -317,6 +318,7 @@ export default function App() {
           <Route path="hod/voice-settings" element={<HoDVoiceSettings />} />
           <Route path="hod/gdpr" element={<GDPRDashboard />} />
           <Route path="hod/sso-settings" element={<HoDSSOSettings />} />
+          <Route path="hod/test-personas" element={<HoDTestPersonas />} />
           {/* Three-tier settings */}
           <Route path="settings" element={<Navigate to="/teacher/settings/profile" replace />} />
           <Route path="settings/:tab" element={<TeacherSettings />} />

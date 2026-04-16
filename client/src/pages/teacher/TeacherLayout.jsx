@@ -45,6 +45,7 @@ const hodNav = [
   { name: 'Voice Settings', href: '/hod/voice-settings', icon: Mic, voiceOnly: true },
   { name: 'Data & Privacy', href: '/hod/gdpr', icon: ShieldCheck },
   { name: 'SSO Settings', href: '/hod/sso-settings', icon: Link2 },
+  { name: 'Test Personas', href: '/hod/test-personas', icon: Users },
 ]
 
 const curriculumNav = [

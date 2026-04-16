@@ -303,4 +303,35 @@ router.delete('/teachers/:userId/sports/:sport', requireHoD, async (req, res) =>
   }
 })
 
+// ── Test Personas (HoD-level) ──────────────────────────────────────
+
+// GET /test-personas - List test persona pupils with summary data
+router.get('/test-personas', requireHoD, async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        p.id, p.name, p.first_name, p.last_name,
+        p.year_group, p.house, p.date_of_birth,
+        p.is_active, p.protected_from_reset,
+        u.id AS user_id, u.email, u.is_test_persona,
+        (SELECT COUNT(*) FROM observations o WHERE o.pupil_id = p.id) AS observation_count,
+        (SELECT COUNT(*) FROM team_memberships tm WHERE tm.pupil_id = p.id) AS team_count,
+        (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.pupil_id = p.id) AS class_count,
+        (SELECT COUNT(*) FROM pupil_assessments pa WHERE pa.pupil_id = p.id) AS assessment_count,
+        (SELECT string_agg(DISTINCT t.sport, ', ' ORDER BY t.sport)
+         FROM team_memberships tm2 JOIN teams t ON t.id = tm2.team_id
+         WHERE tm2.pupil_id = p.id) AS sports
+      FROM pupils p
+      JOIN users u ON u.id = p.user_id
+      WHERE u.is_test_persona = true
+      ORDER BY p.year_group, p.name
+    `)
+
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Error fetching test personas:', error)
+    res.status(500).json({ error: 'Failed to fetch test personas' })
+  }
+})
+
 export default router

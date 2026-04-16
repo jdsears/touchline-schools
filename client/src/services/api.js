@@ -738,6 +738,7 @@ export const hodService = {
   removeTeacherSport: (userId, sport) => api.delete(`/hod/teachers/${userId}/sports/${sport}`),
   updateTeacherRole: (schoolId, memberId, role) => api.put(`/schools/${schoolId}/members/${memberId}`, { role }),
   getSchoolMembers: (schoolId) => api.get(`/schools/${schoolId}/members`),
+  getTestPersonas: () => api.get('/hod/test-personas'),
 }
 
 // Voice Observations service
