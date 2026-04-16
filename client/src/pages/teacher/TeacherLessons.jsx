@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   BookOpen, Plus, Calendar, Clock, X, Trash2,
   ChevronRight, Loader2, GraduationCap, Tag,
+  Sparkles, Users, ClipboardList,
 } from 'lucide-react'
 import { lessonService, teachingGroupService } from '../../services/api'
 import { useAuth } from '../../context/AuthContext'
@@ -37,6 +38,7 @@ export default function TeacherLessons() {
   const [showModal, setShowModal] = useState(false)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
+  const [generating, setGenerating] = useState(false)
 
   // Form state
   const [form, setForm] = useState({
@@ -48,6 +50,8 @@ export default function TeacherLessons() {
     learning_objectives: '',
     activities: '',
     equipment: '',
+    differentiation: '',
+    homework: '',
     status: 'draft',
   })
 
@@ -85,8 +89,11 @@ export default function TeacherLessons() {
       learning_objectives: '',
       activities: '',
       equipment: '',
+      differentiation: '',
+      homework: '',
       status: 'draft',
     })
+    setGenerating(false)
     setShowModal(true)
   }
 
@@ -107,6 +114,8 @@ export default function TeacherLessons() {
         learning_objectives: form.learning_objectives || null,
         activities: form.activities || null,
         equipment: form.equipment || null,
+        differentiation: form.differentiation || null,
+        homework: form.homework || null,
         status: form.status,
       })
       toast.success('Lesson plan created')
@@ -117,6 +126,39 @@ export default function TeacherLessons() {
       toast.error(err.response?.data?.error || 'Failed to create lesson plan')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleGenerate() {
+    setGenerating(true)
+    try {
+      const res = await lessonService.generate({
+        teaching_group_id: form.teaching_group_id || null,
+        sport_unit_id: form.sport_unit_id || null,
+        title: form.title || null,
+        duration: form.duration,
+        learning_objectives: form.learning_objectives || null,
+        equipment: form.equipment || null,
+      })
+      const data = res.data
+      if (data.raw) {
+        toast.error('AI returned an unexpected format')
+        return
+      }
+      setForm(f => ({
+        ...f,
+        learning_objectives: data.learning_objectives || f.learning_objectives,
+        activities: data.activities || f.activities,
+        equipment: data.equipment || f.equipment,
+        differentiation: data.differentiation || f.differentiation,
+        homework: data.homework || f.homework,
+      }))
+      toast.success('Lesson content generated')
+    } catch (err) {
+      console.error('AI generation failed:', err)
+      toast.error(err.response?.data?.error || 'Failed to generate lesson content')
+    } finally {
+      setGenerating(false)
     }
   }
 
@@ -309,6 +351,31 @@ export default function TeacherLessons() {
                   </div>
                 </div>
 
+                {/* AI Generate button */}
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  disabled={generating}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-purple-800 disabled:to-blue-800 text-white rounded-xl text-sm font-medium transition-all"
+                >
+                  {generating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      Generating lesson content…
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      Generate with AI
+                    </>
+                  )}
+                </button>
+                {generating && (
+                  <p className="text-xs text-navy-500 text-center -mt-3">
+                    The AI will fill in objectives, activities, equipment, differentiation, and homework based on your selections above.
+                  </p>
+                )}
+
                 {/* Learning objectives */}
                 <div>
                   <label className="block text-sm font-medium text-navy-300 mb-1.5">Learning objectives</label>
@@ -341,6 +408,36 @@ export default function TeacherLessons() {
                     value={form.equipment}
                     onChange={e => setForm(f => ({ ...f, equipment: e.target.value }))}
                     placeholder="e.g. 20 bibs, cones, 10 balls"
+                    className="input w-full"
+                  />
+                </div>
+
+                {/* Differentiation */}
+                <div>
+                  <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                    <Users className="w-3.5 h-3.5 inline mr-1" />
+                    Differentiation
+                  </label>
+                  <textarea
+                    value={form.differentiation}
+                    onChange={e => setForm(f => ({ ...f, differentiation: e.target.value }))}
+                    placeholder="How will you support lower-ability pupils and extend higher-ability pupils?"
+                    rows={3}
+                    className="input w-full resize-none"
+                  />
+                </div>
+
+                {/* Homework */}
+                <div>
+                  <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                    <ClipboardList className="w-3.5 h-3.5 inline mr-1" />
+                    Homework / follow-up
+                  </label>
+                  <input
+                    type="text"
+                    value={form.homework}
+                    onChange={e => setForm(f => ({ ...f, homework: e.target.value }))}
+                    placeholder="Optional task or reflection for pupils"
                     className="input w-full"
                   />
                 </div>

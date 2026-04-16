@@ -3711,6 +3711,89 @@ Return a JSON object:
   }
 }
 
+// ── AI Lesson Plan Generation ──────────────────────────────────────
+
+export async function generateLessonPlan(params) {
+  const {
+    sport, unitName, curriculumArea,
+    yearGroup, keyStage, duration,
+    title, learningObjectives,
+    pupilCount, equipmentAvailable,
+  } = params
+
+  const ageGuidance = getAgeGroupGuidance(yearGroup ? `U${parseInt(yearGroup) + 5}` : null)
+
+  const prompt = `Generate a complete PE lesson plan with these parameters:
+- Sport: ${sport || 'General PE'}
+- Unit: ${unitName || 'Not specified'}
+- Curriculum area: ${curriculumArea || 'Not specified'}
+- Year group: ${yearGroup ? `Year ${yearGroup}` : 'Not specified'}
+- Key Stage: ${keyStage || 'Not specified'}
+- Duration: ${duration || 60} minutes
+- Title: ${title || 'Not specified'}
+- Pupil count: ${pupilCount || 'approximately 30'}
+${learningObjectives ? `- Teacher's intended learning objectives: ${learningObjectives}` : ''}
+${equipmentAvailable ? `- Equipment available: ${equipmentAvailable}` : ''}
+
+${ageGuidance ? `\n${ageGuidance}\n` : ''}
+
+You are an experienced UK PE teacher creating a lesson plan for a state secondary school.
+The lesson must be realistic, practical, and follow the UK PE National Curriculum.
+
+Return a JSON object with these fields:
+{
+  "learning_objectives": "3-4 clear learning objectives using 'Pupils will be able to...' format, separated by newlines",
+  "activities": "Full lesson structure with timings, formatted as:\\n\\nWARM-UP (X mins)\\nDescription of warm-up activity...\\n\\nACTIVITY 1: Name (X mins)\\nDetailed description with setup, rules, coaching points...\\n\\nACTIVITY 2: Name (X mins)\\nDetailed description...\\n\\nACTIVITY 3: Game/Applied Practice (X mins)\\nDetailed description...\\n\\nCOOL-DOWN (X mins)\\nDescription...",
+  "equipment": "Specific list of equipment needed with quantities",
+  "differentiation": "How to support pupils working below expected level (SEND, lower ability) and extend those working above (gifted & talented). Include specific adaptations for each main activity.",
+  "homework": "Optional follow-up task or reflection question linked to the learning objectives"
+}
+
+Rules:
+- Activities must add up to the total lesson duration
+- Include specific coaching points and success criteria
+- Warm-up must be sport-specific and progressive
+- Main activities should progress from simple to complex
+- Include an applied game or competitive element
+- Cool-down should include a plenary/review of learning
+- Differentiation should be specific, not generic ("make it easier/harder")
+- Use British English throughout
+- Equipment quantities should be realistic for a school setting`
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 4000,
+      system: cacheableSystem(`You are an experienced UK PE teacher and lesson planning specialist. You create detailed, practical lesson plans that follow the UK PE National Curriculum and Ofsted-ready best practices. Always use British English. Your lesson plans are realistic for a state secondary school setting with typical equipment and facilities.`),
+      messages: [{ role: 'user', content: prompt }],
+    })
+
+    let text = response.content[0]?.text
+    if (!text) throw new Error('Empty response from AI service')
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    if (jsonMatch) {
+      try {
+        return JSON.parse(jsonMatch[0])
+      } catch {
+        let cleaned = jsonMatch[0].replace(/,\s*([\]}])/g, '$1')
+        try { return JSON.parse(cleaned) } catch { return { raw: text } }
+      }
+    }
+
+    return { raw: text }
+  } catch (error) {
+    console.error('Lesson plan generation error:', error)
+    if (error.status === 401 || error.message?.includes('API key')) {
+      throw new Error('AI service not configured - please set ANTHROPIC_API_KEY')
+    }
+    if (error.status === 429) {
+      throw new Error('AI service is busy - please try again in a moment')
+    }
+    throw new Error('Failed to generate lesson plan: ' + (error.message || 'Unknown error'))
+  }
+}
+
 export default {
   sendChatMessage,
   sendPlayerChatMessage,
@@ -3735,4 +3818,5 @@ export default {
   generateGrantDraft,
   generateComplianceAnalysis,
   generateCoachDevelopment,
+  generateLessonPlan,
 }

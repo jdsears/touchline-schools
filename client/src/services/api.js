@@ -676,6 +676,7 @@ export const lessonService = {
   create: (data) => api.post('/lessons', data),
   update: (id, data) => api.put(`/lessons/${id}`, data),
   remove: (id) => api.delete(`/lessons/${id}`),
+  generate: (data) => api.post('/lessons/generate', data),
 }
 
 // Assessment service (curriculum PE assessment)

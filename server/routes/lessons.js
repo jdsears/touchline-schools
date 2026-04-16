@@ -1,10 +1,63 @@
 import express from 'express'
 import pool from '../config/database.js'
 import { authenticateToken, requireRole } from '../middleware/auth.js'
+import { generateLessonPlan } from '../services/claudeService.js'
 
 const router = express.Router()
 
 router.use(authenticateToken)
+
+// POST /generate - AI-assisted lesson plan generation
+router.post('/generate', requireRole('manager', 'assistant', 'scout'), async (req, res) => {
+  try {
+    const { teaching_group_id, sport_unit_id, title, duration, learning_objectives, equipment } = req.body
+
+    // Look up context from teaching group and sport unit
+    let sport = null, unitName = null, curriculumArea = null
+    let yearGroup = null, keyStage = null, pupilCount = null
+
+    if (teaching_group_id) {
+      const groupRes = await pool.query(
+        `SELECT tg.year_group, tg.key_stage,
+                (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.teaching_group_id = tg.id) AS pupil_count
+         FROM teaching_groups tg WHERE tg.id = $1`,
+        [teaching_group_id]
+      )
+      if (groupRes.rows[0]) {
+        yearGroup = groupRes.rows[0].year_group
+        keyStage = groupRes.rows[0].key_stage
+        pupilCount = groupRes.rows[0].pupil_count
+      }
+    }
+
+    if (sport_unit_id) {
+      const unitRes = await pool.query(
+        `SELECT sport, unit_name, curriculum_area FROM sport_units WHERE id = $1`,
+        [sport_unit_id]
+      )
+      if (unitRes.rows[0]) {
+        sport = unitRes.rows[0].sport
+        unitName = unitRes.rows[0].unit_name
+        curriculumArea = unitRes.rows[0].curriculum_area
+      }
+    }
+
+    const result = await generateLessonPlan({
+      sport, unitName, curriculumArea,
+      yearGroup, keyStage,
+      duration: duration || 60,
+      title: title || null,
+      learningObjectives: learning_objectives || null,
+      pupilCount: pupilCount || null,
+      equipmentAvailable: equipment || null,
+    })
+
+    res.json(result)
+  } catch (error) {
+    console.error('Error generating lesson plan:', error)
+    res.status(500).json({ error: error.message || 'Failed to generate lesson plan' })
+  }
+})
 
 // GET / - List lesson plans for the current teacher
 router.get('/', async (req, res) => {
