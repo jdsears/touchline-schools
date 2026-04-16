@@ -194,7 +194,7 @@ function KnowledgeBaseTab({ teamId }) {
           <div>
             <h2 className="font-display text-xl font-semibold text-white mb-1">Coaching Knowledge Base</h2>
             <p className="text-navy-400 text-sm">
-              Add your coaching resources, session plans, and notes. The Gaffer will use this knowledge to give advice grounded in your methodology.
+              Add your coaching resources, session plans, and notes. The assistant will use this knowledge to give advice grounded in your methodology.
             </p>
           </div>
           <button
@@ -406,7 +406,7 @@ function KnowledgeBaseTab({ teamId }) {
             <BookOpen className="w-12 h-12 text-navy-600 mx-auto mb-3" />
             <p className="text-navy-400 mb-1">No resources added yet</p>
             <p className="text-sm text-navy-500">
-              Add coaching guidelines, session plans, or your own notes to make The Gaffer's advice specific to your team.
+              Add coaching guidelines, session plans, or your own notes to make the assistant's advice specific to your team.
             </p>
           </div>
         ) : (
@@ -1388,7 +1388,7 @@ export default function Settings() {
       const newStatus = !gafferDisabled
       await playerChatService.setGafferStatus(user.pupil_id, newStatus)
       setGafferDisabled(newStatus)
-      toast.success(newStatus ? 'The Gaffer has been disabled' : 'The Gaffer has been enabled')
+      toast.success(newStatus ? 'AI assistant disabled' : 'AI assistant enabled')
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to update setting')
     } finally {
@@ -2079,7 +2079,7 @@ export default function Settings() {
             >
               <h2 className="font-display text-xl font-semibold text-white mb-2">Parental Controls</h2>
               <p className="text-navy-400 text-sm mb-6">
-                Control your child's access to The Gaffer AI assistant.
+                Control your child's access to the AI assistant.
               </p>
 
               {loadingGafferStatus ? (

@@ -69,7 +69,7 @@ const extracurricularNav = [
 const sharedNav = [
   { name: 'AI Assistant', href: '/assistant', icon: Sparkles },
   { name: 'Safeguarding', href: '/safeguarding', icon: ShieldCheck },
-  { name: 'Settings', href: '/settings', icon: Settings },
+  { name: 'Settings', href: '/settings/profile', icon: Settings },
 ]
 
 // Map internal role values to school-friendly display labels

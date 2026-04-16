@@ -18,7 +18,7 @@ const suggestedQuestions = {
   pupil: [
     "How do I check my schedule?",
     "What does my development progress show?",
-    "How do I talk to The Gaffer?",
+    "How do I talk to the AI assistant?",
     "How can I update my availability?",
   ]
 }
