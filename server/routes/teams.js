@@ -123,7 +123,7 @@ router.get('/mine/sessions', authenticateToken, async (req, res, next) => {
     const userId = req.user.id
 
     const result = await pool.query(
-      `SELECT ts.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+      `SELECT ts.*, ts.focus AS focus_areas, t.name AS team_name, t.sport, t.age_group, t.gender,
               t.primary_color AS team_color
        FROM training_sessions ts
        JOIN teams t ON ts.team_id = t.id

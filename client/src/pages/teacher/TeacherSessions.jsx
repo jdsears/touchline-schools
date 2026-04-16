@@ -29,11 +29,11 @@ export default function TeacherSessions() {
   async function loadData() {
     try {
       const [sessionsRes, teamsRes] = await Promise.all([
-        teacherService.getMySessions(),
-        teacherService.getMyTeams(),
+        teacherService.getMySessions().catch(() => ({ data: [] })),
+        teacherService.getMyTeams().catch(() => ({ data: [] })),
       ])
-      setSessions(sessionsRes.data)
-      setTeams(teamsRes.data)
+      setSessions(Array.isArray(sessionsRes.data) ? sessionsRes.data : [])
+      setTeams(Array.isArray(teamsRes.data) ? teamsRes.data : [])
     } catch (err) {
       console.error('Failed to load sessions:', err)
     } finally {
