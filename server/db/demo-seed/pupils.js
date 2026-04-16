@@ -109,15 +109,21 @@ async function insertPupil(schoolId, { name, house, yearGroup }) {
   `, [name, email, passwordHash])
   const userId = userResult.rows[0].id
 
+  // Split name into first_name / last_name
+  const nameParts = name.split(' ')
+  const firstName = nameParts[0]
+  const lastName = nameParts.slice(1).join(' ')
+
   // Create the pupil record
   const pupilResult = await pool.query(`
     INSERT INTO pupils (
-      name, year_group, house, date_of_birth,
+      name, first_name, last_name,
+      year_group, house, date_of_birth,
       is_active, user_id, created_at
     )
-    VALUES ($1, $2, $3, $4, true, $5, NOW())
+    VALUES ($1, $2, $3, $4, $5, $6, true, $7, NOW())
     RETURNING *
-  `, [name, yearGroup, house, dobForYear(yearGroup), userId])
+  `, [name, firstName, lastName, yearGroup, house, dobForYear(yearGroup), userId])
 
   const pupil = pupilResult.rows[0]
 

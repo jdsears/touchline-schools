@@ -215,51 +215,98 @@ router.get('/dashboard', async (req, res) => {
   try {
     const teacherId = req.user.id
 
-    // Count teaching groups
-    const classesResult = await pool.query(
-      'SELECT COUNT(*) FROM teaching_groups WHERE teacher_id = $1',
+    // Check if user is HoD/admin with school-wide access
+    const accessResult = await pool.query(
+      `SELECT school_id, can_view_all_classes FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC LIMIT 1`,
       [teacherId]
     )
+    const schoolId = accessResult.rows[0]?.school_id
+    const canViewAll = accessResult.rows[0]?.can_view_all_classes === true
 
-    // Count total pupils across all teaching groups
-    const pupilsResult = await pool.query(
-      `SELECT COUNT(DISTINCT tgp.pupil_id)
-       FROM teaching_group_pupils tgp
-       JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
-       WHERE tg.teacher_id = $1`,
-      [teacherId]
-    )
+    let classesResult, pupilsResult, unitsResult, assessmentsResult, recentGroupsResult
 
-    // Count sport units
-    const unitsResult = await pool.query(
-      `SELECT COUNT(*)
-       FROM sport_units su
-       JOIN teaching_groups tg ON su.teaching_group_id = tg.id
-       WHERE tg.teacher_id = $1`,
-      [teacherId]
-    )
-
-    // Count assessments recorded this term
-    const assessmentsResult = await pool.query(
-      `SELECT COUNT(*)
-       FROM pupil_assessments pa
-       WHERE pa.assessed_by = $1
-         AND pa.assessed_at > NOW() - INTERVAL '3 months'`,
-      [teacherId]
-    )
-
-    // Recent teaching groups with their current units
-    const recentGroupsResult = await pool.query(
-      `SELECT tg.*,
-        (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.teaching_group_id = tg.id) AS pupil_count,
-        (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name, 'term', su.term))
-         FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
-       FROM teaching_groups tg
-       WHERE tg.teacher_id = $1
-       ORDER BY tg.updated_at DESC
-       LIMIT 5`,
-      [teacherId]
-    )
+    if (canViewAll && schoolId) {
+      // HoD / admin: show all classes across the school
+      classesResult = await pool.query(
+        'SELECT COUNT(*) FROM teaching_groups WHERE school_id = $1',
+        [schoolId]
+      )
+      pupilsResult = await pool.query(
+        `SELECT COUNT(DISTINCT tgp.pupil_id)
+         FROM teaching_group_pupils tgp
+         JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
+         WHERE tg.school_id = $1`,
+        [schoolId]
+      )
+      unitsResult = await pool.query(
+        `SELECT COUNT(*)
+         FROM sport_units su
+         JOIN teaching_groups tg ON su.teaching_group_id = tg.id
+         WHERE tg.school_id = $1`,
+        [schoolId]
+      )
+      assessmentsResult = await pool.query(
+        `SELECT COUNT(*)
+         FROM pupil_assessments pa
+         JOIN teaching_groups tg ON pa.sport_unit_id IN (
+           SELECT su.id FROM sport_units su WHERE su.teaching_group_id = tg.id
+         )
+         WHERE tg.school_id = $1
+           AND pa.assessed_at > NOW() - INTERVAL '3 months'`,
+        [schoolId]
+      )
+      recentGroupsResult = await pool.query(
+        `SELECT tg.*,
+          u.name AS teacher_name,
+          (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.teaching_group_id = tg.id) AS pupil_count,
+          (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name, 'term', su.term))
+           FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
+         FROM teaching_groups tg
+         LEFT JOIN users u ON tg.teacher_id = u.id
+         WHERE tg.school_id = $1
+         ORDER BY tg.updated_at DESC
+         LIMIT 6`,
+        [schoolId]
+      )
+    } else {
+      // Regular teacher: show only their own classes
+      classesResult = await pool.query(
+        'SELECT COUNT(*) FROM teaching_groups WHERE teacher_id = $1',
+        [teacherId]
+      )
+      pupilsResult = await pool.query(
+        `SELECT COUNT(DISTINCT tgp.pupil_id)
+         FROM teaching_group_pupils tgp
+         JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
+         WHERE tg.teacher_id = $1`,
+        [teacherId]
+      )
+      unitsResult = await pool.query(
+        `SELECT COUNT(*)
+         FROM sport_units su
+         JOIN teaching_groups tg ON su.teaching_group_id = tg.id
+         WHERE tg.teacher_id = $1`,
+        [teacherId]
+      )
+      assessmentsResult = await pool.query(
+        `SELECT COUNT(*)
+         FROM pupil_assessments pa
+         WHERE pa.assessed_by = $1
+           AND pa.assessed_at > NOW() - INTERVAL '3 months'`,
+        [teacherId]
+      )
+      recentGroupsResult = await pool.query(
+        `SELECT tg.*,
+          (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.teaching_group_id = tg.id) AS pupil_count,
+          (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name, 'term', su.term))
+           FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
+         FROM teaching_groups tg
+         WHERE tg.teacher_id = $1
+         ORDER BY tg.updated_at DESC
+         LIMIT 5`,
+        [teacherId]
+      )
+    }
 
     res.json({
       stats: {

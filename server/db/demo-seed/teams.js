@@ -24,6 +24,11 @@ async function createTeam(schoolId, data) {
 
 async function addTeamMemberships(team, pupils) {
   for (const pupil of pupils) {
+    // Link pupil record to team (sets pupils.team_id for queries that use it)
+    await pool.query(
+      `UPDATE pupils SET team_id = $1 WHERE id = $2 AND team_id IS NULL`,
+      [team.id, pupil.id]
+    )
     if (!pupil.user_id) continue
     await pool.query(`
       INSERT INTO team_memberships (team_id, user_id, pupil_id, role, is_primary, created_at)

@@ -449,6 +449,10 @@ app.get('/api/trigger-seed', async (req, res) => {
     await seedAdminUsersAndLink()
     log.push('Admin users linked')
 
+    // Fix pupils with missing team_id
+    await fixPupilTeamIds()
+    log.push('Pupil team_id fix done')
+
     res.json({ success: true, log })
   } catch (err) {
     log.push(`FATAL: ${err.message}`)
@@ -594,6 +598,9 @@ async function ensureDemoPrerequisites() {
   stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true`)
   stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS user_id UUID`)
   stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS school_id UUID`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS first_name TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS last_name TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT`)
   // Add missing columns on teaching_groups
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS group_identifier TEXT`)
   stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS academic_year TEXT`)
@@ -675,6 +682,42 @@ async function ensureDemoSchool() {
 }
 
 // Ensure admin users exist and link to demo school
+// Retroactively fix pupils data gaps for existing records
+async function fixPupilTeamIds() {
+  try {
+    // Fix team_id from team_memberships
+    const teamFix = await pool.query(`
+      UPDATE pupils p
+      SET team_id = tm.team_id
+      FROM team_memberships tm
+      WHERE tm.pupil_id = p.id
+        AND p.team_id IS NULL
+        AND tm.is_primary = true
+    `)
+    if (teamFix.rowCount > 0) {
+      console.log(`[DataFix] Set team_id on ${teamFix.rowCount} pupils from team_memberships`)
+    }
+
+    // Fix first_name / last_name from name (for records created before split was added)
+    const nameFix = await pool.query(`
+      UPDATE pupils
+      SET first_name = split_part(name, ' ', 1),
+          last_name = CASE
+            WHEN position(' ' in name) > 0
+            THEN substring(name from position(' ' in name) + 1)
+            ELSE ''
+          END
+      WHERE name IS NOT NULL
+        AND (first_name IS NULL OR first_name = '')
+    `)
+    if (nameFix.rowCount > 0) {
+      console.log(`[DataFix] Split name into first/last for ${nameFix.rowCount} pupils`)
+    }
+  } catch (err) {
+    console.warn('[DataFix] fixPupilTeamIds:', err.message)
+  }
+}
+
 async function seedAdminUsersAndLink() {
   const admins = [
     { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
@@ -768,6 +811,7 @@ runMigrations().then(() => {
     // Seed demo school then link admin users (all errors caught internally)
     ensureDemoSchool()
       .then(() => seedAdminUsersAndLink())
+      .then(() => fixPupilTeamIds())
       .catch(err => console.error('[Startup] Seed error:', err))
 
     // Run lifecycle scanners on startup (delayed 30s to let DB settle),
