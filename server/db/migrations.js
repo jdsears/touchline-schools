@@ -3862,6 +3862,17 @@ export async function runMigrations() {
 
     console.log('Phase 19: visible_to_pupil column and index on observations')
 
+    // ================================================
+    // PHASE 20: GCSE PE candidate flag on pupils
+    // ================================================
+
+    await pool.query(`
+      ALTER TABLE pupils
+      ADD COLUMN IF NOT EXISTS gcse_pe_candidate BOOLEAN NOT NULL DEFAULT FALSE
+    `)
+
+    console.log('Phase 20: gcse_pe_candidate flag on pupils')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)

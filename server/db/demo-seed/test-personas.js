@@ -25,6 +25,7 @@ async function ensureColumns() {
     `ALTER TABLE observations ADD COLUMN IF NOT EXISTS sport TEXT`,
     `ALTER TABLE observations ADD COLUMN IF NOT EXISTS teaching_group_id UUID`,
     `ALTER TABLE observations ADD COLUMN IF NOT EXISTS visible_to_pupil BOOLEAN NOT NULL DEFAULT FALSE`,
+    `ALTER TABLE pupils ADD COLUMN IF NOT EXISTS gcse_pe_candidate BOOLEAN NOT NULL DEFAULT FALSE`,
   ]
   for (const sql of stmts) {
     await pool.query(sql).catch(() => {})
