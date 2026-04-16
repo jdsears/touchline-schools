@@ -241,9 +241,17 @@ export default function TeacherLayout() {
     voiceObservationService.listPending()
       .then(res => {
         setVoiceEnabled(true)
-        setVoicePendingCount(res.data.filter(v => v.pending_count > 0).length)
+        setVoicePendingCount(Array.isArray(res.data) ? res.data.filter(v => v.pending_count > 0).length : 0)
       })
-      .catch(() => setVoiceEnabled(false))
+      .catch((err) => {
+        // 403 means school doesn't have voice enabled; other errors are transient
+        if (err.response?.status === 403) {
+          setVoiceEnabled(false)
+        } else {
+          // Endpoint may have failed for a transient reason; still show the FAB
+          setVoiceEnabled(true)
+        }
+      })
   }, [location.pathname])
 
   return (
