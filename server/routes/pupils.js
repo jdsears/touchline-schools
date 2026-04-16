@@ -452,16 +452,16 @@ router.post('/:id/observations', authenticateToken, async (req, res, next) => {
       if (schoolCheck.rows.length === 0) return res.status(403).json({ message: 'Access denied' })
     }
 
-    const { type, content, context, contextType, matchId, trainingSessionId, sport, teachingGroupId } = req.body
+    const { type, content, context, contextType, matchId, trainingSessionId, sport, teachingGroupId, visibleToPupil } = req.body
 
     if (!type || !content) {
       return res.status(400).json({ message: 'Type and content are required' })
     }
 
     const result = await pool.query(
-      `INSERT INTO observations (pupil_id, observer_id, type, content, context, context_type, match_id, training_session_id, sport, teaching_group_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
-      [id, req.user.id, type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, sport || null, teachingGroupId || null]
+      `INSERT INTO observations (pupil_id, observer_id, type, content, context, context_type, match_id, training_session_id, sport, teaching_group_id, visible_to_pupil)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      [id, req.user.id, type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, sport || null, teachingGroupId || null, visibleToPupil === true]
     )
 
     res.status(201).json(result.rows[0])
@@ -484,7 +484,7 @@ router.put('/:id/observations/:obsId', authenticateToken, async (req, res, next)
       return res.status(403).json({ message: 'Access denied' })
     }
 
-    const { type, content, context, contextType, matchId, trainingSessionId } = req.body
+    const { type, content, context, contextType, matchId, trainingSessionId, visibleToPupil } = req.body
 
     if (!type || !content) {
       return res.status(400).json({ message: 'Type and content are required' })
@@ -507,9 +507,10 @@ router.put('/:id/observations/:obsId', authenticateToken, async (req, res, next)
         context = $3,
         context_type = $4,
         match_id = $5,
-        training_session_id = $6
-       WHERE id = $7 AND pupil_id = $8 RETURNING *`,
-      [type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, obsId, id]
+        training_session_id = $6,
+        visible_to_pupil = $7
+       WHERE id = $8 AND pupil_id = $9 RETURNING *`,
+      [type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, visibleToPupil === true, obsId, id]
     )
 
     // Fetch the updated observation with observer name and context info
