@@ -68,6 +68,7 @@ import { seedLessons } from './db/demo-seed/lessons.js'
 import { seedAssessments } from './db/demo-seed/assessments.js'
 import { seedReports } from './db/demo-seed/reports.js'
 import { seedFixtures } from './db/demo-seed/fixtures.js'
+import { seedFixturesExtra } from './db/demo-seed/fixturesExtra.js'
 import { seedSafeguarding } from './db/demo-seed/safeguarding.js'
 import { seedAuditLog } from './db/demo-seed/auditLog.js'
 import { seedTestPersonas } from './db/demo-seed/test-personas.js'
@@ -451,6 +452,7 @@ app.get('/api/trigger-seed', async (req, res) => {
     try { await seedAssessments(school.id); log.push('Assessments done') } catch (e) { log.push(`Assessments FAILED: ${e.message}`) }
     try { await seedReports(school.id); log.push('Reports done') } catch (e) { log.push(`Reports FAILED: ${e.message}`) }
     try { await seedFixtures(school.id, teams, staff, pupils); log.push('Fixtures done') } catch (e) { log.push(`Fixtures FAILED: ${e.message}`) }
+    try { await seedFixturesExtra(school.id); log.push('Extra fixtures done') } catch (e) { log.push(`Extra fixtures FAILED: ${e.message}`) }
     try { await seedSafeguarding(school.id, staff); log.push('Safeguarding done') } catch (e) { log.push(`Safeguarding FAILED: ${e.message}`) }
     try { await seedAuditLog(school.id, staff); log.push('AuditLog done') } catch (e) { log.push(`AuditLog FAILED: ${e.message}`) }
 
@@ -762,6 +764,7 @@ async function ensureDemoSchool() {
     await seedAssessments(school.id).catch(e => console.error('[DemoSeed] Assessments:', e.message))
     await seedReports(school.id).catch(e => console.error('[DemoSeed] Reports:', e.message))
     await seedFixtures(school.id, teams, staff, pupils).catch(e => console.error('[DemoSeed] Fixtures:', e.message))
+    await seedFixturesExtra(school.id).catch(e => console.error('[DemoSeed] Extra fixtures:', e.message))
     await seedSafeguarding(school.id, staff).catch(e => console.error('[DemoSeed] Safeguarding:', e.message))
     await seedAuditLog(school.id, staff).catch(e => console.error('[DemoSeed] AuditLog:', e.message))
     console.log('[DemoSeed] Done.')
