@@ -67,6 +67,7 @@ import { seedCurriculum } from './db/demo-seed/curriculum.js'
 import { seedFixtures } from './db/demo-seed/fixtures.js'
 import { seedSafeguarding } from './db/demo-seed/safeguarding.js'
 import { seedAuditLog } from './db/demo-seed/auditLog.js'
+import { seedTestPersonas } from './db/demo-seed/test-personas.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
@@ -454,6 +455,39 @@ app.get('/api/trigger-seed', async (req, res) => {
     // Fix pupils with missing team_id
     await fixPupilTeamIds()
     log.push('Pupil team_id fix done')
+
+    // Seed test personas
+    try {
+      const personas = await seedTestPersonas(school.id)
+      log.push(`Test personas: Jamie=${personas.jamie?.pupilId}, Amelia=${personas.amelia?.pupilId}, Toby=${personas.toby?.pupilId}`)
+    } catch (e) { log.push(`Test personas FAILED: ${e.message}`) }
+
+    res.json({ success: true, log })
+  } catch (err) {
+    log.push(`FATAL: ${err.message}`)
+    log.push(err.stack?.split('\n').slice(0, 3).join('\n'))
+    res.status(500).json({ success: false, log })
+  }
+})
+
+// Test personas seed trigger (idempotent - safe to call multiple times)
+app.get('/api/trigger-seed-personas', async (req, res) => {
+  const log = []
+  try {
+    await ensureDemoPrerequisites()
+    log.push('Prerequisites done')
+
+    const schoolRow = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+    if (schoolRow.rows.length === 0) {
+      return res.status(400).json({ success: false, log: ['Demo school not found - run /api/trigger-seed first'] })
+    }
+    const schoolId = schoolRow.rows[0].id
+    log.push(`School: ${schoolId}`)
+
+    const result = await seedTestPersonas(schoolId)
+    log.push(`Jamie: ${result.jamie?.pupilId}`)
+    log.push(`Amelia: ${result.amelia?.pupilId}`)
+    log.push(`Toby: ${result.toby?.pupilId}`)
 
     res.json({ success: true, log })
   } catch (err) {
