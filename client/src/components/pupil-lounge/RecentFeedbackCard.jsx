@@ -44,12 +44,12 @@ export default function RecentFeedbackCard() {
         {feedback.map(obs => (
           <div
             key={obs.id}
-            className="bg-navy-900 border border-navy-800 rounded-xl p-3"
+            className="bg-navy-900/60 border border-navy-800/50 rounded-xl p-3"
           >
             <div className="flex items-start gap-2.5">
-              <MessageSquare size={14} className="text-gold-400 mt-0.5 flex-shrink-0" />
+              <MessageSquare size={13} className="text-gold-400/70 mt-0.5 flex-shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-sm text-white leading-relaxed line-clamp-3">
+                <p className="text-[13px] text-white/90 leading-relaxed line-clamp-2">
                   {obs.content}
                 </p>
                 <div className="flex items-center gap-2 mt-1.5 text-[10px] text-navy-500">
