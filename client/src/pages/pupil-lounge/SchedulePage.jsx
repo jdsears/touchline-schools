@@ -93,17 +93,15 @@ export default function SchedulePage() {
   const days = eachDayOfInterval({ start: weekStart, end: weekEnd })
   const isCurrentWeek = isSameWeek(weekStart, new Date(), { weekStartsOn: 1 })
 
-  const fetchEvents = useCallback(() => {
+  useEffect(() => {
     setLoading(true)
     const from = format(weekStart, 'yyyy-MM-dd')
-    const to = format(weekEnd, 'yyyy-MM-dd')
+    const to = format(endOfWeek(weekStart, { weekStartsOn: 1 }), 'yyyy-MM-dd')
     api.get(`/pupils/me/schedule?from=${from}&to=${to}`)
       .then(r => setEvents(r.data || []))
       .catch(() => setEvents([]))
       .finally(() => setLoading(false))
-  }, [weekStart, weekEnd])
-
-  useEffect(() => { fetchEvents() }, [fetchEvents])
+  }, [weekStart])
 
   const eventsForDay = (date) => {
     const dateStr = format(date, 'yyyy-MM-dd')
