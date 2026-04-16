@@ -329,10 +329,19 @@ app.get('/api/debug-db', async (req, res) => {
     if (tableNames.includes('users')) {
       const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'users'`)
       checks.users_cols = cols.rows.map(r => r.column_name).sort()
-      const admins = await pool.query(`SELECT name, email, is_admin FROM users WHERE is_admin = true`)
+      const admins = await pool.query(`SELECT name, email, is_admin, team_id, has_completed_onboarding FROM users WHERE is_admin = true`)
       checks.admins = admins.rows
       const total = await pool.query('SELECT COUNT(*) FROM users')
       checks.users_total = parseInt(total.rows[0].count)
+      // Check school_members for admins
+      const adminSchoolLinks = await pool.query(`SELECT sm.user_id, sm.school_id, sm.role, sm.school_role FROM school_members sm JOIN users u ON u.id = sm.user_id WHERE u.is_admin = true`)
+      checks.admin_school_links = adminSchoolLinks.rows
+      // Check team_memberships for admins
+      const adminTeamLinks = await pool.query(`SELECT tm.user_id, tm.team_id, tm.role FROM team_memberships tm JOIN users u ON u.id = tm.user_id WHERE u.is_admin = true`)
+      checks.admin_team_links = adminTeamLinks.rows
+      // Check teams count for demo school
+      const demoTeams = await pool.query(`SELECT id, name, school_id, sport FROM teams WHERE school_id = $1`, [checks.demo_school?.id || '00000000-0000-0000-0000-000000000000'])
+      checks.demo_teams = demoTeams.rows.length > 0 ? demoTeams.rows.map(t => ({ id: t.id, name: t.name, sport: t.sport })) : 'NO TEAMS FOUND for school'
     }
 
     res.json({ tables: tableNames, checks })
