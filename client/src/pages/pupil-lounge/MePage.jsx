@@ -74,7 +74,7 @@ export default function MePage() {
       </div>
 
       {/* Settings sections */}
-      <div className="mx-4 bg-navy-900 rounded-xl border border-navy-800 overflow-hidden divide-y divide-navy-800">
+      <div className="mx-4 bg-navy-900/60 rounded-2xl border border-navy-800/50 overflow-hidden divide-y divide-navy-800/30">
         <SettingsRow icon={Bell} label="Notifications" value="" onClick={() => {}} />
         <SettingsRow icon={HelpCircle} label="Help" value="" onClick={() => {}} />
       </div>
@@ -82,7 +82,7 @@ export default function MePage() {
       {/* Sign out */}
       <div className="mx-4 mt-4">
         {showSignOutConfirm ? (
-          <div className="bg-navy-900 border border-navy-800 rounded-xl p-4 text-center">
+          <div className="bg-navy-900/60 border border-navy-800/50 rounded-2xl p-4 text-center">
             <p className="text-sm text-white mb-3">
               {impersonating ? 'End impersonation and return to HoD?' : 'Are you sure you want to sign out?'}
             </p>

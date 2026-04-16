@@ -24,22 +24,21 @@ function AssessmentRow({ assessment }) {
   const label = assessment.unit_name || assessment.strand_name || sport || 'Assessment'
 
   return (
-    <div className="bg-navy-900 border border-navy-800 rounded-lg px-3 py-2.5">
-      <div className="flex items-center justify-between mb-1.5">
+    <div className="bg-navy-900/60 border border-navy-800/50 rounded-xl px-3 py-2.5">
+      <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-1.5 min-w-0">
-          {sport && <span className="text-xs">{SPORT_EMOJI[sport] || ''}</span>}
-          <span className="text-xs font-medium text-white truncate">{label}</span>
+          {sport && <span className="text-[11px]">{SPORT_EMOJI[sport] || ''}</span>}
+          <span className="text-[12px] font-medium text-white truncate">{label}</span>
         </div>
-        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${grade.bg} text-white`}>
+        <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${grade.bg} text-white`}>
           {grade.label}
         </span>
       </div>
-      {/* Progress bar */}
-      <div className="h-1.5 bg-navy-800 rounded-full overflow-hidden">
-        <div className={`h-full ${grade.bg} rounded-full transition-all`} style={{ width: grade.w }} />
+      <div className="h-1 bg-navy-800/80 rounded-full overflow-hidden">
+        <div className={`h-full ${grade.bg} rounded-full transition-all duration-500`} style={{ width: grade.w }} />
       </div>
       {assessment.teacher_notes && (
-        <p className="text-[10px] text-navy-500 mt-1.5 line-clamp-2">{assessment.teacher_notes}</p>
+        <p className="text-[10px] text-navy-500 mt-1.5 line-clamp-2 leading-relaxed">{assessment.teacher_notes}</p>
       )}
     </div>
   )
@@ -139,9 +138,14 @@ export default function ProgressPage() {
       )}
 
       {showGCSEEvidence && (
-        <div className="mt-5 bg-navy-900 border border-gold-500/30 rounded-xl p-4">
-          <h2 className="text-sm font-bold text-gold-400 mb-1">GCSE PE Portfolio</h2>
-          <p className="text-xs text-navy-400">
+        <div className="mt-5 bg-gold-500/5 border border-gold-500/20 rounded-2xl p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-7 h-7 rounded-lg bg-gold-500/20 flex items-center justify-center">
+              <span className="text-gold-400 text-sm font-bold">G</span>
+            </div>
+            <h2 className="text-[13px] font-bold text-gold-400">GCSE PE Portfolio</h2>
+          </div>
+          <p className="text-[11px] text-navy-400 leading-relaxed">
             Your practical portfolio and exam evidence will appear here as your teachers update your records.
           </p>
         </div>
