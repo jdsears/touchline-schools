@@ -130,6 +130,7 @@ const SportsLoungeLayout = lazy(() => import('./pages/pupil-lounge/SportsLoungeL
 const SLTodayPage = lazy(() => import('./pages/pupil-lounge/TodayPage'))
 const SLSchedulePage = lazy(() => import('./pages/pupil-lounge/SchedulePage'))
 const SLMySportsPage = lazy(() => import('./pages/pupil-lounge/MySportsPage'))
+const SLSportDetailPage = lazy(() => import('./pages/pupil-lounge/SportDetailPage'))
 const SLProgressPage = lazy(() => import('./pages/pupil-lounge/ProgressPage'))
 const SLMePage = lazy(() => import('./pages/pupil-lounge/MePage'))
 
@@ -362,6 +363,7 @@ export default function App() {
           <Route path="today" element={<SLTodayPage />} />
           <Route path="schedule" element={<SLSchedulePage />} />
           <Route path="sports" element={<SLMySportsPage />} />
+          <Route path="sports/:sportKey" element={<SLSportDetailPage />} />
           <Route path="progress" element={<SLProgressPage />} />
           <Route path="me" element={<SLMePage />} />
         </Route>
