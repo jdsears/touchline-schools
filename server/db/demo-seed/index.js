@@ -22,6 +22,7 @@ import { seedSafeguarding } from './safeguarding.js'
 import { seedAuditLog } from './auditLog.js'
 import { seedTestPersonas } from './test-personas.js'
 import { seedLessons } from './lessons.js'
+import { seedAssessments } from './assessments.js'
 
 dotenv.config()
 
@@ -111,6 +112,9 @@ async function runSeed() {
 
     await seedLessons(school.id, staff)
     console.log('[demo-seed] Lessons seeded')
+
+    await seedAssessments(school.id)
+    console.log('[demo-seed] Assessments seeded')
 
     await seedFixtures(school.id, teams, staff, pupils)
     console.log('[demo-seed] Fixtures seeded')
