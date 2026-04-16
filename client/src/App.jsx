@@ -112,6 +112,7 @@ const VoiceSafeguardingReview = lazy(() => import('./pages/teacher/VoiceSafeguar
 const HoDVoiceSettings = lazy(() => import('./pages/teacher/HoDVoiceSettings'))
 const GDPRDashboard = lazy(() => import('./pages/teacher/GDPRDashboard'))
 const HoDSSOSettings = lazy(() => import('./pages/teacher/HoDSSOSettings'))
+const TeacherSettings = lazy(() => import('./pages/teacher/TeacherSettings'))
 
 // Pupil Portal pages
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -316,6 +317,9 @@ export default function App() {
           <Route path="hod/voice-settings" element={<HoDVoiceSettings />} />
           <Route path="hod/gdpr" element={<GDPRDashboard />} />
           <Route path="hod/sso-settings" element={<HoDSSOSettings />} />
+          {/* Three-tier settings */}
+          <Route path="settings" element={<Navigate to="/teacher/settings/profile" replace />} />
+          <Route path="settings/:tab" element={<TeacherSettings />} />
         </Route>
 
         {/* Pupil Portal */}
@@ -337,6 +341,17 @@ export default function App() {
         <Route path="/pupil-lounge" element={<Navigate to="/pupil" replace />} />
         <Route path="/player-lounge" element={<Navigate to="/pupil" replace />} />
         <Route path="/dashboard" element={<Navigate to="/teacher" replace />} />
+        {/* Old Settings tab redirects */}
+        <Route path="/settings/profile"      element={<Navigate to="/teacher/settings/profile" replace />} />
+        <Route path="/settings/team"         element={<Navigate to="/teacher/settings/teams" replace />} />
+        <Route path="/settings/branding"     element={<Navigate to="/teacher/settings/branding" replace />} />
+        <Route path="/settings/billing"      element={<Navigate to="/teacher/settings/licence" replace />} />
+        <Route path="/settings/invites"      element={<Navigate to="/teacher/settings/staff-directory" replace />} />
+        <Route path="/settings/qualifications" element={<Navigate to="/teacher/settings/qualifications" replace />} />
+        <Route path="/settings/knowledge-base" element={<Navigate to="/teacher/settings/knowledge-base" replace />} />
+        <Route path="/settings/tactics"      element={<Navigate to="/teacher/teams" replace />} />
+        <Route path="/settings/streaming"    element={<Navigate to="/teacher/settings" replace />} />
+        <Route path="/settings"              element={<Navigate to="/teacher/settings/profile" replace />} />
 
         {/* Catch all - redirect based on auth status */}
         <Route path="*" element={<CatchAllRedirect />} />
