@@ -107,6 +107,7 @@ router.get('/me/development', authenticateToken, async (req, res) => {
        LEFT JOIN users u ON u.id = o.observer_id
        WHERE o.pupil_id = $1
          AND COALESCE(o.review_state, 'confirmed') = 'confirmed'
+         AND o.visible_to_pupil = TRUE
        ORDER BY o.created_at DESC
        LIMIT 50`,
       [pupilId]
