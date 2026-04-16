@@ -485,9 +485,9 @@ app.get('/api/trigger-seed-personas', async (req, res) => {
     log.push(`School: ${schoolId}`)
 
     const result = await seedTestPersonas(schoolId)
-    log.push(`Jamie: ${result.jamie?.pupilId}`)
-    log.push(`Amelia: ${result.amelia?.pupilId}`)
-    log.push(`Toby: ${result.toby?.pupilId}`)
+    log.push(`Jamie: ${result.jamie?.id}`)
+    log.push(`Amelia: ${result.amelia?.id}`)
+    log.push(`Toby: ${result.toby?.id}`)
 
     res.json({ success: true, log })
   } catch (err) {
