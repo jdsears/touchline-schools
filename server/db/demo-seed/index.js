@@ -38,15 +38,24 @@ export async function wipeDemoTenant() {
   const schoolId = schoolResult.rows[0].id
 
   // Get demo user IDs before deleting the school (to clean up users table too)
+  // Exclude protected_from_reset users — they survive wipes
   const userResult = await pool.query(
     `SELECT u.id FROM users u
      JOIN school_members sm ON sm.user_id = u.id
-     WHERE sm.school_id = $1 AND u.is_demo_user = true`,
+     WHERE sm.school_id = $1 AND u.is_demo_user = true
+       AND COALESCE(u.protected_from_reset, false) = false`,
     [schoolId]
   )
   const demoUserIds = userResult.rows.map(r => r.id)
 
-  console.log(`[demo-seed] Wiping demo tenant ${schoolId} (${demoUserIds.length} demo users)...`)
+  // Also detach protected pupils from teams (team_id) before cascade deletes them
+  await pool.query(`
+    UPDATE pupils SET team_id = NULL
+    WHERE COALESCE(protected_from_reset, false) = true
+      AND team_id IN (SELECT id FROM teams WHERE school_id = $1)
+  `, [schoolId])
+
+  console.log(`[demo-seed] Wiping demo tenant ${schoolId} (${demoUserIds.length} wipeable users, protected users kept)...`)
 
   // Cascading delete via school removes most records.
   // Teams cascade from school_id; matches from team_id; etc.

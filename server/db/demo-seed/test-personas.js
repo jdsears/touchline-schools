@@ -115,29 +115,51 @@ async function insertTestPersona(schoolId, { name, yearGroup, house, gender }) {
   const firstName = name.split(' ')[0]
   const lastName = name.split(' ').slice(1).join(' ')
 
-  // Create user account
-  const userRes = await pool.query(`
-    INSERT INTO users (name, email, password_hash, role,
-                       is_demo_user, is_test_persona, protected_from_reset,
-                       demo_expires_at, created_at)
-    VALUES ($1, $2, $3, 'manager',
-            true, true, true,
-            NOW() + INTERVAL '7 days', NOW())
-    RETURNING id
-  `, [name, email, hash])
-  const userId = userRes.rows[0].id
+  // Check if this persona already exists (survives reset via protected_from_reset)
+  const existing = await pool.query(
+    `SELECT u.id AS user_id, p.id, p.name, p.first_name, p.last_name,
+            p.year_group, p.house, p.date_of_birth, p.is_active, p.protected_from_reset
+     FROM users u
+     JOIN pupils p ON p.user_id = u.id
+     WHERE u.email = $1 AND u.is_test_persona = true`,
+    [email]
+  )
 
-  // Create pupil record
-  const pupilRes = await pool.query(`
-    INSERT INTO pupils (name, first_name, last_name,
-                        year_group, house, date_of_birth,
-                        is_active, protected_from_reset, user_id, created_at)
-    VALUES ($1, $2, $3, $4, $5, $6, true, true, $7, NOW())
-    RETURNING *
-  `, [name, firstName, lastName, yearGroup, house, dobForYear(yearGroup), userId])
-  const pupil = pupilRes.rows[0]
+  let userId, pupil
+  if (existing.rows.length > 0) {
+    // Re-link existing protected persona to new school
+    userId = existing.rows[0].user_id
+    pupil = existing.rows[0]
+    // Refresh expiry
+    await pool.query(
+      `UPDATE users SET demo_expires_at = NOW() + INTERVAL '7 days' WHERE id = $1`,
+      [userId]
+    )
+  } else {
+    // Create user account
+    const userRes = await pool.query(`
+      INSERT INTO users (name, email, password_hash, role,
+                         is_demo_user, is_test_persona, protected_from_reset,
+                         demo_expires_at, created_at)
+      VALUES ($1, $2, $3, 'manager',
+              true, true, true,
+              NOW() + INTERVAL '7 days', NOW())
+      RETURNING id
+    `, [name, email, hash])
+    userId = userRes.rows[0].id
 
-  // School membership (read-only portal role)
+    // Create pupil record
+    const pupilRes = await pool.query(`
+      INSERT INTO pupils (name, first_name, last_name,
+                          year_group, house, date_of_birth,
+                          is_active, protected_from_reset, user_id, created_at)
+      VALUES ($1, $2, $3, $4, $5, $6, true, true, $7, NOW())
+      RETURNING *
+    `, [name, firstName, lastName, yearGroup, house, dobForYear(yearGroup), userId])
+    pupil = pupilRes.rows[0]
+  }
+
+  // (Re-)create school membership — may have been cascade-deleted with old school
   await pool.query(`
     INSERT INTO school_members (school_id, user_id, role, school_role, can_view_reports, joined_at)
     VALUES ($1, $2, 'parent', 'read_only', false, NOW())
