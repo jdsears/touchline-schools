@@ -1,5 +1,6 @@
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { PupilProfileProvider } from '../../hooks/usePupilProfile'
 import BottomTabBar from '../../components/pupil-lounge/BottomTabBar'
 import PupilInstallPrompt from '../../components/pupil-lounge/PupilInstallPrompt'
 
@@ -26,22 +27,24 @@ export default function SportsLoungeLayout() {
   const { impersonating } = useAuth()
 
   return (
-    <div className="flex flex-col h-[100dvh] bg-navy-950 text-white">
-      <ImpersonationBanner />
+    <PupilProfileProvider>
+      <div className="flex flex-col h-[100dvh] bg-navy-950 text-white">
+        <ImpersonationBanner />
 
-      <main
-        className={`flex-1 overflow-y-auto overscroll-y-contain ${
-          impersonating ? 'pt-8' : ''
-        }`}
-        style={{
-          paddingBottom: 'calc(60px + env(safe-area-inset-bottom, 0px))',
-        }}
-      >
-        <Outlet />
-      </main>
+        <main
+          className={`flex-1 overflow-y-auto overscroll-y-contain ${
+            impersonating ? 'pt-8' : ''
+          }`}
+          style={{
+            paddingBottom: 'calc(60px + env(safe-area-inset-bottom, 0px))',
+          }}
+        >
+          <Outlet />
+        </main>
 
-      <BottomTabBar />
-      <PupilInstallPrompt />
-    </div>
+        <BottomTabBar />
+        <PupilInstallPrompt />
+      </div>
+    </PupilProfileProvider>
   )
 }
