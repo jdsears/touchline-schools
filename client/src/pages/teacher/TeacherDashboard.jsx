@@ -24,7 +24,7 @@ export default function TeacherDashboard() {
   async function loadDashboard() {
     try {
       const [dashRes, teamsRes, fixturesRes] = await Promise.all([
-        assessmentService.getDashboard(),
+        assessmentService.getDashboard().catch(() => ({ data: { stats: { classes: 0, pupils: 0, units: 0, assessments_this_term: 0 }, recent_groups: [] } })),
         teacherService.getMyTeams().catch(() => ({ data: [] })),
         teacherService.getMyFixtures().catch(() => ({ data: [] })),
       ])
