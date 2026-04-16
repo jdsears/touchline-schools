@@ -51,10 +51,10 @@ function DayCard({ date, events, onEventTap }) {
   const monthShort = format(date, 'MMM')
 
   return (
-    <div className={`rounded-xl border p-3 ${
+    <div className={`rounded-2xl border p-3 ${
       today
-        ? 'border-gold-500/40 bg-gold-500/5'
-        : 'border-navy-800 bg-navy-900/50'
+        ? 'border-gold-500/30 bg-gold-500/5'
+        : 'border-navy-800/40 bg-navy-900/40'
     }`}>
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-baseline gap-1.5">
