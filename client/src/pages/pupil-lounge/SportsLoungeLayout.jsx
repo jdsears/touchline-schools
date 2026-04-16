@@ -1,15 +1,7 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
-import { Home, Calendar, Trophy, TrendingUp, User } from 'lucide-react'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import BottomTabBar from '../../components/pupil-lounge/BottomTabBar'
 import PupilInstallPrompt from '../../components/pupil-lounge/PupilInstallPrompt'
-
-const TABS = [
-  { to: '/pupil-lounge/today', icon: Home, label: 'Today' },
-  { to: '/pupil-lounge/schedule', icon: Calendar, label: 'Schedule' },
-  { to: '/pupil-lounge/sports', icon: Trophy, label: 'Sports' },
-  { to: '/pupil-lounge/progress', icon: TrendingUp, label: 'Progress' },
-  { to: '/pupil-lounge/me', icon: User, label: 'Me' },
-]
 
 function ImpersonationBanner() {
   const { impersonating, endImpersonation } = useAuth()
@@ -35,10 +27,8 @@ export default function SportsLoungeLayout() {
 
   return (
     <div className="flex flex-col h-[100dvh] bg-navy-950 text-white">
-      {/* Impersonation banner */}
       <ImpersonationBanner />
 
-      {/* Main scrollable content */}
       <main
         className={`flex-1 overflow-y-auto overscroll-y-contain ${
           impersonating ? 'pt-8' : ''
@@ -50,34 +40,7 @@ export default function SportsLoungeLayout() {
         <Outlet />
       </main>
 
-      {/* Bottom tab bar */}
-      <nav
-        className="fixed bottom-0 left-0 right-0 z-40 bg-navy-900 border-t border-navy-800"
-        style={{
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-        }}
-      >
-        <div className="flex items-center justify-around h-[60px] max-w-lg mx-auto">
-          {TABS.map(({ to, icon: Icon, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                `flex flex-col items-center justify-center gap-0.5 min-w-[56px] min-h-[44px] transition-colors ${
-                  isActive
-                    ? 'text-gold-400'
-                    : 'text-white/50 hover:text-white/70'
-                }`
-              }
-            >
-              <Icon size={22} strokeWidth={1.8} />
-              <span className="text-[10px] font-medium leading-none">{label}</span>
-            </NavLink>
-          ))}
-        </div>
-      </nav>
-
-      {/* PWA install prompt (shows after 3 visits) */}
+      <BottomTabBar />
       <PupilInstallPrompt />
     </div>
   )
