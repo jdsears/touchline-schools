@@ -48,6 +48,7 @@ import assessmentRoutes from './routes/assessments.js'
 import sportKnowledgeBaseRoutes from './routes/sportKnowledgeBase.js'
 import hodRoutes from './routes/headOfDepartment.js'
 import teacherDashboardRoutes from './routes/teacherDashboard.js'
+import calendarExportRoutes from './routes/calendarExport.js'
 import onboardingRoutes from './routes/onboarding.js'
 import pupilManagementRoutes from './routes/pupilManagement.js'
 import reportingRoutes from './routes/reporting.js'
@@ -238,6 +239,7 @@ app.use('/api/assessments', assessmentRoutes)
 app.use('/api/sport-knowledge', sportKnowledgeBaseRoutes)
 app.use('/api/hod', hodRoutes)
 app.use('/api/teacher-dashboard', teacherDashboardRoutes)
+app.use('/api/calendar', calendarExportRoutes)
 app.use('/api/onboarding', onboardingRoutes)
 app.use('/api/pupil-management', pupilManagementRoutes)
 app.use('/api/reporting', reportingRoutes)

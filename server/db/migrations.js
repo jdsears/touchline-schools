@@ -3815,6 +3815,21 @@ export async function runMigrations() {
     console.log('Phase 17: Demo access request migration complete')
 
     // ==========================================
+    // PHASE 17b: Calendar export tokens
+    // ==========================================
+    await pool.query(`CREATE TABLE IF NOT EXISTS calendar_tokens (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token TEXT NOT NULL UNIQUE,
+      scope TEXT NOT NULL CHECK (scope IN ('teacher_schedule', 'team_fixtures', 'school_fixtures', 'pupil_schedule')),
+      scope_id UUID,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_token ON calendar_tokens(token)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_user ON calendar_tokens(user_id)`)
+    console.log('Phase 17b: Calendar tokens migration complete')
+
+    // ==========================================
     // PHASE 18: Seed admin users
     // ==========================================
     const adminUsers = [

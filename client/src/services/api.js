@@ -660,6 +660,12 @@ export const teacherService = {
   getDashboardAttention: () => api.get('/teacher-dashboard/attention'),
 }
 
+export const calendarService = {
+  getTokens: () => api.get('/calendar/tokens'),
+  createToken: (scope, scopeId) => api.post('/calendar/tokens', { scope, scope_id: scopeId }),
+  revokeToken: (id) => api.delete(`/calendar/tokens/${id}`),
+}
+
 // Teaching Groups service (curriculum PE classes)
 export const teachingGroupService = {
   list: () => api.get('/teaching-groups'),
