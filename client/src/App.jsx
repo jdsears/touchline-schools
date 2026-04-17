@@ -1,8 +1,9 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { usePageTracking } from './hooks/useAnalytics'
 import ErrorBoundary from './components/common/ErrorBoundary'
+import { lazyWithRetry as lazy } from './utils/lazyWithRetry'
 
 // Page tracker component
 function PageTracker() {

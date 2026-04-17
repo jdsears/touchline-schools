@@ -344,8 +344,9 @@ export default function TeacherLayout() {
 }
 
 // Lazy load the recorder component to avoid loading MediaRecorder code unnecessarily
-import { lazy, Suspense } from 'react'
-const VoiceRecorderComponent = lazy(() => import('../../components/voice/VoiceObservationRecorder'))
+import { Suspense } from 'react'
+import { lazyWithRetry } from '../../utils/lazyWithRetry'
+const VoiceRecorderComponent = lazyWithRetry(() => import('../../components/voice/VoiceObservationRecorder'))
 function VoiceRecorderLazy({ onClose }) {
   return (
     <Suspense fallback={null}>

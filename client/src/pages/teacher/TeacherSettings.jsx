@@ -1,4 +1,5 @@
-import { useState, useEffect, Suspense, lazy } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { lazyWithRetry as lazy } from '../../utils/lazyWithRetry'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { settingsService } from '../../services/api'
