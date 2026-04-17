@@ -133,7 +133,11 @@ const hockey = {
   formationsByFormat,
   defaultFormationByFormat,
   defaultPositionsByFormat,
-  ageGroupFormatMap: {},
+  ageGroupFormatMap: {
+    'U7': 7, 'U8': 7, 'U9': 7, 'U10': 7, 'U11': 7,
+    'U12': 11, 'U13': 11, 'U14': 11, 'U15': 11, 'U16': 11, 'U17': 11, 'U18': 11,
+    'Adult': 11,
+  },
   setPieceRoles,
   defaultSetPieceTakers,
   tacticalZones: null,

@@ -72,7 +72,11 @@ const netball = {
   formationsByFormat,
   defaultFormationByFormat,
   defaultPositionsByFormat,
-  ageGroupFormatMap: {},
+  ageGroupFormatMap: {
+    'U7': 5, 'U8': 5, 'U9': 5,
+    'U10': 7, 'U11': 7, 'U12': 7, 'U13': 7, 'U14': 7,
+    'U15': 7, 'U16': 7, 'U17': 7, 'U18': 7, 'Adult': 7,
+  },
   setPieceRoles,
   defaultSetPieceTakers,
   tacticalZones: courtZones,

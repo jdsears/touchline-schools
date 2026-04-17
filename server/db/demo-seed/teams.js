@@ -5,6 +5,55 @@
 
 import pool from '../../config/database.js'
 
+// UK school year → age grade (U-number) at start of academic year.
+// Year 7 = age 11 at start of year, U12 in governing-body terms.
+// Year 12+ treated as Adult.
+function yearGroupToAgeGrade(yearGroup) {
+  const m = String(yearGroup || '').match(/Year\s*(\d+)/i)
+  if (!m) return 'Adult'
+  const year = parseInt(m[1], 10)
+  if (year >= 12) return 'Adult'
+  return `U${year + 5}`
+}
+
+// Age-appropriate team format per sport (mirrors client sport configs).
+// Football: FA youth format progression.
+// Rugby: RFU age-grade law.
+// Hockey: England Hockey In2Hockey pathway.
+// Netball: England Netball (High 5 for primary → 7-a-side from Y5/U10).
+// Cricket: 11-a-side across the board.
+const AGE_FORMAT_MAP = {
+  football: {
+    U7: 5, U8: 5, U9: 7, U10: 7, U11: 9, U12: 9,
+    U13: 11, U14: 11, U15: 11, U16: 11, U17: 11, U18: 11, Adult: 11,
+  },
+  rugby: {
+    U7: 7, U8: 7, U9: 7, U10: 10, U11: 10, U12: 12, U13: 12,
+    U14: 15, U15: 15, U16: 15, U17: 15, U18: 15, Adult: 15,
+  },
+  hockey: {
+    U7: 7, U8: 7, U9: 7, U10: 7, U11: 7,
+    U12: 11, U13: 11, U14: 11, U15: 11, U16: 11, U17: 11, U18: 11, Adult: 11,
+  },
+  netball: {
+    U7: 5, U8: 5, U9: 5,
+    U10: 7, U11: 7, U12: 7, U13: 7, U14: 7, U15: 7, U16: 7, U17: 7, U18: 7, Adult: 7,
+  },
+  cricket: {
+    U7: 11, U8: 11, U9: 11, U10: 11, U11: 11, U12: 11, U13: 11,
+    U14: 11, U15: 11, U16: 11, U17: 11, U18: 11, Adult: 11,
+  },
+}
+
+// Age-appropriate default formation per sport × format.
+const DEFAULT_FORMATION = {
+  football: { 11: '4-3-3', 9: '3-3-2', 7: '2-3-1', 5: '2-1-1' },
+  rugby:    { 15: 'Drift Defence', 12: 'Standard 12s', 10: 'Standard 10s', 7: 'Standard 7s Attack' },
+  hockey:   { 11: '4-3-3', 7: '3-3' },
+  netball:  { 7: 'standard', 5: 'modified-5' },
+  cricket:  { 11: 'Attack' },
+}
+
 // Default tactics per sport (formation + game model flavour)
 const SPORT_TACTICS = {
   football: {
@@ -78,6 +127,12 @@ const SPORT_TACTICS = {
 
 async function createTeam(schoolId, data) {
   const tactics = SPORT_TACTICS[data.sport] || SPORT_TACTICS.football
+  const ageGrade = yearGroupToAgeGrade(data.ageGroup)
+  const sportMap = AGE_FORMAT_MAP[data.sport] || {}
+  const teamFormat = sportMap[ageGrade] || tactics.team_format
+  const formationMap = DEFAULT_FORMATION[data.sport] || {}
+  const formation = formationMap[teamFormat] || tactics.formation
+
   const result = await pool.query(`
     INSERT INTO teams (
       name, school_id, sport, gender, age_group, season_type,
@@ -91,8 +146,8 @@ async function createTeam(schoolId, data) {
     data.name, schoolId, data.sport, data.gender, data.ageGroup, data.seasonType,
     data.primaryColor || '#1B4332',
     data.secondaryColor || '#D97706',
-    tactics.formation,
-    tactics.team_format,
+    formation,
+    teamFormat,
     JSON.stringify(tactics.game_model),
   ])
   return result.rows[0]

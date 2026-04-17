@@ -51,7 +51,10 @@ const cricket = {
   formationsByFormat,
   defaultFormationByFormat,
   defaultPositionsByFormat,
-  ageGroupFormatMap: {},
+  ageGroupFormatMap: {
+    'U9': 11, 'U10': 11, 'U11': 11, 'U12': 11, 'U13': 11,
+    'U14': 11, 'U15': 11, 'U16': 11, 'U17': 11, 'U18': 11, 'Adult': 11,
+  },
   setPieceRoles,
   defaultSetPieceTakers,
   tacticalZones: null,
