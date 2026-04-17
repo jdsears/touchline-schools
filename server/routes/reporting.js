@@ -6,13 +6,20 @@ import { v4 as uuidv4 } from 'uuid'
 const router = express.Router()
 router.use(authenticateToken)
 
-// Helper to get the user's school_id
+// Helper to get the user's school_id — checks school_members first, then
+// falls back to teaching_groups (covers teachers not yet fully onboarded)
 async function getUserSchoolId(userId) {
-  const result = await pool.query(
-    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC LIMIT 1`,
+  const direct = await pool.query(
+    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at DESC NULLS LAST LIMIT 1`,
     [userId]
   )
-  return result.rows[0]?.school_id || null
+  if (direct.rows[0]?.school_id) return direct.rows[0].school_id
+
+  const via = await pool.query(
+    `SELECT school_id FROM teaching_groups WHERE teacher_id = $1 LIMIT 1`,
+    [userId]
+  )
+  return via.rows[0]?.school_id || null
 }
 
 // ==========================================
@@ -139,31 +146,37 @@ router.get('/my-reports', async (req, res) => {
     )
 
     if (windowsResult.rows.length === 0) {
-      return res.json({ windows: [], pupils_to_report: [] })
+      return res.json({ windows: [], pupils_to_report: [], existing_reports: {} })
     }
 
-    // Get pupils in the teacher's teaching groups
+    // Get pupils in the teacher's teaching groups (scoped to this school)
     const pupilsResult = await pool.query(
       `SELECT DISTINCT p.id, p.first_name, p.last_name, p.year_group,
+              tg.id AS teaching_group_id,
               tg.name AS class_name,
               (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name))
                FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
        FROM teaching_group_pupils tgp
        JOIN pupils p ON tgp.pupil_id = p.id
        JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
-       WHERE tg.teacher_id = $1
+       WHERE tg.teacher_id = $1 AND tg.school_id = $2
        ORDER BY p.year_group ASC, p.last_name ASC`,
-      [req.user.id]
+      [req.user.id, schoolId]
     )
 
-    // Get existing reports by this teacher for open windows
-    const existingResult = await pool.query(
-      `SELECT pr.pupil_id, pr.reporting_window_id, pr.status, pr.id
+    // Get existing reports for any window (by anyone) for these pupils in open windows
+    const windowIds = windowsResult.rows.map(w => w.id)
+    const pupilIds = pupilsResult.rows.map(p => p.id)
+
+    const existingResult = pupilIds.length > 0 ? await pool.query(
+      `SELECT pr.id, pr.pupil_id, pr.reporting_window_id, pr.status,
+              pr.attainment_grade, pr.effort_grade,
+              pr.teacher_comment, pr.generated_by
        FROM pupil_reports pr
-       WHERE pr.generated_by = $1
-         AND pr.reporting_window_id = ANY($2)`,
-      [req.user.id, windowsResult.rows.map(w => w.id)]
-    )
+       WHERE pr.reporting_window_id = ANY($1)
+         AND pr.pupil_id = ANY($2)`,
+      [windowIds, pupilIds]
+    ) : { rows: [] }
 
     const existingMap = {}
     for (const r of existingResult.rows) {

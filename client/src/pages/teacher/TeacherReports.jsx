@@ -147,6 +147,19 @@ export default function TeacherReports() {
     )
   }
 
+  if (data.pupils_to_report.length === 0) {
+    return (
+      <div className="p-6 max-w-7xl mx-auto">
+        <h1 className="text-2xl font-bold text-white mb-2">Reports</h1>
+        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
+          <FileBarChart className="w-8 h-8 text-navy-500 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-white mb-2">{data.windows[0]?.name} is open</h3>
+          <p className="text-navy-400 text-sm">You have no pupils assigned to your teaching groups for this window. Ask your Head of PE to assign you to a teaching group.</p>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
@@ -168,6 +181,25 @@ export default function TeacherReports() {
           </select>
         )}
       </div>
+
+      {/* Progress indicator */}
+      {(() => {
+        const total = data.pupils_to_report.length
+        const started = data.pupils_to_report.filter(p => reports[p.id]?.status).length
+        const submitted = data.pupils_to_report.filter(p => reports[p.id]?.status === 'submitted').length
+        const pct = total > 0 ? Math.round((submitted / total) * 100) : 0
+        return (
+          <div className="mb-6 bg-navy-900 rounded-xl border border-navy-800 p-4">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="text-navy-400">{submitted} of {total} reports submitted</span>
+              <span className="text-navy-500 text-xs">{started - submitted} in draft · {total - started} not started</span>
+            </div>
+            <div className="h-2 bg-navy-800 rounded-full overflow-hidden">
+              <div className="h-full bg-pitch-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+            </div>
+          </div>
+        )
+      })()}
 
       {/* Report cards */}
       <div className="space-y-4">
