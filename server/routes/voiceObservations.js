@@ -35,18 +35,33 @@ const audioUpload = multer({
   },
 })
 
+// Helper to get user's school ID.
+// Teachers reach a school via school_members (staff roster) OR via teaching_groups
+// (class assignment) — fall back through both so non-roster teachers still work.
+async function getUserSchoolId(userId) {
+  const direct = await pool.query(
+    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC NULLS LAST LIMIT 1`,
+    [userId]
+  )
+  if (direct.rows[0]?.school_id) return direct.rows[0].school_id
+  const via = await pool.query(
+    `SELECT school_id FROM teaching_groups WHERE teacher_id = $1 LIMIT 1`,
+    [userId]
+  )
+  return via.rows[0]?.school_id || null
+}
+
 // Middleware: check voice observations feature flag
 async function requireVoiceEnabled(req, res, next) {
   try {
+    const schoolId = await getUserSchoolId(req.user.id)
+    if (!schoolId) {
+      return res.status(403).json({ error: 'No school access' })
+    }
     const schoolResult = await pool.query(
-      `SELECT s.voice_observations_enabled
-       FROM school_members sm
-       JOIN schools s ON sm.school_id = s.id
-       WHERE sm.user_id = $1
-       LIMIT 1`,
-      [req.user.id]
+      `SELECT voice_observations_enabled FROM schools WHERE id = $1`,
+      [schoolId]
     )
-
     if (schoolResult.rows.length === 0 || !schoolResult.rows[0].voice_observations_enabled) {
       return res.status(403).json({ error: 'Voice observations are not enabled for your school' })
     }
@@ -55,15 +70,6 @@ async function requireVoiceEnabled(req, res, next) {
   } catch (error) {
     next(error)
   }
-}
-
-// Helper to get user's school ID
-async function getUserSchoolId(userId) {
-  const result = await pool.query(
-    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC LIMIT 1`,
-    [userId]
-  )
-  return result.rows[0]?.school_id || null
 }
 
 // POST /upload - Upload audio and start processing pipeline

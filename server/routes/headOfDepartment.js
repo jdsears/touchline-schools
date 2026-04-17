@@ -50,7 +50,23 @@ async function requireHoD(req, res, next) {
 router.get('/check', async (req, res) => {
   try {
     if (req.user.is_admin) {
-      return res.json({ isHoD: true, role: 'school_admin' })
+      // Site admin: return the first school so HoD-only pages (e.g. Voice Settings)
+      // can still load rather than sitting on their "no school" fallback.
+      const schoolResult = await pool.query(
+        `SELECT s.id, s.name FROM school_members sm
+         JOIN schools s ON sm.school_id = s.id
+         WHERE sm.user_id = $1
+         ORDER BY sm.joined_at ASC NULLS LAST
+         LIMIT 1`,
+        [req.user.id]
+      )
+      const fallback = schoolResult.rows[0] || (await pool.query('SELECT id, name FROM schools ORDER BY created_at ASC LIMIT 1')).rows[0]
+      return res.json({
+        isHoD: true,
+        role: 'school_admin',
+        school_id: fallback?.id || null,
+        school_name: fallback?.name || null,
+      })
     }
 
     const result = await pool.query(

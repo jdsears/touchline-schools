@@ -436,10 +436,20 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
   const defaultFormationPositions = sportConfig.defaultPositionsByFormat[activeFormat] || {}
   const defaultFormation = sportConfig.defaultFormationByFormat[activeFormat] || availableFormations[0] || '4-3-3'
 
-  const [formation, setFormation] = useState(team?.formation || defaultFormation)
+  // Normalise formation: if the stored formation isn't valid for this sport+format
+  // (e.g. legacy seed stored '2-3-2' for netball where only 'standard' is valid),
+  // fall back to the default so the picker and downstream lookups don't break.
+  const savedCustomFormations = team?.custom_formations || []
+  const isValidFormation = (name) => (
+    !!defaultFormationPositions[name]
+    || availableFormations.includes(name)
+    || savedCustomFormations.some(cf => cf.name === name)
+  )
+  const initialFormation = isValidFormation(team?.formation) ? team.formation : defaultFormation
+
+  const [formation, setFormation] = useState(initialFormation)
   const [positions, setPositions] = useState(() => {
-    const formationName = team?.formation || defaultFormation
-    return validatePositions(team?.positions, formationName, activeFormat, sportConfig)
+    return validatePositions(team?.positions, initialFormation, activeFormat, sportConfig)
   })
   const [saving, setSaving] = useState(false)
   const [selectedPosition, setSelectedPosition] = useState(null)
@@ -736,9 +746,14 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
     // 2. We don't have local unsaved changes (localChangesRef) - OR this is the first load
     // 3. The positions actually changed from what we last received
     if (!isFromOurSave && (!localChangesRef.current || isFirstLoad) && positionsActuallyChanged) {
-      const currentTeamFormat = team?.team_format || 11
-      const fallbackFormation = currentTeamFormat === 9 ? '3-3-2' : '4-3-3'
-      const formationToUse = team?.formation || fallbackFormation
+      const currentTeamFormat = team?.team_format || sportConfig.defaultFormat || 11
+      const sportFallback = sportConfig.defaultFormationByFormat?.[currentTeamFormat]
+        || sportConfig.formationsByFormat?.[currentTeamFormat]?.[0]
+        || '4-3-3'
+      const formatPositionsMap = sportConfig.defaultPositionsByFormat?.[currentTeamFormat] || {}
+      const storedFormation = team?.formation
+      const formationValidForFormat = storedFormation && !!formatPositionsMap[storedFormation]
+      const formationToUse = formationValidForFormat ? storedFormation : sportFallback
       if (team?.positions && Array.isArray(team.positions) && team.positions.length > 0) {
         // Validate and sanitize incoming positions
         const validatedPositions = validatePositions(team.positions, formationToUse, currentTeamFormat, sportConfig)
@@ -813,7 +828,9 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
       setPositions(validatePositions(custom.positions, newFormation, activeFormat, sportConfig))
     } else {
       // Use defaults for standard formations (based on team format)
-      const defaults = defaultFormationPositions[newFormation] || defaultFormationPositions[defaultFormation]
+      const defaults = defaultFormationPositions[newFormation]
+        || defaultFormationPositions[defaultFormation]
+        || []
       setPositions(defaults.map(p => ({ ...p })))
     }
     setSelectedPosition(null)
