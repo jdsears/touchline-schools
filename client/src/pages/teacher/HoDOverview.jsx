@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { hodService } from '../../services/api'
 import {
   Building2, Calendar, AlertTriangle, BarChart3, Clock,
   Users, ChevronRight, Loader2, Shield, FileBarChart,
-  Trophy, GraduationCap,
+  Trophy, GraduationCap, Plus, Download, UserCog,
 } from 'lucide-react'
 
 const TYPE_PILL = {
@@ -41,6 +41,12 @@ export default function HoDOverview() {
   const [attention, setAttention] = useState(null)
   const [weekly, setWeekly] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const pollRef = useRef(null)
+
+  const fetchToday = useCallback(() => {
+    hodService.getSchoolOverviewToday().then(r => setToday(r.data)).catch(() => {})
+  }, [])
 
   useEffect(() => {
     Promise.all([
@@ -48,14 +54,29 @@ export default function HoDOverview() {
       hodService.getSchoolOverviewAttention().then(r => setAttention(r.data)),
       hodService.getSchoolOverviewWeekly().then(r => setWeekly(r.data)),
     ])
-      .catch(err => console.error('Dashboard load error:', err))
+      .catch(err => { console.error('Dashboard load error:', err); setError('Failed to load dashboard') })
       .finally(() => setLoading(false))
-  }, [])
+
+    pollRef.current = setInterval(fetchToday, 30000)
+    return () => clearInterval(pollRef.current)
+  }, [fetchToday])
 
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
         <Loader2 className="w-8 h-8 text-pitch-400 animate-spin" />
+      </div>
+    )
+  }
+
+  if (error && !today && !attention && !weekly) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center">
+        <AlertTriangle className="w-8 h-8 text-amber-400 mb-3" />
+        <p className="text-navy-300 text-sm mb-4">{error}</p>
+        <button onClick={() => window.location.reload()} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-white text-sm rounded-lg transition-colors">
+          Retry
+        </button>
       </div>
     )
   }
@@ -77,6 +98,19 @@ export default function HoDOverview() {
           </h1>
           <p className="text-navy-400 text-sm mt-0.5">{todayDate}</p>
         </div>
+      </div>
+
+      {/* Quick actions */}
+      <div className="flex flex-wrap gap-3">
+        <Link to="/teacher/hod/reporting" className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white text-sm font-medium rounded-lg transition-colors">
+          <Plus className="w-4 h-4" />New reporting window
+        </Link>
+        <Link to="/teacher/hod/teachers" className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-200 text-sm rounded-lg border border-navy-700 transition-colors">
+          <UserCog className="w-4 h-4" />Staff activity report
+        </Link>
+        <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-200 text-sm rounded-lg border border-navy-700 transition-colors">
+          <Download className="w-4 h-4" />Export summary
+        </button>
       </div>
 
       {/* Two-column layout: Today + Attention */}
@@ -209,13 +243,13 @@ function WeeklyFixtures({ fixtures }) {
       {fixtures.length === 0 ? <p className="text-navy-600 text-xs">No fixtures this week</p> : (
         <div className="space-y-2">
           {fixtures.map(f => (
-            <div key={f.id} className="p-2.5 rounded-lg bg-navy-800/50">
+            <Link key={f.id} to={`/matches/${f.id}`} className="block p-2.5 rounded-lg bg-navy-800/50 hover:bg-navy-800 transition-colors">
               <div className="flex items-center justify-between mb-0.5">
                 <span className="text-sm text-white">{f.team_name} vs {f.opponent}</span>
                 {resultPill(f.score_for, f.score_against)}
               </div>
               <div className="text-xs text-navy-500">{formatDate(f.match_date)} {f.match_time ? `· ${formatTime(f.match_time)}` : ''} · {f.home_away}</div>
-            </div>
+            </Link>
           ))}
         </div>
       )}
