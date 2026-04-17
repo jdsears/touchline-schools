@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { pupilManagementService, teamService } from '../../services/api'
+import { lazyWithRetry as lazy } from '../../utils/lazyWithRetry'
+import { pupilManagementService, pupilProfileService, teamService } from '../../services/api'
 import {
   User, ChevronLeft, GraduationCap, Shield, ClipboardCheck,
   BookOpen, TrendingUp, Edit3, Save, X, MessageSquare,
   Plus, Trash2, Loader2, Eye, Brain, Dumbbell, Heart, Zap,
+  Target, Stethoscope, AlertTriangle,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+
+const DevelopmentTab = lazy(() => import('./pupil-profile/DevelopmentTab'))
 
 const GRADE_COLORS = {
   emerging: 'bg-alert-600/20 text-alert-400',
@@ -20,9 +24,15 @@ const SPORT_ICONS = {
   hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E',
 }
 
+const TABS = [
+  { id: 'overview',    label: 'Overview',    icon: User },
+  { id: 'development', label: 'Development', icon: Target },
+]
+
 export default function HoDPupilProfile() {
   const { id } = useParams()
   const [data, setData] = useState(null)
+  const [core, setCore] = useState(null)
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(false)
   const [editForm, setEditForm] = useState({})
@@ -31,10 +41,12 @@ export default function HoDPupilProfile() {
   const [obsForm, setObsForm] = useState({ type: 'development', content: '', contextType: 'general', sport: '' })
   const [savingObs, setSavingObs] = useState(false)
   const [deletingObsId, setDeletingObsId] = useState(null)
+  const [activeTab, setActiveTab] = useState('overview')
 
   useEffect(() => {
     loadProfile()
     loadObservations()
+    pupilProfileService.getCore(id).then(r => setCore(r.data)).catch(() => {})
   }, [id])
 
   async function loadObservations() {
@@ -199,6 +211,43 @@ export default function HoDPupilProfile() {
         </div>
       </div>
 
+      {/* Status badges */}
+      {core?.flags && (
+        <div className="flex flex-wrap gap-2 mb-5">
+          {core.pupil?.gcse_pe_candidate && <Badge colour="bg-pitch-500/20 text-pitch-400" icon={GraduationCap} label="GCSE PE" />}
+          {core.pupil?.talent_pathway_flag && <Badge colour="bg-amber-500/20 text-amber-400" icon={TrendingUp} label="Talent pathway" />}
+          {core.flags.has_send && <Badge colour="bg-sky-500/20 text-sky-400" icon={Brain} label="SEND" />}
+          {core.flags.has_medical && <Badge colour="bg-rose-500/20 text-rose-400" icon={Stethoscope} label="Medical" />}
+          {core.flags.has_open_safeguarding && <Badge colour="bg-red-500/20 text-red-400" icon={AlertTriangle} label="Safeguarding open" />}
+        </div>
+      )}
+
+      {/* Tab bar */}
+      <div className="flex gap-1 border-b border-navy-800 mb-6 -mx-1 overflow-x-auto">
+        {TABS.map(t => {
+          const Icon = t.icon
+          const active = activeTab === t.id
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`flex items-center gap-1.5 px-4 py-2 text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
+                active ? 'border-pitch-500 text-white' : 'border-transparent text-navy-400 hover:text-white'
+              }`}
+            >
+              <Icon className="w-4 h-4" />{t.label}
+            </button>
+          )
+        })}
+      </div>
+
+      {activeTab === 'development' && (
+        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>}>
+          <DevelopmentTab pupilId={id} />
+        </Suspense>
+      )}
+
+      {activeTab === 'overview' && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left column: classes, teams, observations */}
         <div className="space-y-6">
@@ -469,6 +518,15 @@ export default function HoDPupilProfile() {
           </div>
         </div>
       </div>
+      )}
     </div>
+  )
+}
+
+function Badge({ colour, icon: Icon, label }) {
+  return (
+    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium ${colour}`}>
+      <Icon className="w-3 h-3" />{label}
+    </span>
   )
 }
