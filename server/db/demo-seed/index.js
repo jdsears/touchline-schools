@@ -27,6 +27,7 @@ import { seedReports } from './reports.js'
 import { seedFixturesExtra } from './fixturesExtra.js'
 import { seedMedicalNotes } from '../seeds/seed-medical-notes.js'
 import { seedSendNotes } from '../seeds/seed-send-notes.js'
+import { seedIdps } from '../seeds/seed-idps.js'
 
 dotenv.config()
 
@@ -143,6 +144,9 @@ async function runSeed() {
 
     await seedSendNotes().catch(e => console.error('[demo-seed] SEND notes failed:', e.message))
     console.log('[demo-seed] SEND notes seeded')
+
+    await seedIdps().catch(e => console.error('[demo-seed] IDP goals failed:', e.message))
+    console.log('[demo-seed] IDP goals seeded')
 
     console.log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
     process.exit(0)
