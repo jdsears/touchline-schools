@@ -1,5 +1,5 @@
 # MoonBoots Sports
-# https://app.moonbootssports.com
+# https://moonbootssports.com
 
 User-agent: *
 Allow: /
@@ -21,4 +21,4 @@ Disallow: /settings
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://app.moonbootssports.com/sitemap.xml
+Sitemap: https://moonbootssports.com/sitemap.xml

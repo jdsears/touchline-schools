@@ -1,7 +1,7 @@
 export const config = { runtime: 'edge' }
 
-const SITE_URL = 'https://touchline.xyz'
-const API_BASE = process.env.VITE_API_URL || process.env.API_URL || 'https://touchline.xyz/api'
+const SITE_URL = 'https://moonbootssports.com'
+const API_BASE = process.env.VITE_API_URL || process.env.API_URL || 'https://moonbootssports.com/api'
 
 export default async function handler() {
   const today = new Date().toISOString().split('T')[0]
