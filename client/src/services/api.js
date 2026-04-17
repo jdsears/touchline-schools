@@ -723,6 +723,16 @@ export const pupilManagementService = {
   create: (data) => api.post('/pupil-management', data),
 }
 
+// Expanded pupil profile (medical, SEND, safeguarding, IDP, achievements)
+export const pupilProfileService = {
+  getCore: (id) => api.get(`/pupil-profile/${id}`),
+  getIdpGoals: (id) => api.get(`/pupil-profile/${id}/idp-goals`),
+  getAchievements: (id) => api.get(`/pupil-profile/${id}/achievements`),
+  getMedical: (id) => api.get(`/pupil-profile/${id}/medical`),
+  getSend: (id) => api.get(`/pupil-profile/${id}/send`),
+  getSafeguarding: (id) => api.get(`/pupil-profile/${id}/safeguarding`),
+}
+
 // Onboarding service
 export const onboardingService = {
   getStatus: () => api.get('/onboarding/status'),

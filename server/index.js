@@ -51,6 +51,7 @@ import teacherDashboardRoutes from './routes/teacherDashboard.js'
 import calendarExportRoutes from './routes/calendarExport.js'
 import onboardingRoutes from './routes/onboarding.js'
 import pupilManagementRoutes from './routes/pupilManagement.js'
+import pupilProfileRoutes from './routes/pupilProfile.js'
 import reportingRoutes from './routes/reporting.js'
 import enterpriseBillingRoutes from './routes/enterpriseBilling.js'
 import voiceObservationRoutes from './routes/voiceObservations.js'
@@ -242,6 +243,7 @@ app.use('/api/teacher-dashboard', teacherDashboardRoutes)
 app.use('/api/calendar', calendarExportRoutes)
 app.use('/api/onboarding', onboardingRoutes)
 app.use('/api/pupil-management', pupilManagementRoutes)
+app.use('/api/pupil-profile', pupilProfileRoutes)
 app.use('/api/reporting', reportingRoutes)
 app.use('/api/enterprise-billing', enterpriseBillingRoutes)
 app.use('/api/voice-observations', voiceObservationRoutes)
