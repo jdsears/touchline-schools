@@ -27,6 +27,7 @@ const QualificationsTab    = lazy(() => import('./settings/QualificationsTab'))
 const NotificationsTab     = lazy(() => import('./settings/NotificationsTab'))
 const AccessibilityTab     = lazy(() => import('./settings/AccessibilityTab'))
 const SecurityTab          = lazy(() => import('./settings/SecurityTab'))
+const CalendarExportTab    = lazy(() => import('./settings/CalendarExportTab'))
 
 const SCHOOL_TABS = [
   { id: 'school-profile',    label: 'School Profile',       icon: School },
@@ -50,6 +51,7 @@ const PERSONAL_TABS = [
   { id: 'notifications',     label: 'Notifications',        icon: Bell },
   { id: 'accessibility',     label: 'Accessibility',        icon: Eye },
   { id: 'security',          label: 'Security',             icon: Lock },
+  { id: 'calendar-export',   label: 'Calendar Export',      icon: CalendarDays },
 ]
 
 const TAB_COMPONENTS = {
@@ -68,6 +70,7 @@ const TAB_COMPONENTS = {
   'notifications':     NotificationsTab,
   'accessibility':     AccessibilityTab,
   'security':          SecurityTab,
+  'calendar-export':   CalendarExportTab,
 }
 
 function TierHeading({ label }) {

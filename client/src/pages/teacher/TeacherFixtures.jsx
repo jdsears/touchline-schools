@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { teacherService } from '../../services/api'
-import { Trophy, Calendar as CalIcon, List, MapPin, ChevronLeft, ChevronRight, X, Clock, Shirt } from 'lucide-react'
+import { Trophy, Calendar as CalIcon, List, MapPin, ChevronLeft, ChevronRight, X, Clock, Shirt, CalendarPlus } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, addMonths, subMonths, isToday, isWeekend } from 'date-fns'
 
 const SPORT_ICONS = { football: '\u26BD', rugby: '\uD83C\uDFC9', cricket: '\uD83C\uDFCF', hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E' }
@@ -40,14 +40,21 @@ function FixtureCard({ match, compact }) {
             </div>
           </div>
         </div>
-        {result ? (
-          <div className="flex items-center gap-2 shrink-0">
-            <span className="text-base font-bold text-white">{result.score}</span>
-            <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${result.color}`}>{result.label}</span>
-          </div>
-        ) : (
-          <span className="px-2 py-0.5 bg-navy-800 rounded text-[10px] text-navy-400 shrink-0">Upcoming</span>
-        )}
+        <div className="flex items-center gap-2 shrink-0">
+          {result ? (
+            <>
+              <span className="text-base font-bold text-white">{result.score}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${result.color}`}>{result.label}</span>
+            </>
+          ) : (
+            <>
+              <a href={`/api/calendar/event/fixture/${match.id}.ics`} onClick={e => e.stopPropagation()} download title="Add to calendar" className="p-1 text-navy-500 hover:text-pitch-400 transition-colors">
+                <CalendarPlus className="w-3.5 h-3.5" />
+              </a>
+              <span className="px-2 py-0.5 bg-navy-800 rounded text-[10px] text-navy-400">Upcoming</span>
+            </>
+          )}
+        </div>
       </div>
     </Link>
   )
