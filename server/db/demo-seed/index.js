@@ -25,6 +25,7 @@ import { seedLessons } from './lessons.js'
 import { seedAssessments } from './assessments.js'
 import { seedReports } from './reports.js'
 import { seedFixturesExtra } from './fixturesExtra.js'
+import { seedMedicalNotes } from '../seeds/seed-medical-notes.js'
 
 dotenv.config()
 
@@ -135,6 +136,9 @@ async function runSeed() {
 
     const testPersonas = await seedTestPersonas(school.id)
     console.log(`[demo-seed] Test personas: ${Object.keys(testPersonas).join(', ')}`)
+
+    await seedMedicalNotes().catch(e => console.error('[demo-seed] Medical notes failed:', e.message))
+    console.log('[demo-seed] Medical notes seeded')
 
     console.log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
     process.exit(0)
