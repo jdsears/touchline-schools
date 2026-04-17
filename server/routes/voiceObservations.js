@@ -37,7 +37,8 @@ const audioUpload = multer({
 
 // Helper to get user's school ID.
 // Teachers reach a school via school_members (staff roster) OR via teaching_groups
-// (class assignment) — fall back through both so non-roster teachers still work.
+// (class assignment). Site admins may not be in either table, so fall back to the
+// first school in the DB so they can still use features while demoing.
 async function getUserSchoolId(userId) {
   const direct = await pool.query(
     `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC NULLS LAST LIMIT 1`,
@@ -48,7 +49,15 @@ async function getUserSchoolId(userId) {
     `SELECT school_id FROM teaching_groups WHERE teacher_id = $1 LIMIT 1`,
     [userId]
   )
-  return via.rows[0]?.school_id || null
+  if (via.rows[0]?.school_id) return via.rows[0].school_id
+  // Admin fallback: if user is a site admin not on any school roster,
+  // use the first school so they can demo all features.
+  const admin = await pool.query(`SELECT is_admin FROM users WHERE id = $1`, [userId])
+  if (admin.rows[0]?.is_admin) {
+    const fallback = await pool.query(`SELECT id FROM schools ORDER BY created_at ASC LIMIT 1`)
+    return fallback.rows[0]?.id || null
+  }
+  return null
 }
 
 // Middleware: check voice observations feature flag
