@@ -755,6 +755,10 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
       if (team?.formation) {
         setFormation(formationToUse)
       }
+      // Reset view format to team's actual format when team changes
+      if (isFirstLoad) {
+        setViewFormat(currentTeamFormat)
+      }
     } else if (isFromOurSave) {
       // Update the ref so we know what the server has
       lastTeamPositionsRef.current = teamPositionsJson
@@ -1181,8 +1185,12 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">Tactics</h1>
-            <p className="text-navy-400">Build your formation and game model</p>
+            <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">
+              {team?.name ? `${team.name} — Tactics` : 'Tactics'}
+            </h1>
+            <p className="text-navy-400 capitalize">
+              {sportKey !== 'football' ? `${sportConfig.label || sportKey} · ` : ''}Build your formation and game model
+            </p>
           </div>
 
           <div className="flex gap-2">

@@ -1,9 +1,59 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Calendar, MessageSquare, TrendingUp } from 'lucide-react'
+import { ArrowLeft, Calendar, MessageSquare, Layout } from 'lucide-react'
 import { format, formatDistanceToNow } from 'date-fns'
 import { usePupilProfile } from '../../hooks/usePupilProfile'
 import api from '../../services/api'
+import { PITCH_BACKGROUNDS, PITCH_ASPECT_RATIOS } from '../../components/tactics/pitches/PitchRenderer'
+import FootballPitch from '../../components/tactics/pitches/FootballPitch'
+import RugbyPitch from '../../components/tactics/pitches/RugbyPitch'
+import HockeyPitch from '../../components/tactics/pitches/HockeyPitch'
+import NetballCourt from '../../components/tactics/pitches/NetballCourt'
+import CricketField from '../../components/tactics/pitches/CricketField'
+
+const PITCH_COMPONENTS = { football: FootballPitch, rugby: RugbyPitch, hockey: HockeyPitch, netball: NetballCourt, cricket: CricketField }
+
+function MiniPitchView({ team, myPupilId }) {
+  const sport = team?.sport || 'football'
+  const PitchMarkings = PITCH_COMPONENTS[sport] || FootballPitch
+  const bg = PITCH_BACKGROUNDS[sport] || PITCH_BACKGROUNDS.football
+  const aspect = PITCH_ASPECT_RATIOS[sport] || '3/4'
+  const positions = team?.positions || []
+  const formation = team?.formation || ''
+
+  if (!positions.length) return null
+
+  return (
+    <div className="mt-4 px-4">
+      <h2 className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-2 flex items-center gap-1">
+        <Layout size={12} className="-mt-0.5" />
+        Team Formation {formation && <span className="ml-1 text-navy-300">· {formation}</span>}
+      </h2>
+      <div className="relative rounded-xl overflow-hidden shadow-lg" style={{ background: bg, aspectRatio: aspect }}>
+        <div className="absolute inset-0 pointer-events-none" style={{ backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 24px, transparent 24px, transparent 48px)`, backgroundSize: '100% 48px' }} />
+        <PitchMarkings teamFormat={team?.team_format || 11} />
+        {positions.map(pos => {
+          const isMe = pos.pupilId && String(pos.pupilId) === String(myPupilId)
+          return (
+            <div
+              key={pos.id}
+              className="absolute flex flex-col items-center"
+              style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)' }}
+            >
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md ${isMe ? 'bg-yellow-400 text-navy-900 ring-2 ring-white' : 'bg-white/90 text-navy-700'}`}>
+                {pos.label?.charAt(0) || '?'}
+              </div>
+              <span className={`mt-0.5 text-[7px] font-medium px-1 rounded ${isMe ? 'text-yellow-300' : 'text-white/70'}`}>{pos.label}</span>
+            </div>
+          )
+        })}
+      </div>
+      {team?.game_model?.style && (
+        <p className="text-[10px] text-navy-500 mt-1.5 text-center italic">{team.game_model.style}</p>
+      )}
+    </div>
+  )
+}
 
 const SPORT_EMOJI = {
   football: '⚽', rugby: '🏉', cricket: '🏏', hockey: '🏑',
@@ -22,7 +72,7 @@ const SPORT_GRADIENT = {
 export default function SportDetailPage() {
   const { sportKey } = useParams()
   const navigate = useNavigate()
-  const { teams, teachingGroups } = usePupilProfile()
+  const { teams, pupil } = usePupilProfile()
   const [events, setEvents] = useState([])
   const [feedback, setFeedback] = useState([])
   const [loading, setLoading] = useState(true)
@@ -126,6 +176,11 @@ export default function SportDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Team formation view */}
+      {sportTeams.map(team => (
+        <MiniPitchView key={team.id} team={team} myPupilId={pupil?.id} />
+      ))}
 
       {/* Teacher feedback for this sport */}
       <div className="px-4 mt-5">

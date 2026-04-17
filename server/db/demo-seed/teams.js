@@ -5,19 +5,95 @@
 
 import pool from '../../config/database.js'
 
+// Default tactics per sport (formation + game model flavour)
+const SPORT_TACTICS = {
+  football: {
+    formation: '4-3-3',
+    team_format: 11,
+    game_model: {
+      style: 'Possession-based',
+      buildUp: 'Short passing from back',
+      pressing: 'High press',
+      inPossession: 'Patient build-up, exploit wide areas',
+      outOfPossession: 'Press high, win ball in final third',
+      transitions: 'Quick vertical counter when winning ball',
+      setPieceTakers: { corners_left: '', corners_right: '', free_kicks: '', penalties: '', throw_ins_long: '' },
+      tacticalSettings: { defensiveLine: 65, compactness: 60, attackingWidth: 70, defensiveWidth: 50, pressingIntensity: 70, pressingTriggerZone: 'high', showZones: false, showThirds: false, showMovements: false, showPressingZones: false },
+    },
+  },
+  rugby: {
+    formation: 'Drift Defence',
+    team_format: 15,
+    game_model: {
+      style: 'Wide expansive',
+      buildUp: 'Set piece dominance',
+      pressing: 'Defensive line speed',
+      inPossession: 'Exploit width, offload in contact',
+      outOfPossession: 'Drift defence, deny space outside',
+      transitions: 'Recycle quickly after turnover',
+      setPieceTakers: { lineout_caller: '', lineout_jumper: '', penalties_kick: '', conversions: '', restarts: '', dropouts: '' },
+      tacticalSettings: { defensiveLine: 55, compactness: 50, attackingWidth: 75, defensiveWidth: 55, pressingIntensity: 60, pressingTriggerZone: 'mid', showZones: false, showThirds: false, showMovements: false, showPressingZones: false },
+    },
+  },
+  netball: {
+    formation: '2-3-2',
+    team_format: 7,
+    game_model: {
+      style: 'Fast-paced transition',
+      buildUp: 'Centre court control',
+      pressing: 'Tight man-to-man',
+      inPossession: 'Drive through centre, feed shooters early',
+      outOfPossession: 'Intercept at source, block passing lanes',
+      transitions: 'Quick centre pass after goal',
+      setPieceTakers: { centre_pass: '', throw_ins: '' },
+    },
+  },
+  hockey: {
+    formation: '4-3-3',
+    team_format: 11,
+    game_model: {
+      style: 'Counter-attacking',
+      buildUp: 'Through the middle',
+      pressing: 'Mid-block',
+      inPossession: 'Quick one-twos, penetrate D early',
+      outOfPossession: 'Compact mid-block, force wide',
+      transitions: 'Fast break on turnover',
+      setPieceTakers: { penalty_corners: '', penalty_corner_hit: '', short_corners: '', free_hits: '' },
+    },
+  },
+  cricket: {
+    formation: 'Attack',
+    team_format: 11,
+    game_model: {
+      style: 'Aggressive batting',
+      buildUp: 'Front-foot batting',
+      pressing: 'Attacking field placements',
+      inPossession: 'Build partnerships, rotate strike',
+      outOfPossession: 'Move fielders to pressure zone',
+      transitions: 'Reset field after wicket',
+      setPieceTakers: { opening_bowlers: '', wicket_keeper: '', captain: '' },
+    },
+  },
+}
+
 async function createTeam(schoolId, data) {
+  const tactics = SPORT_TACTICS[data.sport] || SPORT_TACTICS.football
   const result = await pool.query(`
     INSERT INTO teams (
       name, school_id, sport, gender, age_group, season_type,
       primary_color, secondary_color,
+      formation, team_format, game_model,
       created_at
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, NOW())
     RETURNING *
   `, [
     data.name, schoolId, data.sport, data.gender, data.ageGroup, data.seasonType,
     data.primaryColor || '#1B4332',
     data.secondaryColor || '#D97706',
+    tactics.formation,
+    tactics.team_format,
+    JSON.stringify(tactics.game_model),
   ])
   return result.rows[0]
 }

@@ -53,7 +53,8 @@ router.get('/me', authenticateToken, async (req, res) => {
     const pupil = pupilRes.rows[0]
 
     const teamsRes = await pool.query(
-      `SELECT t.id, t.name, t.sport, t.gender, t.age_group
+      `SELECT t.id, t.name, t.sport, t.gender, t.age_group,
+              t.formation, t.team_format, t.positions, t.game_model
        FROM teams t
        JOIN team_memberships tm ON tm.team_id = t.id
        WHERE tm.pupil_id = $1
