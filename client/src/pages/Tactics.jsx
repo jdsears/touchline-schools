@@ -7,6 +7,20 @@ import { useTeam } from '../context/TeamContext'
 import toast from 'react-hot-toast'
 import { useBeforeUnload } from 'react-router-dom'
 import { getSportConfig } from '../config/sports/index'
+import { PITCH_BACKGROUNDS, PITCH_ASPECT_RATIOS } from '../components/tactics/pitches/PitchRenderer'
+import FootballPitch from '../components/tactics/pitches/FootballPitch'
+import RugbyPitch from '../components/tactics/pitches/RugbyPitch'
+import HockeyPitch from '../components/tactics/pitches/HockeyPitch'
+import NetballCourt from '../components/tactics/pitches/NetballCourt'
+import CricketField from '../components/tactics/pitches/CricketField'
+
+const PITCH_COMPONENTS = {
+  football: FootballPitch,
+  rugby: RugbyPitch,
+  hockey: HockeyPitch,
+  netball: NetballCourt,
+  cricket: CricketField,
+}
 
 // Tactical phases
 const PHASES = {
@@ -406,6 +420,10 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
 
   // Derive sport config from team's sport (defaults to football)
   const sportConfig = getSportConfig(team?.sport || 'football')
+  const sportKey = team?.sport || 'football'
+  const PitchMarkings = PITCH_COMPONENTS[sportKey] || FootballPitch
+  const pitchBg = PITCH_BACKGROUNDS[sportKey] || PITCH_BACKGROUNDS.football
+  const pitchAspect = PITCH_ASPECT_RATIOS[sportKey] || '3/4'
 
   // Determine available formations based on sport config and team format
   const teamFormat = team?.team_format || sportConfig.defaultFormat
@@ -1353,40 +1371,19 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
-                className="aspect-[3/4] relative rounded-xl overflow-hidden select-none shadow-2xl ring-1 ring-white/10"
-                style={{
-                  touchAction: 'none',
-                  background: `
-                    linear-gradient(135deg, rgba(255,255,255,0.03) 0%, transparent 50%),
-                    linear-gradient(to bottom,
-                      #15803d 0%,
-                      #16a34a 15%,
-                      #22c55e 30%,
-                      #16a34a 45%,
-                      #22c55e 55%,
-                      #16a34a 70%,
-                      #22c55e 85%,
-                      #15803d 100%
-                    )
-                  `
-                }}
+                className="relative rounded-xl overflow-hidden select-none shadow-2xl ring-1 ring-white/10"
+                style={{ touchAction: 'none', background: pitchBg, aspectRatio: pitchAspect }}
               >
-                {/* Grass stripes - more realistic mowing pattern */}
+                {/* Subtle stripe texture for grass surfaces */}
+                {(sportKey === 'football' || sportKey === 'rugby' || sportKey === 'hockey') && (
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    backgroundImage: `
-                      repeating-linear-gradient(
-                        0deg,
-                        rgba(255,255,255,0.03) 0px,
-                        rgba(255,255,255,0.03) 24px,
-                        transparent 24px,
-                        transparent 48px
-                      )
-                    `,
+                    backgroundImage: `repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 24px, transparent 24px, transparent 48px)`,
                     backgroundSize: '100% 48px'
                   }}
                 />
+                )}
 
                 {/* Half-Spaces & Channels Overlay */}
                 <AnimatePresence mode="sync">
@@ -1472,51 +1469,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   )}
                 </AnimatePresence>
 
-                {/* Pitch markings - professional styling, adapted per format */}
-                <div className="absolute inset-[4%] border-[2.5px] border-white/50 rounded-sm pointer-events-none">
-                  {/* Center circle */}
-                  <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${teamFormat <= 7 ? 'w-[14%]' : teamFormat === 9 ? 'w-[18%]' : 'w-[20%]'} aspect-square border-[2.5px] border-white/50 rounded-full`} />
-                  {/* Center spot */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-white/60 rounded-full" />
-                  {/* Halfway line */}
-                  <div className="absolute top-1/2 left-0 right-0 h-[2.5px] bg-white/50 -translate-y-1/2" />
-
-                  {teamFormat === 5 ? (
-                    <>
-                      {/* 5-a-side: Small penalty arcs only */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[28%] h-[10%] border-[2.5px] border-t-0 border-white/50 rounded-b-full" />
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[28%] h-[10%] border-[2.5px] border-b-0 border-white/50 rounded-t-full" />
-                    </>
-                  ) : teamFormat === 7 ? (
-                    <>
-                      {/* 7-a-side: Penalty arcs + spots */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[30%] h-[11%] border-[2.5px] border-t-0 border-white/50 rounded-b-full" />
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[30%] h-[11%] border-[2.5px] border-b-0 border-white/50 rounded-t-full" />
-                      <div className="absolute top-[7%] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white/50 rounded-full" />
-                      <div className="absolute bottom-[7%] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white/50 rounded-full" />
-                    </>
-                  ) : teamFormat === 9 ? (
-                    <>
-                      {/* 9-a-side: Penalty D-arcs + spots */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[32%] h-[12%] border-[2.5px] border-t-0 border-white/50 rounded-b-full" />
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[32%] h-[12%] border-[2.5px] border-b-0 border-white/50 rounded-t-full" />
-                      <div className="absolute top-[8%] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white/50 rounded-full" />
-                      <div className="absolute bottom-[8%] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white/50 rounded-full" />
-                    </>
-                  ) : (
-                    <>
-                      {/* 11-a-side: Full penalty areas, goal areas, spots, arcs */}
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[44%] h-[16%] border-[2.5px] border-t-0 border-white/50" />
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[44%] h-[16%] border-[2.5px] border-b-0 border-white/50" />
-                      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[20%] h-[6%] border-[2.5px] border-t-0 border-white/50" />
-                      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[20%] h-[6%] border-[2.5px] border-b-0 border-white/50" />
-                      <div className="absolute top-[11%] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white/50 rounded-full" />
-                      <div className="absolute bottom-[11%] left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-white/50 rounded-full" />
-                      <div className="absolute top-[16%] left-1/2 -translate-x-1/2 w-[16%] h-[8%] border-[2.5px] border-t-0 border-white/50 rounded-b-full" />
-                      <div className="absolute bottom-[16%] left-1/2 -translate-x-1/2 w-[16%] h-[8%] border-[2.5px] border-b-0 border-white/50 rounded-t-full" />
-                    </>
-                  )}
-                </div>
+                {/* Sport-specific pitch markings */}
+                <PitchMarkings teamFormat={teamFormat} />
 
                 {/* Pressing Trigger Zones */}
                 <AnimatePresence mode="sync">
