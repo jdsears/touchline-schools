@@ -654,6 +654,10 @@ export const teacherService = {
   getMyTeams: () => api.get('/teams/mine'),
   getMyFixtures: () => api.get('/teams/mine/fixtures'),
   getMySessions: () => api.get('/teams/mine/sessions'),
+  getDashboardToday: () => api.get('/teacher-dashboard/today'),
+  getDashboardClasses: () => api.get('/teacher-dashboard/my-classes'),
+  getDashboardTeams: () => api.get('/teacher-dashboard/my-teams'),
+  getDashboardAttention: () => api.get('/teacher-dashboard/attention'),
 }
 
 // Teaching Groups service (curriculum PE classes)
