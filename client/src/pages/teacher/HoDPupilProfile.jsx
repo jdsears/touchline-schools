@@ -393,6 +393,14 @@ export default function HoDPupilProfile() {
                           {obs.sport && (
                             <span className="px-1.5 py-0.5 rounded text-xs bg-navy-700 text-navy-300 capitalize">{obs.sport}</span>
                           )}
+                          <span
+                            title={obs.visible_to_pupil ? 'Visible to pupil in Sports Lounge' : 'Teacher-only — not shown to pupil'}
+                            className={`px-1.5 py-0.5 rounded text-xs font-medium flex-shrink-0 flex items-center gap-1 ${
+                              obs.visible_to_pupil ? 'bg-sky-500/20 text-sky-400' : 'bg-navy-700 text-navy-400'
+                            }`}
+                          >
+                            <Eye className="w-3 h-3" />{obs.visible_to_pupil ? 'Pupil-visible' : 'Teacher-only'}
+                          </span>
                           {obs.context_type && obs.context_type !== 'general' && (
                             <span className="text-xs text-navy-500 capitalize">{obs.context_type}</span>
                           )}

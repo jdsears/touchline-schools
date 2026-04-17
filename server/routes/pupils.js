@@ -394,20 +394,32 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
 
-    const playerCheck = await pool.query('SELECT team_id FROM pupils WHERE id = $1', [id])
-    if (playerCheck.rows.length === 0) {
+    // Resolve the pupil and every school they belong to (via extra-curricular
+    // team OR via a timetabled teaching group). A pupil may legitimately have
+    // no team (curriculum-only), so team_id alone cannot gate access.
+    const pupilCheck = await pool.query(
+      `SELECT p.id, p.team_id,
+              (SELECT t.school_id FROM teams t WHERE t.id = p.team_id) AS team_school_id,
+              (SELECT tg.school_id FROM teaching_group_pupils tgp
+                 JOIN teaching_groups tg ON tg.id = tgp.teaching_group_id
+                 WHERE tgp.pupil_id = p.id LIMIT 1) AS class_school_id
+       FROM pupils p WHERE p.id = $1`,
+      [id]
+    )
+    if (pupilCheck.rows.length === 0) {
       return res.status(404).json({ message: 'Pupil not found' })
     }
+    const pupil = pupilCheck.rows[0]
+    const pupilSchoolIds = [pupil.team_school_id, pupil.class_school_id].filter(Boolean)
 
-    // Allow: admin, same team, or school member with HoD access
-    const isOwnTeam = playerCheck.rows[0].team_id === req.user.team_id
+    // Allow: site admin, same team, or any school member in a school the pupil belongs to
+    const isOwnTeam = pupil.team_id && pupil.team_id === req.user.team_id
     let hasSchoolAccess = false
-    if (!isOwnTeam && !req.user.is_admin) {
+    if (!isOwnTeam && !req.user.is_admin && pupilSchoolIds.length > 0) {
       const schoolCheck = await pool.query(
         `SELECT 1 FROM school_members sm
-         JOIN teams t ON t.school_id = sm.school_id
-         WHERE sm.user_id = $1 AND t.id = $2 LIMIT 1`,
-        [req.user.id, playerCheck.rows[0].team_id]
+         WHERE sm.user_id = $1 AND sm.school_id = ANY($2::uuid[]) LIMIT 1`,
+        [req.user.id, pupilSchoolIds]
       )
       hasSchoolAccess = schoolCheck.rows.length > 0
     }
@@ -415,6 +427,10 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
       return res.status(403).json({ message: 'Access denied' })
     }
 
+    // HoDs and teachers see all observations (both teacher-only and pupil-visible);
+    // the pupil-facing Sports Lounge has its own separate endpoint that enforces
+    // visible_to_pupil = true. The visible_to_pupil column is surfaced here so the
+    // client can show a badge distinguishing teacher-only vs pupil-visible entries.
     const result = await pool.query(
       `SELECT o.*, u.name as observer_name,
               m.opponent as match_opponent, COALESCE(m.date, m.match_date) as match_date,
@@ -425,7 +441,9 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
        LEFT JOIN matches m ON o.match_id = m.id
        LEFT JOIN training_sessions ts ON o.training_session_id = ts.id
        LEFT JOIN teaching_groups tg ON o.teaching_group_id = tg.id
-       WHERE o.pupil_id = $1 ORDER BY o.created_at DESC`,
+       WHERE o.pupil_id = $1
+         AND COALESCE(o.review_state, 'confirmed') <> 'rejected'
+       ORDER BY o.created_at DESC`,
       [id]
     )
 
