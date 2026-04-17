@@ -29,6 +29,7 @@ import { seedMedicalNotes } from '../seeds/seed-medical-notes.js'
 import { seedSendNotes } from '../seeds/seed-send-notes.js'
 import { seedIdps } from '../seeds/seed-idps.js'
 import { seedAchievements } from '../seeds/seed-achievements.js'
+import { seedSafeguardingFlags } from '../seeds/seed-safeguarding-flags.js'
 
 dotenv.config()
 
@@ -151,6 +152,9 @@ async function runSeed() {
 
     await seedAchievements().catch(e => console.error('[demo-seed] Achievements failed:', e.message))
     console.log('[demo-seed] Achievements seeded')
+
+    await seedSafeguardingFlags().catch(e => console.error('[demo-seed] Safeguarding flags failed:', e.message))
+    console.log('[demo-seed] Safeguarding flags seeded')
 
     console.log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
     process.exit(0)

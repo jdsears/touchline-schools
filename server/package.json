@@ -13,7 +13,8 @@
     "seed:medical-notes": "node db/seeds/seed-medical-notes.js",
     "seed:send-notes": "node db/seeds/seed-send-notes.js",
     "seed:idps": "node db/seeds/seed-idps.js",
-    "seed:achievements": "node db/seeds/seed-achievements.js"
+    "seed:achievements": "node db/seeds/seed-achievements.js",
+    "seed:safeguarding-flags": "node db/seeds/seed-safeguarding-flags.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
