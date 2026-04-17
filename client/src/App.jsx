@@ -58,6 +58,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const MagicLinkVerify = lazy(() => import('./pages/MagicLinkVerify'))
 const Terms = lazy(() => import('./pages/Terms'))
 const Admin = lazy(() => import('./pages/Admin'))
+const AdminReseedDemo = lazy(() => import('./pages/AdminReseedDemo'))
 const About = lazy(() => import('./pages/About'))
 const RequestDemoAccess = lazy(() => import('./pages/RequestDemoAccess'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
@@ -300,6 +301,7 @@ export default function App() {
           <Route path="lounge" element={<TeacherLounge />} />
           <Route path="settings" element={<Settings />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="admin/reseed-demo" element={<AdminReseedDemo />} />
         </Route>
 
         {/* Teacher Hub */}

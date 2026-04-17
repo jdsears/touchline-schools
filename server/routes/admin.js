@@ -4,6 +4,7 @@ import path from 'path'
 import pool from '../config/database.js'
 import { authenticateToken, requireAdmin } from '../middleware/auth.js'
 import { PLANS, createSubscription } from '../services/billingService.js'
+import { runDemoSeed } from '../db/demo-seed/index.js'
 import crypto from 'crypto'
 
 const upload = multer({
@@ -992,6 +993,33 @@ router.get('/finance', async (req, res, next) => {
     })
   } catch (error) {
     next(error)
+  }
+})
+
+// ============================================
+// Demo Reseed (browser-triggerable via /admin/reseed-demo client page)
+// ============================================
+
+// Guard against concurrent runs — seeding is expensive.
+let reseedInProgress = false
+
+// POST /api/admin/reseed-demo — run the seed. Optional ?wipeOnly=1.
+router.post('/reseed-demo', async (req, res) => {
+  if (reseedInProgress) {
+    return res.status(409).json({ ok: false, error: 'Reseed already in progress' })
+  }
+  reseedInProgress = true
+  const log = []
+  const wipeOnly = req.query.wipeOnly === '1' || req.query.wipeOnly === 'true'
+  try {
+    const result = await runDemoSeed({ wipeOnly, onLog: (msg) => log.push(msg) })
+    res.json({ ok: true, log, result })
+  } catch (err) {
+    console.error('[admin] reseed-demo failed:', err)
+    log.push(`[demo-seed] ERROR: ${err.message}`)
+    res.status(500).json({ ok: false, log, error: err.message })
+  } finally {
+    reseedInProgress = false
   }
 })
 

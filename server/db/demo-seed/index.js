@@ -89,82 +89,88 @@ export async function wipeDemoTenant() {
   console.log('[demo-seed] Demo tenant wiped.')
 }
 
-async function runSeed() {
-  const wipeOnly = process.argv.includes('--wipe')
-
-  try {
-    await wipeDemoTenant()
-
-    if (wipeOnly) {
-      console.log('[demo-seed] Wipe-only mode. Done.')
-      process.exit(0)
-    }
-
-    console.log('[demo-seed] Seeding Ashworth Park Academy...')
-
-    const school = await seedSchool()
-    console.log(`[demo-seed] School: ${school.id}`)
-
-    const staff = await seedStaff(school.id)
-    console.log(`[demo-seed] Staff: ${Object.keys(staff).join(', ')}`)
-
-    const pupils = await seedPupils(school.id)
-    console.log(`[demo-seed] Pupils: ${pupils.length}`)
-
-    const teams = await seedTeams(school.id, staff, pupils)
-    console.log(`[demo-seed] Teams: ${teams.length}`)
-
-    await seedCurriculum(school.id, staff, pupils)
-    console.log('[demo-seed] Curriculum seeded')
-
-    await seedLessons(school.id, staff)
-    console.log('[demo-seed] Lessons seeded')
-
-    await seedAssessments(school.id)
-    console.log('[demo-seed] Assessments seeded')
-
-    await seedReports(school.id)
-    console.log('[demo-seed] Reports seeded')
-
-    await seedFixtures(school.id, teams, staff, pupils)
-    console.log('[demo-seed] Fixtures seeded')
-
-    await seedFixturesExtra(school.id)
-    console.log('[demo-seed] Extra fixtures seeded')
-
-    await seedSafeguarding(school.id, staff)
-    console.log('[demo-seed] Safeguarding seeded')
-
-    await seedAuditLog(school.id, staff)
-    console.log('[demo-seed] Audit log seeded')
-
-    const testPersonas = await seedTestPersonas(school.id)
-    console.log(`[demo-seed] Test personas: ${Object.keys(testPersonas).join(', ')}`)
-
-    await seedMedicalNotes().catch(e => console.error('[demo-seed] Medical notes failed:', e.message))
-    console.log('[demo-seed] Medical notes seeded')
-
-    await seedSendNotes().catch(e => console.error('[demo-seed] SEND notes failed:', e.message))
-    console.log('[demo-seed] SEND notes seeded')
-
-    await seedIdps().catch(e => console.error('[demo-seed] IDP goals failed:', e.message))
-    console.log('[demo-seed] IDP goals seeded')
-
-    await seedAchievements().catch(e => console.error('[demo-seed] Achievements failed:', e.message))
-    console.log('[demo-seed] Achievements seeded')
-
-    await seedSafeguardingFlags().catch(e => console.error('[demo-seed] Safeguarding flags failed:', e.message))
-    console.log('[demo-seed] Safeguarding flags seeded')
-
-    console.log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
-    process.exit(0)
-  } catch (err) {
-    console.error('[demo-seed] Error:', err)
-    process.exit(1)
+// Reusable seed orchestration. Captures progress log lines so callers (e.g.
+// the admin HTTP endpoint) can return them in a response.
+export async function runDemoSeed({ wipeOnly = false, onLog } = {}) {
+  const log = (msg) => {
+    console.log(msg)
+    onLog?.(msg)
   }
+
+  await wipeDemoTenant()
+
+  if (wipeOnly) {
+    log('[demo-seed] Wipe-only mode. Done.')
+    return { wiped: true, seeded: false }
+  }
+
+  log('[demo-seed] Seeding Ashworth Park Academy...')
+
+  const school = await seedSchool()
+  log(`[demo-seed] School: ${school.id}`)
+
+  const staff = await seedStaff(school.id)
+  log(`[demo-seed] Staff: ${Object.keys(staff).join(', ')}`)
+
+  const pupils = await seedPupils(school.id)
+  log(`[demo-seed] Pupils: ${pupils.length}`)
+
+  const teams = await seedTeams(school.id, staff, pupils)
+  log(`[demo-seed] Teams: ${teams.length}`)
+
+  await seedCurriculum(school.id, staff, pupils)
+  log('[demo-seed] Curriculum seeded')
+
+  await seedLessons(school.id, staff)
+  log('[demo-seed] Lessons seeded')
+
+  await seedAssessments(school.id)
+  log('[demo-seed] Assessments seeded')
+
+  await seedReports(school.id)
+  log('[demo-seed] Reports seeded')
+
+  await seedFixtures(school.id, teams, staff, pupils)
+  log('[demo-seed] Fixtures seeded')
+
+  await seedFixturesExtra(school.id)
+  log('[demo-seed] Extra fixtures seeded')
+
+  await seedSafeguarding(school.id, staff)
+  log('[demo-seed] Safeguarding seeded')
+
+  await seedAuditLog(school.id, staff)
+  log('[demo-seed] Audit log seeded')
+
+  const testPersonas = await seedTestPersonas(school.id)
+  log(`[demo-seed] Test personas: ${Object.keys(testPersonas).join(', ')}`)
+
+  await seedMedicalNotes().catch(e => log(`[demo-seed] Medical notes failed: ${e.message}`))
+  log('[demo-seed] Medical notes seeded')
+
+  await seedSendNotes().catch(e => log(`[demo-seed] SEND notes failed: ${e.message}`))
+  log('[demo-seed] SEND notes seeded')
+
+  await seedIdps().catch(e => log(`[demo-seed] IDP goals failed: ${e.message}`))
+  log('[demo-seed] IDP goals seeded')
+
+  await seedAchievements().catch(e => log(`[demo-seed] Achievements failed: ${e.message}`))
+  log('[demo-seed] Achievements seeded')
+
+  await seedSafeguardingFlags().catch(e => log(`[demo-seed] Safeguarding flags failed: ${e.message}`))
+  log('[demo-seed] Safeguarding flags seeded')
+
+  log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
+  return { wiped: true, seeded: true, schoolId: school.id }
 }
 
 // Run if called directly
 if (process.argv[1]?.includes('demo-seed/index.js')) {
-  runSeed()
+  const wipeOnly = process.argv.includes('--wipe')
+  runDemoSeed({ wipeOnly })
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('[demo-seed] Error:', err)
+      process.exit(1)
+    })
 }
