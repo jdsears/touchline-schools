@@ -421,20 +421,25 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
   // Derive sport config from team's sport (defaults to football)
   const sportConfig = getSportConfig(team?.sport || 'football')
   const sportKey = team?.sport || 'football'
+  const supportsPhases = sportConfig.supportsPhases ?? true
   const PitchMarkings = PITCH_COMPONENTS[sportKey] || FootballPitch
   const pitchBg = PITCH_BACKGROUNDS[sportKey] || PITCH_BACKGROUNDS.football
   const pitchAspect = PITCH_ASPECT_RATIOS[sportKey] || '3/4'
 
   // Determine available formations based on sport config and team format
   const teamFormat = team?.team_format || sportConfig.defaultFormat
-  const availableFormations = sportConfig.formationsByFormat[teamFormat] || []
-  const defaultFormationPositions = sportConfig.defaultPositionsByFormat[teamFormat] || {}
-  const defaultFormation = sportConfig.defaultFormationByFormat[teamFormat] || availableFormations[0] || '4-3-3'
+  const formatSizes = sportConfig.formatSizes || [teamFormat]
+  const [viewFormat, setViewFormat] = useState(teamFormat)
+  // viewFormat follows the team's actual format; only override if team format changes
+  const activeFormat = viewFormat || teamFormat
+  const availableFormations = sportConfig.formationsByFormat[activeFormat] || []
+  const defaultFormationPositions = sportConfig.defaultPositionsByFormat[activeFormat] || {}
+  const defaultFormation = sportConfig.defaultFormationByFormat[activeFormat] || availableFormations[0] || '4-3-3'
 
   const [formation, setFormation] = useState(team?.formation || defaultFormation)
   const [positions, setPositions] = useState(() => {
     const formationName = team?.formation || defaultFormation
-    return validatePositions(team?.positions, formationName, teamFormat, sportConfig)
+    return validatePositions(team?.positions, formationName, activeFormat, sportConfig)
   })
   const [saving, setSaving] = useState(false)
   const [selectedPosition, setSelectedPosition] = useState(null)
@@ -801,7 +806,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
     const custom = customFormations.find(cf => cf.name === newFormation)
     if (custom && custom.positions) {
       // Validate custom formation positions
-      setPositions(validatePositions(custom.positions, newFormation, teamFormat, sportConfig))
+      setPositions(validatePositions(custom.positions, newFormation, activeFormat, sportConfig))
     } else {
       // Use defaults for standard formations (based on team format)
       const defaults = defaultFormationPositions[newFormation] || defaultFormationPositions[defaultFormation]
@@ -1201,14 +1206,38 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
           <div className="lg:col-span-2">
             <div className="card p-4">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="font-display font-semibold text-white">Formation</h2>
+                <div className="flex items-center gap-3">
+                  <h2 className="font-display font-semibold text-white">Formation</h2>
+                  {formatSizes.length > 1 && (
+                    <div className="flex items-center gap-1">
+                      {formatSizes.map(size => (
+                        <button
+                          key={size}
+                          onClick={() => {
+                            setViewFormat(size)
+                            const newDefault = sportConfig.defaultFormationByFormat[size] || sportConfig.formationsByFormat[size]?.[0] || formation
+                            setFormation(newDefault)
+                            setPositions(validatePositions(null, newDefault, size, sportConfig))
+                          }}
+                          className={`px-2 py-0.5 rounded text-xs font-medium transition-all ${
+                            activeFormat === size
+                              ? 'bg-pitch-500 text-white'
+                              : 'bg-navy-700 text-navy-400 hover:bg-navy-600'
+                          }`}
+                        >
+                          {size}v{size}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
                 <div className="flex items-center gap-2">
                   <select
                     value={formation}
                     onChange={(e) => handleFormationChange(e.target.value)}
                     className="input w-40"
                   >
-                    <optgroup label={teamFormat === 9 ? '9-a-side' : 'Standard'}>
+                    <optgroup label={`${activeFormat}-a-side`}>
                       {availableFormations.map(f => (
                         <option key={f} value={f}>{f}</option>
                       ))}
@@ -1240,8 +1269,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 </div>
               </div>
 
-              {/* Tactical Phase Toggle */}
-              <div className="flex flex-wrap items-center gap-2 mb-4">
+              {/* Tactical Phase Toggle - only for sports that support phases */}
+              {supportsPhases && <div className="flex flex-wrap items-center gap-2 mb-4">
                 <span className="text-sm text-navy-400 mr-2">View:</span>
                 <button
                   onClick={() => setTacticalPhase(null)}
@@ -1362,7 +1391,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     </div>
                   </div>
                 </div>
-              </div>
+              </div>}
 
               {/* Pitch */}
               <div
@@ -1470,7 +1499,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 </AnimatePresence>
 
                 {/* Sport-specific pitch markings */}
-                <PitchMarkings teamFormat={teamFormat} />
+                <PitchMarkings teamFormat={activeFormat} />
 
                 {/* Pressing Trigger Zones */}
                 <AnimatePresence mode="sync">
@@ -1951,8 +1980,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               </div>
             </div>
 
-            {/* Tactical Shape Controls */}
-            <div className="card p-4">
+            {/* Tactical Shape Controls - only for sports that support phases */}
+            {supportsPhases && <div className="card p-4">
               <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
                 <Shield className="w-5 h-5 text-alert-400" />
                 Tactical Shape
@@ -2061,7 +2090,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               <p className="text-xs text-navy-500 mt-4">
                 Select a tactical phase to see these settings applied on the pitch
               </p>
-            </div>
+            </div>}
 
             {/* Game Model Summary */}
             <div className="card p-4">
@@ -2518,7 +2547,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
           positions={positions}
           pupils={pupils}
           formation={formation}
-          teamFormat={teamFormat}
+          teamFormat={activeFormat}
+          sport={sportKey}
           teamName={team?.name}
           ageGroup={team?.age_group}
           logoUrl={team?.logo_url}

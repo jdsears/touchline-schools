@@ -142,6 +142,7 @@ export default function TacticsPrintView({
   pupils,
   formation,
   teamFormat,
+  sport = 'football',
   teamName,
   ageGroup,
   logoUrl,
@@ -149,6 +150,7 @@ export default function TacticsPrintView({
   benchPlayers,
   setPieceTakers,
 }) {
+  const sportLabel = sport.charAt(0).toUpperCase() + sport.slice(1)
   // Escape to close
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -292,8 +294,10 @@ export default function TacticsPrintView({
                   <div style={{ fontSize: '16pt', fontWeight: 700, color: '#0f172a' }}>
                     {teamName || 'Team'}
                   </div>
-                  {ageGroup && (
-                    <div style={{ fontSize: '9pt', color: '#64748b' }}>{ageGroup}</div>
+                  {(ageGroup || sport !== 'football') && (
+                    <div style={{ fontSize: '9pt', color: '#64748b' }}>
+                      {[ageGroup, sport !== 'football' ? sportLabel : null].filter(Boolean).join(' · ')}
+                    </div>
                   )}
                 </div>
               </div>
