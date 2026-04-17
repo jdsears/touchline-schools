@@ -3915,7 +3915,7 @@ export async function runMigrations() {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS pupil_medical_notes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
         condition TEXT,
         medication TEXT,
         dietary_requirements TEXT,
@@ -3935,7 +3935,7 @@ export async function runMigrations() {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS pupil_send_notes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
         ehcp_status BOOLEAN NOT NULL DEFAULT FALSE,
         ehcp_number TEXT,
         send_category TEXT,
@@ -3952,7 +3952,7 @@ export async function runMigrations() {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS pupil_safeguarding_notes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
         flag_type TEXT NOT NULL CHECK (flag_type IN ('monitoring', 'concern', 'incident', 'resolved')),
         note TEXT,
         added_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -3969,7 +3969,7 @@ export async function runMigrations() {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS pupil_idp_goals (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
         sport_key TEXT,
         goal_description TEXT NOT NULL,
         target_date DATE,
@@ -3985,12 +3985,24 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_pupil ON pupil_idp_goals(pupil_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_status ON pupil_idp_goals(pupil_id, status)`)
 
-    // 21f: augment existing player_achievements with sport_key for filtering
+    // 21f: augment existing pupil_achievements with sport_key for filtering
+    // (table was renamed from player_achievements earlier; tolerate either name)
     await pool.query(`
-      ALTER TABLE player_achievements
-        ADD COLUMN IF NOT EXISTS sport_key TEXT
+      DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupil_achievements') THEN
+          ALTER TABLE pupil_achievements ADD COLUMN IF NOT EXISTS sport_key TEXT;
+        ELSIF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_achievements') THEN
+          ALTER TABLE player_achievements ADD COLUMN IF NOT EXISTS sport_key TEXT;
+        END IF;
+      END $$
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_achievements_sport ON player_achievements(sport_key) WHERE sport_key IS NOT NULL`)
+    await pool.query(`
+      DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupil_achievements') THEN
+          CREATE INDEX IF NOT EXISTS idx_pupil_achievements_sport ON pupil_achievements(sport_key) WHERE sport_key IS NOT NULL;
+        END IF;
+      END $$
+    `)
 
     console.log('Phase 21: pupil profile expansion (medical, SEND, safeguarding, IDP goals, identity cols)')
 

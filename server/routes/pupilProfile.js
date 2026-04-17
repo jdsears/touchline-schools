@@ -18,7 +18,7 @@ async function resolvePupilAccess(req, pupilId) {
             (SELECT tg.school_id FROM teaching_group_pupils tgp
                JOIN teaching_groups tg ON tg.id = tgp.teaching_group_id
                WHERE tgp.pupil_id = p.id LIMIT 1) AS class_school_id
-     FROM players p WHERE p.id = $1`,
+     FROM pupils p WHERE p.id = $1`,
     [pupilId]
   )
   if (r.rows.length === 0) return { error: 'not_found' }
@@ -67,7 +67,7 @@ router.get('/:id', async (req, res) => {
           (SELECT COUNT(*) FROM team_memberships tm WHERE tm.pupil_id = $1)::int AS teams,
           (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.pupil_id = $1)::int AS classes,
           (SELECT COUNT(*) FROM pupil_idp_goals g WHERE g.pupil_id = $1 AND g.status = 'in_progress')::int AS active_goals,
-          (SELECT COUNT(*) FROM player_achievements a WHERE a.player_id = $1)::int AS achievements`,
+          (SELECT COUNT(*) FROM pupil_achievements a WHERE a.player_id = $1)::int AS achievements`,
         [req.params.id]
       ),
       pool.query(
@@ -119,7 +119,7 @@ router.get('/:id/achievements', async (req, res) => {
   if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
   const r = await pool.query(
     `SELECT a.*, u.name AS awarded_by_name, m.opponent AS match_opponent
-     FROM player_achievements a
+     FROM pupil_achievements a
      LEFT JOIN users u ON u.id = a.awarded_by
      LEFT JOIN matches m ON m.id = a.match_id
      WHERE a.player_id = $1 ORDER BY a.earned_at DESC`,
