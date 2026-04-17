@@ -125,14 +125,15 @@ async function assessGroup(schoolId, groupName, keyStage, term, assessedAt) {
         if (i < 5) comment = comments[i % comments.length]
       }
 
-      await pool.query(`
+      const ins = await pool.query(`
         INSERT INTO pupil_assessments (
-          pupil_id, unit_id, strand_id, criteria_id, assessment_type,
+          pupil_id, unit_id, criteria_id, assessment_type,
           grade, teacher_notes, assessed_by, assessed_at, created_at
-        ) VALUES ($1,$2,$3,$4,'formative',$5,$6,$7,$8,NOW())
+        ) VALUES ($1,$2,$3,'formative',$4,$5,$6,$7,NOW())
         ON CONFLICT DO NOTHING
-      `, [p.id, unitId, strand.id, criteriaId, grade, comment, teacherId, assessedAt])
-      count++
+        RETURNING id
+      `, [p.id, unitId, criteriaId, grade, comment, teacherId, assessedAt])
+      if (ins.rowCount > 0) count++
     }
   }
   return count
@@ -154,5 +155,9 @@ export async function seedAssessments(schoolId) {
   total += await assessGroup(schoolId, '7A PE', 'KS3', 'spring', springDate)
   total += await assessGroup(schoolId, '9B PE', 'KS3', 'spring', springDate)
 
-  console.log(`[demo-seed] Assessments seeded: ${total} records`)
+  if (total === 0) {
+    console.warn(`[demo-seed] WARNING: Assessments seeded 0 records - check teaching groups, strands, or schema drift`)
+  } else {
+    console.log(`[demo-seed] Assessments seeded: ${total} records`)
+  }
 }
