@@ -153,6 +153,11 @@ async function insertTestPersona(schoolId, { name, yearGroup, house, gender }) {
       `UPDATE users SET demo_expires_at = NOW() + INTERVAL '7 days' WHERE id = $1`,
       [userId]
     )
+    // Clean up stale data from previous seed cycles — observations reference
+    // old staff user IDs that were deleted, and assessments reference old
+    // sport_units that were cascade-deleted with the old school.
+    await pool.query(`DELETE FROM observations WHERE pupil_id = $1`, [pupil.id])
+    await pool.query(`DELETE FROM pupil_assessments WHERE pupil_id = $1`, [pupil.id])
   } else {
     // Create user account
     const userRes = await pool.query(`

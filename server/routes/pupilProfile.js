@@ -59,25 +59,49 @@ router.get('/:id', async (req, res) => {
     if (access.error === 'forbidden') return res.status(403).json({ error: 'Access denied' })
     const { pupil, schoolId } = access
 
-    const [stats, activeFlags] = await Promise.all([
-      pool.query(
+    // Each sub-query is individually guarded so a missing table does not crash
+    // the whole response. Tables from Phase 21 may not exist yet on older DBs.
+    const stats = { observations: 0, assessments: 0, teams: 0, classes: 0, active_goals: 0, achievements: 0 }
+    const flags = { has_medical: false, has_send: false, has_open_safeguarding: false }
+
+    try {
+      const r = await pool.query(
         `SELECT
           (SELECT COUNT(*) FROM observations o WHERE o.pupil_id = $1)::int AS observations,
           (SELECT COUNT(*) FROM pupil_assessments pa WHERE pa.pupil_id = $1)::int AS assessments,
           (SELECT COUNT(*) FROM team_memberships tm WHERE tm.pupil_id = $1)::int AS teams,
-          (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.pupil_id = $1)::int AS classes,
-          (SELECT COUNT(*) FROM pupil_idp_goals g WHERE g.pupil_id = $1 AND g.status = 'in_progress')::int AS active_goals,
-          (SELECT COUNT(*) FROM pupil_achievements a WHERE a.player_id = $1)::int AS achievements`,
+          (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.pupil_id = $1)::int AS classes`,
         [req.params.id]
-      ),
-      pool.query(
+      )
+      Object.assign(stats, r.rows[0])
+    } catch (e) { console.warn('pupilProfile stats (core):', e.message) }
+
+    try {
+      const r = await pool.query(
+        `SELECT (SELECT COUNT(*) FROM pupil_idp_goals g WHERE g.pupil_id = $1 AND g.status = 'in_progress')::int AS active_goals`,
+        [req.params.id]
+      )
+      stats.active_goals = r.rows[0].active_goals
+    } catch (e) { /* pupil_idp_goals may not exist */ }
+
+    try {
+      const r = await pool.query(
+        `SELECT (SELECT COUNT(*) FROM pupil_achievements a WHERE a.player_id = $1)::int AS achievements`,
+        [req.params.id]
+      )
+      stats.achievements = r.rows[0].achievements
+    } catch (e) { /* pupil_achievements may not exist or may still be named player_achievements */ }
+
+    try {
+      const r = await pool.query(
         `SELECT
           (SELECT COUNT(*) FROM pupil_medical_notes WHERE pupil_id = $1)::int > 0 AS has_medical,
           (SELECT COUNT(*) FROM pupil_send_notes WHERE pupil_id = $1)::int > 0 AS has_send,
           (SELECT COUNT(*) FROM pupil_safeguarding_notes WHERE pupil_id = $1 AND resolved_at IS NULL)::int > 0 AS has_open_safeguarding`,
         [req.params.id]
-      ),
-    ])
+      )
+      Object.assign(flags, r.rows[0])
+    } catch (e) { /* Phase 21 tables may not exist yet */ }
 
     res.json({
       pupil: {
@@ -92,8 +116,8 @@ router.get('/:id', async (req, res) => {
         gcse_pe_candidate: pupil.gcse_pe_candidate,
         talent_pathway_flag: pupil.talent_pathway_flag,
       },
-      stats: stats.rows[0],
-      flags: activeFlags.rows[0],
+      stats,
+      flags,
       viewer_role: access.role,
       school_id: schoolId,
     })

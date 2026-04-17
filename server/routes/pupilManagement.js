@@ -178,7 +178,7 @@ router.get('/:id/profile', async (req, res) => {
       const r = await pool.query(
         `SELECT pa.*, su.sport, su.unit_name, su.curriculum_area
          FROM pupil_assessments pa
-         JOIN sport_units su ON pa.unit_id = su.id
+         LEFT JOIN sport_units su ON pa.unit_id = su.id
          WHERE pa.pupil_id = $1
          ORDER BY pa.assessed_at DESC LIMIT 30`, [id])
       assessments = r.rows

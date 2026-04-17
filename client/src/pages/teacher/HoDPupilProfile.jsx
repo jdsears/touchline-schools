@@ -61,7 +61,7 @@ export default function HoDPupilProfile() {
   useEffect(() => {
     loadProfile()
     loadObservations()
-    pupilProfileService.getCore(id).then(r => setCore(r.data)).catch(() => {})
+    pupilProfileService.getCore(id).then(r => setCore(r.data)).catch(e => console.warn('pupil core profile:', e.message))
   }, [id])
 
   async function loadObservations() {

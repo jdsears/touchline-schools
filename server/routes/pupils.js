@@ -432,12 +432,12 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
     // visible_to_pupil = true. The visible_to_pupil column is surfaced here so the
     // client can show a badge distinguishing teacher-only vs pupil-visible entries.
     const result = await pool.query(
-      `SELECT o.*, u.name as observer_name,
+      `SELECT o.*, COALESCE(u.name, 'Staff member') as observer_name,
               m.opponent as match_opponent, COALESCE(m.date, m.match_date) as match_date,
               ts.session_date as training_date, ts.focus as training_focus,
               tg.name as teaching_group_name
        FROM observations o
-       JOIN users u ON o.observer_id = u.id
+       LEFT JOIN users u ON o.observer_id = u.id
        LEFT JOIN matches m ON o.match_id = m.id
        LEFT JOIN training_sessions ts ON o.training_session_id = ts.id
        LEFT JOIN teaching_groups tg ON o.teaching_group_id = tg.id
