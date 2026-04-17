@@ -28,6 +28,7 @@ import { seedFixturesExtra } from './fixturesExtra.js'
 import { seedMedicalNotes } from '../seeds/seed-medical-notes.js'
 import { seedSendNotes } from '../seeds/seed-send-notes.js'
 import { seedIdps } from '../seeds/seed-idps.js'
+import { seedAchievements } from '../seeds/seed-achievements.js'
 
 dotenv.config()
 
@@ -147,6 +148,9 @@ async function runSeed() {
 
     await seedIdps().catch(e => console.error('[demo-seed] IDP goals failed:', e.message))
     console.log('[demo-seed] IDP goals seeded')
+
+    await seedAchievements().catch(e => console.error('[demo-seed] Achievements failed:', e.message))
+    console.log('[demo-seed] Achievements seeded')
 
     console.log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
     process.exit(0)

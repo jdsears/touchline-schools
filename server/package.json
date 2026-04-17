@@ -12,7 +12,8 @@
     "seed:demo:wipe": "node db/demo-seed/index.js --wipe",
     "seed:medical-notes": "node db/seeds/seed-medical-notes.js",
     "seed:send-notes": "node db/seeds/seed-send-notes.js",
-    "seed:idps": "node db/seeds/seed-idps.js"
+    "seed:idps": "node db/seeds/seed-idps.js",
+    "seed:achievements": "node db/seeds/seed-achievements.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
