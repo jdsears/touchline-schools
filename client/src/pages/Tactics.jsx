@@ -6,53 +6,7 @@ import TacticsPrintView from '../components/TacticsPrintView'
 import { useTeam } from '../context/TeamContext'
 import toast from 'react-hot-toast'
 import { useBeforeUnload } from 'react-router-dom'
-
-// 11-a-side formations
-const formations11 = [
-  '4-3-3', '4-4-2', '4-2-3-1', '3-5-2', '3-4-3', '4-1-4-1', '4-5-1', '5-3-2', '5-4-1'
-]
-
-// 9-a-side formations (8 outfield + GK)
-const formations9 = [
-  '3-3-2', '3-2-3', '2-4-2', '3-1-3-1', '2-3-2-1', '2-3-3'
-]
-
-// 7-a-side formations (6 outfield + GK)
-const formations7 = [
-  '2-3-1', '3-2-1', '2-1-2-1', '1-2-1-2', '3-1-2'
-]
-
-// 5-a-side formations (4 outfield + GK)
-const formations5 = [
-  '2-1-1', '1-2-1', '2-2', '1-1-2', '3-1'
-]
-
-// Legacy alias for backwards compatibility
-const formations = formations11
-
-// Map age groups to recommended team format
-const AGE_GROUP_FORMAT_MAP = {
-  'U7': 5, 'U8': 5,
-  'U9': 7, 'U10': 7,
-  'U11': 9, 'U12': 9,
-  'U13': 11, 'U14': 11, 'U15': 11, 'U16': 11, 'U17': 11, 'U18': 11,
-  'Adult': 11,
-}
-
-// Formations by format for quick lookup
-const formationsByFormat = {
-  11: formations11,
-  9: formations9,
-  7: formations7,
-  5: formations5,
-}
-
-const defaultFormationByFormat = {
-  11: '4-3-3',
-  9: '3-3-2',
-  7: '2-3-1',
-  5: '2-1-1',
-}
+import { getSportConfig } from '../config/sports/index'
 
 // Tactical phases
 const PHASES = {
@@ -93,297 +47,6 @@ const TACTICAL_ZONES = {
   ],
 }
 
-// Base positions (used as default) and phase-specific offsets
-const defaultPositions = {
-  '4-3-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 52, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 46, pupilId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 52, pupilId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 25, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 25, pupilId: null },
-  ],
-  '4-4-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 48, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 52, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 52, pupilId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 48, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
-  ],
-  '4-2-3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
-    { id: 'CDM1', label: 'CDM', x: 35, y: 58, pupilId: null },
-    { id: 'CDM2', label: 'CDM', x: 65, y: 58, pupilId: null },
-    { id: 'LAM', label: 'LAM', x: 20, y: 38, pupilId: null },
-    { id: 'CAM', label: 'CAM', x: 50, y: 35, pupilId: null },
-    { id: 'RAM', label: 'RAM', x: 80, y: 38, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-  ],
-  '3-5-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 25, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
-    { id: 'CB3', label: 'CB', x: 75, y: 78, pupilId: null },
-    { id: 'LWB', label: 'LWB', x: 10, y: 52, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 55, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 50, pupilId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 55, pupilId: null },
-    { id: 'RWB', label: 'RWB', x: 90, y: 52, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
-  ],
-  '3-4-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 25, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
-    { id: 'CB3', label: 'CB', x: 75, y: 78, pupilId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 52, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 55, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 55, pupilId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 52, pupilId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 22, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 22, pupilId: null },
-  ],
-  '4-1-4-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
-    { id: 'CDM', label: 'CDM', x: 50, y: 60, pupilId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 42, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 45, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 45, pupilId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 42, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-  ],
-  '4-5-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 15, y: 72, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 85, y: 72, pupilId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 48, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 52, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 48, pupilId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 52, pupilId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 48, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-  ],
-  '5-3-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LWB', label: 'LWB', x: 10, y: 65, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 28, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
-    { id: 'CB3', label: 'CB', x: 72, y: 78, pupilId: null },
-    { id: 'RWB', label: 'RWB', x: 90, y: 65, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 30, y: 50, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 50, y: 45, pupilId: null },
-    { id: 'CM3', label: 'CM', x: 70, y: 50, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
-  ],
-  '5-4-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LWB', label: 'LWB', x: 10, y: 65, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 28, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 50, y: 82, pupilId: null },
-    { id: 'CB3', label: 'CB', x: 72, y: 78, pupilId: null },
-    { id: 'RWB', label: 'RWB', x: 90, y: 65, pupilId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 45, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 40, y: 48, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 60, y: 48, pupilId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 45, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-  ],
-}
-
-// 9-a-side default positions (8 outfield + GK)
-const defaultPositions9 = {
-  '3-3-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 20, y: 72, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 80, y: 72, pupilId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 48, pupilId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 45, pupilId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 48, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
-  ],
-  '3-2-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 20, y: 72, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 80, y: 72, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 50, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 50, pupilId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 22, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 22, pupilId: null },
-  ],
-  '2-4-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'LM', label: 'LM', x: 15, y: 48, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 38, y: 52, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 62, y: 52, pupilId: null },
-    { id: 'RM', label: 'RM', x: 85, y: 48, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
-  ],
-  '3-1-3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 20, y: 72, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 78, pupilId: null },
-    { id: 'RB', label: 'RB', x: 80, y: 72, pupilId: null },
-    { id: 'CDM', label: 'CDM', x: 50, y: 58, pupilId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 38, pupilId: null },
-    { id: 'CAM', label: 'CAM', x: 50, y: 35, pupilId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 38, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-  ],
-  '2-3-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 52, pupilId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 55, pupilId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 52, pupilId: null },
-    { id: 'LAM', label: 'AM', x: 35, y: 32, pupilId: null },
-    { id: 'RAM', label: 'AM', x: 65, y: 32, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-  ],
-  '2-3-3': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'CB1', label: 'CB', x: 35, y: 78, pupilId: null },
-    { id: 'CB2', label: 'CB', x: 65, y: 78, pupilId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 50, pupilId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 48, pupilId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 50, pupilId: null },
-    { id: 'LW', label: 'LW', x: 20, y: 22, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 15, pupilId: null },
-    { id: 'RW', label: 'RW', x: 80, y: 22, pupilId: null },
-  ],
-}
-
-// 7-a-side default positions (6 outfield + GK)
-const defaultPositions7 = {
-  '2-3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 25, y: 72, pupilId: null },
-    { id: 'RB', label: 'RB', x: 75, y: 72, pupilId: null },
-    { id: 'LM', label: 'LM', x: 20, y: 45, pupilId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 48, pupilId: null },
-    { id: 'RM', label: 'RM', x: 80, y: 45, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
-  ],
-  '3-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 22, y: 72, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 75, pupilId: null },
-    { id: 'RB', label: 'RB', x: 78, y: 72, pupilId: null },
-    { id: 'CM1', label: 'CM', x: 35, y: 45, pupilId: null },
-    { id: 'CM2', label: 'CM', x: 65, y: 45, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
-  ],
-  '2-1-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 25, y: 72, pupilId: null },
-    { id: 'RB', label: 'RB', x: 75, y: 72, pupilId: null },
-    { id: 'CDM', label: 'CDM', x: 50, y: 55, pupilId: null },
-    { id: 'LM', label: 'LM', x: 25, y: 35, pupilId: null },
-    { id: 'RM', label: 'RM', x: 75, y: 35, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
-  ],
-  '1-2-1-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 75, pupilId: null },
-    { id: 'LM', label: 'LM', x: 22, y: 52, pupilId: null },
-    { id: 'RM', label: 'RM', x: 78, y: 52, pupilId: null },
-    { id: 'CAM', label: 'CAM', x: 50, y: 35, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
-  ],
-  '3-1-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 92, pupilId: null },
-    { id: 'LB', label: 'LB', x: 22, y: 72, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 75, pupilId: null },
-    { id: 'RB', label: 'RB', x: 78, y: 72, pupilId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 45, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 35, y: 18, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 65, y: 18, pupilId: null },
-  ],
-}
-
-// 5-a-side default positions (4 outfield + GK)
-const defaultPositions5 = {
-  '2-1-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
-    { id: 'LB', label: 'LB', x: 25, y: 65, pupilId: null },
-    { id: 'RB', label: 'RB', x: 75, y: 65, pupilId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 42, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
-  ],
-  '1-2-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 68, pupilId: null },
-    { id: 'LM', label: 'LM', x: 25, y: 42, pupilId: null },
-    { id: 'RM', label: 'RM', x: 75, y: 42, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 18, pupilId: null },
-  ],
-  '2-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
-    { id: 'LB', label: 'LB', x: 28, y: 65, pupilId: null },
-    { id: 'RB', label: 'RB', x: 72, y: 65, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 28, y: 28, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 72, y: 28, pupilId: null },
-  ],
-  '1-1-2': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 68, pupilId: null },
-    { id: 'CM', label: 'CM', x: 50, y: 45, pupilId: null },
-    { id: 'ST1', label: 'ST', x: 30, y: 22, pupilId: null },
-    { id: 'ST2', label: 'ST', x: 70, y: 22, pupilId: null },
-  ],
-  '3-1': [
-    { id: 'GK', label: 'GK', x: 50, y: 90, pupilId: null },
-    { id: 'LB', label: 'LB', x: 22, y: 62, pupilId: null },
-    { id: 'CB', label: 'CB', x: 50, y: 68, pupilId: null },
-    { id: 'RB', label: 'RB', x: 78, y: 62, pupilId: null },
-    { id: 'ST', label: 'ST', x: 50, y: 22, pupilId: null },
-  ],
-}
-
-// All position sets by format
-const defaultPositionsByFormat = {
-  11: defaultPositions,
-  9: defaultPositions9,
-  7: defaultPositions7,
-  5: defaultPositions5,
-}
-
-// Position adjustments for different tactical phases (offsets from base position)
-// Positive y = moves toward own goal (more defensive)
-// Negative y = moves toward opponent goal (more attacking)
-// Positive x = moves right, Negative x = moves left
 const phaseOffsets = {
   '4-3-3': {
     inPossession: {
@@ -490,7 +153,7 @@ function getPhaseOffsets(formation, actualPositions) {
   // Generate generic offsets based on position type
   // Goal: Create compact defensive lines and realistic attacking shapes
   // Use actualPositions for custom formations instead of falling back to 4-3-3
-  const basePositions = actualPositions || defaultPositions[formation] || defaultPositions['4-3-3']
+  const basePositions = actualPositions || []
   const offsets = { inPossession: {}, outOfPossession: {}, transition: {} }
 
   basePositions.forEach(pos => {
@@ -647,9 +310,10 @@ function isValidPosition(pos) {
 
 // Validate and sanitize positions array
 // Returns valid positions merged with defaults for the formation
-function validatePositions(savedPositions, formationName, teamFormat = 11) {
-  const positionsMap = defaultPositionsByFormat[teamFormat] || defaultPositions
-  const fallbackFormation = defaultFormationByFormat[teamFormat] || '4-3-3'
+function validatePositions(savedPositions, formationName, teamFormat = 11, sportConfig = null) {
+  const cfg = sportConfig || getSportConfig('football')
+  const positionsMap = cfg.defaultPositionsByFormat[teamFormat] || {}
+  const fallbackFormation = cfg.defaultFormationByFormat[teamFormat] || Object.keys(positionsMap)[0] || '4-3-3'
 
   // Helper to safely get coordinate with fallback to default
   const safeCoord = (value, fallback) => {
@@ -736,16 +400,19 @@ function validatePositions(savedPositions, formationName, teamFormat = 11) {
 export default function Tactics() {
   const { team, updateTeam, pupils } = useTeam()
 
-  // Determine available formations based on team format
-  const teamFormat = team?.team_format || 11
-  const availableFormations = formationsByFormat[teamFormat] || formations11
-  const defaultFormationPositions = defaultPositionsByFormat[teamFormat] || defaultPositions
-  const defaultFormation = defaultFormationByFormat[teamFormat] || '4-3-3'
+  // Derive sport config from team's sport (defaults to football)
+  const sportConfig = getSportConfig(team?.sport || 'football')
+
+  // Determine available formations based on sport config and team format
+  const teamFormat = team?.team_format || sportConfig.defaultFormat
+  const availableFormations = sportConfig.formationsByFormat[teamFormat] || []
+  const defaultFormationPositions = sportConfig.defaultPositionsByFormat[teamFormat] || {}
+  const defaultFormation = sportConfig.defaultFormationByFormat[teamFormat] || availableFormations[0] || '4-3-3'
 
   const [formation, setFormation] = useState(team?.formation || defaultFormation)
   const [positions, setPositions] = useState(() => {
     const formationName = team?.formation || defaultFormation
-    return validatePositions(team?.positions, formationName, teamFormat)
+    return validatePositions(team?.positions, formationName, teamFormat, sportConfig)
   })
   const [saving, setSaving] = useState(false)
   const [selectedPosition, setSelectedPosition] = useState(null)
@@ -775,7 +442,7 @@ export default function Tactics() {
   const [plannedSubs, setPlannedSubs] = useState(team?.planned_subs || [])
   const [newSub, setNewSub] = useState({ minute: '', playerOffId: '', playerOnId: '', notes: '' })
   const [benchPlayerIds, setBenchPlayerIds] = useState(team?.bench_players || [])
-  const [setPieceTakers, setSetPieceTakers] = useState(team?.game_model?.setPieceTakers || {
+  const [setPieceTakers, setSetPieceTakers] = useState(team?.game_model?.setPieceTakers || sportConfig.defaultSetPieceTakers || {
     corners_left: '', corners_right: '', free_kicks: '', penalties: '', throw_ins_long: '',
   })
   const [customFormations, setCustomFormations] = useState(team?.custom_formations || [])
@@ -1047,7 +714,7 @@ export default function Tactics() {
       const formationToUse = team?.formation || fallbackFormation
       if (team?.positions && Array.isArray(team.positions) && team.positions.length > 0) {
         // Validate and sanitize incoming positions
-        const validatedPositions = validatePositions(team.positions, formationToUse, currentTeamFormat)
+        const validatedPositions = validatePositions(team.positions, formationToUse, currentTeamFormat, sportConfig)
         setPositions(validatedPositions)
         lastTeamPositionsRef.current = teamPositionsJson
         // Clear local changes on first load since we're syncing with server
@@ -1112,7 +779,7 @@ export default function Tactics() {
     const custom = customFormations.find(cf => cf.name === newFormation)
     if (custom && custom.positions) {
       // Validate custom formation positions
-      setPositions(validatePositions(custom.positions, newFormation, teamFormat))
+      setPositions(validatePositions(custom.positions, newFormation, teamFormat, sportConfig))
     } else {
       // Use defaults for standard formations (based on team format)
       const defaults = defaultFormationPositions[newFormation] || defaultFormationPositions[defaultFormation]
@@ -1157,10 +824,12 @@ export default function Tactics() {
     const updatedCustomFormations = customFormations.filter(cf => cf.name !== formationName)
     setCustomFormations(updatedCustomFormations)
 
-    // If currently using this formation, switch to 4-3-3
+    // If currently using this formation, switch to the default for this sport/format
     if (formation === formationName) {
-      setFormation('4-3-3')
-      setPositions(defaultPositions['4-3-3'].map(p => ({ ...p })))
+      const fallbackFm = defaultFormation
+      const fallbackPositions = defaultFormationPositions[fallbackFm] || []
+      setFormation(fallbackFm)
+      setPositions(fallbackPositions.map(p => ({ ...p })))
     }
 
     const result = await updateTeam({ custom_formations: updatedCustomFormations })
@@ -2287,13 +1956,13 @@ export default function Tactics() {
                 Set Piece Takers
               </h2>
               <div className="space-y-3">
-                {[
+                {(sportConfig.setPieceRoles || [
                   { key: 'corners_left', label: 'Corners (Left Side)', hasFoot: true },
                   { key: 'corners_right', label: 'Corners (Right Side)', hasFoot: true },
                   { key: 'free_kicks', label: 'Free Kicks' },
                   { key: 'penalties', label: 'Penalties' },
                   { key: 'throw_ins_long', label: 'Long Throw-ins' },
-                ].map(({ key, label, hasFoot }) => (
+                ]).map(({ key, label, hasFoot }) => (
                   <div key={key}>
                     <label className="text-xs text-navy-400 block mb-1">{label}</label>
                     <div className={hasFoot ? 'flex gap-2' : ''}>
