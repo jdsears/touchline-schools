@@ -326,8 +326,8 @@ function isValidPosition(pos) {
 // Returns valid positions merged with defaults for the formation
 function validatePositions(savedPositions, formationName, teamFormat = 11, sportConfig = null) {
   const cfg = sportConfig || getSportConfig('football')
-  const positionsMap = cfg.defaultPositionsByFormat[teamFormat] || {}
-  const fallbackFormation = cfg.defaultFormationByFormat[teamFormat] || Object.keys(positionsMap)[0] || '4-3-3'
+  const positionsMap = cfg.defaultPositionsByFormat?.[teamFormat] || {}
+  const fallbackFormation = cfg.defaultFormationByFormat?.[teamFormat] || Object.keys(positionsMap)[0] || '4-3-3'
 
   // Helper to safely get coordinate with fallback to default
   const safeCoord = (value, fallback) => {
@@ -353,12 +353,14 @@ function validatePositions(savedPositions, formationName, teamFormat = 11, sport
         }))
       }
     }
-    // If no valid saved positions, fall back to default formation
-    return positionsMap[fallbackFormation].map(p => ({ ...p }))
+    // If no valid saved positions, fall back to default formation for this sport+format.
+    // Guard against positionsMap being empty (e.g. sport config missing that format).
+    const fallbackPositions = positionsMap[fallbackFormation] || Object.values(positionsMap)[0] || []
+    return fallbackPositions.map(p => ({ ...p }))
   }
 
   // Standard formation validation
-  const defaults = positionsMap[formationName]
+  const defaults = positionsMap[formationName] || []
 
   // If no saved positions or not an array, return defaults
   if (!savedPositions || !Array.isArray(savedPositions) || savedPositions.length === 0) {
