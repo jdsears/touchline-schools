@@ -698,6 +698,7 @@ export const reportingService = {
   createWindow: (data) => api.post('/reporting/windows', data),
   updateWindow: (id, data) => api.put(`/reporting/windows/${id}`, data),
   getWindowReports: (windowId) => api.get(`/reporting/windows/${windowId}/reports`),
+  getReport: (reportId) => api.get(`/reporting/reports/${reportId}`),
   getMyReports: () => api.get('/reporting/my-reports'),
   saveReport: (data) => api.post('/reporting/reports', data),
   generateAIDraft: (data) => api.post('/reporting/reports/ai-draft', data),

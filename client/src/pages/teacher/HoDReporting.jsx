@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { reportingService } from '../../services/api'
-import { FileBarChart, Plus, X, Check, Clock, Lock, Unlock } from 'lucide-react'
+import { FileBarChart, Plus, X, Check, Clock, Lock, Unlock, ChevronRight } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const STATUS_BADGES = {
@@ -17,6 +18,7 @@ const currentAcademicYear = () => {
 }
 
 export default function HoDReporting() {
+  const navigate = useNavigate()
   const [windows, setWindows] = useState([])
   const [loading, setLoading] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
@@ -101,18 +103,22 @@ export default function HoDReporting() {
             return (
               <div key={w.id} className="bg-navy-900 rounded-xl border border-navy-800 p-5">
                 <div className="flex items-center justify-between">
-                  <div>
+                  <button
+                    onClick={() => navigate(`/teacher/hod/reporting/windows/${w.id}`)}
+                    className="flex-1 text-left hover:opacity-80 transition-opacity min-w-0 mr-4"
+                  >
                     <div className="flex items-center gap-3">
                       <h3 className="text-base font-semibold text-white">{w.name}</h3>
                       <span className={`px-2 py-0.5 rounded text-xs font-medium ${badge.color}`}>{badge.label}</span>
+                      <ChevronRight className="w-4 h-4 text-navy-500 ml-auto" />
                     </div>
                     <div className="flex items-center gap-3 mt-1 text-xs text-navy-400">
                       <span>{w.academic_year}</span>
                       {w.term && <span className="capitalize">{w.term} term</span>}
                       <span>{w.report_count || 0} reports ({w.submitted_count || 0} submitted, {w.published_count || 0} published)</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
+                  </button>
+                  <div className="flex items-center gap-2 flex-shrink-0">
                     {w.status === 'draft' && (
                       <button
                         onClick={() => updateStatus(w.id, 'open')}

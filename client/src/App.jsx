@@ -108,6 +108,8 @@ const HoDClasses = lazy(() => import('./pages/teacher/HoDClasses'))
 const HoDPupils = lazy(() => import('./pages/teacher/HoDPupils'))
 const HoDPupilProfile = lazy(() => import('./pages/teacher/HoDPupilProfile'))
 const HoDReporting = lazy(() => import('./pages/teacher/HoDReporting'))
+const WindowReportsList = lazy(() => import('./pages/teacher/WindowReportsList'))
+const ReportDetail = lazy(() => import('./pages/teacher/ReportDetail'))
 const TeacherSafeguarding = lazy(() => import('./pages/teacher/TeacherSafeguarding'))
 const VoiceObservationReview = lazy(() => import('./pages/teacher/VoiceObservationReview'))
 const VoiceSafeguardingReview = lazy(() => import('./pages/teacher/VoiceSafeguardingReview'))
@@ -330,6 +332,8 @@ export default function App() {
           <Route path="hod/pupils" element={<HoDPupils />} />
           <Route path="hod/pupils/:id" element={<HoDPupilProfile />} />
           <Route path="hod/reporting" element={<HoDReporting />} />
+          <Route path="hod/reporting/windows/:windowId" element={<WindowReportsList />} />
+          <Route path="hod/reporting/windows/:windowId/reports/:reportId" element={<ReportDetail />} />
           <Route path="voice-review/:audioSourceId" element={<VoiceObservationReview />} />
           <Route path="hod/voice-safeguarding" element={<VoiceSafeguardingReview />} />
           <Route path="hod/voice-settings" element={<HoDVoiceSettings />} />

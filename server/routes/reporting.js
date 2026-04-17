@@ -227,6 +227,31 @@ router.post('/reports', async (req, res) => {
   }
 })
 
+// GET /reports/:id - Get a single pupil report with pupil and unit details
+router.get('/reports/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT pr.*,
+              p.first_name, p.last_name, p.year_group, p.house,
+              su.sport AS unit_sport, su.unit_name,
+              u.name AS teacher_name,
+              tg.name AS class_name
+       FROM pupil_reports pr
+       JOIN pupils p ON pr.pupil_id = p.id
+       LEFT JOIN sport_units su ON pr.unit_id = su.id
+       LEFT JOIN users u ON pr.generated_by = u.id
+       LEFT JOIN teaching_groups tg ON su.teaching_group_id = tg.id
+       WHERE pr.id = $1`,
+      [req.params.id]
+    )
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Report not found' })
+    res.json(result.rows[0])
+  } catch (error) {
+    console.error('Error loading report:', error)
+    res.status(500).json({ error: 'Failed to load report' })
+  }
+})
+
 // POST /reports/ai-draft - Generate an AI draft comment for a pupil
 router.post('/reports/ai-draft', async (req, res) => {
   try {
