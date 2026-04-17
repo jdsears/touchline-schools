@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { useState, useEffect, useCallback } from 'react'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { hodService, voiceObservationService } from '../../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -221,6 +221,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
 export default function TeacherLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
+  const navigate = useNavigate()
   const schoolBranding = useSchoolBranding()
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isHoD, setIsHoD] = useState(false)
@@ -228,6 +229,14 @@ export default function TeacherLayout() {
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [voicePendingCount, setVoicePendingCount] = useState(0)
   const [showRecorder, setShowRecorder] = useState(false)
+
+  const isOnHoDView = location.pathname === '/teacher/hod' || location.pathname.startsWith('/teacher/hod/')
+  const isOnTeacherHome = location.pathname === '/teacher'
+
+  const switchView = useCallback((view) => {
+    localStorage.setItem('preferred_dashboard_view', view)
+    navigate(view === 'hod' ? '/teacher/hod' : '/teacher')
+  }, [navigate])
 
   useEffect(() => {
     hodService.check()
@@ -310,6 +319,30 @@ export default function TeacherLayout() {
             </span>
           </div>
         </header>
+
+        {/* Role switcher for dual-role HoD+Teacher users */}
+        {isHoD && (isOnHoDView || isOnTeacherHome) && (
+          <div className="flex items-center justify-end px-4 md:px-6 pt-4 pb-0">
+            <div className="inline-flex rounded-lg bg-navy-800 border border-navy-700 p-0.5">
+              <button
+                onClick={() => switchView('hod')}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  isOnHoDView ? 'bg-amber-500/20 text-amber-400' : 'text-navy-400 hover:text-navy-200'
+                }`}
+              >
+                School Admin
+              </button>
+              <button
+                onClick={() => switchView('teacher')}
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  isOnTeacherHome ? 'bg-pitch-500/20 text-pitch-400' : 'text-navy-400 hover:text-navy-200'
+                }`}
+              >
+                Teacher
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Page content */}
         <main className="min-h-[calc(100vh-4rem)] lg:min-h-screen">

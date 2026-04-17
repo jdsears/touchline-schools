@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { teacherService } from '../../services/api'
+import { Link, useNavigate } from 'react-router-dom'
+import { teacherService, hodService } from '../../services/api'
 import {
   Calendar, GraduationCap, Shield, ClipboardCheck, ChevronRight,
   Users, Loader2, AlertTriangle, Trophy,
@@ -32,6 +32,7 @@ function resultBadge(r) {
 }
 
 export default function TeacherDashboard() {
+  const navigate = useNavigate()
   const [today, setToday] = useState(null)
   const [classes, setClasses] = useState([])
   const [teams, setTeams] = useState([])
@@ -39,6 +40,13 @@ export default function TeacherDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // HoD users with a stored preference land on School Overview instead
+    if (localStorage.getItem('preferred_dashboard_view') === 'hod') {
+      hodService.check()
+        .then(res => { if (res.data.isHoD) navigate('/teacher/hod', { replace: true }) })
+        .catch(() => {})
+    }
+
     Promise.all([
       teacherService.getDashboardToday().then(r => setToday(r.data)),
       teacherService.getDashboardClasses().then(r => setClasses(r.data)),
@@ -47,7 +55,7 @@ export default function TeacherDashboard() {
     ])
       .catch(err => console.error('Dashboard error:', err))
       .finally(() => setLoading(false))
-  }, [])
+  }, [navigate])
 
   if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-pitch-400 animate-spin" /></div>
 
