@@ -3888,6 +3888,112 @@ export async function runMigrations() {
 
     console.log('Phase 20: gcse_pe_candidate flag on pupils')
 
+    // ================================================
+    // PHASE 21: Pupil profile expansion
+    // ================================================
+    // Medical, SEND, safeguarding, IDP goals, achievement augmentation,
+    // and additional pupil identity columns. All non-destructive —
+    // existing data is preserved. Each table has its own access-control
+    // policy enforced at the route layer; safeguarding is the strictest.
+
+    // 21a: identity & profile columns on pupils (aka players)
+    await pool.query(`
+      ALTER TABLE players
+        ADD COLUMN IF NOT EXISTS preferred_name TEXT,
+        ADD COLUMN IF NOT EXISTS pronouns TEXT,
+        ADD COLUMN IF NOT EXISTS parent_phone TEXT,
+        ADD COLUMN IF NOT EXISTS admission_date DATE,
+        ADD COLUMN IF NOT EXISTS estimated_leaving_date DATE,
+        ADD COLUMN IF NOT EXISTS talent_pathway_flag BOOLEAN NOT NULL DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS house_id UUID,
+        ADD COLUMN IF NOT EXISTS tutor_user_id UUID REFERENCES users(id) ON DELETE SET NULL
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_talent_pathway ON players(talent_pathway_flag) WHERE talent_pathway_flag = TRUE`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_tutor ON players(tutor_user_id)`)
+
+    // 21b: medical notes
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_medical_notes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        condition TEXT,
+        medication TEXT,
+        dietary_requirements TEXT,
+        allergies TEXT,
+        physical_limitations_note TEXT,
+        emergency_contact_name TEXT,
+        emergency_contact_phone TEXT,
+        last_reviewed_date DATE,
+        last_reviewed_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_medical_pupil ON pupil_medical_notes(pupil_id)`)
+
+    // 21c: SEND / additional needs
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_send_notes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        ehcp_status BOOLEAN NOT NULL DEFAULT FALSE,
+        ehcp_number TEXT,
+        send_category TEXT,
+        adaptations_required_in_pe TEXT,
+        sendco_comment TEXT,
+        last_reviewed_date DATE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_send_pupil ON pupil_send_notes(pupil_id)`)
+
+    // 21d: safeguarding notes (strict access — enforced at route layer)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_safeguarding_notes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        flag_type TEXT NOT NULL CHECK (flag_type IN ('monitoring', 'concern', 'incident', 'resolved')),
+        note TEXT,
+        added_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        added_at TIMESTAMPTZ DEFAULT NOW(),
+        resolved_at TIMESTAMPTZ,
+        visible_to_roles JSONB NOT NULL DEFAULT '["hod","dsl","deputy_dsl"]'::jsonb
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_pupil ON pupil_safeguarding_notes(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_open ON pupil_safeguarding_notes(pupil_id) WHERE resolved_at IS NULL`)
+
+    // 21e: IDP goals (granular, per-goal row — separate from the existing
+    // development_plans summary table which keeps JSONB arrays)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_idp_goals (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+        sport_key TEXT,
+        goal_description TEXT NOT NULL,
+        target_date DATE,
+        self_assessment_notes TEXT,
+        teacher_assessment_notes TEXT,
+        status TEXT NOT NULL DEFAULT 'in_progress'
+          CHECK (status IN ('in_progress', 'achieved', 'revised', 'abandoned')),
+        created_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_pupil ON pupil_idp_goals(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_status ON pupil_idp_goals(pupil_id, status)`)
+
+    // 21f: augment existing player_achievements with sport_key for filtering
+    await pool.query(`
+      ALTER TABLE player_achievements
+        ADD COLUMN IF NOT EXISTS sport_key TEXT
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_achievements_sport ON player_achievements(sport_key) WHERE sport_key IS NOT NULL`)
+
+    console.log('Phase 21: pupil profile expansion (medical, SEND, safeguarding, IDP goals, identity cols)')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
