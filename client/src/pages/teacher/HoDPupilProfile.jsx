@@ -11,6 +11,11 @@ import {
 import toast from 'react-hot-toast'
 
 const DevelopmentTab = lazy(() => import('./pupil-profile/DevelopmentTab'))
+const MedicalSendTab = lazy(() => import('./pupil-profile/MedicalSendTab'))
+const SafeguardingTab = lazy(() => import('./pupil-profile/SafeguardingTab'))
+
+const MEDICAL_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe', 'head_of_sport', 'teacher', 'coach']
+const SAFEGUARDING_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe', 'dsl', 'deputy_dsl']
 
 const GRADE_COLORS = {
   emerging: 'bg-alert-600/20 text-alert-400',
@@ -24,10 +29,20 @@ const SPORT_ICONS = {
   hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E',
 }
 
-const TABS = [
-  { id: 'overview',    label: 'Overview',    icon: User },
-  { id: 'development', label: 'Development', icon: Target },
-]
+function buildTabs(viewerRole) {
+  const tabs = [
+    { id: 'overview',    label: 'Overview',    icon: User },
+    { id: 'development', label: 'Development', icon: Target },
+  ]
+  if (MEDICAL_ROLES.includes(viewerRole) || viewerRole === 'admin') {
+    tabs.push({ id: 'medical', label: 'Medical & SEND', icon: Stethoscope })
+  }
+  // Safeguarding is conditionally listed; unauthorised users do not see the tab exists.
+  if (SAFEGUARDING_ROLES.includes(viewerRole) || viewerRole === 'admin') {
+    tabs.push({ id: 'safeguarding', label: 'Safeguarding', icon: AlertTriangle })
+  }
+  return tabs
+}
 
 export default function HoDPupilProfile() {
   const { id } = useParams()
@@ -224,7 +239,7 @@ export default function HoDPupilProfile() {
 
       {/* Tab bar */}
       <div className="flex gap-1 border-b border-navy-800 mb-6 -mx-1 overflow-x-auto">
-        {TABS.map(t => {
+        {buildTabs(core?.viewer_role).map(t => {
           const Icon = t.icon
           const active = activeTab === t.id
           return (
@@ -244,6 +259,18 @@ export default function HoDPupilProfile() {
       {activeTab === 'development' && (
         <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>}>
           <DevelopmentTab pupilId={id} />
+        </Suspense>
+      )}
+
+      {activeTab === 'medical' && (
+        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>}>
+          <MedicalSendTab pupilId={id} />
+        </Suspense>
+      )}
+
+      {activeTab === 'safeguarding' && (
+        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>}>
+          <SafeguardingTab pupilId={id} />
         </Suspense>
       )}
 
