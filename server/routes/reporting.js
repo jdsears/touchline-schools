@@ -97,6 +97,26 @@ router.put('/windows/:id', async (req, res) => {
       return res.status(404).json({ error: 'Reporting window not found' })
     }
 
+    // Audit log for consequential status changes (publish / close)
+    if (status === 'published' || status === 'closed') {
+      const w = result.rows[0]
+      const countRes = await pool.query(
+        `SELECT COUNT(*) FROM pupil_reports WHERE reporting_window_id = $1 AND status = 'submitted'`,
+        [w.id]
+      )
+      await pool.query(
+        `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, metadata, created_at)
+         VALUES ($1, $2, $3, 'reporting_window', $4, $5, NOW())`,
+        [
+          w.school_id, req.user.id,
+          status === 'published' ? 'window_published' : 'window_closed',
+          w.id,
+          JSON.stringify({ window_name: w.name, report_count: parseInt(countRes.rows[0].count), status }),
+        ]
+      ).catch(() => {}) // audit failures are non-fatal
+
+    }
+
     res.json(result.rows[0])
   } catch (error) {
     console.error('Error updating reporting window:', error)

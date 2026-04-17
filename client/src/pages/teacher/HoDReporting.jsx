@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { reportingService } from '../../services/api'
-import { FileBarChart, Plus, X, Check, Clock, Lock, Unlock, ChevronRight } from 'lucide-react'
+import { FileBarChart, Plus, X, Check, Lock, Unlock, ChevronRight, AlertTriangle } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const STATUS_BADGES = {
@@ -17,15 +17,42 @@ const currentAcademicYear = () => {
   return now.getMonth() >= 8 ? `${year}-${(year + 1).toString().slice(2)}` : `${year - 1}-${year.toString().slice(2)}`
 }
 
+// Confirmation modal for destructive/consequential actions
+function ConfirmModal({ title, body, warning, confirmLabel, confirmClass, onConfirm, onCancel }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === 'Escape') onCancel() }
+    document.addEventListener('keydown', handler)
+    return () => document.removeEventListener('keydown', handler)
+  }, [onCancel])
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+      <div className="bg-navy-900 rounded-xl border border-navy-700 w-full max-w-md mx-4 p-6 shadow-2xl">
+        <div className="flex items-start gap-3 mb-4">
+          <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <h2 className="text-lg font-semibold text-white">{title}</h2>
+        </div>
+        <div className="text-sm text-navy-300 space-y-2 mb-4">{body}</div>
+        {warning && (
+          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 text-xs text-amber-300 mb-5">{warning}</div>
+        )}
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm transition-colors">Cancel</button>
+          <button onClick={onConfirm} className={`flex-1 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${confirmClass}`}>{confirmLabel}</button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function HoDReporting() {
   const navigate = useNavigate()
   const [windows, setWindows] = useState([])
   const [loading, setLoading] = useState(true)
   const [showCreate, setShowCreate] = useState(false)
   const [creating, setCreating] = useState(false)
-  const [form, setForm] = useState({
-    name: '', academic_year: currentAcademicYear(), term: 'autumn',
-  })
+  const [form, setForm] = useState({ name: '', academic_year: currentAcademicYear(), term: 'autumn' })
+  const [confirm, setConfirm] = useState(null) // { window, action: 'publish'|'close' }
 
   useEffect(() => {
     loadWindows()
@@ -70,10 +97,15 @@ export default function HoDReporting() {
     try {
       await reportingService.updateWindow(windowId, { status: newStatus })
       toast.success(`Reporting window ${newStatus}`)
+      setConfirm(null)
       loadWindows()
     } catch (err) {
       toast.error('Failed to update status')
     }
+  }
+
+  function requestAction(w, action) {
+    setConfirm({ window: w, action })
   }
 
   if (loading) {
@@ -130,7 +162,7 @@ export default function HoDReporting() {
                     )}
                     {w.status === 'open' && (
                       <button
-                        onClick={() => updateStatus(w.id, 'closed')}
+                        onClick={() => requestAction(w, 'close')}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-sm transition-colors"
                       >
                         <Lock className="w-3.5 h-3.5" />
@@ -139,7 +171,7 @@ export default function HoDReporting() {
                     )}
                     {w.status === 'closed' && (
                       <button
-                        onClick={() => updateStatus(w.id, 'published')}
+                        onClick={() => requestAction(w, 'publish')}
                         className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm transition-colors"
                       >
                         <Check className="w-3.5 h-3.5" />
@@ -161,6 +193,47 @@ export default function HoDReporting() {
           </p>
         </div>
       )}
+
+      {/* Publish / Close confirmation modals */}
+      {confirm?.action === 'publish' && (() => {
+        const w = confirm.window
+        const total = parseInt(w.submitted_count || 0)
+        const drafts = parseInt(w.report_count || 0) - total - parseInt(w.published_count || 0)
+        return (
+          <ConfirmModal
+            title={`Publish "${w.name}"?`}
+            body={
+              <>
+                <p>You are about to publish <strong className="text-white">{total} report{total !== 1 ? 's' : ''}</strong> to parents and pupils.</p>
+                <p>Published reports cannot be recalled. Any future edits would need to be communicated separately.</p>
+                <p className="text-navy-400 text-xs mt-2">{total} reports across this reporting window.</p>
+              </>
+            }
+            warning={drafts > 0 ? `${drafts} report${drafts !== 1 ? 's are' : ' is'} still in draft and will not be included. Continue without them?` : null}
+            confirmLabel={`Publish ${total} report${total !== 1 ? 's' : ''}`}
+            confirmClass="bg-blue-600 hover:bg-blue-700 text-white"
+            onConfirm={() => updateStatus(w.id, 'published')}
+            onCancel={() => setConfirm(null)}
+          />
+        )
+      })()}
+
+      {confirm?.action === 'close' && (() => {
+        const w = confirm.window
+        return (
+          <ConfirmModal
+            title={`Close "${w.name}"?`}
+            body={
+              <p>Closing this window prevents further report submissions. This can be reopened later if needed.</p>
+            }
+            warning={null}
+            confirmLabel="Close window"
+            confirmClass="bg-amber-500 hover:bg-amber-600 text-white"
+            onConfirm={() => updateStatus(w.id, 'closed')}
+            onCancel={() => setConfirm(null)}
+          />
+        )
+      })()}
 
       {/* Create Modal */}
       {showCreate && (
