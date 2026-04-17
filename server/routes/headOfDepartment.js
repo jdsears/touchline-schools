@@ -585,4 +585,76 @@ router.get('/school-overview/weekly-summary', requireHoD, async (req, res) => {
   }
 })
 
+// GET /staff-activity-report - Per-staff breakdown over a date range
+router.get('/staff-activity-report', requireHoD, async (req, res) => {
+  try {
+    const schoolId = req.schoolId
+    const today = new Date()
+    let start, end
+
+    const { period = 'week', start: startParam, end: endParam } = req.query
+    if (period === 'custom' && startParam && endParam) {
+      start = startParam
+      end = endParam
+    } else if (period === 'month') {
+      const s = new Date(today); s.setDate(1)
+      const e = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+      start = s.toISOString().slice(0, 10)
+      end = e.toISOString().slice(0, 10)
+    } else if (period === 'term') {
+      const s = new Date(today); s.setDate(today.getDate() - 90)
+      start = s.toISOString().slice(0, 10)
+      end = today.toISOString().slice(0, 10)
+    } else {
+      const s = new Date(today); s.setDate(today.getDate() - today.getDay() + 1)
+      const e = new Date(s); e.setDate(e.getDate() + 6)
+      start = s.toISOString().slice(0, 10)
+      end = e.toISOString().slice(0, 10)
+    }
+
+    const result = await pool.query(
+      `SELECT
+        u.id, u.name, u.email,
+        COALESCE(sm.school_role, sm.role) AS role,
+        (SELECT COUNT(*) FROM observations o
+           WHERE o.observer_id = u.id
+             AND o.created_at >= $2::date AND o.created_at < ($3::date + 1))::int AS observations_logged,
+        (SELECT COUNT(*) FROM pupil_reports pr
+           WHERE pr.generated_by = u.id
+             AND pr.updated_at >= $2::date AND pr.updated_at < ($3::date + 1))::int AS reports_updated,
+        (SELECT COUNT(*) FROM teaching_groups tg
+           WHERE tg.teacher_id = u.id AND tg.school_id = $1)::int AS classes_taught,
+        (SELECT COUNT(DISTINCT ts.sport) FROM teacher_sports ts
+           WHERE ts.teacher_id = u.id)::int AS sports_assigned,
+        (SELECT COALESCE(json_agg(DISTINCT ts.sport), '[]'::json) FROM teacher_sports ts
+           WHERE ts.teacher_id = u.id) AS sports
+       FROM school_members sm
+       JOIN users u ON u.id = sm.user_id
+       WHERE sm.school_id = $1
+         AND COALESCE(sm.school_role, sm.role) IN ('owner', 'school_admin', 'admin', 'head_of_pe', 'head_of_sport', 'teacher', 'coach')
+       ORDER BY u.name`,
+      [schoolId, start, end]
+    )
+
+    const rows = result.rows
+    const totals = rows.reduce((t, r) => ({
+      observations_logged: t.observations_logged + r.observations_logged,
+      reports_updated: t.reports_updated + r.reports_updated,
+      active_staff: t.active_staff + (r.observations_logged > 0 || r.reports_updated > 0 ? 1 : 0),
+    }), { observations_logged: 0, reports_updated: 0, active_staff: 0 })
+
+    res.json({
+      period,
+      start,
+      end,
+      total_staff: rows.length,
+      totals,
+      staff: rows,
+    })
+  } catch (error) {
+    console.error('Staff activity report error:', error)
+    res.status(500).json({ error: 'Failed to load staff activity report' })
+  }
+})
+
 export default router

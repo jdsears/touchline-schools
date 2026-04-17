@@ -104,6 +104,7 @@ const TeacherClassDetail = lazy(() => import('./pages/teacher/TeacherClassDetail
 // Head of Department pages
 const HoDOverview = lazy(() => import('./pages/teacher/HoDOverview'))
 const HoDTeachers = lazy(() => import('./pages/teacher/HoDTeachers'))
+const HoDStaffActivity = lazy(() => import('./pages/teacher/HoDStaffActivity'))
 const HoDTeams = lazy(() => import('./pages/teacher/HoDTeams'))
 const HoDClasses = lazy(() => import('./pages/teacher/HoDClasses'))
 const HoDPupils = lazy(() => import('./pages/teacher/HoDPupils'))
@@ -328,6 +329,7 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="hod" element={<HoDOverview />} />
           <Route path="hod/teachers" element={<HoDTeachers />} />
+          <Route path="hod/staff-activity" element={<HoDStaffActivity />} />
           <Route path="hod/teams" element={<HoDTeams />} />
           <Route path="hod/classes" element={<HoDClasses />} />
           <Route path="hod/pupils" element={<HoDPupils />} />

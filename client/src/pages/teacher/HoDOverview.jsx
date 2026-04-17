@@ -105,7 +105,7 @@ export default function HoDOverview() {
         <Link to="/teacher/hod/reporting" className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white text-sm font-medium rounded-lg transition-colors">
           <Plus className="w-4 h-4" />New reporting window
         </Link>
-        <Link to="/teacher/hod/teachers" className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-200 text-sm rounded-lg border border-navy-700 transition-colors">
+        <Link to="/teacher/hod/staff-activity" className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-200 text-sm rounded-lg border border-navy-700 transition-colors">
           <UserCog className="w-4 h-4" />Staff activity report
         </Link>
         <button onClick={() => window.print()} className="flex items-center gap-2 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-200 text-sm rounded-lg border border-navy-700 transition-colors">
