@@ -36,6 +36,8 @@ const Register = lazy(() => import('./pages/Register'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Chat = lazy(() => import('./pages/Chat'))
 const Tactics = lazy(() => import('./pages/Tactics'))
+const TacticsLoader = lazy(() => import('./pages/teacher/TacticsLoader').then(m => ({ default: m.default })))
+const TacticsRedirect = lazy(() => import('./pages/teacher/TacticsLoader').then(m => ({ default: m.TacticsRedirect })))
 const Training = lazy(() => import('./pages/Training'))
 const Pupils = lazy(() => import('./pages/Pupils'))
 const PupilDetail = lazy(() => import('./pages/PupilDetail'))
@@ -311,10 +313,11 @@ export default function App() {
           <Route path="curriculum" element={<TeacherCurriculum />} />
           <Route path="teams" element={<TeacherTeams />} />
           <Route path="teams/:teamId" element={<TeacherTeamDetail />} />
+          <Route path="teams/:teamId/tactics" element={<TacticsLoader />} />
           <Route path="fixtures" element={<TeacherFixtures />} />
           <Route path="sessions" element={<TeacherSessions />} />
           <Route path="development" element={<TeacherDevelopment />} />
-          <Route path="tactics" element={<Tactics />} />
+          <Route path="tactics" element={<TacticsRedirect />} />
           <Route path="video" element={<VideoLibrary />} />
           <Route path="film-room" element={<FilmRoom />} />
           <Route path="assistant" element={<Chat />} />

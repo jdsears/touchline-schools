@@ -397,8 +397,12 @@ function validatePositions(savedPositions, formationName, teamFormat = 11, sport
   })
 }
 
-export default function Tactics() {
-  const { team, updateTeam, pupils } = useTeam()
+export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverride } = {}) {
+  const ctx = useTeam()
+  // Allow caller to inject team data directly (team-aware routing) or fall back to TeamContext
+  const team = teamOverride ?? ctx.team
+  const pupils = pupilsOverride ?? ctx.pupils
+  const updateTeam = updateTeamOverride ?? ctx.updateTeam
 
   // Derive sport config from team's sport (defaults to football)
   const sportConfig = getSportConfig(team?.sport || 'football')
