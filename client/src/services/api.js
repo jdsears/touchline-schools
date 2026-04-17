@@ -742,6 +742,9 @@ export const hodService = {
   getSchoolMembers: (schoolId) => api.get(`/schools/${schoolId}/members`),
   getTestPersonas: () => api.get('/hod/test-personas'),
   impersonateTestPersona: (pupilId) => api.post(`/hod/test-personas/${pupilId}/impersonate`),
+  getSchoolOverviewToday: () => api.get('/hod/school-overview/today'),
+  getSchoolOverviewAttention: () => api.get('/hod/school-overview/attention'),
+  getSchoolOverviewWeekly: () => api.get('/hod/school-overview/weekly-summary'),
 }
 
 // Voice Observations service

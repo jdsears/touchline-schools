@@ -419,4 +419,170 @@ router.get('/test-personas', requireHoD, async (req, res) => {
   }
 })
 
+// GET /school-overview/today - Today's lessons, training sessions, and fixtures across the department
+router.get('/school-overview/today', requireHoD, async (req, res) => {
+  try {
+    const schoolId = req.schoolId
+    const today = new Date().toISOString().slice(0, 10)
+
+    const [fixtures, training, lessons] = await Promise.all([
+      pool.query(
+        `SELECT m.id, m.match_date, m.match_time, m.opponent, m.location, m.home_away,
+                t.name AS team_name, t.sport, t.age_group,
+                u.name AS coach_name,
+                (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count
+         FROM matches m
+         JOIN teams t ON t.id = m.team_id
+         LEFT JOIN school_members sm ON sm.school_id = t.school_id AND sm.role IN ('owner','admin','coach')
+         LEFT JOIN users u ON u.id = sm.user_id
+         WHERE t.school_id = $1 AND m.match_date = $2
+         ORDER BY m.match_time NULLS LAST`,
+        [schoolId, today]
+      ),
+      pool.query(
+        `SELECT ts.id, ts.date, ts.time, ts.location, ts.session_type, ts.focus_areas,
+                t.name AS team_name, t.sport,
+                u.name AS coach_name,
+                (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count
+         FROM training_sessions ts
+         JOIN teams t ON t.id = ts.team_id
+         LEFT JOIN school_members sm ON sm.school_id = t.school_id AND sm.role IN ('owner','admin','coach')
+         LEFT JOIN users u ON u.id = sm.user_id
+         WHERE t.school_id = $1 AND ts.date = $2
+         ORDER BY ts.time NULLS LAST`,
+        [schoolId, today]
+      ),
+      pool.query(
+        `SELECT su.id, su.sport, su.unit_name,
+                tg.name AS class_name, tg.year_group,
+                u.name AS teacher_name,
+                (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.teaching_group_id = tg.id) AS pupil_count
+         FROM sport_units su
+         JOIN teaching_groups tg ON tg.id = su.teaching_group_id
+         JOIN users u ON u.id = tg.teacher_id
+         JOIN school_members sm ON sm.user_id = tg.teacher_id AND sm.school_id = $1
+         WHERE su.start_date <= $2 AND su.end_date >= $2`,
+        [schoolId, today]
+      ),
+    ])
+
+    res.json({
+      date: today,
+      fixtures: fixtures.rows,
+      training: training.rows,
+      lessons: lessons.rows,
+    })
+  } catch (error) {
+    console.error('School overview today error:', error)
+    res.status(500).json({ error: 'Failed to load today data' })
+  }
+})
+
+// GET /school-overview/attention - Items needing HoD attention
+router.get('/school-overview/attention', requireHoD, async (req, res) => {
+  try {
+    const schoolId = req.schoolId
+
+    const [reportingWindows, recentObservations, safeguardingOpen] = await Promise.all([
+      pool.query(
+        `SELECT rw.id, rw.name, rw.status, rw.closes_at,
+                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id AND pr.status = 'submitted') AS submitted,
+                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id) AS total
+         FROM reporting_windows rw
+         WHERE rw.school_id = $1 AND rw.status IN ('open', 'draft')
+         ORDER BY rw.closes_at ASC`,
+        [schoolId]
+      ),
+      pool.query(
+        `SELECT o.id, o.type, o.content, o.created_at,
+                p.name AS pupil_name, p.id AS pupil_id, p.year_group,
+                u.name AS observer_name
+         FROM observations o
+         JOIN pupils p ON p.id = o.player_id
+         JOIN users u ON u.id = o.observer_id
+         JOIN teams t ON t.id = p.team_id
+         WHERE t.school_id = $1 AND o.type IN ('concern', 'welfare', 'safeguarding', 'behaviour')
+           AND o.created_at > NOW() - INTERVAL '14 days'
+         ORDER BY o.created_at DESC
+         LIMIT 10`,
+        [schoolId]
+      ),
+      pool.query(
+        `SELECT si.id, si.incident_type, si.severity, si.status, si.created_at,
+                si.description
+         FROM safeguarding_incidents si
+         WHERE si.school_id = $1 AND si.status NOT IN ('closed', 'resolved')
+         ORDER BY si.created_at DESC
+         LIMIT 5`,
+        [schoolId]
+      ),
+    ])
+
+    res.json({
+      reporting_windows: reportingWindows.rows,
+      flagged_observations: recentObservations.rows,
+      open_safeguarding: safeguardingOpen.rows,
+    })
+  } catch (error) {
+    console.error('School overview attention error:', error)
+    res.status(500).json({ error: 'Failed to load attention data' })
+  }
+})
+
+// GET /school-overview/weekly-summary - Department activity this week
+router.get('/school-overview/weekly-summary', requireHoD, async (req, res) => {
+  try {
+    const schoolId = req.schoolId
+    const weekStart = new Date()
+    weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1) // Monday
+    const weekEnd = new Date(weekStart)
+    weekEnd.setDate(weekEnd.getDate() + 6)
+    const ws = weekStart.toISOString().slice(0, 10)
+    const we = weekEnd.toISOString().slice(0, 10)
+
+    const [fixtures, staffActivity, participation] = await Promise.all([
+      pool.query(
+        `SELECT m.id, m.match_date, m.match_time, m.opponent, m.location,
+                m.home_away, m.score_for, m.score_against,
+                t.name AS team_name, t.sport, t.age_group
+         FROM matches m
+         JOIN teams t ON t.id = m.team_id
+         WHERE t.school_id = $1 AND m.match_date BETWEEN $2 AND $3
+         ORDER BY m.match_date, m.match_time NULLS LAST`,
+        [schoolId, ws, we]
+      ),
+      pool.query(
+        `SELECT u.id, u.name,
+                (SELECT COUNT(*) FROM observations o WHERE o.observer_id = u.id AND o.created_at >= $2::date AND o.created_at < ($3::date + 1)) AS observations_logged,
+                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.generated_by = u.id AND pr.updated_at >= $2::date AND pr.updated_at < ($3::date + 1)) AS reports_updated
+         FROM school_members sm
+         JOIN users u ON u.id = sm.user_id
+         WHERE sm.school_id = $1 AND sm.role IN ('owner', 'admin', 'coach', 'teacher')
+         ORDER BY u.name`,
+        [schoolId, ws, we]
+      ),
+      pool.query(
+        `SELECT COUNT(DISTINCT t.sport) AS sports_active,
+                COUNT(DISTINCT p.id) AS unique_pupils
+         FROM matches m
+         JOIN teams t ON t.id = m.team_id
+         JOIN pupils p ON p.team_id = t.id AND p.is_active = true
+         WHERE t.school_id = $1 AND m.match_date BETWEEN $2 AND $3`,
+        [schoolId, ws, we]
+      ),
+    ])
+
+    res.json({
+      week_start: ws,
+      week_end: we,
+      fixtures: fixtures.rows,
+      staff_activity: staffActivity.rows,
+      participation: participation.rows[0] || { sports_active: 0, unique_pupils: 0 },
+    })
+  } catch (error) {
+    console.error('School overview weekly error:', error)
+    res.status(500).json({ error: 'Failed to load weekly summary' })
+  }
+})
+
 export default router
