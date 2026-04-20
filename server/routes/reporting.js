@@ -7,8 +7,13 @@ const router = express.Router()
 router.use(authenticateToken)
 
 // Helper to get the user's school_id — checks school_members first, then
-// falls back to teaching_groups (covers teachers not yet fully onboarded)
-async function getUserSchoolId(userId) {
+// falls back to teaching_groups (covers teachers not yet fully onboarded).
+// Site admins (is_admin = true) resolve to the first school so demo/admin
+// views behave the same way as the HoD School Overview dashboard.
+async function getUserSchoolId(user) {
+  const userId = typeof user === 'object' ? user.id : user
+  const isAdmin = typeof user === 'object' ? user.is_admin : false
+
   const direct = await pool.query(
     `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at DESC NULLS LAST LIMIT 1`,
     [userId]
@@ -19,7 +24,14 @@ async function getUserSchoolId(userId) {
     `SELECT school_id FROM teaching_groups WHERE teacher_id = $1 LIMIT 1`,
     [userId]
   )
-  return via.rows[0]?.school_id || null
+  if (via.rows[0]?.school_id) return via.rows[0].school_id
+
+  if (isAdmin) {
+    const fallback = await pool.query('SELECT id FROM schools ORDER BY created_at ASC LIMIT 1')
+    return fallback.rows[0]?.id || null
+  }
+
+  return null
 }
 
 // ==========================================
@@ -29,7 +41,7 @@ async function getUserSchoolId(userId) {
 // GET /windows - List reporting windows for the school
 router.get('/windows', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     const result = await pool.query(
@@ -53,7 +65,7 @@ router.get('/windows', async (req, res) => {
 // POST /windows - Create a reporting window
 router.post('/windows', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     const { name, academic_year, term, opens_at, closes_at, year_groups } = req.body
@@ -156,7 +168,7 @@ router.get('/windows/:windowId/reports', async (req, res) => {
 // GET /my-reports - Get reports the current teacher needs to write
 router.get('/my-reports', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     // Find open reporting windows
