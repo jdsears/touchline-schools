@@ -151,5 +151,31 @@ export async function seedFixturesExtra(schoolId) {
     await addTraining(y9ck, futureDate(1), 'Pre-season nets: fielding drills', 'Ashworth Park Academy Sports Hall')
   }
 
+  // -- Current-week activity --
+  // The dashboard's "This week in the department" panel is scoped Mon-Sun
+  // around today. Without matches inside that window the demo looks empty
+  // regardless of what weekday the prospect views it. Seed one match per
+  // weekday across a range of teams so the dashboard always has something.
+  const weekStart = new Date()
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1) // Monday
+  const dayOffset = (weekday) => {
+    const target = new Date(weekStart)
+    target.setDate(target.getDate() + weekday)
+    return target.toISOString().split('T')[0]
+  }
+
+  const thisWeek = [
+    { name: 'Year 7 Boys Football', opponent: 'Hellesdon High', weekday: 1, homeAway: 'home', time: '15:30', location: null },
+    { name: 'Year 9 Girls Netball', opponent: 'City Academy Norwich', weekday: 2, homeAway: 'away', time: '15:00', location: 'City Academy Norwich' },
+    { name: 'Year 9 Girls Hockey', opponent: 'Aylsham High', weekday: 3, homeAway: 'home', time: '15:30', location: null },
+    { name: 'Year 11 Boys Football', opponent: 'The Broads School', weekday: 4, homeAway: 'away', time: '15:00', location: 'The Broads School' },
+  ]
+
+  for (const f of thisWeek) {
+    const teamId = await findTeam(schoolId, f.name)
+    if (!teamId) continue
+    await addMatch(teamId, f.opponent, dayOffset(f.weekday), f.homeAway, null, null, f.location, f.time)
+  }
+
   console.log('[demo-seed] Extra fixtures and training sessions seeded')
 }
