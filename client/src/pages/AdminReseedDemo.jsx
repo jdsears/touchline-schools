@@ -13,7 +13,7 @@ export default function AdminReseedDemo() {
     setError(null)
     setLog(['Starting... (this can take 30-60 seconds; the browser will appear to hang)'])
     try {
-      const res = await api.post('/admin/reseed-demo', null, {
+      const res = await api.post('/admin/reseed-demo', {}, {
         params: wipeOnly ? { wipeOnly: 1 } : {},
         timeout: 5 * 60 * 1000,
       })

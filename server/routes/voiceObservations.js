@@ -83,6 +83,7 @@ async function requireVoiceEnabled(req, res, next) {
 
 // POST /upload - Upload audio and start processing pipeline
 router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.single('audio'), async (req, res) => {
+  let stage = 'init'
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Audio file is required' })
@@ -98,12 +99,14 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
       return res.status(400).json({ error: `context_type must be one of: ${validContextTypes.join(', ')}` })
     }
 
+    stage = 'resolve_school'
     const schoolId = await getUserSchoolId(req.user.id)
     if (!schoolId) {
       return res.status(403).json({ error: 'No school access' })
     }
 
     // Get school retention settings
+    stage = 'read_retention'
     const retentionResult = await pool.query(
       'SELECT audio_retention_days FROM schools WHERE id = $1',
       [schoolId]
@@ -114,13 +117,14 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     const storageKey = `audio_sources/${schoolId}/${req.user.id}/${audioSourceId}${path.extname(req.file.originalname) || '.webm'}`
 
     // Upload to object storage
+    stage = 'upload_to_storage'
     let storageUrl
     try {
       storageUrl = await uploadFile(req.file.path, storageKey, {
         contentType: req.file.mimetype,
       })
     } catch (err) {
-      console.error('Audio upload to storage failed:', err)
+      console.error('[VoiceObservations] Storage upload failed:', err)
       // Fall back to local file path if storage fails
       storageUrl = req.file.path
     }
@@ -131,20 +135,27 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     }
 
     // Create audio_sources record
+    stage = 'insert_audio_source'
     await pool.query(
       `INSERT INTO audio_sources (id, teacher_id, school_id, context_type, context_id, storage_url, retention_expires_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW() + INTERVAL '1 day' * $7)`,
       [audioSourceId, req.user.id, schoolId, context_type, context_id || null, storageUrl, retentionDays]
     )
 
-    // Audit log
-    await pool.query(
-      `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details)
-       VALUES ($1, $2, 'voice_recording_completed', 'audio_source', $3, $4)`,
-      [schoolId, req.user.id, audioSourceId, JSON.stringify({ context_type, context_id, file_size: req.file.size })]
-    )
+    // Audit log (best-effort — don't 500 the upload if audit insert fails)
+    stage = 'audit_log'
+    try {
+      await pool.query(
+        `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details)
+         VALUES ($1, $2, 'voice_recording_completed', 'audio_source', $3, $4)`,
+        [schoolId, req.user.id, audioSourceId, JSON.stringify({ context_type, context_id, file_size: req.file.size })]
+      )
+    } catch (err) {
+      console.error('[VoiceObservations] Audit log insert failed (non-fatal):', err.message)
+    }
 
     // Kick off async processing (non-blocking)
+    stage = 'enqueue_pipeline'
     processVoiceObservation(audioSourceId, req.user.id, schoolId)
       .catch(err => console.error(`[VoiceObservations] Pipeline error for ${audioSourceId}:`, err))
 
@@ -156,10 +167,13 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
   } catch (error) {
     // Clean up temp file on error
     if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path)
+      try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
     }
-    console.error('Voice upload error:', error)
-    res.status(500).json({ error: 'Failed to process voice observation' })
+    console.error(`[VoiceObservations] Upload failed at stage "${stage}":`, error)
+    res.status(500).json({
+      error: `Failed to process voice observation (${stage}): ${error.message || 'unknown error'}`,
+      stage,
+    })
   }
 })
 
