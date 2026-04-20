@@ -197,15 +197,21 @@ export default function HoDOverview() {
             {(attention?.open_safeguarding || []).length > 0 && (
               <div>
                 <h3 className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-2">Open safeguarding</h3>
-                {attention.open_safeguarding.slice(0, 3).map(si => (
-                  <Link key={si.id} to="/teacher/safeguarding" className="flex items-center gap-3 p-2 rounded-lg hover:bg-navy-800/50 transition-colors">
-                    <Shield className="w-4 h-4 text-red-400" />
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm text-white truncate capitalize">{si.incident_type?.replace(/_/g, ' ')}</div>
-                      <div className="text-xs text-navy-500">{si.severity} · {formatDate(si.created_at)}</div>
-                    </div>
-                  </Link>
-                ))}
+                {attention.open_safeguarding.slice(0, 3).map(si => {
+                  const href = attention.school_slug
+                    ? `/school/${attention.school_slug}/safeguarding/incidents?highlight=${si.id}`
+                    : '/teacher/safeguarding'
+                  return (
+                    <Link key={si.id} to={href} className="flex items-center gap-3 p-2 rounded-lg hover:bg-navy-800/50 transition-colors">
+                      <Shield className="w-4 h-4 text-red-400" />
+                      <div className="flex-1 min-w-0">
+                        <div className="text-sm text-white truncate capitalize">{si.incident_type?.replace(/_/g, ' ')}</div>
+                        <div className="text-xs text-navy-500">{si.severity} · {formatDate(si.created_at)}</div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-navy-600" />
+                    </Link>
+                  )
+                })}
               </div>
             )}
 

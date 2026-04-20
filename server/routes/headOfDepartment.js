@@ -53,24 +53,25 @@ router.get('/check', async (req, res) => {
       // Site admin: return the first school so HoD-only pages (e.g. Voice Settings)
       // can still load rather than sitting on their "no school" fallback.
       const schoolResult = await pool.query(
-        `SELECT s.id, s.name FROM school_members sm
+        `SELECT s.id, s.name, s.slug FROM school_members sm
          JOIN schools s ON sm.school_id = s.id
          WHERE sm.user_id = $1
          ORDER BY sm.joined_at ASC NULLS LAST
          LIMIT 1`,
         [req.user.id]
       )
-      const fallback = schoolResult.rows[0] || (await pool.query('SELECT id, name FROM schools ORDER BY created_at ASC LIMIT 1')).rows[0]
+      const fallback = schoolResult.rows[0] || (await pool.query('SELECT id, name, slug FROM schools ORDER BY created_at ASC LIMIT 1')).rows[0]
       return res.json({
         isHoD: true,
         role: 'school_admin',
         school_id: fallback?.id || null,
         school_name: fallback?.name || null,
+        school_slug: fallback?.slug || null,
       })
     }
 
     const result = await pool.query(
-      `SELECT sm.school_id, sm.role, sm.school_role, s.name AS school_name
+      `SELECT sm.school_id, sm.role, sm.school_role, s.name AS school_name, s.slug AS school_slug
        FROM school_members sm
        JOIN schools s ON sm.school_id = s.id
        WHERE sm.user_id = $1
@@ -89,6 +90,7 @@ router.get('/check', async (req, res) => {
       role: effectiveRole,
       school_id: result.rows[0].school_id,
       school_name: result.rows[0].school_name,
+      school_slug: result.rows[0].school_slug,
     })
   } catch (error) {
     console.error('HoD check error:', error)
@@ -483,6 +485,9 @@ router.get('/school-overview/attention', requireHoD, async (req, res) => {
   try {
     const schoolId = req.schoolId
 
+    const schoolRes = await pool.query('SELECT slug FROM schools WHERE id = $1', [schoolId])
+    const schoolSlug = schoolRes.rows[0]?.slug || null
+
     const [reportingWindows, recentObservations, safeguardingOpen] = await Promise.all([
       pool.query(
         `SELECT rw.id, rw.name, rw.status, rw.closes_at,
@@ -519,6 +524,7 @@ router.get('/school-overview/attention', requireHoD, async (req, res) => {
     ])
 
     res.json({
+      school_slug: schoolSlug,
       reporting_windows: reportingWindows.rows,
       flagged_observations: recentObservations.rows,
       open_safeguarding: safeguardingOpen.rows,
