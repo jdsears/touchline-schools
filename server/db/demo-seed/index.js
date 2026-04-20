@@ -91,8 +91,34 @@ export async function wipeDemoTenant() {
   // Delete the school (cascades to school_members, teams, teaching_groups, etc.)
   await pool.query(`DELETE FROM schools WHERE id = $1`, [schoolId])
 
-  // Delete demo users (after school cascade)
+  // Delete demo users (after school cascade).
+  // observations.observer_id has no ON DELETE action on older deployments,
+  // so observations pinned to protected pupils block the user delete. Null
+  // them out explicitly before deleting — keeps the observation row, loses
+  // only the "who observed" attribution for the demo coach.
   if (demoUserIds.length > 0) {
+    await pool.query(
+      `UPDATE observations SET observer_id = NULL WHERE observer_id = ANY($1::uuid[])`,
+      [demoUserIds]
+    ).catch(err => console.warn('[demo-seed] Could not null observations.observer_id:', err.message))
+
+    // Other tables that may reference users(id) without ON DELETE SET NULL.
+    // Add more as we hit them — each is guarded so missing tables/columns
+    // don't abort the wipe.
+    const nullReferences = [
+      { table: 'pupil_medical_notes', col: 'last_reviewed_by_user_id' },
+      { table: 'pupil_safeguarding_notes', col: 'added_by_user_id' },
+      { table: 'pupil_safeguarding_notes', col: 'resolved_by_user_id' },
+      { table: 'pupil_idp_goals', col: 'created_by_user_id' },
+      { table: 'pupil_achievements', col: 'awarded_by' },
+    ]
+    for (const { table, col } of nullReferences) {
+      await pool.query(
+        `UPDATE ${table} SET ${col} = NULL WHERE ${col} = ANY($1::uuid[])`,
+        [demoUserIds]
+      ).catch(() => {})
+    }
+
     await pool.query(`DELETE FROM users WHERE id = ANY($1::uuid[])`, [demoUserIds])
   }
 
