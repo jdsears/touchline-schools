@@ -498,7 +498,7 @@ router.get('/school-overview/attention', requireHoD, async (req, res) => {
                 p.name AS pupil_name, p.id AS pupil_id, p.year_group,
                 u.name AS observer_name
          FROM observations o
-         JOIN pupils p ON p.id = o.player_id
+         JOIN pupils p ON p.id = o.pupil_id
          JOIN users u ON u.id = o.observer_id
          JOIN teams t ON t.id = p.team_id
          WHERE t.school_id = $1 AND o.type IN ('concern', 'welfare', 'safeguarding', 'behaviour')

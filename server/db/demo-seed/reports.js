@@ -129,7 +129,112 @@ async function seedAutumnReports(schoolId) {
   return count
 }
 
+async function seedSpringWindow(schoolId) {
+  // Open reporting window — partially completed so the "Attention needed"
+  // panel shows a progress bar and deadline.
+  const wRes = await pool.query(`
+    INSERT INTO reporting_windows (school_id, name, academic_year, term, year_groups, status, opens_at, closes_at, created_at)
+    VALUES ($1, 'Spring Report 2026', '2025-26', 'spring', $2, 'open', '2026-03-01', '2026-04-30', NOW())
+    RETURNING id
+  `, [schoolId, JSON.stringify([7, 9, 11])])
+  const windowId = wRes.rows[0].id
+
+  const groups = [
+    { name: '7A PE', ks: 'KS3' },
+    { name: '9B PE', ks: 'KS3' },
+    { name: '11 GCSE PE', ks: 'KS4' },
+  ]
+
+  let submitted = 0
+  let total = 0
+  for (const g of groups) {
+    const group = await findGroup(schoolId, g.name)
+    if (!group) continue
+    const unit = await findUnit(group.id, 'spring')
+    const pupils = await groupPupils(group.id)
+
+    for (let i = 0; i < pupils.length; i++) {
+      const p = pupils[i]
+      const grade = AUTUMN_GRADES[i % AUTUMN_GRADES.length]
+      const effort = EFFORT_GRADES[i % EFFORT_GRADES.length]
+      const sport = unit?.sport || 'PE'
+      const comment = generateComment(p, sport, grade)
+
+      // First ~40% of each group submitted, rest in draft
+      const status = i < Math.ceil(pupils.length * 0.4) ? 'submitted' : 'draft'
+
+      await pool.query(`
+        INSERT INTO pupil_reports (
+          pupil_id, reporting_window_id, teaching_group_id, teacher_id,
+          unit_id, sport, attainment_grade, effort_grade,
+          teacher_comment, status, created_at, updated_at
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,NOW(),NOW())
+        ON CONFLICT DO NOTHING
+      `, [
+        p.id, windowId, group.id, group.teacher_id,
+        unit?.id || null, sport, grade, effort,
+        status === 'submitted' ? comment : null, status,
+      ])
+      total++
+      if (status === 'submitted') submitted++
+    }
+  }
+
+  return { submitted, total }
+}
+
+async function seedFlaggedObservations(schoolId) {
+  // Recent concern/welfare observations that show up in "Attention needed".
+  // Targets pupils who have a team_id (the attention query JOINs through teams).
+  const staffRes = await pool.query(
+    `SELECT u.id FROM users u JOIN school_members sm ON sm.user_id = u.id
+     WHERE sm.school_id = $1 AND u.is_demo_user = true
+     ORDER BY u.name LIMIT 2`,
+    [schoolId]
+  )
+  if (staffRes.rows.length === 0) return 0
+
+  const pupilRes = await pool.query(
+    `SELECT p.id FROM pupils p
+     JOIN school_members sm ON sm.user_id = p.user_id AND sm.school_id = $1
+     WHERE p.team_id IS NOT NULL AND p.is_active = true
+     ORDER BY p.year_group DESC LIMIT 3`,
+    [schoolId]
+  )
+  if (pupilRes.rows.length === 0) return 0
+
+  const flags = [
+    {
+      pupilId: pupilRes.rows[0]?.id,
+      observerId: staffRes.rows[0]?.id,
+      type: 'welfare',
+      content: 'Appeared quiet and disengaged during today\'s session. Did not participate in the warm-up and asked to sit out. This is unusual — normally one of the most enthusiastic in the group. Worth monitoring over the next few sessions.',
+      daysAgo: 3,
+    },
+    {
+      pupilId: pupilRes.rows[1]?.id || pupilRes.rows[0]?.id,
+      observerId: staffRes.rows[1]?.id || staffRes.rows[0]?.id,
+      type: 'concern',
+      content: 'Noticed bruising on right forearm during hockey lesson. Pupil said it was from a fall at home over the weekend. Seemed comfortable discussing it but logging for awareness as per school policy.',
+      daysAgo: 1,
+    },
+  ]
+
+  let count = 0
+  for (const f of flags) {
+    if (!f.pupilId || !f.observerId) continue
+    await pool.query(`
+      INSERT INTO observations (pupil_id, observer_id, type, content, context_type, source, review_state, created_at)
+      VALUES ($1, $2, $3, $4, 'pe_lesson', 'typed', 'confirmed', NOW() - INTERVAL '${f.daysAgo} days')
+    `, [f.pupilId, f.observerId, f.type, f.content])
+    count++
+  }
+  return count
+}
+
 export async function seedReports(schoolId) {
   const autumnCount = await seedAutumnReports(schoolId)
-  console.log(`[demo-seed] Reports seeded: ${autumnCount} autumn reports published`)
+  const spring = await seedSpringWindow(schoolId)
+  const flagCount = await seedFlaggedObservations(schoolId)
+  console.log(`[demo-seed] Reports seeded: ${autumnCount} autumn published, Spring open (${spring.submitted}/${spring.total}), ${flagCount} flagged observations`)
 }
