@@ -4,7 +4,7 @@ import { clubService } from '../../services/api'
 import {
   Users, UserCheck, Building2, ClipboardList, AlertCircle, ChevronRight,
   Copy, Check, CreditCard, Megaphone, ShieldCheck, CalendarDays,
-  BarChart3, Settings, TrendingUp, FileText,
+  BarChart3, Settings, TrendingUp, FileText, GraduationCap,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -73,9 +73,9 @@ export default function ClubDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           { label: 'Teams', value: stats.total_teams, icon: Building2, href: `/school/${slug}/teams`, color: 'text-blue-400' },
-          { label: 'Players', value: stats.total_players, icon: Users, href: `/school/${slug}/pupils`, color: 'text-pitch-400' },
-          { label: 'Guardians', value: stats.total_guardians, icon: UserCheck, href: `/school/${slug}/guardians`, color: 'text-amber-400' },
-          { label: 'Staff', value: stats.total_members, icon: Users, href: `/school/${slug}/members`, color: 'text-purple-400' },
+          { label: 'Pupils', value: stats.total_players, icon: Users, href: `/school/${slug}/pupils`, color: 'text-pitch-400' },
+          { label: 'Classes', value: stats.total_classes, icon: GraduationCap, href: `/school/${slug}/teams`, color: 'text-amber-400' },
+          { label: 'Staff', value: stats.total_members, icon: UserCheck, href: `/school/${slug}/members`, color: 'text-purple-400' },
           { label: 'Pending', value: stats.pending_registrations, icon: ClipboardList, href: `/school/${slug}/registrations`, color: stats.pending_registrations > 0 ? 'text-alert-400' : 'text-navy-400' },
         ].map((stat) => (
           <Link

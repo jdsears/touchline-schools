@@ -256,20 +256,39 @@ router.get('/:schoolId/dashboard', authenticateToken, loadSchool, requireSchoolR
   try {
     const { schoolId } = req.params
 
-    // Run stats queries in parallel
-    const [teamsResult, playersResult, guardiansResult, membersResult, pendingResult] = await Promise.all([
+    // Pupils are linked to the school via school_members (they are seeded with
+    // role='parent', school_role='read_only'); staff are the remaining members.
+    const [teamsResult, pupilsResult, staffResult, pendingResult, classesResult] = await Promise.all([
       pool.query('SELECT COUNT(*) FROM teams WHERE school_id = $1', [schoolId]),
-      pool.query('SELECT COUNT(*) FROM pupils p JOIN teams t ON p.team_id = t.id WHERE t.school_id = $1 AND p.is_active = true', [schoolId]),
-      pool.query('SELECT COUNT(*) FROM guardians WHERE school_id = $1', [schoolId]),
-      pool.query('SELECT COUNT(*) FROM school_members WHERE school_id = $1 AND status = $2', [schoolId, 'active']),
-      pool.query("SELECT COUNT(*) FROM pupils p JOIN teams t ON p.team_id = t.id WHERE t.school_id = $1 AND p.registration_status = 'pending'", [schoolId]),
+      pool.query(
+        `SELECT COUNT(DISTINCT p.id) FROM pupils p
+         JOIN school_members sm ON sm.user_id = p.user_id
+         WHERE sm.school_id = $1 AND p.is_active = true`,
+        [schoolId]
+      ),
+      pool.query(
+        `SELECT COUNT(*) FROM school_members
+         WHERE school_id = $1 AND status = 'active'
+           AND COALESCE(school_role, role) NOT IN ('read_only', 'parent')`,
+        [schoolId]
+      ),
+      pool.query(
+        `SELECT COUNT(*) FROM pupils p
+         JOIN school_members sm ON sm.user_id = p.user_id
+         WHERE sm.school_id = $1 AND p.registration_status = 'pending'`,
+        [schoolId]
+      ),
+      pool.query('SELECT COUNT(*) FROM teaching_groups WHERE school_id = $1', [schoolId]),
     ])
 
-    // Recent registrations
+    // Recent registrations (via school_members link, not team_id)
     const recentRegs = await pool.query(
-      `SELECT p.id, p.name, p.registration_status, p.created_at, t.name as team_name
-       FROM pupils p JOIN teams t ON p.team_id = t.id
-       WHERE t.school_id = $1
+      `SELECT p.id, p.name, p.registration_status, p.created_at,
+              COALESCE(t.name, 'Year ' || p.year_group) AS team_name
+       FROM pupils p
+       JOIN school_members sm ON sm.user_id = p.user_id
+       LEFT JOIN teams t ON t.id = p.team_id
+       WHERE sm.school_id = $1
        ORDER BY p.created_at DESC LIMIT 10`,
       [schoolId]
     )
@@ -289,9 +308,9 @@ router.get('/:schoolId/dashboard', authenticateToken, loadSchool, requireSchoolR
     res.json({
       stats: {
         total_teams: parseInt(teamsResult.rows[0].count),
-        total_players: parseInt(playersResult.rows[0].count),
-        total_guardians: parseInt(guardiansResult.rows[0].count),
-        total_members: parseInt(membersResult.rows[0].count),
+        total_players: parseInt(pupilsResult.rows[0].count),
+        total_classes: parseInt(classesResult.rows[0].count),
+        total_members: parseInt(staffResult.rows[0].count),
         pending_registrations: parseInt(pendingResult.rows[0].count),
       },
       recent_registrations: recentRegs.rows,
