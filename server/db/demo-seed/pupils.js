@@ -101,10 +101,17 @@ async function insertPupil(schoolId, { name, house, yearGroup }) {
   const passwordHash = await getDemoPasswordHash()
   const email = `${name.toLowerCase().replace(/\s+/g, '.').replace(/[^a-z.]/g, '')}.demo@ashworthpark.norfolk.sch.uk`
 
-  // Create a user account for pupil portal access
+  // Upsert user by email — orphaned users from a partial previous seed
+  // won't be caught by the wipe (it finds users via school_members) and
+  // would cause duplicate-key violations on a re-seed.
   const userResult = await pool.query(`
     INSERT INTO users (name, email, password_hash, role, is_demo_user, demo_expires_at, created_at)
     VALUES ($1, $2, $3, 'manager', true, NOW() + INTERVAL '7 days', NOW())
+    ON CONFLICT (email) DO UPDATE SET
+      name = EXCLUDED.name,
+      password_hash = EXCLUDED.password_hash,
+      is_demo_user = true,
+      demo_expires_at = EXCLUDED.demo_expires_at
     RETURNING id
   `, [name, email, passwordHash])
   const userId = userResult.rows[0].id
@@ -114,16 +121,28 @@ async function insertPupil(schoolId, { name, house, yearGroup }) {
   const firstName = nameParts[0]
   const lastName = nameParts.slice(1).join(' ')
 
-  // Create the pupil record
-  const pupilResult = await pool.query(`
-    INSERT INTO pupils (
-      name, first_name, last_name,
-      year_group, house, date_of_birth,
-      is_active, user_id, created_at
-    )
-    VALUES ($1, $2, $3, $4, $5, $6, true, $7, NOW())
-    RETURNING *
-  `, [name, firstName, lastName, yearGroup, house, dobForYear(yearGroup), userId])
+  // Check for existing pupil linked to this user (from a prior partial seed)
+  const existingPupil = await pool.query(
+    `SELECT * FROM pupils WHERE user_id = $1`, [userId]
+  )
+  let pupilResult
+  if (existingPupil.rows.length > 0) {
+    pupilResult = await pool.query(`
+      UPDATE pupils SET name = $1, first_name = $2, last_name = $3,
+        year_group = $4, house = $5, is_active = true
+      WHERE user_id = $6 RETURNING *
+    `, [name, firstName, lastName, yearGroup, house, userId])
+  } else {
+    pupilResult = await pool.query(`
+      INSERT INTO pupils (
+        name, first_name, last_name,
+        year_group, house, date_of_birth,
+        is_active, user_id, created_at
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, true, $7, NOW())
+      RETURNING *
+    `, [name, firstName, lastName, yearGroup, house, dobForYear(yearGroup), userId])
+  }
 
   const pupil = pupilResult.rows[0]
 

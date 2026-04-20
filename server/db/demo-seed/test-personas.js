@@ -159,7 +159,9 @@ async function insertTestPersona(schoolId, { name, yearGroup, house, gender }) {
     await pool.query(`DELETE FROM observations WHERE pupil_id = $1`, [pupil.id])
     await pool.query(`DELETE FROM pupil_assessments WHERE pupil_id = $1`, [pupil.id])
   } else {
-    // Create user account
+    // Upsert user account (a user row may exist from a partial prior seed
+    // even when the existing-persona check above found nothing — e.g. the
+    // user was created but the pupil INSERT failed last time).
     const userRes = await pool.query(`
       INSERT INTO users (name, email, password_hash, role,
                          is_demo_user, is_test_persona, protected_from_reset,
@@ -167,6 +169,13 @@ async function insertTestPersona(schoolId, { name, yearGroup, house, gender }) {
       VALUES ($1, $2, $3, 'manager',
               true, true, true,
               NOW() + INTERVAL '7 days', NOW())
+      ON CONFLICT (email) DO UPDATE SET
+        name = EXCLUDED.name,
+        password_hash = EXCLUDED.password_hash,
+        is_demo_user = true,
+        is_test_persona = true,
+        protected_from_reset = true,
+        demo_expires_at = EXCLUDED.demo_expires_at
       RETURNING id
     `, [name, email, hash])
     userId = userRes.rows[0].id
