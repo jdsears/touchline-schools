@@ -41,6 +41,13 @@ function ensureVoiceSchema() {
       await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_school ON audio_sources(school_id)`)
       await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_retention ON audio_sources(retention_expires_at)`)
 
+      // Processing error column — lets the pipeline surface failures to
+      // the client instead of hanging the UI on silent failures.
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE audio_sources ADD COLUMN IF NOT EXISTS processing_error TEXT;
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
       // Observations table voice fields (from Phase 11a)
       await pool.query(`DO $$ BEGIN
         ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'typed';
@@ -263,6 +270,7 @@ router.get('/status/:audioSourceId', async (req, res) => {
               transcript IS NOT NULL AS has_transcript,
               transcript_generated_at,
               extraction_completed_at,
+              processing_error,
               created_at
        FROM audio_sources
        WHERE id = $1 AND teacher_id = $2`,
@@ -275,7 +283,8 @@ router.get('/status/:audioSourceId', async (req, res) => {
 
     const source = result.rows[0]
     let status = 'processing'
-    if (source.extraction_completed_at) status = 'ready_for_review'
+    if (source.processing_error) status = 'error'
+    else if (source.extraction_completed_at) status = 'ready_for_review'
     else if (source.has_transcript) status = 'extracting'
 
     res.json({ ...source, status })

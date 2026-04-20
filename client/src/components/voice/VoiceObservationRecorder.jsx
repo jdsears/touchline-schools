@@ -134,6 +134,11 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
           navigate(`/teacher/voice-review/${sourceId}`)
           return
         }
+        if (res.data.status === 'error') {
+          toast.error(res.data.processing_error || 'Voice processing failed. Please try again.', { duration: 8000 })
+          if (onClose) onClose()
+          return
+        }
         if (attempts >= maxAttempts) {
           toast('Transcription is taking longer than expected. Check back shortly.', { icon: '\u23F3' })
           if (onClose) onClose()
