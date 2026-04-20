@@ -66,17 +66,27 @@ export async function wipeDemoTenant() {
 
   console.log(`[demo-seed] Wiping demo tenant ${schoolId} (${demoUserIds.length} wipeable users, protected users kept)...`)
 
-  // Cascading delete via school removes most records.
-  // Teams cascade from school_id; matches from team_id; etc.
-  await pool.query(`DELETE FROM demo_telemetry_events WHERE prospect_id IN (
-    SELECT id FROM demo_prospects WHERE created_by IN (SELECT id FROM users WHERE is_admin = true)
-    UNION
-    SELECT id FROM demo_prospects WHERE id IS NOT NULL
-  )`)
-  await pool.query(`DELETE FROM demo_prospect_credentials WHERE user_id = ANY($1::uuid[])`, [demoUserIds])
-  await pool.query(`DELETE FROM demo_prospects WHERE id IN (
-    SELECT prospect_id FROM demo_prospect_credentials WHERE user_id = ANY($1::uuid[])
-  )`, [demoUserIds])
+  // Clean up optional demo-prospect tables if they exist in this deployment.
+  // Older / non-prospect deployments may not have these tables at all.
+  const tableExists = async (name) => {
+    const r = await pool.query(`SELECT to_regclass($1) AS t`, [`public.${name}`])
+    return r.rows[0].t !== null
+  }
+  if (await tableExists('demo_telemetry_events')) {
+    await pool.query(`DELETE FROM demo_telemetry_events WHERE prospect_id IN (
+      SELECT id FROM demo_prospects WHERE created_by IN (SELECT id FROM users WHERE is_admin = true)
+      UNION
+      SELECT id FROM demo_prospects WHERE id IS NOT NULL
+    )`)
+  }
+  if (await tableExists('demo_prospect_credentials')) {
+    await pool.query(`DELETE FROM demo_prospect_credentials WHERE user_id = ANY($1::uuid[])`, [demoUserIds])
+  }
+  if (await tableExists('demo_prospects')) {
+    await pool.query(`DELETE FROM demo_prospects WHERE id IN (
+      SELECT prospect_id FROM demo_prospect_credentials WHERE user_id = ANY($1::uuid[])
+    )`, [demoUserIds]).catch(() => {}) // subquery depends on credentials table; swallow if partial
+  }
 
   // Delete the school (cascades to school_members, teams, teaching_groups, etc.)
   await pool.query(`DELETE FROM schools WHERE id = $1`, [schoolId])
