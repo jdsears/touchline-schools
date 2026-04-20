@@ -21,6 +21,9 @@ async function createUser(data) {
   // one-time temp passwords issued by the admin provisioning flow.
   const passwordHash = await bcrypt.hash(data.tempPassword || 'demo-no-login', 10)
 
+  // Upsert by email so protected users that survived the wipe don't cause
+  // duplicate-key violations. Keeps the existing row when present and
+  // refreshes name/password/demo-expiry so the reseed yields a clean state.
   const result = await pool.query(`
     INSERT INTO users (
       name, email, password_hash, role,
@@ -29,6 +32,12 @@ async function createUser(data) {
       created_at
     )
     VALUES ($1, $2, $3, 'manager', true, NOW() + INTERVAL '7 days', true, NOW())
+    ON CONFLICT (email) DO UPDATE SET
+      name = EXCLUDED.name,
+      password_hash = EXCLUDED.password_hash,
+      is_demo_user = true,
+      demo_expires_at = EXCLUDED.demo_expires_at,
+      has_completed_onboarding = true
     RETURNING *
   `, [data.name, data.email, passwordHash])
 
