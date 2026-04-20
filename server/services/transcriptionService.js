@@ -17,20 +17,20 @@ dotenv.config()
 
 /**
  * Transcribe an audio file using the configured provider.
- * @param {string} audioUrl - Signed URL to the audio file
+ * @param {string|Buffer} audioUrlOrBuffer - Signed URL OR raw audio bytes
  * @param {Object} options
  * @param {string[]} [options.customVocabulary] - Pupil names and nicknames for improved accuracy
  * @param {string} [options.languageCode] - Language hint (default: en_gb)
  * @returns {Promise<TranscriptionResult>}
  */
-export async function transcribe(audioUrl, options = {}) {
+export async function transcribe(audioUrlOrBuffer, options = {}) {
   const provider = process.env.TRANSCRIPTION_PROVIDER || 'assemblyai'
 
   switch (provider) {
     case 'assemblyai':
-      return transcribeWithAssemblyAI(audioUrl, options)
+      return transcribeWithAssemblyAI(audioUrlOrBuffer, options)
     case 'whisper':
-      return transcribeWithWhisper(audioUrl, options)
+      return transcribeWithWhisper(audioUrlOrBuffer, options)
     default:
       throw new Error(`Unknown transcription provider: ${provider}`)
   }
@@ -39,10 +39,22 @@ export async function transcribe(audioUrl, options = {}) {
 // ==========================================
 // AssemblyAI Provider
 // ==========================================
-async function transcribeWithAssemblyAI(audioUrl, options = {}) {
+async function transcribeWithAssemblyAI(audioUrlOrBuffer, options = {}) {
   const apiKey = process.env.ASSEMBLYAI_API_KEY
   if (!apiKey) {
     throw new Error('ASSEMBLYAI_API_KEY is required for AssemblyAI transcription')
+  }
+
+  // AssemblyAI requires an http(s) URL it can fetch. If the caller handed us
+  // a Buffer (or a local path we can read), upload the bytes to AssemblyAI's
+  // /v2/upload endpoint first to get a one-time fetchable URL.
+  let audioUrl
+  if (Buffer.isBuffer(audioUrlOrBuffer)) {
+    audioUrl = await uploadToAssemblyAI(audioUrlOrBuffer, apiKey)
+  } else if (typeof audioUrlOrBuffer === 'string' && /^https?:\/\//i.test(audioUrlOrBuffer)) {
+    audioUrl = audioUrlOrBuffer
+  } else {
+    throw new Error('AssemblyAI requires a Buffer or an http(s) URL for transcription')
   }
 
   const requestBody = {
@@ -113,21 +125,47 @@ async function transcribeWithAssemblyAI(audioUrl, options = {}) {
   throw new Error('AssemblyAI transcription timed out after 120 seconds')
 }
 
+async function uploadToAssemblyAI(buffer, apiKey) {
+  const res = await fetch('https://api.assemblyai.com/v2/upload', {
+    method: 'POST',
+    headers: {
+      authorization: apiKey,
+      'content-type': 'application/octet-stream',
+    },
+    body: buffer,
+  })
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`AssemblyAI upload failed: ${res.status} ${text}`)
+  }
+  const json = await res.json()
+  if (!json.upload_url) throw new Error('AssemblyAI upload returned no upload_url')
+  return json.upload_url
+}
+
 // ==========================================
 // OpenAI Whisper Provider
 // ==========================================
-async function transcribeWithWhisper(audioUrl, options = {}) {
+async function transcribeWithWhisper(audioUrlOrBuffer, options = {}) {
   const apiKey = process.env.OPENAI_API_KEY
   if (!apiKey) {
     throw new Error('OPENAI_API_KEY is required for Whisper transcription')
   }
 
-  // Download the audio file first (Whisper needs file upload, not URL)
-  const audioResponse = await fetch(audioUrl)
-  if (!audioResponse.ok) {
-    throw new Error(`Failed to download audio: ${audioResponse.status}`)
+  // Whisper takes a file upload (not a URL). Accept either a Buffer directly
+  // or an http(s) URL we need to download first.
+  let audioBlob
+  if (Buffer.isBuffer(audioUrlOrBuffer)) {
+    audioBlob = new Blob([audioUrlOrBuffer])
+  } else if (typeof audioUrlOrBuffer === 'string' && /^https?:\/\//i.test(audioUrlOrBuffer)) {
+    const audioResponse = await fetch(audioUrlOrBuffer)
+    if (!audioResponse.ok) {
+      throw new Error(`Failed to download audio: ${audioResponse.status}`)
+    }
+    audioBlob = await audioResponse.blob()
+  } else {
+    throw new Error('Whisper requires a Buffer or an http(s) URL for transcription')
   }
-  const audioBlob = await audioResponse.blob()
 
   const formData = new FormData()
   formData.append('file', audioBlob, 'audio.webm')

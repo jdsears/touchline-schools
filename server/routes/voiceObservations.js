@@ -184,7 +184,14 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     const audioSourceId = uuidv4()
     const storageKey = `audio_sources/${schoolId}/${req.user.id}/${audioSourceId}${path.extname(req.file.originalname) || '.webm'}`
 
-    // Upload to object storage
+    // Read the bytes BEFORE handing off to storage. We pass this buffer to the
+    // transcription pipeline so it never has to re-fetch the audio — works
+    // regardless of whether cloud storage is configured or the returned URL
+    // is publicly fetchable.
+    stage = 'read_audio_bytes'
+    const audioBuffer = fs.readFileSync(req.file.path)
+
+    // Upload to object storage (for retention / audit trail)
     stage = 'upload_to_storage'
     let storageUrl
     try {
@@ -199,7 +206,7 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
 
     // Clean up temp file if uploaded to cloud
     if (storageUrl !== req.file.path && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path)
+      try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
     }
 
     // Create audio_sources record
@@ -222,9 +229,12 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
       console.error('[VoiceObservations] Audit log insert failed (non-fatal):', err.message)
     }
 
-    // Kick off async processing (non-blocking)
+    // Kick off async processing (non-blocking). Pass the in-memory audio
+    // buffer so the pipeline doesn't have to re-fetch storage_url — some
+    // storage backends (local disk mode) return a URL that isn't publicly
+    // fetchable by external transcription providers.
     stage = 'enqueue_pipeline'
-    processVoiceObservation(audioSourceId, req.user.id, schoolId)
+    processVoiceObservation(audioSourceId, req.user.id, schoolId, audioBuffer)
       .catch(err => console.error(`[VoiceObservations] Pipeline error for ${audioSourceId}:`, err))
 
     res.status(201).json({

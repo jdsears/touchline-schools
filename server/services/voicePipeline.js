@@ -15,8 +15,11 @@ import { v4 as uuidv4 } from 'uuid'
  * @param {string} audioSourceId - The audio_sources record ID
  * @param {string} teacherId - The teacher's user ID
  * @param {string} schoolId - The school ID
+ * @param {Buffer} [audioBuffer] - Raw audio bytes to transcribe. Preferred over
+ *   re-fetching the storage URL because not all storage backends return a
+ *   publicly fetchable URL (e.g. local/disk mode).
  */
-export async function processVoiceObservation(audioSourceId, teacherId, schoolId) {
+export async function processVoiceObservation(audioSourceId, teacherId, schoolId, audioBuffer = null) {
   try {
     // 1. Get the audio source record
     const audioResult = await pool.query(
@@ -52,11 +55,23 @@ export async function processVoiceObservation(audioSourceId, teacherId, schoolId
     const pupils = pupilsResult.rows
     const customVocabulary = buildCustomVocabulary(pupils)
 
-    // 3. Transcribe
+    // 3. Transcribe. Prefer the in-memory buffer (works regardless of storage
+    // backend). Fall back to the storage URL only if no buffer was provided
+    // AND the URL looks publicly fetchable (http/https).
     console.log(`[VoicePipeline] Transcribing audio source ${audioSourceId}...`)
     let transcriptionResult
     try {
-      transcriptionResult = await transcribe(audioSource.storage_url, {
+      const audioInput = audioBuffer
+        ? audioBuffer
+        : (audioSource.storage_url && /^https?:\/\//i.test(audioSource.storage_url)
+            ? audioSource.storage_url
+            : null)
+      if (!audioInput) {
+        throw new Error(
+          `No transcribable audio: storage_url is not a public URL (${audioSource.storage_url}) and no buffer provided`
+        )
+      }
+      transcriptionResult = await transcribe(audioInput, {
         customVocabulary,
         languageCode: 'en_gb',
       })
