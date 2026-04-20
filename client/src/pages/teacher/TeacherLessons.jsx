@@ -39,6 +39,7 @@ export default function TeacherLessons() {
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState(null)
   const [generating, setGenerating] = useState(false)
+  const [editingId, setEditingId] = useState(null)
 
   // Form state
   const [form, setForm] = useState({
@@ -80,6 +81,7 @@ export default function TeacherLessons() {
   const availableUnits = selectedGroup?.units || []
 
   function openModal() {
+    setEditingId(null)
     setForm({
       teaching_group_id: groups[0]?.id || '',
       sport_unit_id: '',
@@ -97,6 +99,25 @@ export default function TeacherLessons() {
     setShowModal(true)
   }
 
+  function openEditModal(lesson) {
+    setEditingId(lesson.id)
+    setForm({
+      teaching_group_id: lesson.teaching_group_id || '',
+      sport_unit_id: lesson.sport_unit_id || '',
+      title: lesson.title || '',
+      lesson_date: lesson.lesson_date ? lesson.lesson_date.split('T')[0] : '',
+      duration: lesson.duration || 60,
+      learning_objectives: lesson.learning_objectives || '',
+      activities: lesson.activities || '',
+      equipment: lesson.equipment || '',
+      differentiation: lesson.differentiation || '',
+      homework: lesson.homework || '',
+      status: lesson.status || 'draft',
+    })
+    setGenerating(false)
+    setShowModal(true)
+  }
+
   async function handleSave(e) {
     e.preventDefault()
     if (!form.title.trim()) {
@@ -105,7 +126,7 @@ export default function TeacherLessons() {
     }
     setSaving(true)
     try {
-      await lessonService.create({
+      const payload = {
         teaching_group_id: form.teaching_group_id || null,
         sport_unit_id: form.sport_unit_id || null,
         title: form.title.trim(),
@@ -117,13 +138,20 @@ export default function TeacherLessons() {
         differentiation: form.differentiation || null,
         homework: form.homework || null,
         status: form.status,
-      })
-      toast.success('Lesson plan created')
+      }
+      if (editingId) {
+        await lessonService.update(editingId, payload)
+        toast.success('Lesson plan updated')
+      } else {
+        await lessonService.create(payload)
+        toast.success('Lesson plan created')
+      }
       setShowModal(false)
+      setEditingId(null)
       loadData()
     } catch (err) {
-      console.error('Failed to create lesson:', err)
-      toast.error(err.response?.data?.error || 'Failed to create lesson plan')
+      console.error('Failed to save lesson:', err)
+      toast.error(err.response?.data?.error || 'Failed to save lesson plan')
     } finally {
       setSaving(false)
     }
@@ -228,7 +256,7 @@ export default function TeacherLessons() {
               <h2 className="text-sm font-semibold text-navy-400 uppercase tracking-wider mb-3">Upcoming</h2>
               <div className="space-y-3">
                 {upcoming.map(lesson => (
-                  <LessonCard key={lesson.id} lesson={lesson} onDelete={handleDelete} deletingId={deletingId} />
+                  <LessonCard key={lesson.id} lesson={lesson} onDelete={handleDelete} onEdit={openEditModal} deletingId={deletingId} />
                 ))}
               </div>
             </div>
@@ -238,7 +266,7 @@ export default function TeacherLessons() {
               <h2 className="text-sm font-semibold text-navy-400 uppercase tracking-wider mb-3">Past</h2>
               <div className="space-y-3 opacity-70">
                 {past.slice(0, 20).map(lesson => (
-                  <LessonCard key={lesson.id} lesson={lesson} onDelete={handleDelete} deletingId={deletingId} />
+                  <LessonCard key={lesson.id} lesson={lesson} onDelete={handleDelete} onEdit={openEditModal} deletingId={deletingId} />
                 ))}
               </div>
             </div>
@@ -256,9 +284,9 @@ export default function TeacherLessons() {
                 <div className="w-9 h-9 rounded-lg bg-pitch-600/20 flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-pitch-400" />
                 </div>
-                <h2 className="text-lg font-semibold text-white">New Lesson Plan</h2>
+                <h2 className="text-lg font-semibold text-white">{editingId ? 'Edit Lesson Plan' : 'New Lesson Plan'}</h2>
               </div>
-              <button onClick={() => setShowModal(false)} className="text-navy-400 hover:text-white transition-colors">
+              <button onClick={() => { setShowModal(false); setEditingId(null) }} className="text-navy-400 hover:text-white transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -468,7 +496,7 @@ export default function TeacherLessons() {
               <div className="p-6 border-t border-navy-800 flex items-center justify-end gap-3 flex-shrink-0">
                 <button
                   type="button"
-                  onClick={() => setShowModal(false)}
+                  onClick={() => { setShowModal(false); setEditingId(null) }}
                   className="px-4 py-2.5 text-sm text-navy-400 hover:text-white transition-colors"
                 >
                   Cancel
@@ -479,7 +507,7 @@ export default function TeacherLessons() {
                   className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                  {saving ? 'Creating…' : 'Create Lesson'}
+                  {saving ? (editingId ? 'Saving…' : 'Creating…') : (editingId ? 'Save Changes' : 'Create Lesson')}
                 </button>
               </div>
             </form>
@@ -490,17 +518,21 @@ export default function TeacherLessons() {
   )
 }
 
-function LessonCard({ lesson, onDelete, deletingId }) {
+function LessonCard({ lesson, onDelete, onEdit, deletingId }) {
   const emoji = SPORT_ICONS[lesson.sport] || '📋'
   const statusStyle = STATUS_STYLES[lesson.status] || STATUS_STYLES.draft
 
   return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 p-5 flex items-center justify-between gap-4">
-      <div className="flex items-center gap-4 min-w-0">
+    <div className="bg-navy-900 rounded-xl border border-navy-800 hover:border-navy-700 transition-colors flex items-center justify-between gap-4 group">
+      <button
+        type="button"
+        onClick={() => onEdit(lesson)}
+        className="flex items-center gap-4 min-w-0 flex-1 text-left p-5 rounded-xl hover:bg-navy-800/30 transition-colors"
+      >
         <div className="w-10 h-10 rounded-lg bg-navy-800 flex items-center justify-center text-lg flex-shrink-0">
           {emoji}
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-medium text-white truncate">{lesson.title}</span>
             <span className={`px-1.5 py-0.5 rounded text-xs capitalize flex-shrink-0 ${statusStyle}`}>
@@ -532,12 +564,13 @@ function LessonCard({ lesson, onDelete, deletingId }) {
             )}
           </div>
         </div>
-      </div>
+        <ChevronRight className="w-4 h-4 text-navy-600 group-hover:text-navy-400 flex-shrink-0 transition-colors" />
+      </button>
 
       <button
-        onClick={() => onDelete(lesson)}
+        onClick={(e) => { e.stopPropagation(); onDelete(lesson) }}
         disabled={deletingId === lesson.id}
-        className="p-2 text-navy-500 hover:text-red-400 transition-colors flex-shrink-0"
+        className="p-2 mr-3 text-navy-500 hover:text-red-400 transition-colors flex-shrink-0"
         title="Delete lesson"
       >
         {deletingId === lesson.id
