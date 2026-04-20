@@ -13,6 +13,71 @@ import os from 'os'
 const router = express.Router()
 router.use(authenticateToken)
 
+// Self-heal the voice schema if the Phase 11 migration was skipped
+// (runMigrations swallows errors from earlier phases, which can prevent
+// Phase 11 from running on affected deployments). Runs once per process.
+let schemaEnsured = null
+function ensureVoiceSchema() {
+  if (schemaEnsured) return schemaEnsured
+  schemaEnsured = (async () => {
+    try {
+      await pool.query(`CREATE TABLE IF NOT EXISTS audio_sources (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+        context_type TEXT NOT NULL DEFAULT 'general'
+          CHECK (context_type IN ('session', 'match', 'half_time', 'post_fixture', 'lesson', 'general')),
+        context_id UUID,
+        duration_seconds INTEGER,
+        storage_url TEXT,
+        transcript TEXT,
+        transcript_generated_at TIMESTAMPTZ,
+        extraction_completed_at TIMESTAMPTZ,
+        retention_expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_teacher ON audio_sources(teacher_id)`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_school ON audio_sources(school_id)`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_retention ON audio_sources(retention_expires_at)`)
+
+      // Observations table voice fields (from Phase 11a)
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'typed';
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS audio_source_id UUID;
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS transcript_fragment TEXT;
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS confidence REAL;
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT DEFAULT 'confirmed';
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+      // Schools voice config (from Phase 11d)
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE schools ADD COLUMN IF NOT EXISTS voice_observations_enabled BOOLEAN DEFAULT false;
+        ALTER TABLE schools ADD COLUMN IF NOT EXISTS audio_retention_days INTEGER DEFAULT 7;
+        ALTER TABLE schools ADD COLUMN IF NOT EXISTS transcript_retention_days INTEGER DEFAULT 30;
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+      // Pupil nicknames (from Phase 11c)
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT[];
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+      console.log('[VoiceObservations] Schema ensured')
+    } catch (err) {
+      console.error('[VoiceObservations] ensureVoiceSchema failed:', err.message)
+      schemaEnsured = null // allow retry on next request
+      throw err
+    }
+  })()
+  return schemaEnsured
+}
+
+// Run once on module load (fire-and-forget; requests will await it if needed)
+ensureVoiceSchema().catch(() => {})
+
 // Rate limit: max 20 uploads per teacher per hour
 const voiceUploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -98,6 +163,9 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     if (!validContextTypes.includes(context_type)) {
       return res.status(400).json({ error: `context_type must be one of: ${validContextTypes.join(', ')}` })
     }
+
+    stage = 'ensure_schema'
+    await ensureVoiceSchema()
 
     stage = 'resolve_school'
     const schoolId = await getUserSchoolId(req.user.id)
