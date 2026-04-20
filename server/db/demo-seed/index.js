@@ -92,15 +92,15 @@ export async function wipeDemoTenant() {
   await pool.query(`DELETE FROM schools WHERE id = $1`, [schoolId])
 
   // Delete demo users (after school cascade).
-  // observations.observer_id has no ON DELETE action on older deployments,
-  // so observations pinned to protected pupils block the user delete. Null
-  // them out explicitly before deleting — keeps the observation row, loses
-  // only the "who observed" attribution for the demo coach.
+  // observations.observer_id is NOT NULL REFERENCES users(id) with no
+  // ON DELETE action, so observations pinned to protected pupils block
+  // the user delete. DELETE those observations outright — they're stale
+  // demo data and will be re-seeded against fresh staff IDs.
   if (demoUserIds.length > 0) {
     await pool.query(
-      `UPDATE observations SET observer_id = NULL WHERE observer_id = ANY($1::uuid[])`,
+      `DELETE FROM observations WHERE observer_id = ANY($1::uuid[])`,
       [demoUserIds]
-    ).catch(err => console.warn('[demo-seed] Could not null observations.observer_id:', err.message))
+    ).catch(err => console.warn('[demo-seed] Could not delete stale observations:', err.message))
 
     // Other tables that may reference users(id) without ON DELETE SET NULL.
     // Add more as we hit them — each is guarded so missing tables/columns
