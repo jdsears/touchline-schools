@@ -41,6 +41,7 @@ const hodNav = [
   { name: 'All Teams', href: '/hod/teams', icon: Shield },
   { name: 'All Classes', href: '/hod/classes', icon: GraduationCap },
   { name: 'Reporting', href: '/hod/reporting', icon: BarChart3 },
+  { name: 'Assessment Overview', href: '/hod/assessment-overview', icon: ClipboardCheck },
   { name: 'Voice Safeguarding', href: '/hod/voice-safeguarding', icon: Shield, voiceOnly: true },
   { name: 'Voice Settings', href: '/hod/voice-settings', icon: Mic, voiceOnly: true },
   { name: 'Data & Privacy', href: '/hod/gdpr', icon: ShieldCheck },

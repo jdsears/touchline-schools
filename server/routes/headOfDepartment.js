@@ -657,4 +657,87 @@ router.get('/staff-activity-report', requireHoD, async (req, res) => {
   }
 })
 
+// GET /assessments/heatmap - Cross-year assessment heatmap data
+router.get('/assessments/heatmap', requireHoD, async (req, res) => {
+  try {
+    const schoolId = req.schoolId
+    const { term } = req.query
+
+    const termFilter = term ? 'AND su.term = $2' : ''
+    const params = term ? [schoolId, term] : [schoolId]
+
+    // Grade distribution per year_group × strand
+    const result = await pool.query(`
+      SELECT
+        tg.year_group,
+        tg.key_stage,
+        COALESCE(cs.strand_name, 'General') AS strand_name,
+        pa.grade,
+        COUNT(*)::int AS count
+      FROM pupil_assessments pa
+      JOIN sport_units su ON su.id = pa.unit_id
+      JOIN teaching_groups tg ON tg.id = su.teaching_group_id
+      LEFT JOIN assessment_criteria ac ON ac.id = pa.criteria_id
+      LEFT JOIN curriculum_strands cs ON cs.id = ac.strand_id
+      WHERE tg.school_id = $1
+        AND pa.grade IS NOT NULL
+        ${termFilter}
+      GROUP BY tg.year_group, tg.key_stage, cs.strand_name, pa.grade
+      ORDER BY tg.year_group, cs.strand_name, pa.grade
+    `, params)
+
+    // Pupil coverage: how many pupils have at least one assessment per year group
+    const coverage = await pool.query(`
+      SELECT
+        tg.year_group,
+        COUNT(DISTINCT tgp.pupil_id)::int AS total_pupils,
+        COUNT(DISTINCT pa.pupil_id)::int AS assessed_pupils
+      FROM teaching_groups tg
+      JOIN teaching_group_pupils tgp ON tgp.teaching_group_id = tg.id
+      LEFT JOIN sport_units su ON su.teaching_group_id = tg.id
+      LEFT JOIN pupil_assessments pa ON pa.unit_id = su.id AND pa.pupil_id = tgp.pupil_id AND pa.grade IS NOT NULL
+      WHERE tg.school_id = $1
+      GROUP BY tg.year_group
+      ORDER BY tg.year_group
+    `, [schoolId])
+
+    // Collect unique strands and year groups
+    const strands = [...new Set(result.rows.map(r => r.strand_name))].sort()
+    const yearGroups = [...new Set(result.rows.map(r => r.year_group))].sort((a, b) => a - b)
+
+    // Build heatmap cells: { [yearGroup]: { [strand]: { grades, total, average } } }
+    const GRADE_NUMERIC = { Beg: 1, Dev: 2, Sec: 3, Exc: 4, D: 4, C: 5, B: 6, A: 7, 'A*': 8 }
+    const cells = {}
+    for (const row of result.rows) {
+      if (!cells[row.year_group]) cells[row.year_group] = {}
+      if (!cells[row.year_group][row.strand_name]) {
+        cells[row.year_group][row.strand_name] = { grades: {}, total: 0, weighted_sum: 0, key_stage: row.key_stage }
+      }
+      const cell = cells[row.year_group][row.strand_name]
+      cell.grades[row.grade] = row.count
+      cell.total += row.count
+      cell.weighted_sum += (GRADE_NUMERIC[row.grade] || 0) * row.count
+    }
+
+    // Compute averages
+    for (const yg of Object.keys(cells)) {
+      for (const s of Object.keys(cells[yg])) {
+        const cell = cells[yg][s]
+        cell.average = cell.total > 0 ? +(cell.weighted_sum / cell.total).toFixed(2) : null
+        delete cell.weighted_sum
+      }
+    }
+
+    res.json({
+      year_groups: yearGroups,
+      strands,
+      cells,
+      coverage: coverage.rows,
+    })
+  } catch (error) {
+    console.error('Assessment heatmap error:', error)
+    res.status(500).json({ error: 'Failed to load assessment heatmap' })
+  }
+})
+
 export default router

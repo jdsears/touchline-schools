@@ -766,6 +766,7 @@ export const hodService = {
   getSchoolOverviewAttention: () => api.get('/hod/school-overview/attention'),
   getSchoolOverviewWeekly: () => api.get('/hod/school-overview/weekly-summary'),
   getStaffActivityReport: (params) => api.get('/hod/staff-activity-report', { params }),
+  getAssessmentHeatmap: (term) => api.get('/hod/assessments/heatmap', { params: { term } }),
 }
 
 // Voice Observations service
