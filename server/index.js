@@ -320,6 +320,23 @@ app.get('/api/health', async (req, res) => {
   }
 })
 
+// Diagnostic endpoint to verify env vars are visible at runtime (no secrets exposed)
+app.get('/api/debug-env', (req, res) => {
+  const show = (name) => {
+    const v = process.env[name]
+    if (!v) return { set: false }
+    return { set: true, length: v.length, prefix: v.slice(0, 8) }
+  }
+  res.json({
+    ANTHROPIC_API_KEY: show('ANTHROPIC_API_KEY'),
+    ASSEMBLYAI_API_KEY: show('ASSEMBLYAI_API_KEY'),
+    OPENAI_API_KEY: show('OPENAI_API_KEY'),
+    DATABASE_URL: { set: !!process.env.DATABASE_URL },
+    JWT_SECRET: { set: !!process.env.JWT_SECRET },
+    NODE_ENV: process.env.NODE_ENV || 'not set',
+  })
+})
+
 // Debug endpoint - shows DB state to diagnose demo seed issues
 app.get('/api/debug-db', async (req, res) => {
   try {

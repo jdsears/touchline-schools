@@ -3721,6 +3721,10 @@ export async function generateLessonPlan(params) {
     pupilCount, equipmentAvailable,
   } = params
 
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('AI service not configured - ANTHROPIC_API_KEY is missing from the environment')
+  }
+
   const ageGuidance = getAgeGroupGuidance(yearGroup ? `U${parseInt(yearGroup) + 5}` : null)
 
   const prompt = `Generate a complete PE lesson plan with these parameters:
@@ -3783,12 +3787,24 @@ Rules:
 
     return { raw: text }
   } catch (error) {
-    console.error('Lesson plan generation error:', error)
-    if (error.status === 401 || error.message?.includes('API key')) {
-      throw new Error('AI service not configured - please set ANTHROPIC_API_KEY')
+    console.error('Lesson plan generation error:', {
+      status: error.status,
+      message: error.message,
+      type: error.type,
+      hasApiKey: !!process.env.ANTHROPIC_API_KEY,
+      apiKeyPrefix: process.env.ANTHROPIC_API_KEY?.slice(0, 10),
+    })
+    if (error.status === 401) {
+      throw new Error('AI service rejected the API key (401). Check the ANTHROPIC_API_KEY value and redeploy.')
+    }
+    if (error.status === 404) {
+      throw new Error(`AI model not available (404): ${error.message || 'model not found'}`)
     }
     if (error.status === 429) {
       throw new Error('AI service is busy - please try again in a moment')
+    }
+    if (error.message?.includes('API key')) {
+      throw new Error('AI service error: ' + error.message)
     }
     throw new Error('Failed to generate lesson plan: ' + (error.message || 'Unknown error'))
   }
