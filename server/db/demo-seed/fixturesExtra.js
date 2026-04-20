@@ -177,5 +177,34 @@ export async function seedFixturesExtra(schoolId) {
     await addMatch(teamId, f.opponent, dayOffset(f.weekday), f.homeAway, null, null, f.location, f.time)
   }
 
+  // -- Today's activity --
+  // The "Today in your department" panel queries matches, training sessions and
+  // sport units scoped to today's date. Seed a spread of training sessions plus
+  // a fixture on weekends (when the current-week loop won't create one) so the
+  // panel always has something to show.
+  const todayStr = new Date().toISOString().split('T')[0]
+  const todayDow = new Date().getDay()
+
+  const todayTraining = [
+    { name: 'Year 9 Girls Netball', time: '07:45', focus: 'Morning strength & conditioning', location: 'Ashworth Park Academy Fitness Suite' },
+    { name: 'Year 7 Boys Football', time: '15:45', focus: 'Pre-fixture walkthrough and set pieces', location: null },
+    { name: 'Year 11 Boys Rugby', time: '16:00', focus: 'Video review and contact preparation', location: null },
+    { name: 'Year 9 Girls Hockey', time: '16:30', focus: 'Small-sided games and pressing triggers', location: null },
+  ]
+  for (const t of todayTraining) {
+    const teamId = await findTeam(schoolId, t.name)
+    if (!teamId) continue
+    await addTraining(teamId, todayStr, t.focus, t.location, t.time)
+  }
+
+  // Weekend fallback: ensure a fixture still appears when the current-week
+  // loop (which only covers Mon-Thu) hasn't scheduled anything for today.
+  if (todayDow === 0 || todayDow === 5 || todayDow === 6) {
+    const weekendFixtureTeam = await findTeam(schoolId, 'Year 9 Girls Netball')
+    if (weekendFixtureTeam) {
+      await addMatch(weekendFixtureTeam, 'Oakfield Grammar', todayStr, 'home', null, null, null, '10:30')
+    }
+  }
+
   console.log('[demo-seed] Extra fixtures and training sessions seeded')
 }
