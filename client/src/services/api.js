@@ -660,6 +660,7 @@ export const misService = {
   getConfig: () => api.get('/mis/config'),
   saveConfig: (data) => api.put('/mis/config', data),
   getHistory: () => api.get('/mis/history'),
+  sync: (dryRun = false) => api.post('/mis/sync', { dryRun }),
 }
 
 export const consentService = {

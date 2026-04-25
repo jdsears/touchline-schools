@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import { authenticateToken } from '../middleware/auth.js'
-import { getConfig, saveConfig, getSyncHistory } from '../services/mis/iSAMSService.js'
+import { getConfig, saveConfig, getSyncHistory, runSync } from '../services/mis/iSAMSService.js'
 import pool from '../config/database.js'
 
 const router = Router()
@@ -43,6 +43,18 @@ router.get('/history', authenticateToken, async (req, res, next) => {
     const history = await getSyncHistory(schoolId)
     res.json(history)
   } catch (error) { next(error) }
+})
+
+router.post('/sync', authenticateToken, async (req, res, next) => {
+  try {
+    const schoolId = await getSchoolId(req.user)
+    if (!schoolId) return res.status(403).json({ error: 'No school access' })
+    const { dryRun } = req.body
+    const result = await runSync(schoolId, { dryRun: dryRun || false })
+    res.json(result)
+  } catch (error) {
+    res.status(500).json({ error: error.message || 'Sync failed' })
+  }
 })
 
 export default router
