@@ -653,6 +653,12 @@ export const knowledgeBaseService = {
 }
 
 // Teacher Hub cross-team service (extra-curricular)
+export const travelService = {
+  get: (matchId) => api.get(`/fixture-travel/${matchId}`),
+  save: (matchId, data) => api.put(`/fixture-travel/${matchId}`, data),
+  saveAssignments: (matchId, assignments) => api.put(`/fixture-travel/${matchId}/assignments`, { assignments }),
+}
+
 export const venueService = {
   list: () => api.get('/venues'),
   get: (id) => api.get(`/venues/${id}`),

@@ -54,6 +54,7 @@ import toast from 'react-hot-toast'
 import AIMarkdown from '../components/AIMarkdown'
 import FormationPitch, { formationsByFormat, defaultFormationByFormat } from '../components/FormationPitch'
 import VideoUpload from '../components/VideoUpload'
+import FixtureTravelPanel from '../components/FixtureTravelPanel'
 import PlayingTimeCalculator from '../components/PlayingTimeCalculator'
 
 const tabs = [
@@ -1438,6 +1439,9 @@ export default function MatchDetail() {
                 </div>
               </div>
             </div>
+
+            {/* Travel arrangements (away fixtures) */}
+            <FixtureTravelPanel matchId={id} isAway={!match.is_home} />
 
             {/* Goalscorers & Assists - Only show when match has a result */}
             {resultDisplay && (
