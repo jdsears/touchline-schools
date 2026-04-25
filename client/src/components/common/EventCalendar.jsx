@@ -80,16 +80,16 @@ export default function EventCalendar({
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
-          className="p-2 text-navy-400 hover:text-white rounded-lg hover:bg-navy-800 transition-colors"
+          className="p-2 text-secondary hover:text-primary rounded-lg hover:bg-subtle transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h3 className="font-display font-semibold text-white">
+        <h3 className="font-display font-semibold text-primary">
           {format(currentMonth, 'MMMM yyyy')}
         </h3>
         <button
           onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
-          className="p-2 text-navy-400 hover:text-white rounded-lg hover:bg-navy-800 transition-colors"
+          className="p-2 text-secondary hover:text-primary rounded-lg hover:bg-subtle transition-colors"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -98,7 +98,7 @@ export default function EventCalendar({
       {/* Week Day Headers */}
       <div className="grid grid-cols-7 gap-1 mb-2">
         {weekDays.map(day => (
-          <div key={day} className="text-center text-xs font-medium text-navy-500 py-1">
+          <div key={day} className="text-center text-xs font-medium text-tertiary py-1">
             {day}
           </div>
         ))}
@@ -134,10 +134,10 @@ export default function EventCalendar({
                 min-h-[70px] rounded-lg p-1 flex flex-col items-stretch transition-colors relative
                 ${isCurrentDay ? 'bg-pitch-500/20 ring-2 ring-pitch-500' : ''}
                 ${!isCurrentMonth ? 'opacity-30' : ''}
-                ${hasEvents ? 'hover:bg-navy-800 cursor-pointer' : onSelectDate ? 'hover:bg-navy-800/50 cursor-pointer' : 'cursor-default'}
+                ${hasEvents ? 'hover:bg-subtle cursor-pointer' : onSelectDate ? 'hover:bg-subtle cursor-pointer' : 'cursor-default'}
               `}
             >
-              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-pitch-400' : 'text-navy-300'}`}>
+              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-pitch-400' : 'text-secondary'}`}>
                 {format(day, 'd')}
               </span>
 
@@ -156,7 +156,7 @@ export default function EventCalendar({
                                 ? 'bg-pitch-500/30 text-pitch-300' // Win
                                 : parseInt(event.data.result?.split('-')[0]) < parseInt(event.data.result?.split('-')[1])
                                   ? 'bg-alert-500/30 text-alert-300' // Loss
-                                  : 'bg-navy-600 text-navy-300' // Draw or unknown
+                                  : 'bg-navy-600 text-secondary' // Draw or unknown
                               : 'bg-energy-500/30 text-energy-300' // Upcoming match
                             : event.type === 'sc'
                               ? 'bg-caution-500/30 text-caution-300'
@@ -190,7 +190,7 @@ export default function EventCalendar({
                     )
                   })}
                   {events.length > 3 && (
-                    <span className="text-[8px] text-navy-400 text-center">+{events.length - 3} more</span>
+                    <span className="text-[8px] text-secondary text-center">+{events.length - 3} more</span>
                   )}
                 </div>
               )}
@@ -200,23 +200,23 @@ export default function EventCalendar({
       </div>
 
       {/* Legend & Export */}
-      <div className="mt-4 pt-4 border-t border-navy-800">
+      <div className="mt-4 pt-4 border-t border-border-default">
         <div className="flex items-center justify-center gap-4 flex-wrap mb-3">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-energy-400" />
-            <span className="text-xs text-navy-400">Upcoming Match</span>
+            <span className="text-xs text-secondary">Upcoming Match</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-pitch-400" />
-            <span className="text-xs text-navy-400">Win / Training</span>
+            <span className="text-xs text-secondary">Win / Training</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-caution-400" />
-            <span className="text-xs text-navy-400">S&C</span>
+            <span className="text-xs text-secondary">S&C</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-alert-400" />
-            <span className="text-xs text-navy-400">Loss</span>
+            <span className="text-xs text-secondary">Loss</span>
           </div>
         </div>
 

@@ -15,7 +15,7 @@ const EVENT_TYPES = [
   { value: 'trial', label: 'Trial Day', icon: Flag, color: 'bg-blue-600/20 text-blue-400' },
   { value: 'social', label: 'Social Event', icon: Star, color: 'bg-purple-600/20 text-purple-400' },
   { value: 'fundraiser', label: 'Fundraiser', icon: DollarSign, color: 'bg-pink-600/20 text-pink-400' },
-  { value: 'other', label: 'Other', icon: CalendarDays, color: 'bg-navy-700 text-navy-300' },
+  { value: 'other', label: 'Other', icon: CalendarDays, color: 'bg-border-default text-secondary' },
 ]
 
 const FILTER_TABS = [
@@ -28,7 +28,7 @@ const FILTER_TABS = [
 
 const STATUS_BADGES = {
   published: { label: 'Published', className: 'bg-pitch-600/20 text-pitch-400' },
-  draft: { label: 'Draft', className: 'bg-navy-700 text-navy-400' },
+  draft: { label: 'Draft', className: 'bg-border-default text-secondary' },
   cancelled: { label: 'Cancelled', className: 'bg-red-500/20 text-red-400' },
 }
 
@@ -270,8 +270,8 @@ export default function ClubEvents() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Events</h1>
-          <p className="text-navy-400 text-sm mt-1">Manage camps, tournaments and school events</p>
+          <h1 className="text-2xl font-bold text-primary">Events</h1>
+          <p className="text-secondary text-sm mt-1">Manage camps, tournaments and school events</p>
         </div>
         {canManage && (
           <button
@@ -282,7 +282,7 @@ export default function ClubEvents() {
                 setShowCreate(true)
               }
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
           >
             {showCreate ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
             {showCreate ? 'Cancel' : 'Create Event'}
@@ -292,8 +292,8 @@ export default function ClubEvents() {
 
       {/* Create/Edit event form */}
       {showCreate && (
-        <form onSubmit={handleSubmit} className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-5">
-          <h3 className="font-semibold text-white flex items-center gap-2">
+        <form onSubmit={handleSubmit} className="bg-card border border-border-default rounded-xl p-5 space-y-5">
+          <h3 className="font-semibold text-primary flex items-center gap-2">
             <CalendarDays className="w-5 h-5 text-pitch-400" />
             {editingEvent ? 'Edit Event' : 'New Event'}
           </h3>
@@ -301,22 +301,22 @@ export default function ClubEvents() {
           {/* Title and type */}
           <div className="grid sm:grid-cols-3 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs text-navy-400 mb-1">Title *</label>
+              <label className="block text-xs text-secondary mb-1">Title *</label>
               <input
                 type="text"
                 required
                 value={form.title}
                 onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="e.g. Summer Holiday Camp 2026"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Event Type</label>
+              <label className="block text-xs text-secondary mb-1">Event Type</label>
               <select
                 value={form.event_type}
                 onChange={(e) => setForm(f => ({ ...f, event_type: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 {EVENT_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -327,12 +327,12 @@ export default function ClubEvents() {
 
           {/* Description */}
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Description</label>
+            <label className="block text-xs text-secondary mb-1">Description</label>
             <textarea
               value={form.description}
               rows={3}
               onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
               placeholder="Describe the event, what to bring, etc..."
             />
           </div>
@@ -340,40 +340,40 @@ export default function ClubEvents() {
           {/* Dates and times */}
           <div className="grid sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Start Date *</label>
+              <label className="block text-xs text-secondary mb-1">Start Date *</label>
               <input
                 type="date"
                 required
                 value={form.start_date}
                 onChange={(e) => setForm(f => ({ ...f, start_date: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">End Date</label>
+              <label className="block text-xs text-secondary mb-1">End Date</label>
               <input
                 type="date"
                 value={form.end_date}
                 onChange={(e) => setForm(f => ({ ...f, end_date: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Start Time</label>
+              <label className="block text-xs text-secondary mb-1">Start Time</label>
               <input
                 type="time"
                 value={form.start_time}
                 onChange={(e) => setForm(f => ({ ...f, start_time: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">End Time</label>
+              <label className="block text-xs text-secondary mb-1">End Time</label>
               <input
                 type="time"
                 value={form.end_time}
                 onChange={(e) => setForm(f => ({ ...f, end_time: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
           </div>
@@ -381,22 +381,22 @@ export default function ClubEvents() {
           {/* Venue */}
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Venue Name</label>
+              <label className="block text-xs text-secondary mb-1">Venue Name</label>
               <input
                 type="text"
                 value={form.venue}
                 onChange={(e) => setForm(f => ({ ...f, venue: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="e.g. Main Pitch"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Venue Address</label>
+              <label className="block text-xs text-secondary mb-1">Venue Address</label>
               <input
                 type="text"
                 value={form.venue_address}
                 onChange={(e) => setForm(f => ({ ...f, venue_address: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="Full address for map link"
               />
             </div>
@@ -405,57 +405,57 @@ export default function ClubEvents() {
           {/* Pricing */}
           <div className="grid sm:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Price (GBP)</label>
+              <label className="block text-xs text-secondary mb-1">Price (GBP)</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-500 text-sm">£</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary text-sm">£</span>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={form.price}
                   onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg pl-7 pr-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   placeholder="0.00 = Free"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Sibling Discount</label>
+              <label className="block text-xs text-secondary mb-1">Sibling Discount</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-500 text-sm">£</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary text-sm">£</span>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={form.sibling_discount}
                   onChange={(e) => setForm(f => ({ ...f, sibling_discount: e.target.value }))}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg pl-7 pr-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Early Bird Price</label>
+              <label className="block text-xs text-secondary mb-1">Early Bird Price</label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-navy-500 text-sm">£</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary text-sm">£</span>
                 <input
                   type="number"
                   step="0.01"
                   min="0"
                   value={form.early_bird_price}
                   onChange={(e) => setForm(f => ({ ...f, early_bird_price: e.target.value }))}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg pl-7 pr-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Early Bird Deadline</label>
+              <label className="block text-xs text-secondary mb-1">Early Bird Deadline</label>
               <input
                 type="date"
                 value={form.early_bird_deadline}
                 onChange={(e) => setForm(f => ({ ...f, early_bird_deadline: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
           </div>
@@ -463,31 +463,31 @@ export default function ClubEvents() {
           {/* Capacity and deadline */}
           <div className="grid sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Max Participants</label>
+              <label className="block text-xs text-secondary mb-1">Max Participants</label>
               <input
                 type="number"
                 min="1"
                 value={form.max_participants}
                 onChange={(e) => setForm(f => ({ ...f, max_participants: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="Unlimited"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Registration Deadline</label>
+              <label className="block text-xs text-secondary mb-1">Registration Deadline</label>
               <input
                 type="date"
                 value={form.registration_deadline}
                 onChange={(e) => setForm(f => ({ ...f, registration_deadline: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Status</label>
+              <label className="block text-xs text-secondary mb-1">Status</label>
               <select
                 value={form.status}
                 onChange={(e) => setForm(f => ({ ...f, status: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 <option value="published">Published</option>
                 <option value="draft">Draft</option>
@@ -497,13 +497,13 @@ export default function ClubEvents() {
 
           {/* Target audience */}
           <div className="space-y-2">
-            <label className="block text-xs text-navy-400">Target Audience</label>
+            <label className="block text-xs text-secondary">Target Audience</label>
             <div className="flex flex-wrap gap-2">
               <button
                 type="button"
                 onClick={() => setForm(f => ({ ...f, target_audience: 'all', target_team_ids: [] }))}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                  form.target_audience === 'all' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+                  form.target_audience === 'all' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
                 }`}
               >
                 <Users className="w-3.5 h-3.5 inline mr-1" />
@@ -513,7 +513,7 @@ export default function ClubEvents() {
                 type="button"
                 onClick={() => setForm(f => ({ ...f, target_audience: 'specific' }))}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                  form.target_audience === 'specific' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+                  form.target_audience === 'specific' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
                 }`}
               >
                 Specific Teams
@@ -522,7 +522,7 @@ export default function ClubEvents() {
             {form.target_audience === 'specific' && teams.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {teams.map(team => (
-                  <label key={team.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 rounded-lg text-sm text-navy-300 cursor-pointer hover:bg-navy-700">
+                  <label key={team.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle rounded-lg text-sm text-secondary cursor-pointer hover:bg-border-default">
                     <input
                       type="checkbox"
                       checked={form.target_team_ids.includes(team.id)}
@@ -532,7 +532,7 @@ export default function ClubEvents() {
                           : form.target_team_ids.filter(id => id !== team.id)
                         setForm(f => ({ ...f, target_team_ids: ids }))
                       }}
-                      className="rounded bg-navy-700 border-navy-600 text-pitch-600 focus:ring-pitch-600"
+                      className="rounded bg-border-default border-border-strong text-pitch-600 focus:ring-pitch-600"
                     />
                     {team.name}
                   </label>
@@ -543,21 +543,21 @@ export default function ClubEvents() {
 
           {/* Options */}
           <div className="flex flex-wrap gap-4">
-            <label className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.requires_medical_info}
                 onChange={(e) => setForm(f => ({ ...f, requires_medical_info: e.target.checked }))}
-                className="rounded bg-navy-800 border-navy-700 text-pitch-600 focus:ring-pitch-600"
+                className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
               />
               Request medical info
             </label>
-            <label className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer">
+            <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.requires_photo_consent}
                 onChange={(e) => setForm(f => ({ ...f, requires_photo_consent: e.target.checked }))}
-                className="rounded bg-navy-800 border-navy-700 text-pitch-600 focus:ring-pitch-600"
+                className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
               />
               Require photo consent
             </label>
@@ -565,13 +565,13 @@ export default function ClubEvents() {
 
           {/* Custom fields */}
           <div className="space-y-2">
-            <label className="block text-xs text-navy-400">Custom Registration Fields</label>
+            <label className="block text-xs text-secondary">Custom Registration Fields</label>
             {form.custom_fields.length > 0 && (
               <div className="flex flex-wrap gap-2">
                 {form.custom_fields.map((field, idx) => (
-                  <div key={idx} className="flex items-center gap-1.5 bg-navy-800 px-3 py-1.5 rounded-lg text-sm text-navy-300">
+                  <div key={idx} className="flex items-center gap-1.5 bg-subtle px-3 py-1.5 rounded-lg text-sm text-secondary">
                     <span>{field.label}</span>
-                    <button type="button" onClick={() => removeCustomField(idx)} className="text-navy-500 hover:text-red-400">
+                    <button type="button" onClick={() => removeCustomField(idx)} className="text-tertiary hover:text-red-400">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -584,13 +584,13 @@ export default function ClubEvents() {
                 value={customFieldInput}
                 onChange={(e) => setCustomFieldInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomField())}
-                className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="e.g. T-shirt size, dietary requirements..."
               />
               <button
                 type="button"
                 onClick={addCustomField}
-                className="px-3 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 hover:text-white rounded-lg text-sm transition-colors"
+                className="px-3 py-2 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-sm transition-colors"
               >
                 <Plus className="w-4 h-4" />
               </button>
@@ -599,10 +599,10 @@ export default function ClubEvents() {
 
           {/* Actions */}
           <div className="flex gap-2 justify-end pt-2">
-            <button type="button" onClick={resetForm} className="px-4 py-2 text-sm text-navy-400 hover:text-white transition-colors">
+            <button type="button" onClick={resetForm} className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-lg text-sm transition-colors">
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors">
               {saving ? 'Saving...' : editingEvent ? 'Update Event' : 'Create Event'}
             </button>
           </div>
@@ -610,7 +610,7 @@ export default function ClubEvents() {
       )}
 
       {/* Filter tabs */}
-      <div className="flex gap-1 bg-navy-900 border border-navy-800 rounded-xl p-1">
+      <div className="flex gap-1 bg-card border border-border-default rounded-xl p-1">
         {FILTER_TABS.map(tab => (
           <button
             key={tab.id}
@@ -618,7 +618,7 @@ export default function ClubEvents() {
             className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === tab.id
                 ? 'bg-pitch-600/20 text-pitch-400'
-                : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                : 'text-secondary hover:text-primary hover:bg-subtle'
             }`}
           >
             {tab.label}
@@ -628,10 +628,10 @@ export default function ClubEvents() {
 
       {/* Events list */}
       {filtered.length === 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <CalendarDays className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">No events found</h3>
-          <p className="text-navy-400 text-sm">
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <CalendarDays className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">No events found</h3>
+          <p className="text-secondary text-sm">
             {activeFilter === 'all'
               ? 'Create your first event to get started.'
               : `No ${activeFilter} events.`
@@ -688,8 +688,8 @@ function EventCard({
   }
 
   return (
-    <div className={`bg-navy-900 border rounded-xl overflow-hidden ${
-      event.status === 'cancelled' ? 'border-red-500/20 opacity-75' : 'border-navy-800'
+    <div className={`bg-card border rounded-xl overflow-hidden ${
+      event.status === 'cancelled' ? 'border-red-500/20 opacity-75' : 'border-border-default'
     }`}>
       {/* Event header */}
       <div className="flex items-start gap-4 px-5 py-4">
@@ -701,7 +701,7 @@ function EventCard({
         {/* Event info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <h3 className="font-semibold text-white truncate">{event.title}</h3>
+            <h3 className="font-semibold text-primary truncate">{event.title}</h3>
             <span className={`text-xs px-2 py-0.5 rounded-full ${typeConfig.color}`}>
               {typeConfig.label}
             </span>
@@ -710,7 +710,7 @@ function EventCard({
             </span>
           </div>
 
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-navy-400">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-secondary">
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" />
               {formatDateRange(event.start_date, event.end_date)}
@@ -737,14 +737,14 @@ function EventCard({
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">
           {canManage && event.status === 'published' && (
-            <button onClick={onCopyLink} className="p-2 text-navy-400 hover:text-pitch-400 transition-colors" title="Copy public link">
+            <button onClick={onCopyLink} className="p-2 text-secondary hover:text-pitch-400 transition-colors" title="Copy public link">
               <Copy className="w-4 h-4" />
             </button>
           )}
           <button
             onClick={onToggleExpand}
             disabled={loadingRegistrations}
-            className="p-2 text-navy-400 hover:text-white transition-colors"
+            className="p-2 text-secondary hover:text-primary transition-colors"
             title="View registrations"
           >
             {loadingRegistrations ? (
@@ -761,7 +761,7 @@ function EventCard({
       {/* Capacity bar */}
       {event.max_participants > 0 && (
         <div className="px-5 pb-3">
-          <div className="w-full h-1.5 bg-navy-800 rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-subtle rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
                 registrationCount >= event.max_participants ? 'bg-red-500' :
@@ -776,18 +776,18 @@ function EventCard({
 
       {/* Expanded: Registrations */}
       {expanded && (
-        <div className="border-t border-navy-800">
+        <div className="border-t border-border-default">
           {/* Action buttons */}
           {canManage && (
-            <div className="flex flex-wrap gap-2 px-5 py-3 border-b border-navy-800/50">
-              <button onClick={onEdit} className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-navy-700 text-navy-300 hover:text-white rounded-lg text-xs transition-colors">
+            <div className="flex flex-wrap gap-2 px-5 py-3 border-b border-border-subtle">
+              <button onClick={onEdit} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-xs transition-colors">
                 <Edit3 className="w-3.5 h-3.5" /> Edit
               </button>
-              <button onClick={onExport} className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-navy-700 text-navy-300 hover:text-white rounded-lg text-xs transition-colors">
+              <button onClick={onExport} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-xs transition-colors">
                 <Download className="w-3.5 h-3.5" /> Export CSV
               </button>
               {event.status !== 'cancelled' && (
-                <button onClick={onCancel} className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-red-600/20 text-navy-300 hover:text-red-400 rounded-lg text-xs transition-colors">
+                <button onClick={onCancel} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-red-600/20 text-secondary hover:text-red-400 rounded-lg text-xs transition-colors">
                   <Trash2 className="w-3.5 h-3.5" /> Cancel Event
                 </button>
               )}
@@ -796,23 +796,23 @@ function EventCard({
 
           {/* Description */}
           {event.description && (
-            <div className="px-5 py-3 border-b border-navy-800/50">
-              <p className="text-sm text-navy-300 whitespace-pre-wrap">{event.description}</p>
+            <div className="px-5 py-3 border-b border-border-subtle">
+              <p className="text-sm text-secondary whitespace-pre-wrap">{event.description}</p>
             </div>
           )}
 
           {/* Pricing details */}
           {event.price > 0 && (
-            <div className="px-5 py-3 border-b border-navy-800/50 flex flex-wrap gap-4 text-xs text-navy-400">
-              <span>Standard: <span className="text-white font-medium">£{(event.price / 100).toFixed(2)}</span></span>
+            <div className="px-5 py-3 border-b border-border-subtle flex flex-wrap gap-4 text-xs text-secondary">
+              <span>Standard: <span className="text-primary font-medium">£{(event.price / 100).toFixed(2)}</span></span>
               {event.sibling_discount > 0 && (
-                <span>Sibling discount: <span className="text-white font-medium">-£{(event.sibling_discount / 100).toFixed(2)}</span></span>
+                <span>Sibling discount: <span className="text-primary font-medium">-£{(event.sibling_discount / 100).toFixed(2)}</span></span>
               )}
               {event.early_bird_price > 0 && (
                 <span>
-                  Early bird: <span className="text-white font-medium">£{(event.early_bird_price / 100).toFixed(2)}</span>
+                  Early bird: <span className="text-primary font-medium">£{(event.early_bird_price / 100).toFixed(2)}</span>
                   {event.early_bird_deadline && (
-                    <span className="text-navy-500"> (until {new Date(event.early_bird_deadline).toLocaleDateString('en-GB')})</span>
+                    <span className="text-tertiary"> (until {new Date(event.early_bird_deadline).toLocaleDateString('en-GB')})</span>
                   )}
                 </span>
               )}
@@ -824,23 +824,23 @@ function EventCard({
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-navy-800">
-                    <th className="text-left px-5 py-2.5 text-xs font-medium text-navy-400 uppercase">Participant</th>
-                    <th className="text-left px-5 py-2.5 text-xs font-medium text-navy-400 uppercase">Guardian</th>
-                    <th className="text-left px-5 py-2.5 text-xs font-medium text-navy-400 uppercase">Email</th>
-                    <th className="text-left px-5 py-2.5 text-xs font-medium text-navy-400 uppercase">Registered</th>
+                  <tr className="border-b border-border-default">
+                    <th className="text-left px-5 py-2.5 text-xs font-medium text-secondary uppercase">Participant</th>
+                    <th className="text-left px-5 py-2.5 text-xs font-medium text-secondary uppercase">Guardian</th>
+                    <th className="text-left px-5 py-2.5 text-xs font-medium text-secondary uppercase">Email</th>
+                    <th className="text-left px-5 py-2.5 text-xs font-medium text-secondary uppercase">Registered</th>
                     {canManage && (
-                      <th className="text-center px-5 py-2.5 text-xs font-medium text-navy-400 uppercase">Attended</th>
+                      <th className="text-center px-5 py-2.5 text-xs font-medium text-secondary uppercase">Attended</th>
                     )}
                   </tr>
                 </thead>
                 <tbody>
                   {registrationsList.map(reg => (
-                    <tr key={reg.id} className="border-b border-navy-800/50 last:border-0">
-                      <td className="px-5 py-2.5 text-sm text-white font-medium">{reg.participant_name}</td>
-                      <td className="px-5 py-2.5 text-sm text-navy-300">{reg.guardian_name}</td>
-                      <td className="px-5 py-2.5 text-sm text-navy-400">{reg.email}</td>
-                      <td className="px-5 py-2.5 text-xs text-navy-400">
+                    <tr key={reg.id} className="border-b border-border-subtle last:border-0">
+                      <td className="px-5 py-2.5 text-sm text-primary font-medium">{reg.participant_name}</td>
+                      <td className="px-5 py-2.5 text-sm text-secondary">{reg.guardian_name}</td>
+                      <td className="px-5 py-2.5 text-sm text-secondary">{reg.email}</td>
+                      <td className="px-5 py-2.5 text-xs text-secondary">
                         {new Date(reg.created_at).toLocaleDateString('en-GB')}
                       </td>
                       {canManage && (
@@ -850,7 +850,7 @@ function EventCard({
                             className={`p-1.5 rounded-lg transition-colors ${
                               reg.attended
                                 ? 'bg-pitch-600/20 text-pitch-400 hover:bg-pitch-600/30'
-                                : 'bg-navy-800 text-navy-500 hover:text-white'
+                                : 'bg-subtle text-tertiary hover:text-primary'
                             }`}
                             title={reg.attended ? 'Mark as not attended' : 'Mark as attended'}
                           >
@@ -865,8 +865,8 @@ function EventCard({
             </div>
           ) : registrationsList ? (
             <div className="px-5 py-6 text-center">
-              <Users className="w-8 h-8 text-navy-600 mx-auto mb-2" />
-              <p className="text-sm text-navy-400">No registrations yet</p>
+              <Users className="w-8 h-8 text-tertiary mx-auto mb-2" />
+              <p className="text-sm text-secondary">No registrations yet</p>
             </div>
           ) : null}
         </div>

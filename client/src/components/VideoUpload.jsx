@@ -288,7 +288,7 @@ export default function VideoUpload({
           className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
             isDragging
               ? 'border-pitch-500 bg-pitch-500/10'
-              : 'border-navy-700 hover:border-pitch-500 hover:bg-navy-800/50'
+              : 'border-border-strong hover:border-pitch-500 hover:bg-subtle'
           }`}
         >
           <input
@@ -298,14 +298,14 @@ export default function VideoUpload({
             onChange={handleFileSelect}
             className="hidden"
           />
-          <Upload className={`w-12 h-12 mx-auto mb-4 ${isDragging ? 'text-pitch-400' : 'text-navy-500'}`} />
-          <p className="text-white font-medium mb-2">
+          <Upload className={`w-12 h-12 mx-auto mb-4 ${isDragging ? 'text-pitch-400' : 'text-tertiary'}`} />
+          <p className="text-primary font-medium mb-2">
             {isDragging ? 'Drop video here' : 'Drag & drop or tap to select video'}
           </p>
-          <p className="text-sm text-navy-400">
+          <p className="text-sm text-secondary">
             MP4, MOV, AVI, MKV, or WebM up to {formatBytes(maxSize)}
           </p>
-          <p className="text-xs text-navy-500 mt-2">
+          <p className="text-xs text-tertiary mt-2">
             Uploads directly to cloud - no server timeout issues
           </p>
         </div>
@@ -313,18 +313,18 @@ export default function VideoUpload({
 
       {/* Selected File - Ready to upload */}
       {file && status === 'idle' && (
-        <div className="bg-navy-800 rounded-xl p-4 space-y-4">
+        <div className="bg-subtle rounded-xl p-4 space-y-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-navy-700 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-lg bg-border-default flex items-center justify-center shrink-0">
               <Film className="w-6 h-6 text-pitch-400" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{file.name}</p>
-              <p className="text-sm text-navy-400">{formatBytes(file.size)}</p>
+              <p className="text-primary font-medium truncate">{file.name}</p>
+              <p className="text-sm text-secondary">{formatBytes(file.size)}</p>
             </div>
             <button
               onClick={() => { setFile(null); setTitle('') }}
-              className="p-2 text-navy-400 hover:text-white transition-colors"
+              className="p-2 text-secondary hover:text-primary transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
@@ -411,28 +411,28 @@ export default function VideoUpload({
 
       {/* Uploading */}
       {status === 'uploading' && (
-        <div className="bg-navy-800 rounded-xl p-4">
+        <div className="bg-subtle rounded-xl p-4">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-12 h-12 rounded-lg bg-navy-700 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-lg bg-border-default flex items-center justify-center shrink-0">
               {paused
                 ? <WifiOff className="w-6 h-6 text-caution-400" />
                 : <Loader2 className="w-6 h-6 text-pitch-400 animate-spin" />
               }
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white font-medium truncate">{file?.name}</p>
-              <p className="text-sm text-navy-400">
+              <p className="text-primary font-medium truncate">{file?.name}</p>
+              <p className="text-sm text-secondary">
                 {paused ? 'Reconnecting - upload will resume automatically...' : 'Uploading to cloud...'}
               </p>
             </div>
           </div>
-          <div className="h-2 bg-navy-700 rounded-full overflow-hidden mb-2">
+          <div className="h-2 bg-border-default rounded-full overflow-hidden mb-2">
             <div
               className={`h-full transition-all duration-300 ${paused ? 'bg-caution-500' : 'bg-pitch-500'}`}
               style={{ width: `${progress}%` }}
             />
           </div>
-          <p className="text-sm text-navy-400 text-center">{progress}%</p>
+          <p className="text-sm text-secondary text-center">{progress}%</p>
           {paused && (
             <p className="text-xs text-caution-400 text-center mt-2">
               Keep this screen open - upload resumes when connection returns
@@ -443,14 +443,14 @@ export default function VideoUpload({
 
       {/* Processing */}
       {status === 'processing' && (
-        <div className="bg-navy-800 rounded-xl p-4">
+        <div className="bg-subtle rounded-xl p-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-lg bg-caution-500/20 flex items-center justify-center shrink-0">
               <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
             </div>
             <div className="flex-1">
-              <p className="text-white font-medium">Processing video</p>
-              <p className="text-sm text-navy-400">Mux is transcoding - usually 1-2 minutes...</p>
+              <p className="text-primary font-medium">Processing video</p>
+              <p className="text-sm text-secondary">Mux is transcoding - usually 1-2 minutes...</p>
             </div>
           </div>
           {onCancel && (
@@ -459,7 +459,7 @@ export default function VideoUpload({
                 if (pollRef.current) clearInterval(pollRef.current)
                 onCancel?.()
               }}
-              className="mt-4 w-full text-sm text-navy-400 hover:text-white py-2"
+              className="mt-4 w-full text-sm text-secondary hover:text-primary py-2"
             >
               Processing in background - close this panel
             </button>
@@ -475,8 +475,8 @@ export default function VideoUpload({
               <CheckCircle className="w-6 h-6 text-pitch-400" />
             </div>
             <div>
-              <p className="text-white font-medium">Video Ready</p>
-              <p className="text-sm text-navy-400">{title}</p>
+              <p className="text-primary font-medium">Video Ready</p>
+              <p className="text-sm text-secondary">{title}</p>
             </div>
           </div>
         </div>
@@ -490,12 +490,12 @@ export default function VideoUpload({
               <AlertCircle className="w-6 h-6 text-alert-400" />
             </div>
             <div className="flex-1">
-              <p className="text-white font-medium">Upload Failed</p>
+              <p className="text-primary font-medium">Upload Failed</p>
               <p className="text-sm text-alert-400">{error}</p>
             </div>
           </div>
           {error?.toLowerCase().includes('process') && (
-            <p className="text-xs text-navy-400 mt-3">
+            <p className="text-xs text-secondary mt-3">
               If your camera uses H.265/HEVC encoding (common with XbotGo, newer iPhones), try exporting as H.264/MP4 first. Most video apps can convert this.
             </p>
           )}

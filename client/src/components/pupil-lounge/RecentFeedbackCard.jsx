@@ -27,7 +27,7 @@ export default function RecentFeedbackCard() {
   if (loading) {
     return (
       <div className="mx-4 mb-4 space-y-2">
-        <div className="h-20 bg-navy-800 rounded-xl animate-pulse" />
+        <div className="h-20 bg-subtle rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -37,22 +37,22 @@ export default function RecentFeedbackCard() {
 
   return (
     <div className="mx-4 mb-4">
-      <h3 className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-2 px-1">
+      <h3 className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 px-1">
         Recent Feedback
       </h3>
       <div className="space-y-2">
         {feedback.map(obs => (
           <div
             key={obs.id}
-            className="bg-navy-900/60 border border-navy-800/50 rounded-xl p-3"
+            className="bg-card/60 border border-border-subtle rounded-xl p-3"
           >
             <div className="flex items-start gap-2.5">
               <MessageSquare size={13} className="text-gold-400/70 mt-0.5 flex-shrink-0" />
               <div className="min-w-0 flex-1">
-                <p className="text-[13px] text-white/90 leading-relaxed line-clamp-2">
+                <p className="text-[13px] text-primary/90 leading-relaxed line-clamp-2">
                   {obs.content}
                 </p>
-                <div className="flex items-center gap-2 mt-1.5 text-[10px] text-navy-500">
+                <div className="flex items-center gap-2 mt-1.5 text-[10px] text-tertiary">
                   <span>{obs.observer_name}</span>
                   {obs.sport && (
                     <>

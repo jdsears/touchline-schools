@@ -28,9 +28,9 @@ export default function NetballCourt({ teamFormat = 7 }) {
       <div className="absolute top-[33.33%] left-[48%] right-[48%] h-[3%] bg-white/30 -translate-y-1/2" />
 
       {/* Zone labels */}
-      <span className="absolute top-[16%] left-1/2 -translate-x-1/2 text-[8px] text-white/35 font-semibold tracking-widest uppercase">Att. Third</span>
-      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-6 text-[8px] text-white/35 font-semibold tracking-widest uppercase">Centre</span>
-      <span className="absolute bottom-[16%] left-1/2 -translate-x-1/2 text-[8px] text-white/35 font-semibold tracking-widest uppercase">Def. Third</span>
+      <span className="absolute top-[16%] left-1/2 -translate-x-1/2 text-[8px] text-primary/35 font-semibold tracking-widest uppercase">Att. Third</span>
+      <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 mt-6 text-[8px] text-primary/35 font-semibold tracking-widest uppercase">Centre</span>
+      <span className="absolute bottom-[16%] left-1/2 -translate-x-1/2 text-[8px] text-primary/35 font-semibold tracking-widest uppercase">Def. Third</span>
     </div>
   )
 }

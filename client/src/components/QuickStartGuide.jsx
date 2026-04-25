@@ -107,7 +107,7 @@ export default function QuickStartGuide({ isOpen, onClose }) {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-4 right-4 text-navy-500 hover:text-navy-300 transition-colors z-10"
+          className="absolute top-4 right-4 text-tertiary hover:text-secondary transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
@@ -122,7 +122,7 @@ export default function QuickStartGuide({ isOpen, onClose }) {
                   ? 'w-6 bg-pitch-500'
                   : i < currentStep
                     ? 'w-1.5 bg-pitch-500/40'
-                    : 'w-1.5 bg-navy-700'
+                    : 'w-1.5 bg-border-default'
               }`}
             />
           ))}
@@ -147,12 +147,12 @@ export default function QuickStartGuide({ isOpen, onClose }) {
               </div>
 
               {/* Title */}
-              <h2 className="font-display text-xl font-semibold text-white mb-3">
+              <h2 className="font-display text-xl font-semibold text-primary mb-3">
                 {step.title}
               </h2>
 
               {/* Description */}
-              <p className="text-navy-300 text-sm leading-relaxed mb-6">
+              <p className="text-secondary text-sm leading-relaxed mb-6">
                 {step.description}
               </p>
 
@@ -174,20 +174,20 @@ export default function QuickStartGuide({ isOpen, onClose }) {
               className={`flex items-center gap-1 text-sm transition-colors ${
                 isFirst
                   ? 'text-navy-700 cursor-default'
-                  : 'text-navy-400 hover:text-white'
+                  : 'text-secondary hover:text-primary'
               }`}
             >
               <ChevronLeft className="w-4 h-4" />
               Back
             </button>
 
-            <span className="text-xs text-navy-600">
+            <span className="text-xs text-tertiary">
               {currentStep + 1} of {steps.length}
             </span>
 
             <button
               onClick={goNext}
-              className="flex items-center gap-1 text-sm text-navy-400 hover:text-white transition-colors"
+              className="flex items-center gap-1 text-sm text-secondary hover:text-primary transition-colors"
             >
               {isLast ? (
                 <>

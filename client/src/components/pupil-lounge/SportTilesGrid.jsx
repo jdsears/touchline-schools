@@ -37,9 +37,9 @@ function SportTile({ sport, teams, onClick }) {
       className={`rounded-xl bg-gradient-to-br ${gradient} border border-white/10 p-3.5 text-left min-w-[140px] snap-start flex-shrink-0 active:scale-95 transition-transform`}
     >
       <div className="text-2xl mb-1.5">{emoji}</div>
-      <h4 className="text-white font-semibold text-sm capitalize">{sport}</h4>
+      <h4 className="text-primary font-semibold text-sm capitalize">{sport}</h4>
       {role && (
-        <p className="text-white/50 text-[10px] mt-0.5 truncate">{role}</p>
+        <p className="text-primary/50 text-[10px] mt-0.5 truncate">{role}</p>
       )}
     </button>
   )
@@ -54,7 +54,7 @@ export default function SportTilesGrid() {
       <div className="px-4 mb-4">
         <div className="flex gap-3 overflow-x-auto">
           {[1, 2, 3].map(i => (
-            <div key={i} className="h-24 w-36 bg-navy-800 rounded-xl animate-pulse flex-shrink-0" />
+            <div key={i} className="h-24 w-36 bg-subtle rounded-xl animate-pulse flex-shrink-0" />
           ))}
         </div>
       </div>
@@ -65,7 +65,7 @@ export default function SportTilesGrid() {
 
   return (
     <div className="mb-4">
-      <h3 className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-2 px-5">
+      <h3 className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 px-5">
         My Sports
       </h3>
       <div className="flex gap-3 overflow-x-auto px-4 pb-1 snap-x snap-mandatory scrollbar-hide">

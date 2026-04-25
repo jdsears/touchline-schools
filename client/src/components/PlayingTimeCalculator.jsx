@@ -171,15 +171,15 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
       {/* Collapsible header */}
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between p-4 hover:bg-navy-800/30 transition-colors"
+        className="w-full flex items-center justify-between p-4 hover:bg-subtle transition-colors"
       >
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-lg bg-pitch-500/20 flex items-center justify-center">
             <Clock className="w-4 h-4 text-pitch-400" />
           </div>
           <div className="text-left">
-            <h3 className="font-display font-semibold text-white text-sm">Playing Time Calculator</h3>
-            <p className="text-xs text-navy-400">
+            <h3 className="font-display font-semibold text-primary text-sm">Playing Time Calculator</h3>
+            <p className="text-xs text-secondary">
               Fair rotation plan for {squadPlayers.length} pupils
               {wasLimited && (
                 <span className="text-amber-400 ml-1">(limited from {allSelected.length} to match day {maxSquad})</span>
@@ -187,53 +187,53 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
             </p>
           </div>
         </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-navy-400" /> : <ChevronDown className="w-4 h-4 text-navy-400" />}
+        {expanded ? <ChevronUp className="w-4 h-4 text-secondary" /> : <ChevronDown className="w-4 h-4 text-secondary" />}
       </button>
 
       {/* Expandable content */}
       {expanded && (
-        <div className="px-4 pb-4 space-y-4 border-t border-navy-800">
+        <div className="px-4 pb-4 space-y-4 border-t border-border-default">
           {/* Config Inputs */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
             <div>
-              <label className="text-xs text-navy-400 block mb-1">Match Length</label>
+              <label className="text-xs text-secondary block mb-1">Match Length</label>
               <div className="flex items-center gap-1">
                 <input
                   type="number"
                   value={matchDuration}
                   onChange={e => setMatchDuration(Math.max(1, parseInt(e.target.value) || 0))}
-                  className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none"
                 />
-                <span className="text-xs text-navy-500">min</span>
+                <span className="text-xs text-tertiary">min</span>
               </div>
             </div>
             <div>
-              <label className="text-xs text-navy-400 block mb-1">On Field</label>
+              <label className="text-xs text-secondary block mb-1">On Field</label>
               <input
                 type="number"
                 value={playersOnField}
                 onChange={e => setPlayersOnField(Math.max(1, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none"
               />
             </div>
             <div>
-              <label className="text-xs text-navy-400 block mb-1">Periods</label>
+              <label className="text-xs text-secondary block mb-1">Periods</label>
               <select
                 value={numPeriods}
                 onChange={e => setNumPeriods(parseInt(e.target.value))}
                 disabled={rollingSubInterval > 0}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none disabled:opacity-50"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none disabled:opacity-50"
               >
                 <option value={2}>2 halves</option>
                 <option value={4}>4 quarters</option>
               </select>
             </div>
             <div>
-              <label className="text-xs text-navy-400 block mb-1">Rolling Subs</label>
+              <label className="text-xs text-secondary block mb-1">Rolling Subs</label>
               <select
                 value={rollingSubInterval}
                 onChange={e => setRollingSubInterval(parseInt(e.target.value))}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none"
               >
                 <option value={0}>Off (breaks only)</option>
                 <option value={5}>Every 5 min</option>
@@ -245,7 +245,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
 
           {/* Quick presets */}
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-xs text-navy-500">Presets:</span>
+            <span className="text-xs text-tertiary">Presets:</span>
             {Object.entries(FORMAT_DEFAULTS).map(([fmt, cfg]) => (
               <button
                 key={fmt}
@@ -258,7 +258,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                 className={`px-2 py-1 rounded text-xs transition-colors ${
                   matchDuration === cfg.duration && numPeriods === cfg.periods && playersOnField === cfg.playersOnField
                     ? 'bg-pitch-500/30 text-pitch-400 border border-pitch-500/30'
-                    : 'bg-navy-800 text-navy-400 hover:text-white border border-navy-700'
+                    : 'bg-subtle text-secondary hover:text-primary border border-border-strong'
                 }`}
               >
                 {fmt}-a-side
@@ -285,7 +285,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                     }
                   </p>
                   {!result.allEqual && !result.rollingMode && (
-                    <p className="text-xs text-navy-400 mt-1">
+                    <p className="text-xs text-secondary mt-1">
                       Tip: Enable rolling subs for more even playing time across the squad
                     </p>
                   )}
@@ -294,8 +294,8 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
 
               {/* Substitution Windows */}
               {result.subTimes.length > 0 && (
-                <div className="bg-navy-800/50 rounded-lg p-3">
-                  <p className="text-sm text-navy-400 mb-2 flex items-center gap-2">
+                <div className="bg-subtle rounded-lg p-3">
+                  <p className="text-sm text-secondary mb-2 flex items-center gap-2">
                     <RotateCcw className="w-4 h-4" />
                     Substitution Windows ({result.rollingMode ? `Every ${rollingSubInterval} min` : numPeriods === 4 ? 'Quarter Breaks' : 'Half Breaks'})
                   </p>
@@ -313,14 +313,14 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
               <div className="flex items-center justify-between">
                 <button
                   onClick={() => setShowTimeline(!showTimeline)}
-                  className="flex items-center gap-2 text-sm text-navy-400 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-sm text-secondary hover:text-primary transition-colors"
                 >
                   {showTimeline ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   {showTimeline ? 'Hide' : 'Show'} Pupil Timeline
                 </button>
                 <button
                   onClick={() => setShowPrintView(true)}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-navy-800 text-navy-300 hover:text-white hover:bg-navy-700 border border-navy-700 transition-colors"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium bg-subtle text-secondary hover:text-primary hover:bg-border-default border border-border-strong transition-colors"
                   title="Print rotation plan"
                 >
                   <Printer className="w-3.5 h-3.5" />
@@ -333,7 +333,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                 <div className="space-y-1.5">
                   {/* Time axis */}
                   <div className="flex items-center ml-[120px] mb-1">
-                    <span className="text-[10px] text-navy-500">0'</span>
+                    <span className="text-[10px] text-tertiary">0'</span>
                     <div className="flex-1" />
                     {result.subTimes.filter((_, i) => {
                       // In rolling mode with many sub times, only show every other label
@@ -341,19 +341,19 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                       return result.subTimes.length <= 6 || i % 2 === 0
                     }).map((t, i) => (
                       <div key={i} className="flex-1 text-center">
-                        <span className="text-[10px] text-navy-500">{t}'</span>
+                        <span className="text-[10px] text-tertiary">{t}'</span>
                       </div>
                     ))}
-                    <span className="text-[10px] text-navy-500">{matchDuration}'</span>
+                    <span className="text-[10px] text-tertiary">{matchDuration}'</span>
                   </div>
 
                   {result.slots.map((slot, idx) => (
                     <div key={idx} className="flex items-center gap-2">
-                      <div className="w-[112px] truncate text-sm text-navy-300 flex-shrink-0">
+                      <div className="w-[112px] truncate text-sm text-secondary flex-shrink-0">
                         {slot.pupil.player_name || slot.pupil.name}
                         {slot.pupil.squad_number ? ` #${slot.pupil.squad_number}` : ''}
                       </div>
-                      <div className="flex-1 relative h-6 bg-navy-800/50 rounded overflow-hidden">
+                      <div className="flex-1 relative h-6 bg-subtle rounded overflow-hidden">
                         {/* Sub time dividers */}
                         {result.subTimes.map((t, i) => (
                           <div
@@ -374,7 +374,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                           />
                         ))}
                       </div>
-                      <div className="w-14 text-right text-xs text-navy-400 flex-shrink-0">
+                      <div className="w-14 text-right text-xs text-secondary flex-shrink-0">
                         {slot.totalMinutes}' ({slot.percentage}%)
                       </div>
                     </div>
@@ -383,19 +383,19 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
               )}
 
               {/* Pupil Summary Table */}
-              <div className="bg-navy-800/30 rounded-lg overflow-hidden">
-                <div className="grid grid-cols-12 gap-1 px-3 py-2 text-xs text-navy-500 border-b border-navy-700">
+              <div className="bg-subtle rounded-lg overflow-hidden">
+                <div className="grid grid-cols-12 gap-1 px-3 py-2 text-xs text-tertiary border-b border-border-strong">
                   <div className="col-span-5">Pupil</div>
                   <div className="col-span-3 text-center">Playing Time</div>
                   <div className="col-span-2 text-center">% of Match</div>
                   <div className="col-span-2 text-center">Status</div>
                 </div>
                 {result.slots.map((slot, idx) => (
-                  <div key={idx} className="grid grid-cols-12 gap-1 px-3 py-2 text-sm border-b border-navy-800/50 last:border-0">
-                    <div className="col-span-5 text-white truncate">
+                  <div key={idx} className="grid grid-cols-12 gap-1 px-3 py-2 text-sm border-b border-border-subtle last:border-0">
+                    <div className="col-span-5 text-primary truncate">
                       {slot.pupil.player_name || slot.pupil.name}
                     </div>
-                    <div className="col-span-3 text-center text-navy-300">{slot.totalMinutes} min</div>
+                    <div className="col-span-3 text-center text-secondary">{slot.totalMinutes} min</div>
                     <div className="col-span-2 text-center">
                       <span className={`px-1.5 py-0.5 rounded text-xs ${
                         slot.percentage >= 45 ? 'bg-green-500/20 text-green-400' :
@@ -405,7 +405,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                         {slot.percentage}%
                       </span>
                     </div>
-                    <div className="col-span-2 text-center text-xs text-navy-400">
+                    <div className="col-span-2 text-center text-xs text-secondary">
                       {slot.segments[0]?.start === 0 ? 'Start' : `On ${slot.segments[0]?.start}'`}
                     </div>
                   </div>

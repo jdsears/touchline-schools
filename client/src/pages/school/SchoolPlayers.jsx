@@ -62,26 +62,26 @@ export default function ClubPlayers() {
   return (
     <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">All Players</h1>
-        <p className="text-navy-400 text-sm mt-1">{pupils.length} pupil{pupils.length !== 1 ? 's' : ''} across all teams</p>
+        <h1 className="text-2xl font-bold text-primary">All Players</h1>
+        <p className="text-secondary text-sm mt-1">{pupils.length} pupil{pupils.length !== 1 ? 's' : ''} across all teams</p>
       </div>
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
           <input
             type="text"
             placeholder="Search pupils..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+            className="w-full pl-9 pr-4 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
           />
         </div>
         <select
           value={teamFilter}
           onChange={(e) => setTeamFilter(e.target.value)}
-          className="bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+          className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
         >
           <option value="">All Teams</option>
           {teams.map(t => (
@@ -91,7 +91,7 @@ export default function ClubPlayers() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+          className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
         >
           <option value="">All Statuses</option>
           <option value="registered">Registered</option>
@@ -102,40 +102,40 @@ export default function ClubPlayers() {
 
       {/* Players table */}
       {pupils.length === 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <Users className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">No pupils found</h3>
-          <p className="text-navy-400 text-sm">Players will appear here when they're registered with the school.</p>
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <Users className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">No pupils found</h3>
+          <p className="text-secondary text-sm">Players will appear here when they're registered with the school.</p>
         </div>
       ) : (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+        <div className="bg-card border border-border-default rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-navy-800">
-                  <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Pupil</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Team</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Age Group</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Position</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Guardian</th>
-                  <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Status</th>
+                <tr className="border-b border-border-default">
+                  <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Pupil</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Team</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Age Group</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Position</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Guardian</th>
+                  <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Status</th>
                 </tr>
               </thead>
               <tbody>
                 {pupils.map((p) => (
-                  <tr key={p.id} className="border-b border-navy-800/50 last:border-0 hover:bg-navy-800/30 transition-colors">
+                  <tr key={p.id} className="border-b border-border-subtle last:border-0 hover:bg-subtle transition-colors">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-navy-800 flex items-center justify-center text-xs font-medium text-navy-300">
+                        <div className="w-8 h-8 rounded-full bg-subtle flex items-center justify-center text-xs font-medium text-secondary">
                           {p.jersey_number || p.name?.charAt(0)}
                         </div>
-                        <span className="text-sm text-white font-medium">{p.name}</span>
+                        <span className="text-sm text-primary font-medium">{p.name}</span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-navy-300">{p.team_name}</td>
-                    <td className="px-4 py-3 text-sm text-navy-400">{p.age_group || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-navy-400">{p.position || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-navy-400">
+                    <td className="px-4 py-3 text-sm text-secondary">{p.team_name}</td>
+                    <td className="px-4 py-3 text-sm text-secondary">{p.age_group || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-secondary">{p.position || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-secondary">
                       {p.guardians && p.guardians.length > 0
                         ? p.guardians.map(g => g.name).join(', ')
                         : '-'

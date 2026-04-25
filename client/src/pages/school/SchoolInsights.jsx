@@ -31,23 +31,23 @@ const PRIORITY_STYLES = {
 
 function ShimmerCard() {
   return (
-    <div className="bg-navy-900 border border-navy-800 rounded-xl p-5 animate-pulse">
+    <div className="bg-card border border-border-default rounded-xl p-5 animate-pulse">
       <div className="flex items-center gap-3 mb-3">
-        <div className="w-8 h-8 rounded-lg bg-navy-800" />
+        <div className="w-8 h-8 rounded-lg bg-subtle" />
         <div className="flex-1">
-          <div className="h-4 w-24 bg-navy-800 rounded" />
+          <div className="h-4 w-24 bg-subtle rounded" />
         </div>
-        <div className="h-5 w-16 bg-navy-800 rounded-full" />
+        <div className="h-5 w-16 bg-subtle rounded-full" />
       </div>
-      <div className="h-5 w-3/4 bg-navy-800 rounded mb-2" />
+      <div className="h-5 w-3/4 bg-subtle rounded mb-2" />
       <div className="space-y-2">
-        <div className="h-3 w-full bg-navy-800 rounded" />
-        <div className="h-3 w-5/6 bg-navy-800 rounded" />
-        <div className="h-3 w-2/3 bg-navy-800 rounded" />
+        <div className="h-3 w-full bg-subtle rounded" />
+        <div className="h-3 w-5/6 bg-subtle rounded" />
+        <div className="h-3 w-2/3 bg-subtle rounded" />
       </div>
       <div className="flex items-center gap-3 mt-4">
-        <div className="h-3 w-20 bg-navy-800 rounded" />
-        <div className="h-7 w-28 bg-navy-800 rounded-lg" />
+        <div className="h-3 w-20 bg-subtle rounded" />
+        <div className="h-7 w-28 bg-subtle rounded-lg" />
       </div>
     </div>
   )
@@ -115,12 +115,12 @@ export default function ClubInsights() {
     return (
       <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
         <div className="flex items-center gap-3">
-          <div className="h-8 w-8 rounded-lg bg-navy-800 animate-pulse" />
-          <div className="h-7 w-40 bg-navy-800 rounded animate-pulse" />
+          <div className="h-8 w-8 rounded-lg bg-subtle animate-pulse" />
+          <div className="h-7 w-40 bg-subtle rounded animate-pulse" />
         </div>
         <div className="flex gap-2">
           {[1, 2, 3, 4].map(i => (
-            <div key={i} className="h-9 w-24 bg-navy-800 rounded-lg animate-pulse" />
+            <div key={i} className="h-9 w-24 bg-subtle rounded-lg animate-pulse" />
           ))}
         </div>
         <div className="space-y-4">
@@ -141,8 +141,8 @@ export default function ClubInsights() {
             <Sparkles className="w-5 h-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">AI Insights</h1>
-            <p className="text-navy-400 text-sm mt-0.5">
+            <h1 className="text-2xl font-bold text-primary">AI Insights</h1>
+            <p className="text-secondary text-sm mt-0.5">
               Intelligent observations about your school
               {unseenCount > 0 && (
                 <span className="ml-2 inline-flex items-center gap-1 text-xs bg-purple-600/20 text-purple-400 px-2 py-0.5 rounded-full">
@@ -156,7 +156,7 @@ export default function ClubInsights() {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex gap-1 bg-navy-900 border border-navy-800 rounded-xl p-1">
+      <div className="flex gap-1 bg-card border border-border-default rounded-xl p-1">
         {FILTER_TABS.map(tab => {
           const count = tab.id === 'all'
             ? insights.length
@@ -168,13 +168,13 @@ export default function ClubInsights() {
               className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeFilter === tab.id
                   ? 'bg-pitch-600/20 text-pitch-400'
-                  : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                  : 'text-secondary hover:text-primary hover:bg-subtle'
               }`}
             >
               {tab.label}
               {count > 0 && (
                 <span className={`ml-1.5 text-xs ${
-                  activeFilter === tab.id ? 'text-pitch-400/70' : 'text-navy-500'
+                  activeFilter === tab.id ? 'text-pitch-400/70' : 'text-tertiary'
                 }`}>
                   ({count})
                 </span>
@@ -186,10 +186,10 @@ export default function ClubInsights() {
 
       {/* Insights list */}
       {filteredInsights.length === 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <Sparkles className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">No AI insights generated yet</h3>
-          <p className="text-navy-400 text-sm max-w-md mx-auto">
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <Sparkles className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">No AI insights generated yet</h3>
+          <p className="text-secondary text-sm max-w-md mx-auto">
             Insights are automatically created as your school data grows. Keep adding matches, tracking attendance, and managing your school to see AI-powered observations here.
           </p>
         </div>
@@ -221,12 +221,12 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
   const isDismissed = insight.status === 'dismissed'
 
   return (
-    <div className={`bg-navy-900 border border-navy-800 rounded-xl overflow-hidden border-l-4 ${priorityBorder} ${
+    <div className={`bg-card border border-border-default rounded-xl overflow-hidden border-l-4 ${priorityBorder} ${
       isNew ? 'ring-1 ring-purple-500/20' : ''
     } ${isDismissed ? 'opacity-60' : ''}`}>
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-navy-800/30 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-subtle transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0 flex-1">
           <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${typeConfig.color.split(' ').slice(0, 1).join(' ')}`}>
@@ -234,7 +234,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className={`font-medium truncate ${isActioned ? 'text-navy-400 line-through' : 'text-white'}`}>
+              <p className={`font-medium truncate ${isActioned ? 'text-secondary line-through' : 'text-primary'}`}>
                 {insight.title}
               </p>
               {isNew && (
@@ -257,7 +257,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
                   <AlertTriangle className="w-3 h-3" /> High priority
                 </span>
               )}
-              <span className="text-xs text-navy-500">
+              <span className="text-xs text-tertiary">
                 <Clock className="w-3 h-3 inline mr-0.5" />
                 {formatTimeAgo(insight.created_at)}
               </span>
@@ -265,19 +265,19 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
           </div>
         </div>
         {expanded
-          ? <ChevronUp className="w-4 h-4 text-navy-400 shrink-0 ml-2" />
-          : <ChevronDown className="w-4 h-4 text-navy-400 shrink-0 ml-2" />
+          ? <ChevronUp className="w-4 h-4 text-secondary shrink-0 ml-2" />
+          : <ChevronDown className="w-4 h-4 text-secondary shrink-0 ml-2" />
         }
       </button>
 
       {expanded && (
-        <div className="px-5 pb-4 pt-1 border-t border-navy-800">
-          <div className="text-sm text-navy-300 whitespace-pre-wrap leading-relaxed">
+        <div className="px-5 pb-4 pt-1 border-t border-border-default">
+          <div className="text-sm text-secondary whitespace-pre-wrap leading-relaxed">
             {insight.content}
           </div>
 
           {insight.team_name && (
-            <p className="text-xs text-navy-500 mt-3">
+            <p className="text-xs text-tertiary mt-3">
               <Users className="w-3 h-3 inline mr-1" />
               Related to: {insight.team_name}
             </p>
@@ -288,7 +288,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
               <button
                 onClick={(e) => { e.stopPropagation(); onMarkActioned(insight.id) }}
                 disabled={isActioning}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-lg text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-xs font-medium transition-colors"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 {isActioning ? 'Updating...' : 'Mark as actioned'}
@@ -296,7 +296,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
               <button
                 onClick={(e) => { e.stopPropagation(); onDismiss(insight.id) }}
                 disabled={isActioning}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-navy-700 disabled:opacity-50 text-navy-400 hover:text-white rounded-lg text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default disabled:opacity-50 text-secondary hover:text-primary rounded-lg text-xs font-medium transition-colors"
               >
                 Dismiss
               </button>
@@ -304,7 +304,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
           )}
 
           {isActioned && insight.actioned_at && (
-            <p className="text-xs text-navy-500 mt-3">
+            <p className="text-xs text-tertiary mt-3">
               Actioned {formatTimeAgo(insight.actioned_at)}
             </p>
           )}

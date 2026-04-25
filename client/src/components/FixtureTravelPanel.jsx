@@ -53,7 +53,7 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
     finally { setSaving(false) }
   }
 
-  if (loading) return <div className="py-4 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-navy-400" /></div>
+  if (loading) return <div className="py-4 flex justify-center"><Loader2 className="w-5 h-5 animate-spin text-secondary" /></div>
 
   if (!isAway && !travel) return null
 
@@ -61,28 +61,28 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
     const mode = MODES.find(m => m.value === travel.transport_mode) || MODES[0]
     const ModeIcon = mode.icon
     return (
-      <div className="bg-navy-800/50 rounded-xl p-4 space-y-2">
+      <div className="bg-subtle rounded-xl p-4 space-y-2">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-semibold text-white flex items-center gap-2">
+          <h3 className="text-sm font-semibold text-primary flex items-center gap-2">
             <ModeIcon className="w-4 h-4 text-pitch-400" /> Travel: {mode.label}
           </h3>
           <button onClick={() => setEditing(true)} className="text-xs text-pitch-400 hover:text-pitch-300">Edit</button>
         </div>
         {travel.departure_time && (
-          <p className="text-sm text-navy-300 flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-navy-500" />
+          <p className="text-sm text-secondary flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-tertiary" />
             Departing {travel.departure_time.slice(0, 5)}
             {travel.departure_location ? ` from ${travel.departure_location}` : ''}
             {travel.return_time ? `. Returning ~${travel.return_time.slice(0, 5)}` : ''}
           </p>
         )}
         {travel.contact_phone && (
-          <p className="text-xs text-navy-400 flex items-center gap-1.5">
+          <p className="text-xs text-secondary flex items-center gap-1.5">
             <Phone className="w-3 h-3" /> {travel.contact_phone}
           </p>
         )}
         {travel.special_instructions && (
-          <p className="text-xs text-navy-400 flex items-center gap-1.5">
+          <p className="text-xs text-secondary flex items-center gap-1.5">
             <AlertCircle className="w-3 h-3" /> {travel.special_instructions}
           </p>
         )}
@@ -93,19 +93,19 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
   if (!editing && !travel && isAway) {
     return (
       <button onClick={() => setEditing(true)}
-        className="w-full py-3 border border-dashed border-navy-700 rounded-xl text-sm text-navy-400 hover:text-white hover:border-navy-500 transition-colors flex items-center justify-center gap-2">
+        className="w-full py-3 border border-dashed border-border-strong rounded-xl text-sm text-secondary hover:text-primary hover:border-navy-500 transition-colors flex items-center justify-center gap-2">
         <Bus className="w-4 h-4" /> Add travel arrangements
       </button>
     )
   }
 
   return (
-    <div className="bg-navy-800/50 rounded-xl p-4 space-y-3">
-      <h3 className="text-sm font-semibold text-white">Travel Arrangements</h3>
+    <div className="bg-subtle rounded-xl p-4 space-y-3">
+      <h3 className="text-sm font-semibold text-primary">Travel Arrangements</h3>
       <div className="flex flex-wrap gap-1.5">
         {MODES.map(m => (
           <button key={m.value} onClick={() => setForm(f => ({ ...f, transportMode: m.value }))}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${form.transportMode === m.value ? 'bg-pitch-600 text-white' : 'bg-navy-700 text-navy-300 hover:bg-navy-600'}`}>
+            className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${form.transportMode === m.value ? 'bg-pitch-600 text-on-dark' : 'bg-border-default text-secondary hover:bg-navy-600'}`}>
             <m.icon className="w-3 h-3" /> {m.label}
           </button>
         ))}
@@ -127,9 +127,9 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
       <TravelField label="Transport Coordinator Notes" value={form.coordinatorNotes}
         onChange={v => setForm(f => ({ ...f, coordinatorNotes: v }))} placeholder="Internal notes" />
       <div className="flex justify-end gap-2 pt-1">
-        <button onClick={() => setEditing(false)} className="px-3 py-1.5 text-xs text-navy-400 hover:text-white">Cancel</button>
+        <button onClick={() => setEditing(false)} className="px-3 py-1.5 text-xs text-secondary hover:text-primary">Cancel</button>
         <button onClick={handleSave} disabled={saving}
-          className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-lg text-xs">
+          className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-xs">
           {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
           Save
         </button>
@@ -140,10 +140,10 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
 
 function TravelField({ label, value, onChange, type = 'text', placeholder }) {
   return (
-    <label className="block text-[11px] text-navy-500">
+    <label className="block text-[11px] text-tertiary">
       {label}
       <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-        className="block w-full mt-0.5 bg-navy-800 border border-navy-700 rounded px-2 py-1.5 text-xs text-white" />
+        className="block w-full mt-0.5 bg-subtle border border-border-strong rounded px-2 py-1.5 text-xs text-primary" />
     </label>
   )
 }

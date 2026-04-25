@@ -114,13 +114,13 @@ export default function ClubSafeguardingRoles() {
       <div className="flex items-center gap-3">
         <button
           onClick={() => navigate(basePath)}
-          className="p-2 text-navy-400 hover:text-white transition-colors"
+          className="p-2 text-secondary hover:text-primary transition-colors"
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-white">Safeguarding Roles</h1>
-          <p className="text-navy-400 text-sm mt-1">Manage welfare officer and safeguarding lead assignments</p>
+          <h1 className="text-2xl font-bold text-primary">Safeguarding Roles</h1>
+          <p className="text-secondary text-sm mt-1">Manage welfare officer and safeguarding lead assignments</p>
         </div>
       </div>
 
@@ -132,7 +132,7 @@ export default function ClubSafeguardingRoles() {
           const isAssigning = assigningRole === roleDef.key
 
           return (
-            <div key={roleDef.key} className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+            <div key={roleDef.key} className="bg-card border border-border-default rounded-xl overflow-hidden">
               <div className="p-5">
                 <div className="flex items-start gap-4">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
@@ -140,13 +140,13 @@ export default function ClubSafeguardingRoles() {
                       ? 'bg-pitch-600/10 text-pitch-400'
                       : roleDef.required
                         ? 'bg-red-600/10 text-red-400'
-                        : 'bg-navy-800 text-navy-400'
+                        : 'bg-subtle text-secondary'
                   }`}>
                     <RoleIcon className="w-6 h-6" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <h3 className="text-lg font-semibold text-white">{roleDef.title}</h3>
+                      <h3 className="text-lg font-semibold text-primary">{roleDef.title}</h3>
                       {roleDef.required && !assignment && (
                         <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
                           <AlertTriangle className="w-3 h-3" />
@@ -154,16 +154,16 @@ export default function ClubSafeguardingRoles() {
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-navy-400 mt-1">{roleDef.description}</p>
+                    <p className="text-sm text-secondary mt-1">{roleDef.description}</p>
 
                     {/* Current assignment */}
                     {assignment ? (
-                      <div className="mt-4 flex items-center gap-3 bg-navy-800/50 rounded-lg p-3">
-                        <div className="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-navy-300 shrink-0">
+                      <div className="mt-4 flex items-center gap-3 bg-subtle rounded-lg p-3">
+                        <div className="w-10 h-10 rounded-full bg-border-default flex items-center justify-center text-sm font-medium text-secondary shrink-0">
                           {(assignment.member_name || assignment.name || '?').charAt(0)}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-white">{assignment.member_name || assignment.name}</p>
+                          <p className="text-sm font-medium text-primary">{assignment.member_name || assignment.name}</p>
                           <div className="flex items-center gap-3 mt-1">
                             {assignment.training_up_to_date !== undefined && (
                               <span className={`inline-flex items-center gap-1 text-xs ${
@@ -178,7 +178,7 @@ export default function ClubSafeguardingRoles() {
                               </span>
                             )}
                             {assignment.assigned_at && (
-                              <span className="text-xs text-navy-500">
+                              <span className="text-xs text-tertiary">
                                 Assigned {new Date(assignment.assigned_at).toLocaleDateString('en-GB')}
                               </span>
                             )}
@@ -191,7 +191,7 @@ export default function ClubSafeguardingRoles() {
                               roleDef.title,
                               assignment.member_name || assignment.name
                             )}
-                            className="p-2 text-navy-400 hover:text-red-400 transition-colors"
+                            className="p-2 text-secondary hover:text-red-400 transition-colors"
                             title="Remove from role"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -205,7 +205,7 @@ export default function ClubSafeguardingRoles() {
                             <select
                               value={selectedMember}
                               onChange={(e) => setSelectedMember(e.target.value)}
-                              className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             >
                               <option value="">Select a member...</option>
                               {members.map(m => (
@@ -216,14 +216,14 @@ export default function ClubSafeguardingRoles() {
                             </select>
                             <button
                               onClick={() => handleAssign(roleDef.key)}
-                              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+                              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
                             >
                               <Check className="w-4 h-4" />
                               Assign
                             </button>
                             <button
                               onClick={() => { setAssigningRole(null); setSelectedMember('') }}
-                              className="p-2 text-navy-400 hover:text-white transition-colors"
+                              className="p-2 text-secondary hover:text-primary transition-colors"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -232,7 +232,7 @@ export default function ClubSafeguardingRoles() {
                           canManage && (
                             <button
                               onClick={() => setAssigningRole(roleDef.key)}
-                              className="flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 hover:text-white rounded-lg text-sm transition-colors"
+                              className="flex items-center gap-2 px-4 py-2 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-sm transition-colors"
                             >
                               <UserPlus className="w-4 h-4" />
                               Assign Member
@@ -251,9 +251,9 @@ export default function ClubSafeguardingRoles() {
 
       {/* Additional assigned roles (custom or extra) */}
       {roles.filter(r => !SAFEGUARDING_ROLES.some(sr => sr.key === r.role || sr.key === r.role_type)).length > 0 && (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
-          <div className="px-5 py-4 border-b border-navy-800">
-            <h3 className="font-semibold text-white">Additional Assignments</h3>
+        <div className="bg-card border border-border-default rounded-xl overflow-hidden">
+          <div className="px-5 py-4 border-b border-border-default">
+            <h3 className="font-semibold text-primary">Additional Assignments</h3>
           </div>
           <div className="divide-y divide-navy-800">
             {roles
@@ -261,12 +261,12 @@ export default function ClubSafeguardingRoles() {
               .map((assignment) => (
                 <div key={assignment.id} className="flex items-center justify-between px-5 py-3">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-navy-800 flex items-center justify-center text-sm font-medium text-navy-300">
+                    <div className="w-8 h-8 rounded-full bg-subtle flex items-center justify-center text-sm font-medium text-secondary">
                       {(assignment.member_name || assignment.name || '?').charAt(0)}
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-white">{assignment.member_name || assignment.name}</p>
-                      <p className="text-xs text-navy-400 capitalize">{(assignment.role || assignment.role_type || '').replace(/_/g, ' ')}</p>
+                      <p className="text-sm font-medium text-primary">{assignment.member_name || assignment.name}</p>
+                      <p className="text-xs text-secondary capitalize">{(assignment.role || assignment.role_type || '').replace(/_/g, ' ')}</p>
                     </div>
                   </div>
                   {canManage && (
@@ -276,7 +276,7 @@ export default function ClubSafeguardingRoles() {
                         assignment.role || assignment.role_type,
                         assignment.member_name || assignment.name
                       )}
-                      className="p-2 text-navy-400 hover:text-red-400 transition-colors"
+                      className="p-2 text-secondary hover:text-red-400 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -289,12 +289,12 @@ export default function ClubSafeguardingRoles() {
       )}
 
       {/* Info box */}
-      <div className="bg-navy-900 border border-navy-800 rounded-xl p-5">
+      <div className="bg-card border border-border-default rounded-xl p-5">
         <div className="flex items-start gap-3">
           <ShieldCheck className="w-5 h-5 text-pitch-400 mt-0.5 shrink-0" />
           <div>
-            <h4 className="text-sm font-medium text-white mb-1">FA Safeguarding Requirements</h4>
-            <p className="text-xs text-navy-400 leading-relaxed">
+            <h4 className="text-sm font-medium text-primary mb-1">FA Safeguarding Requirements</h4>
+            <p className="text-xs text-secondary leading-relaxed">
               All affiliated schools must appoint a School Welfare Officer. The CWO should hold an in-date
               FA Safeguarding Children Workshop qualification and an enhanced DBS check. It is recommended
               to also appoint a Deputy Welfare Officer to provide cover. For more information, visit the

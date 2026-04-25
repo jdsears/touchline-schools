@@ -17,11 +17,11 @@ export default function DailyMotivation() {
   if (profileLoading || !quote) return null
 
   return (
-    <div className="mx-4 mb-4 px-4 py-3 rounded-xl bg-navy-900/50 border border-navy-800/50">
-      <p className="text-sm text-white/80 italic leading-relaxed">
+    <div className="mx-4 mb-4 px-4 py-3 rounded-xl bg-card border border-border-default/50">
+      <p className="text-sm text-primary/80 italic leading-relaxed">
         "{quote.text}"
       </p>
-      <p className="text-[10px] text-navy-500 mt-1.5 text-right">
+      <p className="text-[10px] text-tertiary mt-1.5 text-right">
         {quote.attribution}
       </p>
     </div>

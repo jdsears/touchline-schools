@@ -41,71 +41,71 @@ export default function CreateClub() {
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
           <Building2 className="w-8 h-8 text-pitch-400" />
-          <h1 className="text-2xl font-bold text-white">Create Your School</h1>
+          <h1 className="text-2xl font-bold text-primary">Create Your School</h1>
         </div>
-        <p className="text-navy-400 text-sm">
+        <p className="text-secondary text-sm">
           Set up your school to manage multiple teams, pupils, guardians, and payments from one place.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
+        <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
           <div>
-            <label className="block text-xs text-navy-400 mb-1">School Name *</label>
+            <label className="block text-xs text-secondary mb-1">School Name *</label>
             <input
               type="text" required value={form.name}
               onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               placeholder="e.g. Morley FC"
             />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Contact Email</label>
+              <label className="block text-xs text-secondary mb-1">Contact Email</label>
               <input
                 type="email" value={form.contact_email}
                 onChange={(e) => setForm(f => ({ ...f, contact_email: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">League</label>
+              <label className="block text-xs text-secondary mb-1">League</label>
               <input
                 type="text" value={form.league}
                 onChange={(e) => setForm(f => ({ ...f, league: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="e.g. Norfolk Youth League"
               />
             </div>
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Primary Colour</label>
+              <label className="block text-xs text-secondary mb-1">Primary Colour</label>
               <div className="flex items-center gap-3">
                 <input
                   type="color" value={form.primary_color}
                   onChange={(e) => setForm(f => ({ ...f, primary_color: e.target.value }))}
-                  className="w-10 h-10 rounded-lg border border-navy-700 cursor-pointer"
+                  className="w-10 h-10 rounded-lg border border-border-strong cursor-pointer"
                 />
                 <input
                   type="text" value={form.primary_color}
                   onChange={(e) => setForm(f => ({ ...f, primary_color: e.target.value }))}
-                  className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Secondary Colour</label>
+              <label className="block text-xs text-secondary mb-1">Secondary Colour</label>
               <div className="flex items-center gap-3">
                 <input
                   type="color" value={form.secondary_color}
                   onChange={(e) => setForm(f => ({ ...f, secondary_color: e.target.value }))}
-                  className="w-10 h-10 rounded-lg border border-navy-700 cursor-pointer"
+                  className="w-10 h-10 rounded-lg border border-border-strong cursor-pointer"
                 />
                 <input
                   type="text" value={form.secondary_color}
                   onChange={(e) => setForm(f => ({ ...f, secondary_color: e.target.value }))}
-                  className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
             </div>
@@ -113,34 +113,34 @@ export default function CreateClub() {
         </section>
 
         {/* Data Processing Agreement */}
-        <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
+        <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
           <div className="flex items-center gap-2">
             <Shield className="w-5 h-5 text-amber-400" />
-            <h2 className="text-lg font-semibold text-white">Data Processing Agreement</h2>
+            <h2 className="text-lg font-semibold text-primary">Data Processing Agreement</h2>
           </div>
 
           <button
             type="button"
             onClick={() => setShowDpa(!showDpa)}
-            className="flex items-center justify-between w-full text-left px-3 py-2 bg-navy-800 rounded-lg text-sm text-navy-300 hover:bg-navy-700 transition-colors"
+            className="flex items-center justify-between w-full text-left px-3 py-2 bg-subtle rounded-lg text-sm text-secondary hover:bg-border-default transition-colors"
           >
             <span>Read the Data Processing Agreement</span>
             {showDpa ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
           {showDpa && (
-            <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-80 overflow-y-auto border border-navy-700">
-              <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) - v1.0</h3>
+            <div className="bg-subtle rounded-lg p-4 text-xs text-secondary space-y-3 max-h-80 overflow-y-auto border border-border-strong">
+              <h3 className="font-semibold text-primary text-sm">Data Processing Agreement (DPA) - v1.0</h3>
 
               <p>This Data Processing Agreement ("DPA") forms part of the agreement between MoonBoots Sports ("Processor") and the School ("Controller") for the use of the MoonBoots Sports platform.</p>
 
-              <h4 className="font-medium text-navy-200">1. Roles & Responsibilities</h4>
-              <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. The School determines what personal data is collected, the purpose of collection, and is responsible for ensuring lawful basis for processing. MoonBoots Sports acts as a <strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions through the platform.</p>
+              <h4 className="font-medium text-primary">1. Roles & Responsibilities</h4>
+              <p>The School acts as the <strong className="text-primary">Data Controller</strong> under UK GDPR. The School determines what personal data is collected, the purpose of collection, and is responsible for ensuring lawful basis for processing. MoonBoots Sports acts as a <strong className="text-primary">Data Processor</strong>, processing data solely on the School's instructions through the platform.</p>
 
-              <h4 className="font-medium text-navy-200">2. Data Processed</h4>
+              <h4 className="font-medium text-primary">2. Data Processed</h4>
               <p>Personal data processed includes: pupil names, dates of birth, medical information, emergency contacts, passport-style photographs, identity documents, guardian contact details, payment information (via Stripe), and consent records.</p>
 
-              <h4 className="font-medium text-navy-200">3. School Obligations</h4>
+              <h4 className="font-medium text-primary">3. School Obligations</h4>
               <ul className="list-disc pl-4 space-y-1">
                 <li>Ensure a lawful basis exists for collecting and processing personal data (e.g. consent, legitimate interest, or contractual necessity).</li>
                 <li>Respond to data subject access requests (DSARs) within 30 days.</li>
@@ -150,7 +150,7 @@ export default function CreateClub() {
                 <li>Inform guardians/parents about how their data is processed and their rights.</li>
               </ul>
 
-              <h4 className="font-medium text-navy-200">4. MoonBoots Sports Obligations</h4>
+              <h4 className="font-medium text-primary">4. MoonBoots Sports Obligations</h4>
               <ul className="list-disc pl-4 space-y-1">
                 <li>Process data only as instructed by the School through the platform.</li>
                 <li>Implement appropriate technical and organisational security measures (encryption in transit, access controls, secure hosting).</li>
@@ -160,16 +160,16 @@ export default function CreateClub() {
                 <li>Not sub-process data to third parties without prior consent (current sub-processors: Railway (hosting), Stripe (payments), Resend (email)).</li>
               </ul>
 
-              <h4 className="font-medium text-navy-200">5. Data Retention</h4>
+              <h4 className="font-medium text-primary">5. Data Retention</h4>
               <p>Data is retained while the School's account is active. Upon account closure, all School data (including pupil records, documents, and payment history) is deleted within 30 days. Clubs may request early deletion at any time.</p>
 
-              <h4 className="font-medium text-navy-200">6. Security Measures</h4>
+              <h4 className="font-medium text-primary">6. Security Measures</h4>
               <p>MoonBoots Sports implements: HTTPS/TLS encryption in transit, JWT-based authentication, role-based access controls, authenticated file access for sensitive documents, rate limiting, and regular security reviews.</p>
 
-              <h4 className="font-medium text-navy-200">7. Breach Notification</h4>
+              <h4 className="font-medium text-primary">7. Breach Notification</h4>
               <p>In the event of a personal data breach, MoonBoots Sports will notify the School without undue delay and no later than 48 hours after becoming aware of the breach.</p>
 
-              <h4 className="font-medium text-navy-200">8. Governing Law</h4>
+              <h4 className="font-medium text-primary">8. Governing Law</h4>
               <p>This DPA is governed by the laws of England and Wales and is subject to the jurisdiction of the English courts.</p>
             </div>
           )}
@@ -179,9 +179,9 @@ export default function CreateClub() {
               type="checkbox"
               checked={dpaAccepted}
               onChange={(e) => setDpaAccepted(e.target.checked)}
-              className="mt-1 rounded border-navy-600 bg-navy-800 text-pitch-600 focus:ring-pitch-600"
+              className="mt-1 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
             />
-            <span className="text-sm text-navy-300">
+            <span className="text-sm text-secondary">
               I confirm that I am authorised to act on behalf of this school and I accept the <button type="button" onClick={() => setShowDpa(true)} className="text-amber-400 hover:text-amber-300 underline">Data Processing Agreement</button>. I understand that the school is the Data Controller and is responsible for ensuring lawful basis for processing personal data. *
             </span>
           </label>
@@ -190,7 +190,7 @@ export default function CreateClub() {
         <button
           type="submit"
           disabled={saving || !dpaAccepted}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-xl text-sm font-medium transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-xl text-sm font-medium transition-colors"
         >
           <Building2 className="w-5 h-5" />
           {saving ? 'Creating...' : 'Create School'}

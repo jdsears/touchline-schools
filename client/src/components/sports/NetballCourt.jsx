@@ -36,9 +36,9 @@ export default function NetballCourt({ size = 'medium', className = '', children
         </div>
 
         {/* Third labels */}
-        <div className="absolute top-[14%] left-1/2 -translate-x-1/2 text-[7px] text-white/30 font-medium tracking-wider">GOAL THIRD</div>
-        <div className="absolute top-[48%] left-1/2 -translate-x-1/2 text-[7px] text-white/30 font-medium tracking-wider">CENTRE THIRD</div>
-        <div className="absolute bottom-[14%] left-1/2 -translate-x-1/2 text-[7px] text-white/30 font-medium tracking-wider">GOAL THIRD</div>
+        <div className="absolute top-[14%] left-1/2 -translate-x-1/2 text-[7px] text-primary/30 font-medium tracking-wider">GOAL THIRD</div>
+        <div className="absolute top-[48%] left-1/2 -translate-x-1/2 text-[7px] text-primary/30 font-medium tracking-wider">CENTRE THIRD</div>
+        <div className="absolute bottom-[14%] left-1/2 -translate-x-1/2 text-[7px] text-primary/30 font-medium tracking-wider">GOAL THIRD</div>
 
         {children}
       </div>

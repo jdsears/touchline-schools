@@ -37,7 +37,7 @@ export default function NextEventCard() {
   if (loading) {
     return (
       <div className="mx-4 mb-4">
-        <div className="h-36 bg-navy-800 rounded-2xl animate-pulse" />
+        <div className="h-36 bg-subtle rounded-2xl animate-pulse" />
       </div>
     )
   }
@@ -56,7 +56,7 @@ export default function NextEventCard() {
       {/* Type badge */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-white/70">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-primary/70">
             {style.label}
           </span>
           {sport && (
@@ -64,15 +64,15 @@ export default function NextEventCard() {
           )}
         </div>
         {!isToday && countdown && (
-          <span className="text-[10px] text-white/60 font-medium">{countdown}</span>
+          <span className="text-[10px] text-primary/60 font-medium">{countdown}</span>
         )}
         {isToday && (
-          <span className="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded-full font-semibold">TODAY</span>
+          <span className="text-[10px] bg-white/20 text-primary px-2 py-0.5 rounded-full font-semibold">TODAY</span>
         )}
       </div>
 
       {/* Title */}
-      <h3 className="text-lg font-bold text-white leading-tight mb-2">
+      <h3 className="text-lg font-bold text-primary leading-tight mb-2">
         {event.type === 'fixture' && extra.home_away
           ? `vs ${event.title} (${extra.home_away})`
           : event.title}
@@ -81,7 +81,7 @@ export default function NextEventCard() {
       {/* Details */}
       <div className="space-y-1.5">
         {eventDate && (
-          <div className="flex items-center gap-2 text-xs text-white/70">
+          <div className="flex items-center gap-2 text-xs text-primary/70">
             <Clock size={13} />
             <span>
               {format(eventDate, 'EEE d MMM')}
@@ -92,26 +92,26 @@ export default function NextEventCard() {
         )}
 
         {event.venue && (
-          <div className="flex items-center gap-2 text-xs text-white/70">
+          <div className="flex items-center gap-2 text-xs text-primary/70">
             <MapPin size={13} />
             <span>{event.venue}</span>
           </div>
         )}
 
         {event.type === 'fixture' && extra.kit_type && (
-          <div className="flex items-center gap-2 text-xs text-white/70">
+          <div className="flex items-center gap-2 text-xs text-primary/70">
             <Shirt size={13} />
             <span className="capitalize">{extra.kit_type} kit</span>
           </div>
         )}
 
         {extra.team_name && (
-          <p className="text-xs text-white/50 mt-1">{extra.team_name}</p>
+          <p className="text-xs text-primary/50 mt-1">{extra.team_name}</p>
         )}
       </div>
 
       {/* Tap hint */}
-      <div className="flex items-center justify-end mt-3 text-white/40">
+      <div className="flex items-center justify-end mt-3 text-primary/40">
         <ChevronRight size={16} />
       </div>
     </div>
