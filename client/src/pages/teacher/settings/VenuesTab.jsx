@@ -69,7 +69,7 @@ export default function VenuesTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-primary">Venues</h2>
-        <button onClick={openNew} className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 text-primary rounded-lg text-sm">
+        <button onClick={openNew} className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm">
           <Plus className="w-4 h-4" /> Add Venue
         </button>
       </div>
@@ -153,7 +153,7 @@ export default function VenuesTab() {
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-secondary hover:text-link">Cancel</button>
               <button onClick={handleSave} disabled={saving}
-                className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm">
+                className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
                 {saving ? 'Saving...' : editing === 'new' ? 'Add Venue' : 'Save Changes'}
               </button>
             </div>

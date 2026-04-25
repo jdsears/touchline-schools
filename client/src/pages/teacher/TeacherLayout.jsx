@@ -130,17 +130,17 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
             <img src={schoolBranding.logoUrl} alt="" className="w-8 h-8 rounded-lg object-cover" />
           ) : (
             <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
-              <GraduationCap className="w-5 h-5 text-primary" />
+              <GraduationCap className="w-5 h-5 text-on-dark" />
             </div>
           )}
           <div>
-            <div className="text-sm font-semibold text-primary">{schoolBranding?.schoolName || 'Teacher Hub'}</div>
+            <div className="text-sm font-semibold text-on-dark">{schoolBranding?.schoolName || 'Teacher Hub'}</div>
             <div className="text-xs text-brand-gold">{roleDisplay || user?.name}</div>
           </div>
         </div>
         <button
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-1 text-primary/60 hover:text-link"
+          className="lg:hidden p-1 text-on-dark/60 hover:text-on-dark"
         >
           <X className="w-5 h-5" />
         </button>
@@ -199,7 +199,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
       <div className="border-t border-border-default p-4">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
-            <span className="text-xs font-medium text-primary">
+            <span className="text-xs font-medium text-on-dark">
               {user?.name?.charAt(0)?.toUpperCase() || '?'}
             </span>
           </div>
@@ -307,16 +307,16 @@ export default function TeacherLayout() {
         <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-14 px-4 bg-brand-navy">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 text-primary/60 hover:text-link"
+            className="p-2 text-on-dark/60 hover:text-on-dark"
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-brand-gold" />
-            <span className="text-sm font-semibold text-primary">Teacher Hub</span>
+            <span className="text-sm font-semibold text-on-dark">Teacher Hub</span>
           </div>
           <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-            <span className="text-xs font-medium text-primary">
+            <span className="text-xs font-medium text-on-dark">
               {user?.name?.charAt(0)?.toUpperCase() || '?'}
             </span>
           </div>
@@ -329,7 +329,7 @@ export default function TeacherLayout() {
               <button
                 onClick={() => switchView('hod')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  isOnHoDView ? 'bg-brand-navy text-primary' : 'text-secondary hover:text-link'
+                  isOnHoDView ? 'bg-brand-navy text-on-dark' : 'text-secondary hover:text-link'
                 }`}
               >
                 School Admin
@@ -337,7 +337,7 @@ export default function TeacherLayout() {
               <button
                 onClick={() => switchView('teacher')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  isOnTeacherHome ? 'bg-brand-navy text-primary' : 'text-secondary hover:text-link'
+                  isOnTeacherHome ? 'bg-brand-navy text-on-dark' : 'text-secondary hover:text-link'
                 }`}
               >
                 Teacher
@@ -361,9 +361,9 @@ export default function TeacherLayout() {
           className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-pitch-600 hover:bg-pitch-700 shadow-lg shadow-pitch-600/30 flex items-center justify-center transition-all hover:scale-105"
           title="Voice observation"
         >
-          <Mic className="w-6 h-6 text-primary" />
+          <Mic className="w-6 h-6 text-on-dark" />
           {voicePendingCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-alert-600 rounded-full flex items-center justify-center text-[10px] font-bold text-primary">
+            <span className="absolute -top-1 -right-1 w-5 h-5 bg-alert-600 rounded-full flex items-center justify-center text-[10px] font-bold text-on-dark">
               {voicePendingCount}
             </span>
           )}

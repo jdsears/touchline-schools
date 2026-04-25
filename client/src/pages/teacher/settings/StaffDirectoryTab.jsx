@@ -51,7 +51,7 @@ export default function StaffDirectoryTab({ access }) {
         </div>
         {access?.isAdmin && (
           <button
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
             onClick={() => toast('Invite flow coming soon')}
           >
             <UserPlus className="w-4 h-4" />

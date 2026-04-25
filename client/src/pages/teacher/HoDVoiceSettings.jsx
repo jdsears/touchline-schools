@@ -160,7 +160,7 @@ export default function HoDVoiceSettings() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Settings

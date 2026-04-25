@@ -99,7 +99,7 @@ export default function GDPRDashboard() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab.id
-                ? 'bg-pitch-600 text-primary'
+                ? 'bg-pitch-600 text-on-dark'
                 : 'text-secondary hover:text-link hover:bg-subtle'
             }`}
           >
@@ -355,7 +355,7 @@ function PupilsTab() {
               <button
                 onClick={handleDelete}
                 disabled={!deleteReason.trim() || deleteLoading}
-                className="flex-1 py-2.5 bg-alert-600 hover:bg-alert-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-alert-600 hover:bg-alert-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {deleteLoading ? <div className="spinner w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
                 Delete All Data
@@ -540,7 +540,7 @@ function RequestsTab() {
                 {r.request_type === 'export' && r.status === 'ready' && (
                   <button
                     onClick={() => handleDownload(r)}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs"
                   >
                     <Download className="w-3.5 h-3.5" />
                     Download

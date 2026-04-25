@@ -228,7 +228,7 @@ export default function TeacherClassDetail() {
             </h2>
             <button
               onClick={() => setShowAddUnit(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               Add Unit
@@ -275,7 +275,7 @@ export default function TeacherClassDetail() {
               </p>
               <button
                 onClick={() => setShowAddUnit(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm mx-auto transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm mx-auto transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Sport Unit
@@ -293,7 +293,7 @@ export default function TeacherClassDetail() {
             </h2>
             <button
               onClick={openAddPupils}
-              className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs transition-colors"
             >
               <UserPlus className="w-3.5 h-3.5" />
               Add
@@ -333,7 +333,7 @@ export default function TeacherClassDetail() {
                 </p>
                 <button
                   onClick={openAddPupils}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm mx-auto transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm mx-auto transition-colors"
                 >
                   <UserPlus className="w-4 h-4" />
                   Add Pupils
@@ -407,7 +407,7 @@ export default function TeacherClassDetail() {
                         <button
                           onClick={() => handleAddPupils([p.id])}
                           disabled={isAdding}
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs transition-colors disabled:opacity-50"
+                          className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs transition-colors disabled:opacity-50"
                         >
                           {isAdding ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
                           Add
@@ -506,7 +506,7 @@ export default function TeacherClassDetail() {
                 <button
                   type="submit"
                   disabled={addingUnit}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {addingUnit ? 'Adding...' : 'Add Unit'}
                 </button>

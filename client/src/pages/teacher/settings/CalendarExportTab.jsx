@@ -70,7 +70,7 @@ export default function CalendarExportTab() {
               <p className="text-xs text-secondary mb-3">
                 Generate a subscription URL to see all your classes, fixtures, and training sessions in your personal calendar.
               </p>
-              <button onClick={() => createToken('teacher_schedule')} className="flex items-center gap-2 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary text-sm rounded-lg transition-colors">
+              <button onClick={() => createToken('teacher_schedule')} className="flex items-center gap-2 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark text-sm rounded-lg transition-colors">
                 <Plus className="w-4 h-4" />Generate my schedule URL
               </button>
             </div>

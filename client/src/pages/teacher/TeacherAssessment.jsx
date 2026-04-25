@@ -142,7 +142,7 @@ export default function TeacherAssessment() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span className="text-sm font-medium">{saving ? 'Saving...' : 'Save Assessments'}</span>

@@ -250,7 +250,7 @@ export default function VoiceObservationReview() {
           <button
             onClick={handleConfirmAll}
             disabled={confirming}
-            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             {confirming ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCheck className="w-4 h-4" />}
             Confirm all ({pendingObs.length})
@@ -312,7 +312,7 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
           />
           <div className="flex gap-2 mt-2">
             <button onClick={onCancelEdit} className="px-3 py-1 bg-subtle text-secondary rounded text-xs">Cancel</button>
-            <button onClick={() => onSaveEdit(obs.id)} className="px-3 py-1 bg-pitch-600 text-primary rounded text-xs">Save</button>
+            <button onClick={() => onSaveEdit(obs.id)} className="px-3 py-1 bg-pitch-600 text-on-dark rounded text-xs">Save</button>
           </div>
         </div>
       ) : (

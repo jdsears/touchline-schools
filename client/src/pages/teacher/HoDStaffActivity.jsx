@@ -86,7 +86,7 @@ export default function HoDStaffActivity() {
                 key={p.value}
                 onClick={() => setPeriod(p.value)}
                 className={`px-3 py-1.5 text-xs transition-colors ${
-                  period === p.value ? 'bg-pitch-600 text-primary' : 'bg-subtle hover:bg-border-default text-secondary'
+                  period === p.value ? 'bg-pitch-600 text-on-dark' : 'bg-subtle hover:bg-border-default text-secondary'
                 }`}
               >
                 {p.label}

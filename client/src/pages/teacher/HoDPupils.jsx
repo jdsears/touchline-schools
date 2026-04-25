@@ -106,7 +106,7 @@ export default function HoDPupils() {
           </Link>
           <button
             onClick={() => setShowAdd(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Pupil
@@ -316,7 +316,7 @@ export default function HoDPupils() {
                 <button type="button" onClick={() => setShowAdd(false)}
                   className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">Cancel</button>
                 <button type="submit" disabled={adding}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
                   {adding ? 'Adding...' : 'Add Pupil'}
                 </button>
               </div>

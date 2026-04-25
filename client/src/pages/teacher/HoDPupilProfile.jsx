@@ -214,7 +214,7 @@ export default function HoDPupilProfile() {
           {editing ? (
             <>
               <button onClick={() => setEditing(false)} className="p-2 text-secondary hover:text-link"><X className="w-5 h-5" /></button>
-              <button onClick={handleSave} className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm">
+              <button onClick={handleSave} className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm">
                 <Save className="w-4 h-4" /> Save
               </button>
             </>
@@ -333,7 +333,7 @@ export default function HoDPupilProfile() {
               </h2>
               <button
                 onClick={() => setShowAddObs(!showAddObs)}
-                className="flex items-center gap-1 px-2 py-1 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs transition-colors"
+                className="flex items-center gap-1 px-2 py-1 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs transition-colors"
               >
                 <Plus className="w-3 h-3" /> Add
               </button>
@@ -423,7 +423,7 @@ export default function HoDPupilProfile() {
                   <button type="button" onClick={() => setShowAddObs(false)}
                     className="px-3 py-1.5 text-xs text-secondary hover:text-link">Cancel</button>
                   <button type="submit" disabled={savingObs}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs disabled:opacity-50">
+                    className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs disabled:opacity-50">
                     {savingObs ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                     Save
                   </button>

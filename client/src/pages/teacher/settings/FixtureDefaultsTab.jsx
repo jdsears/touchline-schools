@@ -102,7 +102,7 @@ export default function FixtureDefaultsTab({ access }) {
           <button
             type="submit"
             disabled={!!saving}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Default

@@ -74,7 +74,7 @@ export default function HoDOverview() {
       <div className="flex flex-col items-center justify-center py-20 text-center">
         <AlertTriangle className="w-8 h-8 text-amber-400 mb-3" />
         <p className="text-secondary text-sm mb-4">{error}</p>
-        <button onClick={() => window.location.reload()} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary text-sm rounded-lg transition-colors">
+        <button onClick={() => window.location.reload()} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark text-sm rounded-lg transition-colors">
           Retry
         </button>
       </div>
@@ -102,7 +102,7 @@ export default function HoDOverview() {
 
       {/* Quick actions */}
       <div className="flex flex-wrap gap-3">
-        <Link to="/teacher/hod/reporting" className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary text-sm font-medium rounded-lg transition-colors">
+        <Link to="/teacher/hod/reporting" className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark text-sm font-medium rounded-lg transition-colors">
           <Plus className="w-4 h-4" />New reporting window
         </Link>
         <Link to="/teacher/hod/staff-activity" className="flex items-center gap-2 px-4 py-2.5 bg-subtle hover:bg-subtle text-primary text-sm rounded-lg border border-border-strong transition-colors">

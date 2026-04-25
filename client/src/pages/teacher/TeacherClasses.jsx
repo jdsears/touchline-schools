@@ -98,7 +98,7 @@ export default function TeacherClasses() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span className="text-sm font-medium">New Class</span>
@@ -171,7 +171,7 @@ export default function TeacherClasses() {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {creating ? 'Creating...' : 'Create'}
                 </button>
@@ -259,7 +259,7 @@ export default function TeacherClasses() {
           </p>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors mx-auto"
+            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors mx-auto"
           >
             <Plus className="w-4 h-4" />
             <span className="text-sm font-medium">Create Teaching Group</span>

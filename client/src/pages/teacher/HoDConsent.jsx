@@ -60,7 +60,7 @@ export default function HoDConsent() {
         </div>
         {(!types || types.length === 0) && (
           <button onClick={seedDefaults} disabled={seeding}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
             {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             Set up default consent types
           </button>
@@ -142,7 +142,7 @@ export default function HoDConsent() {
             <p className="text-xs text-secondary mt-0.5">Expire all annual consents and require fresh parent confirmation for the new year.</p>
           </div>
           <button onClick={() => setShowResetConfirm(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-primary rounded-lg text-sm shrink-0">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-on-dark rounded-lg text-sm shrink-0">
             <RefreshCw className="w-3.5 h-3.5" /> Start of Year Reset
           </button>
         </div>
@@ -160,7 +160,7 @@ export default function HoDConsent() {
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 text-sm text-secondary hover:text-link">Cancel</button>
               <button onClick={bulkReset} disabled={resetting}
-                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-primary rounded-lg text-sm">
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
                 {resetting ? 'Resetting...' : 'Confirm Reset'}
               </button>
             </div>
