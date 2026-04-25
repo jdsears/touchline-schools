@@ -1,8 +1,11 @@
+import { useState, useEffect } from 'react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { PupilProfileProvider, usePupilProfile } from '../../hooks/usePupilProfile'
 import BottomTabBar from '../../components/pupil-lounge/BottomTabBar'
 import PupilInstallPrompt from '../../components/pupil-lounge/PupilInstallPrompt'
+
+const SL_THEME_KEY = 'touchline-sl-theme'
 
 function SchoolHeader() {
   const { pupil } = usePupilProfile()
@@ -67,9 +70,19 @@ function LayoutInner() {
 }
 
 export default function SportsLoungeLayout() {
+  const [slTheme, setSlTheme] = useState(() => {
+    try { return localStorage.getItem(SL_THEME_KEY) || 'dark' } catch { return 'dark' }
+  })
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', slTheme)
+    try { localStorage.setItem(SL_THEME_KEY, slTheme) } catch {}
+    return () => { document.documentElement.setAttribute('data-theme', 'light') }
+  }, [slTheme])
+
   return (
     <PupilProfileProvider>
-      <div className="bg-[#060C1A] min-h-[100dvh] text-white">
+      <div className={`min-h-[100dvh] ${slTheme === 'dark' ? 'bg-[#060C1A] text-white' : 'bg-page text-primary'}`}>
         <LayoutInner />
       </div>
     </PupilProfileProvider>
