@@ -62,6 +62,7 @@ import demoRequestRoutes from './routes/demoRequests.js'
 import schoolSettingsRoutes from './routes/schoolSettings.js'
 import venueRoutes from './routes/venues.js'
 import fixtureTravelRoutes from './routes/fixtureTravel.js'
+import consentRoutes from './routes/consent.js'
 
 // Demo seed
 import { seedSchool } from './db/demo-seed/school.js'
@@ -256,6 +257,7 @@ app.use('/api/demo-requests', demoRequestRoutes)
 app.use('/api/settings', schoolSettingsRoutes)
 app.use('/api/venues', venueRoutes)
 app.use('/api/fixture-travel', fixtureTravelRoutes)
+app.use('/api/consent', consentRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -745,6 +747,8 @@ async function ensureDemoPrerequisites() {
     `CREATE TABLE IF NOT EXISTS venues (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, name TEXT NOT NULL, address TEXT, postcode TEXT, latitude DOUBLE PRECISION, longitude DOUBLE PRECISION, parking_notes TEXT, changing_room_notes TEXT, pitch_layout_notes TEXT, contact_name TEXT, contact_phone TEXT, accessibility_notes TEXT, is_school_venue BOOLEAN DEFAULT false, last_visited_date DATE, archived_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS fixture_travel (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), match_id UUID NOT NULL UNIQUE, transport_mode TEXT NOT NULL DEFAULT 'school_coach', departure_location TEXT, departure_time TIME, return_time TIME, contact_phone TEXT, special_instructions TEXT, coordinator_notes TEXT, parent_lifts_requested BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS travel_assignments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), match_id UUID NOT NULL, pupil_id UUID NOT NULL, transport_mode TEXT NOT NULL DEFAULT 'team', driver_name TEXT, driver_capacity INTEGER, notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(match_id, pupil_id))`,
+    `CREATE TABLE IF NOT EXISTS consent_types (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, name TEXT NOT NULL, description TEXT, is_per_term BOOLEAN DEFAULT false, is_per_fixture BOOLEAN DEFAULT false, expiry_period_months INTEGER, requires_text_acknowledgement BOOLEAN DEFAULT true, default_response TEXT DEFAULT 'no_default', display_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS pupil_consents (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID NOT NULL, consent_type_id UUID NOT NULL REFERENCES consent_types(id) ON DELETE CASCADE, status TEXT NOT NULL DEFAULT 'pending', granted_at TIMESTAMPTZ, granted_by_parent_email TEXT, expires_at TIMESTAMPTZ, parent_signature_text TEXT, consent_text_version TEXT, ip_address TEXT, notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(pupil_id, consent_type_id))`,
   ]
   for (const sql of createTables) stmts.push(sql)
   stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS venue_id UUID REFERENCES venues(id) ON DELETE SET NULL`)
