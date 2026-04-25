@@ -655,6 +655,7 @@ export const knowledgeBaseService = {
 // Teacher Hub cross-team service (extra-curricular)
 export const venueService = {
   list: () => api.get('/venues'),
+  get: (id) => api.get(`/venues/${id}`),
   create: (data) => api.post('/venues', data),
   update: (id, data) => api.put(`/venues/${id}`, data),
   archive: (id) => api.delete(`/venues/${id}`),

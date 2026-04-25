@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, lazy, Suspense } from 'react'
 import { venueService } from '../../../services/api'
-import { MapPin, Plus, Edit2, Archive, Loader2, Home, X } from 'lucide-react'
+import { MapPin, Plus, Edit2, Archive, Loader2, Home, X, Eye } from 'lucide-react'
 import toast from 'react-hot-toast'
+
+const VenueMap = lazy(() => import('../../../components/VenueMap'))
 
 const EMPTY = { name: '', address: '', postcode: '', contactName: '', contactPhone: '',
   parkingNotes: '', changingRoomNotes: '', pitchLayoutNotes: '', accessibilityNotes: '', isSchoolVenue: false }
@@ -10,6 +12,7 @@ export default function VenuesTab() {
   const [venues, setVenues] = useState([])
   const [loading, setLoading] = useState(true)
   const [editing, setEditing] = useState(null)
+  const [viewing, setViewing] = useState(null)
   const [form, setForm] = useState(EMPTY)
   const [saving, setSaving] = useState(false)
 
@@ -89,12 +92,37 @@ export default function VenuesTab() {
               <p className="text-xs text-navy-500 mt-0.5">{v.fixture_count || 0} fixture{v.fixture_count !== 1 ? 's' : ''}</p>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => openEdit(v)} className="p-1.5 text-navy-500 hover:text-white"><Edit2 className="w-4 h-4" /></button>
-              <button onClick={() => handleArchive(v.id)} className="p-1.5 text-navy-500 hover:text-alert-400"><Archive className="w-4 h-4" /></button>
+              <button onClick={() => setViewing(v)} title="View" className="p-1.5 text-navy-500 hover:text-pitch-400"><Eye className="w-4 h-4" /></button>
+              <button onClick={() => openEdit(v)} title="Edit" className="p-1.5 text-navy-500 hover:text-white"><Edit2 className="w-4 h-4" /></button>
+              <button onClick={() => handleArchive(v.id)} title="Archive" className="p-1.5 text-navy-500 hover:text-alert-400"><Archive className="w-4 h-4" /></button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Venue detail with map */}
+      {viewing && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setViewing(null)}>
+          <div className="bg-navy-900 border border-navy-800 rounded-xl p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">{viewing.name}</h3>
+              <button onClick={() => setViewing(null)} className="text-navy-400 hover:text-white"><X className="w-5 h-5" /></button>
+            </div>
+            {viewing.address && <p className="text-sm text-navy-300 mb-1">{viewing.address}</p>}
+            {viewing.postcode && <p className="text-sm text-navy-400 mb-3">{viewing.postcode}</p>}
+            <Suspense fallback={<div className="bg-navy-800 rounded-lg h-60 flex items-center justify-center"><Loader2 className="w-5 h-5 animate-spin text-navy-400" /></div>}>
+              <VenueMap venue={viewing} />
+            </Suspense>
+            {viewing.parking_notes && <Detail label="Parking" text={viewing.parking_notes} />}
+            {viewing.changing_room_notes && <Detail label="Changing Rooms" text={viewing.changing_room_notes} />}
+            {viewing.pitch_layout_notes && <Detail label="Pitch / Facilities" text={viewing.pitch_layout_notes} />}
+            {viewing.accessibility_notes && <Detail label="Accessibility" text={viewing.accessibility_notes} />}
+            {viewing.contact_name && (
+              <p className="text-xs text-navy-400 mt-3">Contact: {viewing.contact_name}{viewing.contact_phone ? ` - ${viewing.contact_phone}` : ''}</p>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Edit/Create modal */}
       {editing && (
@@ -132,6 +160,15 @@ export default function VenuesTab() {
           </div>
         </div>
       )}
+    </div>
+  )
+}
+
+function Detail({ label, text }) {
+  return (
+    <div className="mt-3">
+      <p className="text-xs font-medium text-navy-500 uppercase tracking-wider mb-0.5">{label}</p>
+      <p className="text-sm text-navy-300">{text}</p>
     </div>
   )
 }
