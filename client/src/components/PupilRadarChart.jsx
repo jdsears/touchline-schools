@@ -28,7 +28,7 @@ const CATEGORIES = {
   mental: { label: 'Mental', attrs: ['confidence', 'work_rate', 'communication', 'coachability', 'resilience', 'leadership'], source: 'mental_traits' },
 }
 
-// FA's 6 Core Capabilities — used for the overview radar
+// FA's 6 Core Capabilities - used for the overview radar
 const CORE_CAPABILITIES = ['scanning', 'timing', 'movement', 'positioning', 'deception', 'techniques']
 
 // Build overview data from the 6 FA core capabilities

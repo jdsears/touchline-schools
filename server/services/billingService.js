@@ -5,7 +5,7 @@ import pool from '../config/database.js'
 // ==========================================
 
 export const PLANS = {
-  // Free (no Stripe product — handled entirely in database)
+  // Free (no Stripe product - handled entirely in database)
   free: {
     id: 'free',
     name: 'Free',
@@ -29,7 +29,7 @@ export const PLANS = {
     },
   },
 
-  // Trial (legacy — existing trials continue, new signups go to free)
+  // Trial (legacy - existing trials continue, new signups go to free)
   trial_14d: {
     id: 'trial_14d',
     name: 'Trial',
@@ -53,7 +53,7 @@ export const PLANS = {
     isTrial: true,
   },
 
-  // Core — £9.99/mo, £7.99/mo billed annually
+  // Core - £9.99/mo, £7.99/mo billed annually
   team_core_monthly: {
     id: 'team_core_monthly',
     name: 'Core',
@@ -97,7 +97,7 @@ export const PLANS = {
     },
   },
 
-  // Pro — £19.99/mo, £15.99/mo billed annually
+  // Pro - £19.99/mo, £15.99/mo billed annually
   team_pro_monthly: {
     id: 'team_pro_monthly',
     name: 'Pro',
@@ -147,7 +147,7 @@ export const PLANS = {
     },
   },
 
-  // Academy — £29.99/mo, £24.99/mo billed annually
+  // Academy - £29.99/mo, £24.99/mo billed annually
   academy_monthly: {
     id: 'academy_monthly',
     name: 'Academy',
@@ -203,7 +203,7 @@ export const PLANS = {
     },
   },
 
-  // School Plans — monthly only, video pools shared across teams
+  // School Plans - monthly only, video pools shared across teams
   club_starter_monthly: {
     id: 'club_starter_monthly',
     name: 'School Starter',
@@ -446,7 +446,7 @@ export async function getEntitlements({ userId, teamId, userEmail }) {
         const subscription = subResult.rows[0]
 
         // For trialing subscriptions, enforce the period end strictly
-        // For active subscriptions, trust the status — period_end may be stale
+        // For active subscriptions, trust the status - period_end may be stale
         // if a Stripe renewal webhook was missed or delayed
         const periodExpired = subscription.current_period_end && new Date(subscription.current_period_end) < new Date()
         if (subscription.status === 'trialing' && periodExpired) {
@@ -650,7 +650,7 @@ export async function checkAndIncrementUsage(teamId, type, entitlements = null) 
           creditBalance: deduction.balance,
         }
       }
-      // No purchased credits either — return with purchasable flag
+      // No purchased credits either - return with purchasable flag
       const creditBalance = await getVideoCredits(teamId)
       return { ...check, creditsAvailable: creditBalance, canPurchase: true }
     }

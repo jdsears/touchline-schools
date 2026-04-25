@@ -1,13 +1,20 @@
 {
-  "name": "touchline-schools-server",
+  "name": "moonboots-sports-server",
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
     "start": "node index.js",
-    "migrate": "node config/migrate.js",
+    "migrate": "node db/migrations.js",
     "seed": "node config/seed.js",
-    "create-service-account": "node scripts/create-service-account.js"
+    "create-service-account": "node scripts/create-service-account.js",
+    "seed:demo": "node db/demo-seed/index.js",
+    "seed:demo:wipe": "node db/demo-seed/index.js --wipe",
+    "seed:medical-notes": "node db/seeds/seed-medical-notes.js",
+    "seed:send-notes": "node db/seeds/seed-send-notes.js",
+    "seed:idps": "node db/seeds/seed-idps.js",
+    "seed:achievements": "node db/seeds/seed-achievements.js",
+    "seed:safeguarding-flags": "node db/seeds/seed-safeguarding-flags.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.24.0",
@@ -24,6 +31,7 @@
     "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
     "multer": "^1.4.5-lts.1",
+    "openid-client": "^5.7.1",
     "pg": "^8.11.3",
     "resend": "^6.8.0",
     "stripe": "^20.2.0",

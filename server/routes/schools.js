@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url'
 import rateLimit from 'express-rate-limit'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { loadSchool, loadSchoolBySlug, requireSchoolRole, ROLE_PERMISSIONS } from '../middleware/schoolAuth.js'
+import { loadSchool, loadSchoolBySlug, requireSchoolRole, ROLE_PERMISSIONS, ROLE_LABELS, getEffectiveRole } from '../middleware/schoolAuth.js'
 import { sendNotificationEmail } from '../services/emailService.js'
 import { getFrontendUrl } from '../utils/urlUtils.js'
 import { uploadFile } from '../services/storageService.js'
@@ -25,6 +25,38 @@ const router = Router()
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
+// GET /schools/my-branding - return the current user's school branding (logo, colours, name)
+router.get('/my-branding', authenticateToken, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT s.id, s.name, s.slug, s.logo_url, s.primary_color, s.secondary_color
+       FROM school_members sm
+       JOIN schools s ON sm.school_id = s.id
+       WHERE sm.user_id = $1
+       ORDER BY sm.joined_at ASC
+       LIMIT 1`,
+      [req.user.id]
+    )
+    if (result.rows.length === 0) {
+      return res.json({ branding: null })
+    }
+    const school = result.rows[0]
+    res.json({
+      branding: {
+        schoolId: school.id,
+        schoolName: school.name,
+        slug: school.slug,
+        logoUrl: school.logo_url || null,
+        primaryColor: school.primary_color || '#1a365d',
+        secondaryColor: school.secondary_color || '#38a169',
+      },
+    })
+  } catch (error) {
+    console.error('Branding fetch error:', error)
+    res.status(500).json({ error: 'Failed to load branding' })
+  }
+})
 
 // ==========================================
 // MULTER CONFIG FOR REGISTRATION UPLOADS
@@ -224,20 +256,39 @@ router.get('/:schoolId/dashboard', authenticateToken, loadSchool, requireSchoolR
   try {
     const { schoolId } = req.params
 
-    // Run stats queries in parallel
-    const [teamsResult, playersResult, guardiansResult, membersResult, pendingResult] = await Promise.all([
+    // Pupils are linked to the school via school_members (they are seeded with
+    // role='parent', school_role='read_only'); staff are the remaining members.
+    const [teamsResult, pupilsResult, staffResult, pendingResult, classesResult] = await Promise.all([
       pool.query('SELECT COUNT(*) FROM teams WHERE school_id = $1', [schoolId]),
-      pool.query('SELECT COUNT(*) FROM pupils p JOIN teams t ON p.team_id = t.id WHERE t.school_id = $1 AND p.is_active = true', [schoolId]),
-      pool.query('SELECT COUNT(*) FROM guardians WHERE school_id = $1', [schoolId]),
-      pool.query('SELECT COUNT(*) FROM school_members WHERE school_id = $1 AND status = $2', [schoolId, 'active']),
-      pool.query("SELECT COUNT(*) FROM pupils p JOIN teams t ON p.team_id = t.id WHERE t.school_id = $1 AND p.registration_status = 'pending'", [schoolId]),
+      pool.query(
+        `SELECT COUNT(DISTINCT p.id) FROM pupils p
+         JOIN school_members sm ON sm.user_id = p.user_id
+         WHERE sm.school_id = $1 AND p.is_active = true`,
+        [schoolId]
+      ),
+      pool.query(
+        `SELECT COUNT(*) FROM school_members
+         WHERE school_id = $1 AND status = 'active'
+           AND COALESCE(school_role, role) NOT IN ('read_only', 'parent')`,
+        [schoolId]
+      ),
+      pool.query(
+        `SELECT COUNT(*) FROM pupils p
+         JOIN school_members sm ON sm.user_id = p.user_id
+         WHERE sm.school_id = $1 AND p.registration_status = 'pending'`,
+        [schoolId]
+      ),
+      pool.query('SELECT COUNT(*) FROM teaching_groups WHERE school_id = $1', [schoolId]),
     ])
 
-    // Recent registrations
+    // Recent registrations (via school_members link, not team_id)
     const recentRegs = await pool.query(
-      `SELECT p.id, p.name, p.registration_status, p.created_at, t.name as team_name
-       FROM pupils p JOIN teams t ON p.team_id = t.id
-       WHERE t.school_id = $1
+      `SELECT p.id, p.name, p.registration_status, p.created_at,
+              COALESCE(t.name, 'Year ' || p.year_group) AS team_name
+       FROM pupils p
+       JOIN school_members sm ON sm.user_id = p.user_id
+       LEFT JOIN teams t ON t.id = p.team_id
+       WHERE sm.school_id = $1
        ORDER BY p.created_at DESC LIMIT 10`,
       [schoolId]
     )
@@ -257,9 +308,9 @@ router.get('/:schoolId/dashboard', authenticateToken, loadSchool, requireSchoolR
     res.json({
       stats: {
         total_teams: parseInt(teamsResult.rows[0].count),
-        total_players: parseInt(playersResult.rows[0].count),
-        total_guardians: parseInt(guardiansResult.rows[0].count),
-        total_members: parseInt(membersResult.rows[0].count),
+        total_players: parseInt(pupilsResult.rows[0].count),
+        total_classes: parseInt(classesResult.rows[0].count),
+        total_members: parseInt(staffResult.rows[0].count),
         pending_registrations: parseInt(pendingResult.rows[0].count),
       },
       recent_registrations: recentRegs.rows,
@@ -276,22 +327,29 @@ router.get('/:schoolId/dashboard', authenticateToken, loadSchool, requireSchoolR
 // ==========================================
 
 // List all school members
-router.get('/:schoolId/members', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary', 'coach'), async (req, res, next) => {
+router.get('/:schoolId/members', authenticateToken, loadSchool, requireSchoolRole('owner', 'school_admin', 'admin', 'head_of_pe', 'secretary', 'coach', 'teacher'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const result = await pool.query(
-      `SELECT cm.*, u.name, u.email
+      `SELECT cm.*, u.name, u.email,
+              COALESCE(cm.school_role, cm.role) as effective_role
        FROM school_members cm
        JOIN users u ON cm.user_id = u.id
        WHERE cm.school_id = $1
        ORDER BY
-         CASE cm.role
+         CASE COALESCE(cm.school_role, cm.role)
            WHEN 'owner' THEN 1
+           WHEN 'school_admin' THEN 2
+           WHEN 'head_of_pe' THEN 3
+           WHEN 'head_of_sport' THEN 4
+           WHEN 'teacher' THEN 5
            WHEN 'admin' THEN 2
-           WHEN 'treasurer' THEN 3
-           WHEN 'secretary' THEN 4
+           WHEN 'treasurer' THEN 6
+           WHEN 'secretary' THEN 6
            WHEN 'coach' THEN 5
-           WHEN 'parent' THEN 6
+           WHEN 'read_only' THEN 7
+           WHEN 'parent' THEN 8
+           ELSE 9
          END, u.name`,
       [schoolId]
     )
@@ -311,7 +369,7 @@ router.post('/:schoolId/members/invite', authenticateToken, loadSchool, requireS
       return res.status(400).json({ error: 'Email and role are required' })
     }
 
-    const validRoles = ['admin', 'treasurer', 'secretary', 'coach']
+    const validRoles = ['school_admin', 'head_of_pe', 'head_of_sport', 'teacher', 'read_only', 'admin', 'treasurer', 'secretary', 'coach']
     if (!validRoles.includes(role)) {
       return res.status(400).json({ error: `Invalid role. Must be one of: ${validRoles.join(', ')}` })
     }
@@ -343,21 +401,30 @@ router.post('/:schoolId/members/invite', authenticateToken, loadSchool, requireS
     // Create membership
     const perms = ROLE_PERMISSIONS[role] || {}
     const result = await pool.query(
-      `INSERT INTO school_members (school_id, user_id, role, can_manage_payments, can_manage_players, can_view_financials, can_invite_members, status, invited_at)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, 'invited', NOW())
+      `INSERT INTO school_members (school_id, user_id, role, school_role,
+         can_manage_payments, can_manage_players, can_view_financials, can_invite_members,
+         can_view_all_classes, can_view_all_teams, can_manage_curriculum, can_view_reports, can_manage_safeguarding,
+         status, invited_at)
+       VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 'invited', NOW())
        RETURNING *`,
-      [schoolId, userId, role, perms.can_manage_payments || false, perms.can_manage_players || false, perms.can_view_financials || false, perms.can_invite_members || false]
+      [schoolId, userId, role,
+       perms.can_manage_payments || false, perms.can_manage_players || false,
+       perms.can_view_financials || false, perms.can_invite_members || false,
+       perms.can_view_all_classes || false, perms.can_view_all_teams || false,
+       perms.can_manage_curriculum || false, perms.can_view_reports || false,
+       perms.can_manage_safeguarding || false]
     )
 
     // Send invite email
+    const roleLabel = ROLE_LABELS[role] || role
     try {
       const school = req.school
       await sendNotificationEmail(email, {
         teamName: school.name,
         title: `You've been invited to ${school.name}`,
-        message: `You've been invited to join ${school.name} as a ${role}. Log in to Touchline to access your school dashboard.`,
+        message: `You've been invited to join ${school.name} as ${roleLabel}. Log in to Touchline for Schools to access your dashboard.`,
         actionLink: `${getFrontendUrl()}/login`,
-        actionText: 'Log in to Touchline',
+        actionText: 'Log in to Touchline for Schools',
       })
     } catch (emailErr) {
       console.error('Failed to send school invite email:', emailErr)
@@ -370,7 +437,7 @@ router.post('/:schoolId/members/invite', authenticateToken, loadSchool, requireS
 })
 
 // Update member role/permissions
-router.put('/:schoolId/members/:memberId', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin'), async (req, res, next) => {
+router.put('/:schoolId/members/:memberId', authenticateToken, loadSchool, requireSchoolRole('owner', 'school_admin', 'admin'), async (req, res, next) => {
   try {
     const { schoolId, memberId } = req.params
     const { role, can_manage_payments, can_manage_players, can_view_financials, can_invite_members } = req.body
@@ -381,21 +448,42 @@ router.put('/:schoolId/members/:memberId', authenticateToken, loadSchool, requir
       return res.status(404).json({ error: 'Member not found' })
     }
 
-    if (member.rows[0].role === 'owner' && req.clubRole !== 'owner') {
+    const currentRole = member.rows[0].school_role || member.rows[0].role
+    if (currentRole === 'owner' && req.clubRole !== 'owner') {
       return res.status(403).json({ error: 'Only the owner can modify owner permissions' })
     }
+
+    // Derive permissions from the new role if role is changing
+    const perms = role ? (ROLE_PERMISSIONS[role] || {}) : {}
 
     const result = await pool.query(
       `UPDATE school_members SET
         role = COALESCE($1, role),
+        school_role = COALESCE($1, school_role),
         can_manage_payments = COALESCE($2, can_manage_payments),
         can_manage_players = COALESCE($3, can_manage_players),
         can_view_financials = COALESCE($4, can_view_financials),
         can_invite_members = COALESCE($5, can_invite_members),
+        can_view_all_classes = COALESCE($8, can_view_all_classes),
+        can_view_all_teams = COALESCE($9, can_view_all_teams),
+        can_manage_curriculum = COALESCE($10, can_manage_curriculum),
+        can_view_reports = COALESCE($11, can_view_reports),
+        can_manage_safeguarding = COALESCE($12, can_manage_safeguarding),
         status = CASE WHEN status = 'invited' THEN 'active' ELSE status END
        WHERE id = $6 AND school_id = $7
        RETURNING *`,
-      [role, can_manage_payments, can_manage_players, can_view_financials, can_invite_members, memberId, schoolId]
+      [role,
+       can_manage_payments ?? perms.can_manage_payments ?? null,
+       can_manage_players ?? perms.can_manage_players ?? null,
+       can_view_financials ?? perms.can_view_financials ?? null,
+       can_invite_members ?? perms.can_invite_members ?? null,
+       memberId, schoolId,
+       role ? (perms.can_view_all_classes ?? false) : null,
+       role ? (perms.can_view_all_teams ?? false) : null,
+       role ? (perms.can_manage_curriculum ?? false) : null,
+       role ? (perms.can_view_reports ?? false) : null,
+       role ? (perms.can_manage_safeguarding ?? false) : null,
+      ]
     )
 
     res.json(result.rows[0])
@@ -764,7 +852,7 @@ router.get('/by-slug/:slug/register', loadSchoolBySlug, async (req, res, next) =
         [school.id]
       )
     } catch {
-      // available_for_registration column may not exist yet — return no plans
+      // available_for_registration column may not exist yet - return no plans
     }
 
     res.json({

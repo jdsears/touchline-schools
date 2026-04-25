@@ -121,7 +121,7 @@ export default function PupilDetail() {
 
   // Observation modal
   const [showObsModal, setShowObsModal] = useState(false)
-  const [newObs, setNewObs] = useState({ type: 'technical', content: '', context: '', contextType: 'general', matchId: null, trainingSessionId: null })
+  const [newObs, setNewObs] = useState({ type: 'technical', content: '', context: '', contextType: 'general', matchId: null, trainingSessionId: null, visibleToPupil: false })
   const [addingObs, setAddingObs] = useState(false)
   const [recentMatches, setRecentMatches] = useState([])
   const [recentTrainingSessions, setRecentTrainingSessions] = useState([])
@@ -287,7 +287,7 @@ export default function PupilDetail() {
       const response = await teamService.addObservation(id, newObs)
       setObservations(prev => [response.data, ...prev])
       setShowObsModal(false)
-      setNewObs({ type: 'technical', content: '', context: '', contextType: 'general', matchId: null, trainingSessionId: null })
+      setNewObs({ type: 'technical', content: '', context: '', contextType: 'general', matchId: null, trainingSessionId: null, visibleToPupil: false })
       toast.success('Observation added!')
     } catch (error) {
       toast.error('Failed to add observation')
@@ -491,7 +491,7 @@ export default function PupilDetail() {
             }
           } catch (e) {
             if (e.message !== 'Generation failed' && !e.message?.includes('No content')) {
-              // JSON parse error — ignore partial chunks
+              // JSON parse error - ignore partial chunks
             } else {
               throw e
             }
@@ -1629,6 +1629,16 @@ export default function PupilDetail() {
                     required
                   />
                 </div>
+
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={newObs.visibleToPupil}
+                    onChange={(e) => setNewObs(prev => ({ ...prev, visibleToPupil: e.target.checked }))}
+                    className="w-4 h-4 rounded border-navy-600 bg-navy-800 text-pitch-500 focus:ring-pitch-500"
+                  />
+                  <span className="text-sm text-navy-300">Share with pupil</span>
+                </label>
 
                 <div className="flex justify-end gap-3 pt-4">
                   <button

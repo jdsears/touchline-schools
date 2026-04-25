@@ -1,39 +1,36 @@
-import { useState, useId } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, Loader2, Brain, Users, TrendingUp, Target, Eye, EyeOff } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Loader2, GraduationCap, Trophy, Users, Eye, EyeOff, AlertTriangle } from 'lucide-react'
 import SEO from '../components/common/SEO'
+import api from '../services/api'
 
-// Touchline logo mark component
-function TouchlineMark({ className = "w-10 h-8" }) {
-  const id = useId()
-  const gradId = `tl-arc-${id}`
-  return (
-    <svg viewBox="0 10 64 38" className={className} xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#2ED573"/>
-          <stop offset="100%" stopColor="#F5A623"/>
-        </linearGradient>
-      </defs>
-      <g fill="none">
-        <path d="M12 44 C18 12, 46 12, 52 44"
-              stroke={`url(#${gradId})`}
-              strokeWidth="4.5"
-              strokeLinecap="round"/>
-        <line x1="8" y1="44" x2="56" y2="44"
-              stroke="#2ED573"
-              strokeWidth="3.5"
-              strokeLinecap="round"/>
-        <circle cx="32" cy="44" r="5" fill="#2ED573"/>
-      </g>
-    </svg>
-  )
+const inputStyle = {
+  width: '100%',
+  padding: '12px 14px 12px 42px',
+  background: 'var(--color-bg-input)',
+  border: '1px solid var(--color-border-default)',
+  borderRadius: 'var(--radius-md)',
+  color: 'var(--color-text-primary)',
+  fontFamily: 'var(--font-sans)',
+  fontSize: 15,
+  outline: 'none',
+  boxSizing: 'border-box',
+}
+
+const labelStyle = {
+  display: 'block',
+  fontFamily: 'var(--font-sans)',
+  fontSize: 13,
+  fontWeight: 500,
+  color: 'var(--color-text-primary)',
+  marginBottom: 6,
 }
 
 export default function Login() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { login, sendMagicLink } = useAuth()
   const [mode, setMode] = useState('password')
   const [email, setEmail] = useState('')
@@ -41,148 +38,187 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [magicLinkSent, setMagicLinkSent] = useState(false)
-  
+  const [ssoProviders, setSsoProviders] = useState([])
+  const [ssoError, setSsoError] = useState(null)
+
+  useEffect(() => {
+    api.get('/sso/providers').then(res => {
+      setSsoProviders(res.data.providers || [])
+    }).catch(() => {})
+
+    const err = searchParams.get('error')
+    const detail = searchParams.get('detail')
+    if (err) {
+      const messages = {
+        sso_denied: 'You declined the sign-in request.',
+        sso_failed: detail || 'No MoonBoots Sports account found for that identity. Ask your admin to add you first.',
+        sso_init_failed: 'Could not connect to the identity provider. Try again.',
+        sso_missing_params: 'The SSO response was incomplete. Try again.',
+      }
+      setSsoError(messages[err] || detail || 'SSO sign-in failed.')
+    }
+  }, [searchParams])
+
+  function handleSsoLogin(provider) {
+    window.location.href = `/api/sso/${provider}/initiate`
+  }
+
   async function handlePasswordLogin(e) {
     e.preventDefault()
     setLoading(true)
-
     const result = await login(email, password)
-
     if (result.success) {
-      // Navigate based on user role
       const userRole = result.user?.role
       if (userRole === 'pupil' || userRole === 'parent') {
-        navigate('/pupil')
+        navigate('/pupil-lounge')
       } else {
         navigate('/teacher')
       }
     }
-
     setLoading(false)
   }
-  
+
   async function handleMagicLink(e) {
     e.preventDefault()
     setLoading(true)
-    
     const result = await sendMagicLink(email)
-    
     if (result.success) {
       setMagicLinkSent(true)
     }
-    
     setLoading(false)
   }
-  
+
+  const goldBtnStyle = {
+    width: '100%',
+    padding: '14px 24px',
+    background: loading ? 'rgba(15, 30, 61, 0.5)' : 'var(--color-brand-navy)',
+    color: 'var(--color-text-on-dark)',
+    border: 'none',
+    borderRadius: 'var(--radius-md)',
+    fontFamily: 'var(--font-sans)',
+    fontWeight: 600,
+    fontSize: 15,
+    cursor: loading ? 'not-allowed' : 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    transition: 'background 0.15s ease',
+  }
+
+  const tabStyle = (active) => ({
+    flex: 1,
+    padding: '10px 16px',
+    borderRadius: 'var(--radius-md)',
+    fontFamily: 'var(--font-sans)',
+    fontSize: 14,
+    fontWeight: 500,
+    border: 'none',
+    cursor: 'pointer',
+    transition: 'all 0.15s ease',
+    background: active ? 'var(--color-brand-navy)' : 'transparent',
+    color: active ? 'var(--color-text-on-dark)' : 'var(--color-text-secondary)',
+  })
+
   return (
-    <div className="min-h-screen bg-navy-950 flex">
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--color-bg-page)' }}>
       <SEO
         title="Login"
         path="/login"
-        description="Sign in to Touchline to access your coaching dashboard, tactics board, and pupil management tools."
+        description="Sign in to MoonBoots Sports to manage your school PE department."
         noIndex={true}
       />
-      <div className="flex-1 flex items-center justify-center p-8">
+
+      {/* Left: Login form */}
+      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
+          style={{ width: '100%', maxWidth: 420 }}
         >
-          <Link to="/" className="inline-flex items-center gap-2 mb-8">
-            <TouchlineMark className="w-10 h-6" />
-            <span className="font-display font-semibold text-navy-50 text-xl">Touchline</span>
+          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 40 }}>
+            <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 28 }} />
           </Link>
-          
-          <h1 className="font-display text-3xl font-bold text-white mb-2">Welcome back</h1>
-          <p className="text-navy-400 mb-8">Sign in to your account to continue</p>
-          
-          <div className="flex gap-2 p-1 bg-navy-900 rounded-lg mb-6">
-            <button
-              onClick={() => setMode('password')}
-              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                mode === 'password' ? 'bg-navy-800 text-white' : 'text-navy-400 hover:text-white'
-              }`}
-            >
-              Password
-            </button>
-            <button
-              onClick={() => setMode('magic')}
-              className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-                mode === 'magic' ? 'bg-navy-800 text-white' : 'text-navy-400 hover:text-white'
-              }`}
-            >
-              Magic Link
-            </button>
+
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 32, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 8 }}>
+            Welcome back
+          </h1>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--color-text-secondary)', marginBottom: 32 }}>
+            Sign in to your account to continue
+          </p>
+
+          {/* Tabs */}
+          <div style={{ display: 'flex', gap: 4, padding: 4, background: 'var(--color-bg-subtle)', borderRadius: 6, marginBottom: 24 }}>
+            <button onClick={() => setMode('password')} style={tabStyle(mode === 'password')}>Password</button>
+            <button onClick={() => setMode('magic')} style={tabStyle(mode === 'magic')}>Magic Link</button>
           </div>
-          
+
           {mode === 'password' ? (
-            <form onSubmit={handlePasswordLogin} className="space-y-4">
+            <form onSubmit={handlePasswordLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               <div>
-                <label htmlFor="email" className="label">Email</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                <label style={labelStyle}>Email</label>
+                <div style={{ position: 'relative' }}>
+                  <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
                   <input
-                    id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="input pl-10"
-                    placeholder="coach@example.com"
+                    style={inputStyle}
+                    placeholder="name@school.ac.uk"
                     required
                   />
                 </div>
               </div>
-              
+
               <div>
-                <div className="flex items-center justify-between">
-                  <label htmlFor="password" className="label">Password</label>
-                  <Link to="/forgot-password" className="text-sm text-pitch-400 hover:text-pitch-300">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <label style={labelStyle}>Password</label>
+                  <Link to="/forgot-password" style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-text-link)', textDecoration: 'none' }}>
                     Forgot password?
                   </Link>
                 </div>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                <div style={{ position: 'relative' }}>
+                  <Lock size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
                   <input
-                    id="password"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="input pl-10 pr-10"
+                    style={{ ...inputStyle, paddingRight: 42 }}
                     placeholder="••••••••"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-500 hover:text-navy-300 transition-colors"
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--color-text-tertiary)' }}
                     tabIndex={-1}
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                   </button>
                 </div>
               </div>
-              
-              <button type="submit" disabled={loading} className="btn-primary w-full">
-                {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                  <>Sign In <ArrowRight className="w-5 h-5" /></>
+
+              <button type="submit" disabled={loading} style={goldBtnStyle}>
+                {loading ? <Loader2 size={18} className="animate-spin" /> : (
+                  <>Sign In <ArrowRight size={18} /></>
                 )}
               </button>
             </form>
           ) : (
-            <form onSubmit={handleMagicLink} className="space-y-4">
+            <form onSubmit={handleMagicLink} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               {magicLinkSent ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 rounded-full bg-pitch-500/10 flex items-center justify-center mx-auto mb-4">
-                    <Mail className="w-8 h-8 text-pitch-400" />
+                <div style={{ textAlign: 'center', padding: '32px 0' }}>
+                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--color-bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                    <Mail size={24} style={{ color: 'var(--color-brand-navy)' }} />
                   </div>
-                  <h3 className="font-display text-xl font-semibold text-white mb-2">Check your email</h3>
-                  <p className="text-navy-400 mb-4">
-                    We've sent a magic link to <span className="text-white">{email}</span>
+                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 8 }}>Check your email</h3>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 16 }}>
+                    We have sent a magic link to <span style={{ color: 'white' }}>{email}</span>
                   </p>
                   <button
                     type="button"
                     onClick={() => setMagicLinkSent(false)}
-                    className="text-pitch-400 hover:text-pitch-300 text-sm"
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-brand-navy)' }}
                   >
                     Try a different email
                   </button>
@@ -190,198 +226,148 @@ export default function Login() {
               ) : (
                 <>
                   <div>
-                    <label htmlFor="magic-email" className="label">Email</label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                    <label style={labelStyle}>Email</label>
+                    <div style={{ position: 'relative' }}>
+                      <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
                       <input
-                        id="magic-email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="input pl-10"
-                        placeholder="coach@example.com"
+                        style={inputStyle}
+                        placeholder="name@school.ac.uk"
                         required
                       />
                     </div>
                   </div>
-                  
-                  <button type="submit" disabled={loading} className="btn-primary w-full">
-                    {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (
-                      <>Send Magic Link <ArrowRight className="w-5 h-5" /></>
+                  <button type="submit" disabled={loading} style={goldBtnStyle}>
+                    {loading ? <Loader2 size={18} className="animate-spin" /> : (
+                      <>Send Magic Link <ArrowRight size={18} /></>
                     )}
                   </button>
                 </>
               )}
             </form>
           )}
-          
-          <p className="text-center text-navy-400 mt-6">
+
+          {/* SSO error */}
+          {ssoError && (
+            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-start', gap: 10, padding: 12, background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: 4 }}>
+              <AlertTriangle size={16} style={{ color: '#ef4444', flexShrink: 0, marginTop: 2 }} />
+              <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: '#ef4444' }}>{ssoError}</p>
+            </div>
+          )}
+
+          {/* SSO providers */}
+          {ssoProviders.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ flex: 1, height: 1, background: 'var(--color-border-subtle)' }} />
+                <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-text-tertiary)' }}>or sign in with</span>
+                <div style={{ flex: 1, height: 1, background: 'var(--color-border-subtle)' }} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {ssoProviders.map(p => (
+                  <button
+                    key={p.id}
+                    onClick={() => handleSsoLogin(p.id)}
+                    style={{
+                      width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
+                      padding: '12px 16px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border-default)',
+                      borderRadius: 4, cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 500,
+                      color: 'white', transition: 'background 0.15s ease',
+                    }}
+                  >
+                    {p.id === 'microsoft' && (
+                      <svg viewBox="0 0 21 21" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+                        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+                        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+                        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+                      </svg>
+                    )}
+                    {p.id === 'google' && (
+                      <svg viewBox="0 0 24 24" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
+                        <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                        <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                        <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                      </svg>
+                    )}
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p style={{ textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-text-secondary)', marginTop: 24 }}>
             Don't have an account?{' '}
-            <Link to="/register" className="text-pitch-400 hover:text-pitch-300">Sign up</Link>
+            <Link to="/register" style={{ color: 'var(--color-text-link)', textDecoration: 'none' }}>Sign up</Link>
           </p>
         </motion.div>
       </div>
-      
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-navy-900 via-navy-900 to-pitch-950/30 border-l border-navy-800 relative overflow-hidden">
-        {/* Background glow effects */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-pitch-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
 
-        <div className="relative z-10 px-12 max-w-lg">
-          {/* Animated Tactics Board */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6 }}
-            className="relative mb-10"
-          >
-            <svg viewBox="0 0 320 200" className="w-full h-auto drop-shadow-2xl">
-              {/* Pitch background */}
-              <defs>
-                <linearGradient id="pitchGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stopColor="#166534" />
-                  <stop offset="50%" stopColor="#15803d" />
-                  <stop offset="100%" stopColor="#14532d" />
-                </linearGradient>
-                <filter id="glow">
-                  <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
-                  <feMerge>
-                    <feMergeNode in="coloredBlur"/>
-                    <feMergeNode in="SourceGraphic"/>
-                  </feMerge>
-                </filter>
-              </defs>
+      {/* Right: Brand panel (desktop only) */}
+      <div className="hidden lg:flex" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid var(--color-border-subtle)', position: 'relative', overflow: 'hidden', background: 'var(--color-brand-navy)' }}>
+        <div style={{ position: 'absolute', top: '20%', right: '20%', width: 384, height: 384, borderRadius: '50%', filter: 'blur(120px)', background: 'rgba(201, 169, 97, 0.06)' }} />
+        <div style={{ position: 'absolute', bottom: '25%', left: '25%', width: 256, height: 256, borderRadius: '50%', filter: 'blur(120px)', background: 'rgba(201, 169, 97, 0.04)' }} />
 
-              {/* Pitch shape */}
-              <rect x="10" y="10" width="300" height="180" rx="8" fill="url(#pitchGrad)" />
-
-              {/* Pitch markings */}
-              <g stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" fill="none">
-                {/* Outer border */}
-                <rect x="20" y="20" width="280" height="160" rx="2" />
-                {/* Center line */}
-                <line x1="160" y1="20" x2="160" y2="180" />
-                {/* Center circle */}
-                <circle cx="160" cy="100" r="25" />
-                <circle cx="160" cy="100" r="2" fill="rgba(255,255,255,0.3)" />
-                {/* Left penalty area */}
-                <rect x="20" y="55" width="45" height="90" />
-                <rect x="20" y="75" width="18" height="50" />
-                {/* Right penalty area */}
-                <rect x="255" y="55" width="45" height="90" />
-                <rect x="282" y="75" width="18" height="50" />
-              </g>
-
-              {/* Animated pupil positions - 4-3-3 formation */}
-              <g filter="url(#glow)">
-                {/* Goalkeeper */}
-                <motion.circle
-                  cx="40" cy="100" r="6"
-                  fill="#F5A623"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: [1, 1.1, 1] }}
-                  transition={{ duration: 2, repeat: Infinity, delay: 0 }}
-                />
-
-                {/* Defenders */}
-                {[[75, 45], [75, 75], [75, 125], [75, 155]].map(([x, y], i) => (
-                  <motion.circle
-                    key={`def-${i}`}
-                    cx={x} cy={y} r="6"
-                    fill="#2ED573"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.1 * (i + 1) }}
-                  />
-                ))}
-
-                {/* Midfielders */}
-                {[[130, 60], [130, 100], [130, 140]].map(([x, y], i) => (
-                  <motion.circle
-                    key={`mid-${i}`}
-                    cx={x} cy={y} r="6"
-                    fill="#2ED573"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.1 * (i + 5) }}
-                  />
-                ))}
-
-                {/* Forwards */}
-                {[[190, 50], [200, 100], [190, 150]].map(([x, y], i) => (
-                  <motion.circle
-                    key={`fwd-${i}`}
-                    cx={x} cy={y} r="6"
-                    fill="#2ED573"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity, delay: 0.1 * (i + 8) }}
-                  />
-                ))}
-              </g>
-
-              {/* Tactical movement arrows */}
-              <g stroke="#F5A623" strokeWidth="1.5" fill="none" opacity="0.6">
-                <motion.path
-                  d="M130,100 Q160,85 190,100"
-                  strokeDasharray="4 4"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.6 }}
-                  transition={{ duration: 2, repeat: Infinity, repeatType: "loop" }}
-                />
-                <motion.path
-                  d="M75,75 Q100,60 130,60"
-                  strokeDasharray="4 4"
-                  initial={{ pathLength: 0, opacity: 0 }}
-                  animate={{ pathLength: 1, opacity: 0.6 }}
-                  transition={{ duration: 2, repeat: Infinity, repeatType: "loop", delay: 0.5 }}
-                />
-              </g>
-            </svg>
+        <div style={{ position: 'relative', zIndex: 1, padding: '0 48px', maxWidth: 480 }}>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ marginBottom: 40 }}>
+            <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 36 }} />
           </motion.div>
 
-          {/* Heading */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-center mb-8"
-          >
-            <h2 className="font-display text-2xl font-bold text-white mb-3">
-              Football intelligence for grassroots teams
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ marginBottom: 32 }}>
+            <div style={{ width: 48, height: 2, background: 'var(--color-brand-gold)', marginBottom: 20 }} />
+            <h2 style={{ fontFamily: 'var(--font-serif, "Crimson Pro", Georgia, serif)', fontSize: 32, fontWeight: 700, lineHeight: 1.2, color: 'white' }}>
+              The PE department platform for UK schools.
             </h2>
-            <p className="text-navy-400">
-              The analytical support your coaching deserves
+            <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.6, marginTop: 16 }}>
+              Curriculum PE and extra-curricular sport, in one bespoke platform per school.
             </p>
           </motion.div>
 
-          {/* Feature highlights */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="grid grid-cols-2 gap-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {[
-              { icon: Brain, label: 'AI-Powered Analysis', color: 'pitch' },
-              { icon: Target, label: 'Tactical Planning', color: 'amber' },
-              { icon: Users, label: 'Squad Management', color: 'pitch' },
-              { icon: TrendingUp, label: 'Pupil Development', color: 'amber' },
-            ].map(({ icon: Icon, label, color }, i) => (
+              { icon: GraduationCap, label: 'Curriculum PE', desc: 'Teaching groups, assessment, AI-drafted reports' },
+              { icon: Trophy, label: 'Extra-Curricular Sport', desc: 'Teams, fixtures, sessions, NGB-aligned AI coaching' },
+              { icon: Users, label: 'Pupil Development', desc: 'One profile per pupil across every sport' },
+            ].map(({ icon: Icon, label, desc }, i) => (
               <motion.div
                 key={label}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-                className="flex items-center gap-3 p-3 rounded-lg bg-navy-800/50 border border-navy-700/50"
+                transition={{ delay: 0.5 + i * 0.1 }}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: 14,
+                  padding: '16px 18px', borderRadius: 6,
+                  background: 'var(--color-bg-subtle)',
+                  border: '1px solid var(--color-border-default)',
+                }}
               >
-                <div className={`w-8 h-8 rounded-md bg-${color}-500/20 flex items-center justify-center`}>
-                  <Icon className={`w-4 h-4 text-${color}-400`} />
+                <div style={{
+                  width: 36, height: 36, borderRadius: 6, flexShrink: 0,
+                  background: 'rgba(201, 169, 97, 0.12)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <Icon size={18} style={{ color: 'var(--color-text-link)' }} />
                 </div>
-                <span className="text-sm text-navy-200 font-medium">{label}</span>
+                <div>
+                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 14, fontWeight: 600, color: 'white' }}>{label}</p>
+                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>{desc}</p>
+                </div>
               </motion.div>
             ))}
           </motion.div>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 32 }}
+          >
+            Bespoke deployments for primary, prep, secondary, all-through, and multi-academy trusts.
+          </motion.p>
         </div>
       </div>
     </div>

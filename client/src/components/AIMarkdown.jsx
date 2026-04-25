@@ -58,7 +58,7 @@ export default function AIMarkdown({ children, variant = 'content' }) {
     )
   }
 
-  // variant === 'content' — full AI content blocks (IDP, reports, prep notes, analysis, training plans)
+  // variant === 'content' - full AI content blocks (IDP, reports, prep notes, analysis, training plans)
   return (
     <div className="ai-content">
       <ReactMarkdown

@@ -3,7 +3,7 @@
  * Priority:
  * 1. FRONTEND_URL environment variable (explicitly set)
  * 2. RAILWAY_PUBLIC_DOMAIN (auto-provided by Railway in production)
- * 3. Fallback to touchline.xyz (production default)
+ * 3. Fallback to app.moonbootssports.com (production default)
  * 4. localhost for development
  */
 export function getFrontendUrl() {
@@ -16,7 +16,7 @@ export function getFrontendUrl() {
   }
 
   if (process.env.NODE_ENV === 'production') {
-    return 'https://touchline.xyz'
+    return 'https://app.moonbootssports.com'
   }
 
   return 'http://localhost:5173'

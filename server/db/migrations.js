@@ -42,13 +42,64 @@ export async function runMigrations() {
         password_hash VARCHAR(255) NOT NULL,
         role VARCHAR(50) DEFAULT 'parent',
         team_id UUID REFERENCES teams(id) ON DELETE SET NULL,
-        player_id UUID,
+        pupil_id UUID,
         is_admin BOOLEAN DEFAULT false,
+        has_completed_onboarding BOOLEAN DEFAULT false,
         magic_link_token VARCHAR(255),
         magic_link_expires TIMESTAMP,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
+
+    // Ensure critical columns exist on users table (for existing DBs where later phases didn't run)
+    const earlyUserColumns = [
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS has_completed_onboarding BOOLEAN DEFAULT false`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo_user BOOLEAN DEFAULT false`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS demo_expires_at TIMESTAMPTZ`,
+    ]
+    for (const sql of earlyUserColumns) {
+      try { await pool.query(sql) } catch (e) { /* already exists */ }
+    }
+
+    // Ensure critical columns exist on schools table
+    try {
+      await pool.query(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS is_demo_tenant BOOLEAN DEFAULT false`)
+    } catch (e) { /* table or column may not exist yet on fresh DB */ }
+
+    // Early rename: player_id -> pupil_id across all tables (mirrors Phase 8d for existing DBs
+    // where the migration previously failed before reaching that phase)
+    const earlyPlayerIdRenames = [
+      'users', 'training_attendance', 'training_availability', 'invites',
+      'pupil_messages', 'match_media', 'pupil_achievements', 'team_suggestions',
+      'team_memberships', 'clip_player_tags', 'video_ai_analysis',
+      'event_registrations', 'availability_responses', 'match_availability',
+      'match_squads', 'observations', 'development_plans', 'attribute_snapshots'
+    ]
+    for (const table of earlyPlayerIdRenames) {
+      try {
+        await pool.query(`DO $$ BEGIN
+          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${table}' AND column_name = 'player_id') THEN
+            ALTER TABLE ${table} RENAME COLUMN player_id TO pupil_id;
+          END IF;
+        END $$`)
+      } catch (e) { /* table may not exist yet on fresh DB - safe to skip */ }
+    }
+    // Rename match-specific columns
+    const matchColRenames = [
+      { table: 'match_goals', old: 'scorer_player_id', new: 'scorer_pupil_id' },
+      { table: 'match_goals', old: 'assist_player_id', new: 'assist_pupil_id' },
+      { table: 'match_substitutions', old: 'player_off_id', new: 'pupil_off_id' },
+      { table: 'match_substitutions', old: 'player_on_id', new: 'pupil_on_id' },
+    ]
+    for (const r of matchColRenames) {
+      try {
+        await pool.query(`DO $$ BEGIN
+          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${r.table}' AND column_name = '${r.old}') THEN
+            ALTER TABLE ${r.table} RENAME COLUMN ${r.old} TO ${r.new};
+          END IF;
+        END $$`)
+      } catch (e) { /* table may not exist yet */ }
+    }
 
     // Create players table
     await pool.query(`
@@ -1430,7 +1481,7 @@ export async function runMigrations() {
     // PAYMENT PLANS & SUBSCRIPTIONS (Phase 2)
     // ==========================================
 
-    // Payment plans — what a club charges for (subs, match fees, kit)
+    // Payment plans - what a club charges for (subs, match fees, kit)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS payment_plans (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1475,7 +1526,7 @@ export async function runMigrations() {
       console.warn('payment_plans term columns migration warning:', e.message)
     }
 
-    // Player subscriptions — links a player to a payment plan
+    // Player subscriptions - links a player to a payment plan
     await pool.query(`
       CREATE TABLE IF NOT EXISTS player_subscriptions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1513,7 +1564,7 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_token ON player_subscriptions(portal_token) WHERE portal_token IS NOT NULL`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_status ON player_subscriptions(club_id, status)`)
 
-    // Transactions — every payment recorded
+    // Transactions - every payment recorded
     await pool.query(`
       CREATE TABLE IF NOT EXISTS club_transactions (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1560,7 +1611,7 @@ export async function runMigrations() {
     // PHASE 3: Parent Portal & Comms
     // ================================================
 
-    // Club announcements (separate from team_announcements — club-wide to parents/guardians)
+    // Club announcements (separate from team_announcements - club-wide to parents/guardians)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS club_announcements (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -1651,7 +1702,7 @@ export async function runMigrations() {
     // Players: speed up team player listings
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_players_team_active ON players(team_id, is_active)`)
 
-    // These indexes reference tables created by config/migrate.js — wrap each in
+    // These indexes reference tables created by config/migrate.js - wrap each in
     // its own try/catch so a missing table doesn't block all subsequent migrations.
     const optionalIndexes = [
       `CREATE INDEX IF NOT EXISTS idx_observations_player_created ON observations(player_id, created_at DESC)`,
@@ -2005,7 +2056,7 @@ export async function runMigrations() {
     // PHASE 8: Consent Tracking & DPA
     // =============================================
 
-    // Consent records — audit trail for every consent given
+    // Consent records - audit trail for every consent given
     await pool.query(`
       CREATE TABLE IF NOT EXISTS consent_records (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2168,7 +2219,7 @@ export async function runMigrations() {
     `)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_parent_potm_votes_match ON parent_potm_votes(match_id)`)
 
-    // Late-stage column additions — wrapped individually so one failure doesn't block the rest
+    // Late-stage column additions - wrapped individually so one failure doesn't block the rest
     const lateAlterations = [
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS push_subscription JSONB`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS notification_preferences JSONB DEFAULT '{"email": true, "push": true, "availability": true, "squad": true}'`,
@@ -2191,13 +2242,13 @@ export async function runMigrations() {
           $1, $2, $3, $4, $5, 'published', 'Touchline', $6, $7, $8, NOW()
         ) ON CONFLICT (slug) DO NOTHING
       `, [
-        'Touchline Platform Update — February 2025',
+        'Touchline Platform Update - February 2025',
         'platform-update-february-2025',
         'We\'ve upgraded every AI feature in Touchline to the latest Claude Sonnet 4.6 model, added full Club Intelligence documentation, and improved all help assistants across the platform.',
-        `## Smarter AI Across the Board\n\nWe've upgraded the AI engine powering every part of Touchline to **Claude Sonnet 4.6** — the latest model from Anthropic. This means improvements across every AI feature you use, with no change in pricing.\n\n## What This Means for Coaches\n\n- **Pep is sharper** — Tactical advice, training sessions, and match preparation documents are more detailed, more consistent, and better tailored to your team's age group and format\n- **Better match reports** — Post-match reports for parents are clearer and more insightful, especially when enriched with video analysis\n- **Improved video analysis** — Individual player feedback is more specific with fewer generic observations\n- **Stronger training plans** — Session plans follow a more logical progression with better coaching points\n- **More reliable outputs** — Fewer repeated suggestions and less generic filler across all AI features\n\n## What This Means for Players and Parents\n\n- **The Gaffer is smarter** — Players get better answers about their development, coach feedback, and how to improve\n- **Clearer development plans** — AI-generated Individual Development Plans are more actionable and age-appropriate\n- **Better pep talks** — Pre-match motivation messages feel more personal and relevant\n\n## Club Intelligence — Now Fully Documented\n\nFor clubs on the **Pro plan and above**, the Club Intelligence suite is now fully integrated across the platform with improved help and guidance:\n\n- **Attendance Insights** — AI analyses attendance patterns across your club and flags players with concerning trends\n- **Season Summary Reports** — Generate comprehensive AGM-ready reports covering membership, match records, finances, and compliance at the click of a button\n- **Grant Application Drafts** — AI drafts funding applications for Football Foundation, FA National Game, and County FA grants tailored to your club\n- **Compliance Analysis** — Safeguarding gap analysis covering DBS checks, first aid coverage, and training currency with a clear compliance score\n- **Coach Development** — Personalised development suggestions for every coach based on their activity, badges, and session history\n\n## Improved Help & Support\n\nBoth our website assistant and in-app help guide have been updated with full documentation covering:\n\n- All Club Intelligence features with step-by-step guides\n- Club communications and event management\n- Player registration workflows\n- Payment and subscription management\n\nWhether you're a new user exploring Touchline or a club admin managing multiple teams, our help assistants now have the answers you need.\n\n## What's Next\n\nWe're continuing to develop new features and improvements. As always, if you have feedback or suggestions, reach out to us at **hello@touchline.xyz** or use the suggestion box in the Player Lounge.\n\n**Happy coaching!**\nThe Touchline Team`,
+        `## Smarter AI Across the Board\n\nWe've upgraded the AI engine powering every part of Touchline to **Claude Sonnet 4.6** - the latest model from Anthropic. This means improvements across every AI feature you use, with no change in pricing.\n\n## What This Means for Coaches\n\n- **Pep is sharper** - Tactical advice, training sessions, and match preparation documents are more detailed, more consistent, and better tailored to your team's age group and format\n- **Better match reports** - Post-match reports for parents are clearer and more insightful, especially when enriched with video analysis\n- **Improved video analysis** - Individual player feedback is more specific with fewer generic observations\n- **Stronger training plans** - Session plans follow a more logical progression with better coaching points\n- **More reliable outputs** - Fewer repeated suggestions and less generic filler across all AI features\n\n## What This Means for Players and Parents\n\n- **The Gaffer is smarter** - Players get better answers about their development, coach feedback, and how to improve\n- **Clearer development plans** - AI-generated Individual Development Plans are more actionable and age-appropriate\n- **Better pep talks** - Pre-match motivation messages feel more personal and relevant\n\n## Club Intelligence - Now Fully Documented\n\nFor clubs on the **Pro plan and above**, the Club Intelligence suite is now fully integrated across the platform with improved help and guidance:\n\n- **Attendance Insights** - AI analyses attendance patterns across your club and flags players with concerning trends\n- **Season Summary Reports** - Generate comprehensive AGM-ready reports covering membership, match records, finances, and compliance at the click of a button\n- **Grant Application Drafts** - AI drafts funding applications for Football Foundation, FA National Game, and County FA grants tailored to your club\n- **Compliance Analysis** - Safeguarding gap analysis covering DBS checks, first aid coverage, and training currency with a clear compliance score\n- **Coach Development** - Personalised development suggestions for every coach based on their activity, badges, and session history\n\n## Improved Help & Support\n\nBoth our website assistant and in-app help guide have been updated with full documentation covering:\n\n- All Club Intelligence features with step-by-step guides\n- Club communications and event management\n- Player registration workflows\n- Payment and subscription management\n\nWhether you're a new user exploring Touchline or a club admin managing multiple teams, our help assistants now have the answers you need.\n\n## What's Next\n\nWe're continuing to develop new features and improvements. As always, if you have feedback or suggestions, reach out to us at **hello@touchline.xyz** or use the suggestion box in the Player Lounge.\n\n**Happy coaching!**\nThe Touchline Team`,
         'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=1200&h=675&fit=crop&crop=center&q=80',
         ['platform-update', 'ai', 'club-intelligence', 'release-notes'],
-        'Touchline Platform Update — February 2025',
+        'Touchline Platform Update - February 2025',
         'We\'ve upgraded to Claude Sonnet 4.6 across all AI features, added full Club Intelligence docs, and improved help assistants.'
       ])
       console.log('📝 Blog seed: platform update post checked')
@@ -2243,13 +2294,13 @@ export async function runMigrations() {
           $1, $2, $3, $4, $5, 'published', 'Touchline', $6, $7, $8, NOW()
         ) ON CONFLICT (slug) DO NOTHING
       `, [
-        'What Touchline Brings to Your Club — And Why Intelligence Changes Everything',
+        'What Touchline Brings to Your Club - And Why Intelligence Changes Everything',
         'what-touchline-brings-to-clubs-intelligence-layer',
-        'Most football platforms manage your club. Touchline actually understands it. Here\'s how the AI intelligence layer transforms the way grassroots clubs operate — from the training ground to the AGM.',
-        `## Every Club Deserves an Intelligence Layer\n\nRunning a grassroots football club is relentless. Spreadsheets for attendance, WhatsApp for comms, a filing cabinet for DBS checks, and a prayer that someone remembers to book the pitch. Most "club management" tools digitise those spreadsheets and call it progress.\n\nTouchline does something different. It watches, learns, and surfaces the things you\'d miss — then helps you act on them.\n\nWe call it the **Intelligence Layer**, and it sits underneath every feature in the platform.\n\n## What Does "Intelligence" Actually Mean?\n\nIt means your club doesn\'t just store data — it **uses** it.\n\nWhen a coach records attendance after training, that data doesn\'t sit in a table. Touchline spots that a player\'s attendance has dropped from 90% to 50% over six weeks and flags it — not as a disciplinary issue, but as a welfare concern. Maybe they\'ve lost confidence. Maybe something\'s happening at home. The AI nudges the coach to check in, because that\'s what good clubs do.\n\nWhen a volunteer\'s DBS is due to expire in 60 days, the platform doesn\'t wait for someone to notice. It generates a compliance alert, calculates your club\'s overall safeguarding score, and tells you exactly which gaps need closing before your next Charter Standard review.\n\nWhen the AGM rolls around, you don\'t spend a weekend pulling numbers together. One click generates a **Season Summary Report** covering membership, match results, attendance trends, financial overview, and compliance status — ready to present.\n\nThat\'s the intelligence layer. Data in, insight out.\n\n## Built for How Clubs Actually Work\n\nTouchline isn\'t built for elite academies with full-time analysts. It\'s built for the volunteer coach who works Monday to Friday and gives up their weekends for the kids.\n\nEvery feature is designed to save time:\n\n- **AI Training Sessions** — Tell Touchline what you want to work on, and it generates a complete session plan with warm-up, drills, progressions, and coaching points. Tailored to your age group, pitch size, and player count.\n- **Match Preparation** — Before every game, generate a tactical briefing with formation suggestions, focus points, and a team talk. Share it with your coaching staff or keep it in your pocket on the touchline.\n- **Player Development** — Individual Development Plans generated from session-by-session observations. Track technical, tactical, physical, and mental progress across the season without a clipboard in sight.\n- **Video Analysis** — Upload match footage and get AI-powered individual player feedback with ratings, strengths, and areas to improve. The analysis feeds into match reports for parents automatically.\n\n## The Club Intelligence Suite\n\nFor clubs managing multiple teams, the intelligence layer scales up with the **Club Intelligence** suite:\n\n### Attendance Insights\nAI analyses attendance patterns across every team. Spots declining trends before they become dropouts. Flags welfare concerns sensitively. Gives coaches and welfare officers the information they need to act early.\n\n### Compliance & Safeguarding\nA real-time view of your club\'s compliance posture. DBS tracking with automatic expiry alerts. First aid coverage analysis per team. Safeguarding role assignments. Incident reporting with confidential audit trails. AI generates a gap analysis with a clear compliance score and actionable recommendations.\n\n### Grant Applications\nNeed funding? Touchline drafts grant applications for Football Foundation, FA National Game, and County FA grants — tailored to your club\'s actual data. Membership numbers, facility needs, community impact — all pulled from the platform and structured into a compelling application.\n\n### Season Summary Reports\nOne-click AGM-ready reports. Membership breakdown by age group, match records and results, attendance averages, financial summary, compliance status, and coaching activity — all generated from your real data, not guesswork.\n\n### Coach Development\nPersonalised development suggestions for every coach based on their qualifications, sessions delivered, video analyses conducted, and observation patterns. Helps coaches grow without needing expensive external CPD.\n\n## What Makes This Different\n\nOther platforms give you forms to fill in. Touchline gives you answers.\n\nThe intelligence layer means:\n\n- **No more missed renewals** — DBS, first aid, and safeguarding expiries are tracked and flagged automatically\n- **No more invisible dropouts** — Attendance trends surface before players disappear\n- **No more blank-page AGMs** — Season reports generate themselves\n- **No more generic sessions** — Every training plan is built for your team\'s format, age group, and focus areas\n- **No more grant-writing dread** — Applications draft themselves from your club\'s real data\n\nThe technology behind it is Claude, the latest AI from Anthropic — the same technology used by leading organisations worldwide. But you don\'t need to know that. You just need to know it works.\n\n## Pricing That Makes Sense\n\nTouchline starts at **£9.99/month** for individual teams with full AI coaching tools. Club plans with the full Intelligence suite start at **£34.99/month** for up to 6 teams — less than the cost of a set of training bibs.\n\nEvery plan includes unlimited coaches, players, and parents. No per-user fees. No hidden charges.\n\n## Try It\n\nIf you\'re running a grassroots club and spending more time on admin than coaching, Touchline was built for you. The intelligence layer isn\'t a gimmick — it\'s what happens when you build a platform that actually understands football.\n\n**[Start your free trial at touchline.xyz](https://touchline.xyz/register)**\n\n---\n\n*Touchline is built in England for English grassroots football. Every AI feature follows FA guidelines and the Youth Development Review framework.*`,
+        'Most football platforms manage your club. Touchline actually understands it. Here\'s how the AI intelligence layer transforms the way grassroots clubs operate - from the training ground to the AGM.',
+        `## Every Club Deserves an Intelligence Layer\n\nRunning a grassroots football club is relentless. Spreadsheets for attendance, WhatsApp for comms, a filing cabinet for DBS checks, and a prayer that someone remembers to book the pitch. Most "club management" tools digitise those spreadsheets and call it progress.\n\nTouchline does something different. It watches, learns, and surfaces the things you\'d miss - then helps you act on them.\n\nWe call it the **Intelligence Layer**, and it sits underneath every feature in the platform.\n\n## What Does "Intelligence" Actually Mean?\n\nIt means your club doesn\'t just store data - it **uses** it.\n\nWhen a coach records attendance after training, that data doesn\'t sit in a table. Touchline spots that a player\'s attendance has dropped from 90% to 50% over six weeks and flags it - not as a disciplinary issue, but as a welfare concern. Maybe they\'ve lost confidence. Maybe something\'s happening at home. The AI nudges the coach to check in, because that\'s what good clubs do.\n\nWhen a volunteer\'s DBS is due to expire in 60 days, the platform doesn\'t wait for someone to notice. It generates a compliance alert, calculates your club\'s overall safeguarding score, and tells you exactly which gaps need closing before your next Charter Standard review.\n\nWhen the AGM rolls around, you don\'t spend a weekend pulling numbers together. One click generates a **Season Summary Report** covering membership, match results, attendance trends, financial overview, and compliance status - ready to present.\n\nThat\'s the intelligence layer. Data in, insight out.\n\n## Built for How Clubs Actually Work\n\nTouchline isn\'t built for elite academies with full-time analysts. It\'s built for the volunteer coach who works Monday to Friday and gives up their weekends for the kids.\n\nEvery feature is designed to save time:\n\n- **AI Training Sessions** - Tell Touchline what you want to work on, and it generates a complete session plan with warm-up, drills, progressions, and coaching points. Tailored to your age group, pitch size, and player count.\n- **Match Preparation** - Before every game, generate a tactical briefing with formation suggestions, focus points, and a team talk. Share it with your coaching staff or keep it in your pocket on the touchline.\n- **Player Development** - Individual Development Plans generated from session-by-session observations. Track technical, tactical, physical, and mental progress across the season without a clipboard in sight.\n- **Video Analysis** - Upload match footage and get AI-powered individual player feedback with ratings, strengths, and areas to improve. The analysis feeds into match reports for parents automatically.\n\n## The Club Intelligence Suite\n\nFor clubs managing multiple teams, the intelligence layer scales up with the **Club Intelligence** suite:\n\n### Attendance Insights\nAI analyses attendance patterns across every team. Spots declining trends before they become dropouts. Flags welfare concerns sensitively. Gives coaches and welfare officers the information they need to act early.\n\n### Compliance & Safeguarding\nA real-time view of your club\'s compliance posture. DBS tracking with automatic expiry alerts. First aid coverage analysis per team. Safeguarding role assignments. Incident reporting with confidential audit trails. AI generates a gap analysis with a clear compliance score and actionable recommendations.\n\n### Grant Applications\nNeed funding? Touchline drafts grant applications for Football Foundation, FA National Game, and County FA grants - tailored to your club\'s actual data. Membership numbers, facility needs, community impact - all pulled from the platform and structured into a compelling application.\n\n### Season Summary Reports\nOne-click AGM-ready reports. Membership breakdown by age group, match records and results, attendance averages, financial summary, compliance status, and coaching activity - all generated from your real data, not guesswork.\n\n### Coach Development\nPersonalised development suggestions for every coach based on their qualifications, sessions delivered, video analyses conducted, and observation patterns. Helps coaches grow without needing expensive external CPD.\n\n## What Makes This Different\n\nOther platforms give you forms to fill in. Touchline gives you answers.\n\nThe intelligence layer means:\n\n- **No more missed renewals** - DBS, first aid, and safeguarding expiries are tracked and flagged automatically\n- **No more invisible dropouts** - Attendance trends surface before players disappear\n- **No more blank-page AGMs** - Season reports generate themselves\n- **No more generic sessions** - Every training plan is built for your team\'s format, age group, and focus areas\n- **No more grant-writing dread** - Applications draft themselves from your club\'s real data\n\nThe technology behind it is Claude, the latest AI from Anthropic - the same technology used by leading organisations worldwide. But you don\'t need to know that. You just need to know it works.\n\n## Pricing That Makes Sense\n\nTouchline starts at **£9.99/month** for individual teams with full AI coaching tools. Club plans with the full Intelligence suite start at **£34.99/month** for up to 6 teams - less than the cost of a set of training bibs.\n\nEvery plan includes unlimited coaches, players, and parents. No per-user fees. No hidden charges.\n\n## Try It\n\nIf you\'re running a grassroots club and spending more time on admin than coaching, Touchline was built for you. The intelligence layer isn\'t a gimmick - it\'s what happens when you build a platform that actually understands football.\n\n**[Start your free trial at touchline.xyz](https://touchline.xyz/register)**\n\n---\n\n*Touchline is built in England for English grassroots football. Every AI feature follows FA guidelines and the Youth Development Review framework.*`,
         'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&h=675&fit=crop&crop=center&q=80',
         ['club-intelligence', 'grassroots', 'ai', 'club-management', 'safeguarding'],
-        'What Touchline Brings to Clubs — The AI Intelligence Layer',
+        'What Touchline Brings to Clubs - The AI Intelligence Layer',
         'Most football platforms manage your club. Touchline understands it. Discover how the AI intelligence layer transforms grassroots club operations.'
       ])
       console.log('📝 Blog seed: club intelligence post checked')
@@ -2264,7 +2315,7 @@ export async function runMigrations() {
       await pool.query(`ALTER TABLE development_plans ADD COLUMN IF NOT EXISTS auto_review BOOLEAN DEFAULT false`)
     } catch (e) { /* table may not exist yet */ }
 
-    // Trial lifecycle email tracking — records which reminder stage was last sent
+    // Trial lifecycle email tracking - records which reminder stage was last sent
     // Values: '3day', '1day', 'expired', or NULL (none sent)
     try {
       await pool.query(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS trial_reminder_sent VARCHAR(10)`)
@@ -2272,7 +2323,7 @@ export async function runMigrations() {
       console.warn('trial_reminder_sent migration warning:', e.message)
     }
 
-    // Payment reminder tracking — records which reminder stage was last sent
+    // Payment reminder tracking - records which reminder stage was last sent
     // Values: 'upcoming', 'overdue', or NULL (none sent). Reset on successful payment.
     try {
       await pool.query(`ALTER TABLE player_subscriptions ADD COLUMN IF NOT EXISTS payment_reminder_sent VARCHAR(10)`)
@@ -2280,7 +2331,7 @@ export async function runMigrations() {
       console.warn('payment_reminder_sent migration warning:', e.message)
     }
 
-    // Match goals — individual goalscorer and assist tracking per match
+    // Match goals - individual goalscorer and assist tracking per match
     await pool.query(`
       CREATE TABLE IF NOT EXISTS match_goals (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2658,7 +2709,7 @@ export async function runMigrations() {
     // SEASON DEVELOPMENT TRACKING
     // ================================================
 
-    // Attribute snapshots — timestamped records of player attributes for tracking improvement over time
+    // Attribute snapshots - timestamped records of player attributes for tracking improvement over time
     await pool.query(`
       CREATE TABLE IF NOT EXISTS attribute_snapshots (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -2684,7 +2735,7 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_attr_snapshots_player ON attribute_snapshots(player_id, created_at DESC)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_attr_snapshots_team ON attribute_snapshots(team_id, created_at DESC)`)
 
-    // Add effort_rating column to training_attendance (additive — does not touch existing columns)
+    // Add effort_rating column to training_attendance (additive - does not touch existing columns)
     try {
       await pool.query(`ALTER TABLE training_attendance ADD COLUMN IF NOT EXISTS effort_rating SMALLINT`)
     } catch (e) {
@@ -2749,7 +2800,7 @@ export async function runMigrations() {
     try {
       await pool.query(`ALTER TABLE library_sections ADD CONSTRAINT library_sections_team_id_slug_key UNIQUE (team_id, slug)`)
     } catch (e) {
-      // Constraint already exists — ignore
+      // Constraint already exists - ignore
     }
 
     // Seed predefined sections for all existing teams that don't have them yet
@@ -3444,6 +3495,517 @@ export async function runMigrations() {
 
     console.log('Phase 11: Voice observations groundwork complete')
 
+    // =========================================================================
+    // PHASE 12: GDPR Data Export & Deletion
+    // =========================================================================
+
+    // --- 12a: Data export requests table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS data_export_requests (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      requested_by UUID NOT NULL REFERENCES users(id),
+      request_type TEXT NOT NULL CHECK (request_type IN ('export', 'deletion')),
+      status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'processing', 'ready', 'downloaded', 'completed', 'failed')),
+      reason TEXT,
+      download_token UUID DEFAULT gen_random_uuid(),
+      download_expires_at TIMESTAMPTZ,
+      file_path TEXT,
+      completed_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_school ON data_export_requests(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_pupil ON data_export_requests(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_token ON data_export_requests(download_token)`)
+
+    // --- 12b: Data deletion log (permanent record that deletion occurred) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS data_deletion_log (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL,
+      pupil_reference TEXT NOT NULL,
+      deleted_by UUID NOT NULL,
+      reason TEXT,
+      tables_purged TEXT[],
+      files_deleted TEXT[],
+      summary JSONB,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+
+    // --- 12c: Consent records table (if not already created) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS gdpr_consent_records (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      pupil_id UUID REFERENCES pupils(id) ON DELETE CASCADE,
+      guardian_id UUID,
+      consent_type TEXT NOT NULL
+        CHECK (consent_type IN ('data_processing', 'photo_video', 'medical', 'ai_analysis', 'voice_recording', 'third_party_sharing')),
+      granted BOOLEAN NOT NULL DEFAULT false,
+      granted_by TEXT,
+      granted_at TIMESTAMPTZ,
+      withdrawn_at TIMESTAMPTZ,
+      ip_address TEXT,
+      notes TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_school ON gdpr_consent_records(school_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_pupil ON gdpr_consent_records(pupil_id)`)
+
+    console.log('Phase 12: GDPR data export & deletion complete')
+
+    // =========================================================================
+    // PHASE 13: Role-Based Access Control (Schools RBAC)
+    // =========================================================================
+
+    // --- 13a: Add school-product roles to school_members
+    //   New role vocabulary for the schools product:
+    //     owner       - the account owner (set at school creation)
+    //     school_admin - IT admin / bursar (manage billing, staff, settings)
+    //     head_of_pe  - Head of PE / Head of Sport department (full HoD view)
+    //     head_of_sport - Head of a specific sport (per-sport HoD, stored in teacher_sports)
+    //     teacher     - curriculum PE teacher or extracurricular coach
+    //     read_only   - observer / governor / visiting inspector (read, no write)
+    //   Legacy roles (owner, admin, coach) kept for backwards compatibility.
+    // ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS school_role TEXT
+        CHECK (school_role IN (
+          'owner', 'school_admin', 'head_of_pe', 'head_of_sport', 'teacher', 'read_only',
+          'admin', 'coach', 'parent', 'treasurer', 'secretary'
+        ));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // Backfill school_role from legacy role column for existing members
+    await pool.query(`UPDATE school_members SET school_role = CASE
+      WHEN role = 'owner' THEN 'owner'
+      WHEN role = 'admin' THEN 'school_admin'
+      WHEN role = 'coach' THEN 'teacher'
+      WHEN role = 'parent' THEN 'read_only'
+      ELSE role
+    END
+    WHERE school_role IS NULL`)
+
+    // --- 13b: Add permissions columns if not already present ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_classes BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_teams BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_curriculum BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_reports BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_safeguarding BOOLEAN DEFAULT false;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // --- 13c: Populate new permission columns based on school_role ---
+    await pool.query(`UPDATE school_members SET
+      can_view_all_classes = (school_role IN ('owner', 'school_admin', 'head_of_pe')),
+      can_view_all_teams   = (school_role IN ('owner', 'school_admin', 'head_of_pe', 'head_of_sport')),
+      can_manage_curriculum = (school_role IN ('owner', 'school_admin', 'head_of_pe')),
+      can_view_reports     = (school_role IN ('owner', 'school_admin', 'head_of_pe', 'head_of_sport', 'teacher')),
+      can_manage_safeguarding = (school_role IN ('owner', 'school_admin', 'head_of_pe'))
+    WHERE school_role IS NOT NULL`)
+
+    console.log('Phase 13: RBAC schools roles complete')
+
+    // =========================================================================
+    // PHASE 14: SSO - Microsoft 365 & Google Workspace for Education
+    // =========================================================================
+
+    // --- 14a: SSO identity columns on users table ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_provider TEXT
+        CHECK (sso_provider IN ('microsoft', 'google', 'saml'));
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_sub TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_email TEXT;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+
+    // Unique constraint: one SSO identity per provider per user
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_sso_identity
+      ON users(sso_provider, sso_sub)
+      WHERE sso_provider IS NOT NULL AND sso_sub IS NOT NULL`)
+
+    // --- 14b: SSO OAuth state table (PKCE + state tracking, short-lived) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sso_state (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      state TEXT NOT NULL UNIQUE,
+      provider TEXT NOT NULL CHECK (provider IN ('microsoft', 'google')),
+      school_id UUID REFERENCES schools(id) ON DELETE CASCADE,
+      code_verifier TEXT NOT NULL,
+      redirect_to TEXT DEFAULT '/teacher',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '10 minutes')
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_state_state ON sso_state(state)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_state_expires ON sso_state(expires_at)`)
+
+    // --- 14c: SSO domain allowlist (school-level: which email domains map to this school's SSO) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS sso_domain_allowlist (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      domain TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(school_id, domain)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_domain_school ON sso_domain_allowlist(school_id)`)
+    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_sso_domain_domain ON sso_domain_allowlist(domain)`)
+
+    console.log('Phase 14: SSO migration complete')
+
+    // ==========================================
+    // Phase 15: Sport-specific match events & pupil stats
+    // ==========================================
+    console.log('Running Phase 15: Match events & pupil stats...')
+
+    // --- 15a: match_events - flexible sport-agnostic event log ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS match_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+      event_type TEXT NOT NULL,
+      pupil_id UUID REFERENCES pupils(id) ON DELETE SET NULL,
+      secondary_pupil_id UUID REFERENCES pupils(id) ON DELETE SET NULL,
+      minute INTEGER,
+      value INTEGER DEFAULT 1,
+      details JSONB DEFAULT '{}',
+      notes TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_match ON match_events(match_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_pupil ON match_events(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_type ON match_events(event_type)`)
+
+    // --- 15b: match_pupil_stats - per-pupil per-match flexible stats ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS match_pupil_stats (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      stats JSONB DEFAULT '{}',
+      rating INTEGER CHECK (rating >= 1 AND rating <= 10),
+      notes TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(match_id, pupil_id)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_match ON match_pupil_stats(match_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_pupil ON match_pupil_stats(pupil_id)`)
+
+    console.log('Phase 15: Match events & pupil stats migration complete')
+
+    // ==========================================
+    // Phase 16: Prospect demo instance
+    // ==========================================
+    console.log('Running Phase 16: Prospect demo instance...')
+
+    // --- 16a: Flag schools as demo tenants ---
+    try {
+      await pool.query(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS is_demo_tenant BOOLEAN DEFAULT false`)
+    } catch (e) {
+      console.warn('Phase 16a schools.is_demo_tenant warning:', e.message)
+    }
+
+    // --- 16b: Flag users as demo users + expiry ---
+    try {
+      await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo_user BOOLEAN DEFAULT false`)
+      await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS demo_expires_at TIMESTAMPTZ`)
+    } catch (e) {
+      console.warn('Phase 16b users demo columns warning:', e.message)
+    }
+
+    // --- 16c: Prospects table - one row per prospective customer ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospects (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name VARCHAR(255) NOT NULL,
+      email VARCHAR(255) NOT NULL UNIQUE,
+      organisation VARCHAR(255),
+      notes TEXT,
+      created_by UUID REFERENCES users(id) ON DELETE SET NULL,
+      access_granted_at TIMESTAMPTZ DEFAULT NOW(),
+      access_expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW() + INTERVAL '7 days'),
+      last_login_at TIMESTAMPTZ,
+      is_active BOOLEAN DEFAULT true,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_email ON demo_prospects(email)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_expires ON demo_prospects(access_expires_at)`)
+
+    // --- 16d: Prospect credentials - one row per persona per prospect ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospect_credentials (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      prospect_id UUID NOT NULL REFERENCES demo_prospects(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      persona VARCHAR(50) NOT NULL CHECK (persona IN ('head_of_pe', 'teacher', 'pupil')),
+      temp_password TEXT NOT NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(prospect_id, persona)
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_creds_prospect ON demo_prospect_credentials(prospect_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_creds_user ON demo_prospect_credentials(user_id)`)
+
+    // --- 16e: Demo telemetry events ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_telemetry_events (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      prospect_id UUID REFERENCES demo_prospects(id) ON DELETE SET NULL,
+      user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      event_type TEXT NOT NULL,
+      page TEXT,
+      feature TEXT,
+      metadata JSONB DEFAULT '{}',
+      session_id TEXT,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_prospect ON demo_telemetry_events(prospect_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_event_type ON demo_telemetry_events(event_type)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_created ON demo_telemetry_events(created_at)`)
+
+    console.log('Phase 16: Prospect demo instance migration complete')
+
+    // ============================================================
+    // PHASE 17: Demo access request form
+    // ============================================================
+
+    // --- 17a: Demo requests table ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS demo_requests (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      name TEXT NOT NULL,
+      role_at_school TEXT NOT NULL,
+      role_at_school_other TEXT,
+      school_name TEXT NOT NULL,
+      school_type TEXT NOT NULL,
+      email TEXT NOT NULL,
+      pupil_roll_band TEXT NOT NULL,
+      hopes_to_help_with TEXT,
+      referral_source TEXT,
+      ip_address TEXT,
+      user_agent TEXT,
+      status TEXT DEFAULT 'new' CHECK (status IN ('new', 'contacted', 'demo_issued', 'declined', 'no_response')),
+      internal_notes TEXT,
+      contacted_at TIMESTAMPTZ,
+      demo_prospect_id UUID REFERENCES demo_prospects(id) ON DELETE SET NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_requests_email ON demo_requests(email)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_requests_status ON demo_requests(status)`)
+
+    console.log('Phase 17: Demo access request migration complete')
+
+    // ==========================================
+    // PHASE 17b: Calendar export tokens
+    // ==========================================
+    await pool.query(`CREATE TABLE IF NOT EXISTS calendar_tokens (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      token TEXT NOT NULL UNIQUE,
+      scope TEXT NOT NULL CHECK (scope IN ('teacher_schedule', 'team_fixtures', 'school_fixtures', 'pupil_schedule')),
+      scope_id UUID,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_token ON calendar_tokens(token)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_user ON calendar_tokens(user_id)`)
+    console.log('Phase 17b: Calendar tokens migration complete')
+
+    // ==========================================
+    // PHASE 18: Seed admin users
+    // ==========================================
+    const adminUsers = [
+      { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
+      { name: 'Peter Taylor', email: 'petertaylor1983@gmail.com' },
+    ]
+    // bcrypt hash of 'MoonBoots2026!' with 10 salt rounds
+    const adminPasswordHash = '$2a$10$8Q9TztHyoY5vkS5FlqX0h.C.8p26vcjcFBU78unFIRqwVe5Dt/wpe'
+
+    for (const admin of adminUsers) {
+      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [admin.email.toLowerCase()])
+      if (exists.rows.length > 0) {
+        if (!exists.rows[0].is_admin) {
+          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [exists.rows[0].id])
+          console.log(`  Promoted ${admin.email} to admin`)
+        }
+      } else {
+        await pool.query(
+          `INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true)`,
+          [admin.name, admin.email.toLowerCase(), adminPasswordHash]
+        )
+        console.log(`  Created admin: ${admin.email}`)
+      }
+    }
+
+    console.log('Phase 18: Admin users seeded')
+
+    // ================================================
+    // PHASE 19: Pupil-facing visibility on observations
+    // ================================================
+    // visible_to_pupil defaults to FALSE so existing and new observations
+    // are teacher-only unless explicitly opted in. This is a safeguarding
+    // requirement: internal notes must never leak to pupils.
+
+    await pool.query(`
+      ALTER TABLE observations
+      ADD COLUMN IF NOT EXISTS visible_to_pupil BOOLEAN NOT NULL DEFAULT FALSE
+    `)
+
+    await pool.query(`
+      CREATE INDEX IF NOT EXISTS idx_observations_pupil_visible
+      ON observations (pupil_id, visible_to_pupil)
+      WHERE visible_to_pupil = TRUE
+    `)
+
+    console.log('Phase 19: visible_to_pupil column and index on observations')
+
+    // ================================================
+    // PHASE 20: GCSE PE candidate flag on pupils
+    // ================================================
+
+    await pool.query(`
+      ALTER TABLE pupils
+      ADD COLUMN IF NOT EXISTS gcse_pe_candidate BOOLEAN NOT NULL DEFAULT FALSE
+    `)
+
+    console.log('Phase 20: gcse_pe_candidate flag on pupils')
+
+    // ================================================
+    // PHASE 21: Pupil profile expansion
+    // ================================================
+    // Medical, SEND, safeguarding, IDP goals, achievement augmentation,
+    // and additional pupil identity columns. All non-destructive —
+    // existing data is preserved. Each table has its own access-control
+    // policy enforced at the route layer; safeguarding is the strictest.
+
+    // 21a: identity & profile columns on pupils (aka players)
+    await pool.query(`
+      ALTER TABLE players
+        ADD COLUMN IF NOT EXISTS preferred_name TEXT,
+        ADD COLUMN IF NOT EXISTS pronouns TEXT,
+        ADD COLUMN IF NOT EXISTS parent_phone TEXT,
+        ADD COLUMN IF NOT EXISTS admission_date DATE,
+        ADD COLUMN IF NOT EXISTS estimated_leaving_date DATE,
+        ADD COLUMN IF NOT EXISTS talent_pathway_flag BOOLEAN NOT NULL DEFAULT FALSE,
+        ADD COLUMN IF NOT EXISTS house_id UUID,
+        ADD COLUMN IF NOT EXISTS tutor_user_id UUID REFERENCES users(id) ON DELETE SET NULL
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_talent_pathway ON players(talent_pathway_flag) WHERE talent_pathway_flag = TRUE`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_tutor ON players(tutor_user_id)`)
+
+    // 21b: medical notes
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_medical_notes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+        condition TEXT,
+        medication TEXT,
+        dietary_requirements TEXT,
+        allergies TEXT,
+        physical_limitations_note TEXT,
+        emergency_contact_name TEXT,
+        emergency_contact_phone TEXT,
+        last_reviewed_date DATE,
+        last_reviewed_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_medical_pupil ON pupil_medical_notes(pupil_id)`)
+
+    // 21c: SEND / additional needs
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_send_notes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+        ehcp_status BOOLEAN NOT NULL DEFAULT FALSE,
+        ehcp_number TEXT,
+        send_category TEXT,
+        adaptations_required_in_pe TEXT,
+        sendco_comment TEXT,
+        last_reviewed_date DATE,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_send_pupil ON pupil_send_notes(pupil_id)`)
+
+    // 21d: safeguarding notes (strict access — enforced at route layer)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_safeguarding_notes (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+        flag_type TEXT NOT NULL CHECK (flag_type IN ('monitoring', 'concern', 'incident', 'resolved')),
+        note TEXT,
+        added_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        added_at TIMESTAMPTZ DEFAULT NOW(),
+        resolved_at TIMESTAMPTZ,
+        visible_to_roles JSONB NOT NULL DEFAULT '["hod","dsl","deputy_dsl"]'::jsonb
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_pupil ON pupil_safeguarding_notes(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_open ON pupil_safeguarding_notes(pupil_id) WHERE resolved_at IS NULL`)
+
+    // 21e: IDP goals (granular, per-goal row — separate from the existing
+    // development_plans summary table which keeps JSONB arrays)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_idp_goals (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+        sport_key TEXT,
+        goal_description TEXT NOT NULL,
+        target_date DATE,
+        self_assessment_notes TEXT,
+        teacher_assessment_notes TEXT,
+        status TEXT NOT NULL DEFAULT 'in_progress'
+          CHECK (status IN ('in_progress', 'achieved', 'revised', 'abandoned')),
+        created_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_pupil ON pupil_idp_goals(pupil_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_status ON pupil_idp_goals(pupil_id, status)`)
+
+    // 21f: augment existing pupil_achievements with sport_key for filtering
+    // (table was renamed from player_achievements earlier; tolerate either name)
+    await pool.query(`
+      DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupil_achievements') THEN
+          ALTER TABLE pupil_achievements ADD COLUMN IF NOT EXISTS sport_key TEXT;
+        ELSIF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_achievements') THEN
+          ALTER TABLE player_achievements ADD COLUMN IF NOT EXISTS sport_key TEXT;
+        END IF;
+      END $$
+    `)
+    await pool.query(`
+      DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupil_achievements') THEN
+          CREATE INDEX IF NOT EXISTS idx_pupil_achievements_sport ON pupil_achievements(sport_key) WHERE sport_key IS NOT NULL;
+        END IF;
+      END $$
+    `)
+
+    console.log('Phase 21: pupil profile expansion (medical, SEND, safeguarding, IDP goals, identity cols)')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)
@@ -3451,6 +4013,8 @@ export async function runMigrations() {
 }
 
 // Run if called directly
-if (process.argv[1].includes('migrations.js')) {
-  runMigrations().then(() => process.exit(0))
+if (process.argv[1]?.includes('migrations.js')) {
+  runMigrations()
+    .then(() => process.exit(0))
+    .catch(() => process.exit(1))
 }

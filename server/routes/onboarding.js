@@ -123,7 +123,7 @@ router.post('/teachers', async (req, res) => {
 
       const email = teacher.email.trim().toLowerCase()
       const name = teacher.name?.trim() || email.split('@')[0]
-      const role = teacher.role || 'coach'
+      const role = teacher.role || 'teacher'
 
       // Check if user already exists
       let userId
@@ -145,9 +145,9 @@ router.post('/teachers', async (req, res) => {
 
       // Add as school member
       await pool.query(
-        `INSERT INTO school_members (school_id, user_id, role, can_manage_players, can_invite_members, invited_at, joined_at)
-         VALUES ($1, $2, $3, true, false, NOW(), NOW())
-         ON CONFLICT (school_id, user_id) DO UPDATE SET role = EXCLUDED.role`,
+        `INSERT INTO school_members (school_id, user_id, role, school_role, can_manage_players, can_invite_members, can_view_reports, invited_at, joined_at)
+         VALUES ($1, $2, $3, $3, true, false, true, NOW(), NOW())
+         ON CONFLICT (school_id, user_id) DO UPDATE SET role = EXCLUDED.role, school_role = EXCLUDED.school_role`,
         [school_id, userId, role]
       )
 

@@ -1,12 +1,12 @@
 {
-  "name": "Touchline - AI Coaching Intelligence",
-  "short_name": "Touchline",
-  "description": "AI-powered coaching platform for grassroots football teams. Tactical planning, training sessions, player development, and team management.",
-  "id": "xyz.touchline.app",
+  "name": "MoonBoots Sports",
+  "short_name": "MoonBoots",
+  "description": "The multi-sport platform for school PE departments. Curriculum PE, extra-curricular sport, assessment, reporting, and AI coaching in one place.",
+  "id": "com.moonbootssports.app",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0B1C2D",
-  "theme_color": "#0B1C2D",
+  "background_color": "#0F1E3D",
+  "theme_color": "#0F1E3D",
   "orientation": "portrait-primary",
   "scope": "/",
   "lang": "en-GB",
@@ -44,7 +44,7 @@
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Touchline Dashboard"
+      "label": "Dashboard"
     },
     {
       "src": "/screenshots/training.png",
@@ -65,7 +65,7 @@
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Player Development"
+      "label": "Pupil Development"
     }
   ],
   "shortcuts": [
@@ -82,8 +82,8 @@
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Ask The Gaffer",
-      "short_name": "Chat",
+      "name": "AI Assistant",
+      "short_name": "Assistant",
       "url": "/chat",
       "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }]
     }

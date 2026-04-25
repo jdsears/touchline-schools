@@ -881,7 +881,7 @@ export default function TeacherLounge() {
                     <p className="text-xs text-pitch-400 mb-1">Previous Response:</p>
                     <p className="text-navy-300 text-sm">{selectedSuggestion.coach_response}</p>
                     <p className="text-xs text-navy-500 mt-2">
-                      — {selectedSuggestion.responded_by_name}
+                      - {selectedSuggestion.responded_by_name}
                     </p>
                   </div>
                 )}

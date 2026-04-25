@@ -115,7 +115,8 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
       // Poll for completion
       pollForCompletion(res.data.audio_source_id)
     } catch (err) {
-      toast.error('Failed to upload observation')
+      const serverMsg = err.response?.data?.error
+      toast.error(serverMsg || 'Failed to upload observation')
       console.error('Upload error:', err)
       setState('idle')
     }
@@ -131,6 +132,11 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
         const res = await voiceObservationService.getStatus(sourceId)
         if (res.data.status === 'ready_for_review') {
           navigate(`/teacher/voice-review/${sourceId}`)
+          return
+        }
+        if (res.data.status === 'error') {
+          toast.error(res.data.processing_error || 'Voice processing failed. Please try again.', { duration: 8000 })
+          if (onClose) onClose()
           return
         }
         if (attempts >= maxAttempts) {

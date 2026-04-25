@@ -1,3 +1,11 @@
+// Canonical matches table columns:
+//   match_date (DATE), date (DATE, kept in sync), match_time (TIME),
+//   home_away ('home'|'away'), score_for (INT), score_against (INT),
+//   team_notes (TEXT), formations (JSONB), kit_type, meet_time, veo_link,
+//   video_url, video_id, opponent, location, prep_notes, prep_draft, report.
+// Legacy aliases (is_home, goals_for, goals_against, result, notes) are
+// computed in SELECT for backward-compat with older frontend pages.
+
 import { Router } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import multer from 'multer'
@@ -5,7 +13,7 @@ import path from 'path'
 import fs from 'fs'
 import pool from '../config/database.js'
 import { authenticateToken, requireTeamAccess } from '../middleware/auth.js'
-import { extractFixturesFromImage, extractPlayersFromImage, generateTrainingSession, generateTrainingSummary } from '../services/claudeService.js'
+import { extractFixturesFromImage, extractPlayersFromImage, generateTrainingSession, generateTrainingSummary, generateSeasonFixtures } from '../services/claudeService.js'
 import { normalizePlayerPositions, normalizePlayersPositions } from '../utils/pupilUtils.js'
 import { sendTeamInviteEmail, sendNotificationEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
 import { sendPushToUser } from '../services/pushService.js'
@@ -76,6 +84,23 @@ router.get('/mine', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user.id
 
+    if (req.user.is_admin) {
+      const fallback = await pool.query('SELECT id FROM schools ORDER BY created_at ASC LIMIT 1')
+      const schoolId = fallback.rows[0]?.id
+      if (schoolId) {
+        const result = await pool.query(
+          `SELECT t.*,
+            (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count,
+            (SELECT COUNT(*) FROM matches m WHERE m.team_id = t.id) AS match_count
+           FROM teams t
+           WHERE t.school_id = $1
+           ORDER BY t.sport ASC, t.name ASC`,
+          [schoolId]
+        )
+        return res.json(result.rows)
+      }
+    }
+
     // Teams where user is owner OR has a team_membership with a coaching role
     const result = await pool.query(
       `SELECT DISTINCT t.*,
@@ -100,13 +125,13 @@ router.get('/mine/fixtures', authenticateToken, async (req, res, next) => {
     const userId = req.user.id
 
     const result = await pool.query(
-      `SELECT m.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+      `SELECT m.*, COALESCE(m.date, m.match_date) AS date, t.name AS team_name, t.sport, t.age_group, t.gender,
               t.primary_color AS team_color
        FROM matches m
        JOIN teams t ON m.team_id = t.id
        LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
        WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
-       ORDER BY m.date DESC
+       ORDER BY COALESCE(m.date, m.match_date) DESC
        LIMIT 50`,
       [userId]
     )
@@ -123,7 +148,7 @@ router.get('/mine/sessions', authenticateToken, async (req, res, next) => {
     const userId = req.user.id
 
     const result = await pool.query(
-      `SELECT ts.*, t.name AS team_name, t.sport, t.age_group, t.gender,
+      `SELECT ts.*, ts.focus AS focus_areas, t.name AS team_name, t.sport, t.age_group, t.gender,
               t.primary_color AS team_color
        FROM training_sessions ts
        JOIN teams t ON ts.team_id = t.id
@@ -623,10 +648,16 @@ router.get('/:id/matches', authenticateToken, requireTeamAccess, async (req, res
     
     const result = await pool.query(
       `SELECT m.*,
+        (m.home_away = 'home') AS is_home,
+        m.score_for AS goals_for,
+        m.score_against AS goals_against,
+        m.team_notes AS notes,
+        CASE WHEN m.score_for IS NOT NULL AND m.score_against IS NOT NULL
+          THEN m.score_for || ' - ' || m.score_against ELSE NULL END AS result,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'available') as available_count,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'unavailable') as unavailable_count,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'maybe') as maybe_count
-      FROM matches m WHERE m.team_id = $1 ORDER BY m.date DESC`,
+      FROM matches m WHERE m.team_id = $1 ORDER BY COALESCE(m.date, m.match_date) DESC`,
       [id]
     )
     
@@ -646,10 +677,12 @@ router.post('/:id/matches', authenticateToken, requireTeamAccess, async (req, re
       return res.status(400).json({ message: 'Opponent and date are required' })
     }
 
+    const homeAway = isHome !== false ? 'home' : 'away'
     const dbResult = await pool.query(
-      `INSERT INTO matches (team_id, opponent, date, location, is_home, veo_link, result, kit_type, meet_time)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-      [id, opponent, date, location || null, isHome !== false, veoLink || null, matchResult || null, kitType || (isHome !== false ? 'home' : 'away'), meetTime || null]
+      `INSERT INTO matches (team_id, opponent, match_date, date, location, home_away, veo_link, kit_type, meet_time)
+       VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8) RETURNING *,
+         (home_away = 'home') AS is_home, score_for AS goals_for, score_against AS goals_against`,
+      [id, opponent, date, location || null, homeAway, veoLink || null, kitType || homeAway, meetTime || null]
     )
 
     res.status(201).json(dbResult.rows[0])
@@ -739,21 +772,26 @@ router.post('/:id/matches/bulk', authenticateToken, requireTeamAccess, async (re
         resultStr = `${goalsFor}-${goalsAgainst}`
       }
 
+      const matchDate = match.date + (match.time ? `T${match.time}:00` : 'T00:00:00')
+      const homeAway = match.isHome !== false ? 'home' : 'away'
       const result = await pool.query(
-        `INSERT INTO matches (team_id, opponent, date, location, is_home, result, goals_for, goals_against, notes)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `INSERT INTO matches (team_id, opponent, match_date, date, match_time, location, home_away,
+          score_for, score_against, team_notes, kit_type, meet_time)
+         VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          ON CONFLICT DO NOTHING
          RETURNING *`,
         [
           id,
           match.opponent,
-          match.date + (match.time ? `T${match.time}:00` : 'T00:00:00'),
+          matchDate,
+          match.time || null,
           match.location || null,
-          match.isHome !== false,
-          resultStr,
+          homeAway,
           goalsFor,
           goalsAgainst,
-          match.competition ? `Competition: ${match.competition}` : null
+          match.competition ? `Competition: ${match.competition}` : null,
+          match.kitType || homeAway,
+          match.meetTime || null
         ]
       )
       if (result.rows.length > 0) {
@@ -770,6 +808,81 @@ router.post('/:id/matches/bulk', authenticateToken, requireTeamAccess, async (re
   }
 })
 
+// AI-assisted season fixture generation
+router.post('/:id/matches/generate-season', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const teamRes = await pool.query('SELECT name, sport, age_group, gender FROM teams WHERE id = $1', [id])
+    if (!teamRes.rows.length) return res.status(404).json({ message: 'Team not found' })
+    const team = teamRes.rows[0]
+
+    const pastRes = await pool.query(
+      `SELECT DISTINCT opponent FROM matches WHERE team_id = $1 AND opponent IS NOT NULL ORDER BY opponent`,
+      [id]
+    )
+    const pastOpponents = pastRes.rows.map(r => r.opponent)
+
+    const fixtures = await generateSeasonFixtures({
+      teamName: team.name,
+      sport: team.sport,
+      ageGroup: team.age_group,
+      gender: team.gender,
+      pastOpponents,
+    })
+
+    res.json({ fixtures })
+  } catch (error) {
+    console.error('AI season generation failed:', error)
+    res.status(500).json({ message: error.message || 'Failed to generate season fixtures' })
+  }
+})
+
+// Validate fixtures for clashes before bulk creation
+router.post('/:id/matches/validate', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { matches: proposed } = req.body
+    if (!proposed?.length) return res.json({ warnings: [] })
+
+    const team = await pool.query('SELECT school_id FROM teams WHERE id = $1', [id])
+    const schoolId = team.rows[0]?.school_id
+    const warnings = []
+
+    for (let i = 0; i < proposed.length; i++) {
+      const m = proposed[i]
+      if (!m.date) continue
+      const d = m.date
+
+      // Venue clash: another fixture at the same school on the same date at the same home venue
+      if (m.isHome !== false && schoolId) {
+        const venueClash = await pool.query(
+          `SELECT t.name AS team_name, m2.opponent
+           FROM matches m2 JOIN teams t ON t.id = m2.team_id
+           WHERE t.school_id = $1 AND m2.team_id != $2
+             AND m2.match_date::date = $3::date AND m2.home_away = 'home'
+           LIMIT 1`,
+          [schoolId, id, d]
+        )
+        if (venueClash.rows.length > 0) {
+          const c = venueClash.rows[0]
+          warnings.push({ row: i, type: 'venue', message: `Home venue clash: ${c.team_name} vs ${c.opponent} on the same date` })
+        }
+      }
+
+      // Date warning: Sunday fixture
+      const dow = new Date(d).getDay()
+      if (dow === 0) {
+        warnings.push({ row: i, type: 'date', message: 'Sunday fixture - verify this is intentional' })
+      }
+    }
+
+    res.json({ warnings })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // Delete all matches for a team
 router.delete('/:id/matches/all', authenticateToken, requireTeamAccess, async (req, res, next) => {
   try {
@@ -780,9 +893,9 @@ router.delete('/:id/matches/all', authenticateToken, requireTeamAccess, async (r
     const params = [id]
 
     if (type === 'upcoming') {
-      query += ' AND date > NOW() AND result IS NULL'
+      query += ' AND COALESCE(date, match_date) > NOW() AND score_for IS NULL'
     } else if (type === 'results') {
-      query += ' AND (date < NOW() OR result IS NOT NULL)'
+      query += ' AND (COALESCE(date, match_date) < NOW() OR score_for IS NOT NULL)'
     }
     query += ' RETURNING id'
 
@@ -1255,7 +1368,7 @@ router.put('/:id/training/:sessionId/attendance', authenticateToken, requireTeam
     const results = []
     for (const record of attendance) {
       const { pupil_id, attended, notes, effort_rating } = record
-      // effort_rating is optional (1-5) — only set if provided
+      // effort_rating is optional (1-5) - only set if provided
       const effortVal = effort_rating && effort_rating >= 1 && effort_rating <= 5 ? effort_rating : null
       const result = await pool.query(
         `INSERT INTO training_attendance (session_id, pupil_id, attended, notes, recorded_by, effort_rating)
@@ -1392,7 +1505,7 @@ router.post('/:id/training/:sessionId/availability/request', authenticateToken, 
     })
     const sessionTime = session.time ? ` at ${session.time.slice(0, 5)}` : ''
 
-    // Get pupils — optionally filter to only those who haven't responded
+    // Get pupils - optionally filter to only those who haven't responded
     const playersResult = await pool.query(
       `SELECT p.*, u.id as user_id, u.email as user_email
        FROM pupils p

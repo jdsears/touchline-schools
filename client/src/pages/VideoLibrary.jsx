@@ -1,4 +1,4 @@
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -315,7 +315,7 @@ export default function VideoLibrary() {
                 </button>
               </div>
               <div className="aspect-video">
-                <mux-pupil
+                <mux-player
                   ref={playerRef}
                   playback-id={activeVideo.mux_playback_id}
                   stream-type="on-demand"
@@ -432,7 +432,7 @@ export default function VideoLibrary() {
                     <option value="">None</option>
                     {matches.map(m => (
                       <option key={m.id} value={m.id}>
-                        {m.opponent} — {new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                        {m.opponent} - {new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </option>
                     ))}
                   </select>

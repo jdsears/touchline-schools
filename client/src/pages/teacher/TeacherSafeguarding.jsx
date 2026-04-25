@@ -31,20 +31,20 @@ export default function TeacherSafeguarding() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
           <ShieldCheck className="w-7 h-7 text-pitch-400" />
           Safeguarding
         </h1>
-        <p className="text-navy-400 mt-1">Safeguarding, compliance, and incident management</p>
+        <p className="text-secondary mt-1">Safeguarding, compliance, and incident management</p>
       </div>
 
       {/* Key principles banner */}
-      <div className="bg-navy-900 rounded-xl border border-amber-400/30 p-5 mb-6">
+      <div className="bg-card rounded-xl border border-amber-400/30 p-5 mb-6">
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
           <div>
             <h3 className="text-sm font-semibold text-amber-400 mb-1">Safeguarding is everyone's responsibility</h3>
-            <p className="text-xs text-navy-300">
+            <p className="text-xs text-secondary">
               If you have a concern about a pupil, report it immediately to your Designated Safeguarding Lead.
               If a child is in immediate danger, contact the police (999) or local authority children's services.
               All safeguarding activity on this platform is logged and auditable.
@@ -84,7 +84,7 @@ export default function TeacherSafeguarding() {
       {/* HoD-only section */}
       {isHoD && (
         <>
-          <h2 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
             <Shield className="w-5 h-5 text-amber-400" />
             DSL / Head of Department
           </h2>
@@ -118,8 +118,8 @@ export default function TeacherSafeguarding() {
       )}
 
       {/* Key policies */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-6">
-        <h2 className="text-base font-semibold text-white mb-4">Key Safeguarding Principles</h2>
+      <div className="bg-card rounded-xl border border-border-default p-6">
+        <h2 className="text-base font-semibold text-primary mb-4">Key Safeguarding Principles</h2>
         <div className="space-y-3">
           <PolicyRow title="All teacher-pupil interactions are logged" description="Messages, feedback, video comments, and assessment notes are visible to the DSL for audit purposes." />
           <PolicyRow title="Incident reporting is confidential" description="Only the DSL and designated personnel can access full incident details. Access is logged." />
@@ -138,12 +138,12 @@ function ActionCard({ icon: Icon, title, description, buttonLabel, color, href }
     amber: 'bg-amber-400/20 text-amber-400',
   }
   return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 p-5 flex flex-col">
+    <div className="bg-card rounded-xl border border-border-default p-5 flex flex-col">
       <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${colors[color]}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <h3 className="text-sm font-semibold text-white mb-1">{title}</h3>
-      <p className="text-xs text-navy-400 flex-1 mb-4">{description}</p>
+      <h3 className="text-sm font-semibold text-primary mb-1">{title}</h3>
+      <p className="text-xs text-secondary flex-1 mb-4">{description}</p>
       <Link
         to={href}
         className={`inline-flex items-center gap-1.5 text-xs font-medium ${
@@ -158,11 +158,11 @@ function ActionCard({ icon: Icon, title, description, buttonLabel, color, href }
 
 function DashboardCard({ icon: Icon, title, description, href }) {
   return (
-    <Link to={href} className="bg-navy-800/50 rounded-xl border border-navy-700/50 p-5 hover:border-navy-600 transition-colors flex items-start gap-4">
+    <Link to={href} className="bg-subtle rounded-xl border border-border-strong/50 p-5 hover:border-border-strong transition-colors flex items-start gap-4">
       <Icon className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
       <div>
-        <h3 className="text-sm font-medium text-white">{title}</h3>
-        <p className="text-xs text-navy-400 mt-0.5">{description}</p>
+        <h3 className="text-sm font-medium text-primary">{title}</h3>
+        <p className="text-xs text-secondary mt-0.5">{description}</p>
       </div>
     </Link>
   )
@@ -170,11 +170,11 @@ function DashboardCard({ icon: Icon, title, description, href }) {
 
 function PolicyRow({ title, description }) {
   return (
-    <div className="flex items-start gap-3 p-3 rounded-lg bg-navy-800/50">
+    <div className="flex items-start gap-3 p-3 rounded-lg bg-subtle">
       <div className="w-2 h-2 rounded-full bg-pitch-400 mt-1.5 shrink-0" />
       <div>
-        <div className="text-sm font-medium text-white">{title}</div>
-        <div className="text-xs text-navy-400">{description}</div>
+        <div className="text-sm font-medium text-primary">{title}</div>
+        <div className="text-xs text-secondary">{description}</div>
       </div>
     </div>
   )

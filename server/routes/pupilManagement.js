@@ -25,8 +25,15 @@ router.get('/', async (req, res) => {
     const limit = Math.min(parseInt(lim) || 50, 200)
     const offset = parseInt(off) || 0
 
+    // Derive first_name/last_name from the guaranteed 'name' column
     let query = `
-      SELECT p.id, p.first_name, p.last_name, p.year_group, p.house,
+      SELECT p.id,
+             split_part(COALESCE(p.name, ''), ' ', 1) AS first_name,
+             CASE WHEN position(' ' in COALESCE(p.name, '')) > 0
+                  THEN substring(COALESCE(p.name, '') from position(' ' in COALESCE(p.name, '')) + 1)
+                  ELSE '' END AS last_name,
+             p.name,
+             p.year_group, p.house,
              p.date_of_birth, p.is_active, p.created_at,
              t.name AS team_name, t.sport AS team_sport,
              (SELECT json_agg(DISTINCT su.sport)
@@ -36,14 +43,19 @@ router.get('/', async (req, res) => {
               WHERE tgp.pupil_id = p.id) AS curriculum_sports,
              (SELECT COUNT(*) FROM pupil_assessments pa WHERE pa.pupil_id = p.id) AS assessment_count
       FROM pupils p
-      JOIN teams t ON p.team_id = t.id
-      WHERE t.school_id = $1 AND p.is_active = true`
+      LEFT JOIN teams t ON p.team_id = t.id
+      WHERE p.is_active = true
+        AND (t.school_id = $1 OR p.id IN (
+          SELECT tgp2.pupil_id FROM teaching_group_pupils tgp2
+          JOIN teaching_groups tg2 ON tgp2.teaching_group_id = tg2.id
+          WHERE tg2.school_id = $1
+        ))`
 
     const params = [schoolId]
     let paramIndex = 2
 
     if (search) {
-      query += ` AND (p.first_name ILIKE $${paramIndex} OR p.last_name ILIKE $${paramIndex})`
+      query += ` AND p.name ILIKE $${paramIndex}`
       params.push(`%${search}%`)
       paramIndex++
     }
@@ -61,10 +73,10 @@ router.get('/', async (req, res) => {
     }
 
     // Count total before pagination
-    const countQuery = query.replace(/SELECT .* FROM/, 'SELECT COUNT(*) FROM')
+    const countQuery = `SELECT COUNT(*) FROM (${query}) AS _count`
     const countResult = await pool.query(countQuery, params)
 
-    query += ` ORDER BY p.year_group ASC, p.last_name ASC, p.first_name ASC`
+    query += ` ORDER BY p.year_group ASC, p.name ASC`
     query += ` LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`
     params.push(limit, offset)
 
@@ -127,9 +139,14 @@ router.get('/:id/profile', async (req, res) => {
 
     // Pupil details
     const pupilResult = await pool.query(
-      `SELECT p.*, t.name AS team_name, t.sport AS team_sport
+      `SELECT p.*,
+              split_part(COALESCE(p.name, ''), ' ', 1) AS first_name,
+              CASE WHEN position(' ' in COALESCE(p.name, '')) > 0
+                   THEN substring(COALESCE(p.name, '') from position(' ' in COALESCE(p.name, '')) + 1)
+                   ELSE '' END AS last_name,
+              t.name AS team_name, t.sport AS team_sport
        FROM pupils p
-       JOIN teams t ON p.team_id = t.id
+       LEFT JOIN teams t ON p.team_id = t.id
        WHERE p.id = $1`,
       [id]
     )
@@ -140,53 +157,48 @@ router.get('/:id/profile', async (req, res) => {
 
     const pupil = pupilResult.rows[0]
 
-    // Teaching groups and sport units
-    const classesResult = await pool.query(
-      `SELECT tg.id, tg.name, tg.year_group, tg.key_stage,
-              u.name AS teacher_name,
-              (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name, 'term', su.term))
-               FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
-       FROM teaching_group_pupils tgp
-       JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
-       JOIN users u ON tg.teacher_id = u.id
-       WHERE tgp.pupil_id = $1
-       ORDER BY tg.year_group ASC`,
-      [id]
-    )
+    // Each sub-query wrapped so one failure doesn't break the whole profile
+    let classes = [], assessments = [], teams = [], sports = []
 
-    // Assessments (recent, grouped by sport)
-    const assessmentsResult = await pool.query(
-      `SELECT pa.*, su.sport, su.unit_name, su.curriculum_area
-       FROM pupil_assessments pa
-       JOIN sport_units su ON pa.unit_id = su.id
-       WHERE pa.pupil_id = $1
-       ORDER BY pa.assessed_at DESC
-       LIMIT 30`,
-      [id]
-    )
+    try {
+      const r = await pool.query(
+        `SELECT tg.id, tg.name, tg.year_group, tg.key_stage,
+                u.name AS teacher_name,
+                (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name, 'term', su.term))
+                 FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
+         FROM teaching_group_pupils tgp
+         JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
+         LEFT JOIN users u ON tg.teacher_id = u.id
+         WHERE tgp.pupil_id = $1
+         ORDER BY tg.year_group ASC`, [id])
+      classes = r.rows
+    } catch (e) { console.warn('Profile classes query failed:', e.message) }
 
-    // Extra-curricular team memberships
-    const teamsResult = await pool.query(
-      `SELECT t.id, t.name, t.sport, t.age_group, t.gender
-       FROM team_memberships tm
-       JOIN teams t ON tm.team_id = t.id
-       WHERE tm.pupil_id = $1`,
-      [id]
-    )
+    try {
+      const r = await pool.query(
+        `SELECT pa.*, su.sport, su.unit_name, su.curriculum_area
+         FROM pupil_assessments pa
+         LEFT JOIN sport_units su ON pa.unit_id = su.id
+         WHERE pa.pupil_id = $1
+         ORDER BY pa.assessed_at DESC LIMIT 30`, [id])
+      assessments = r.rows
+    } catch (e) { console.warn('Profile assessments query failed:', e.message) }
 
-    // Pupil sports
-    const sportsResult = await pool.query(
-      `SELECT * FROM pupil_sports WHERE pupil_id = $1`,
-      [id]
-    )
+    try {
+      const r = await pool.query(
+        `SELECT t.id, t.name, t.sport, t.age_group, t.gender
+         FROM team_memberships tm
+         JOIN teams t ON tm.team_id = t.id
+         WHERE tm.pupil_id = $1`, [id])
+      teams = r.rows
+    } catch (e) { console.warn('Profile teams query failed:', e.message) }
 
-    res.json({
-      pupil,
-      classes: classesResult.rows,
-      assessments: assessmentsResult.rows,
-      teams: teamsResult.rows,
-      sports: sportsResult.rows,
-    })
+    try {
+      const r = await pool.query(`SELECT * FROM pupil_sports WHERE pupil_id = $1`, [id])
+      sports = r.rows
+    } catch (e) { /* pupil_sports table may not exist - not critical */ }
+
+    res.json({ pupil, classes, assessments, teams, sports })
   } catch (error) {
     console.error('Error loading pupil profile:', error)
     res.status(500).json({ error: 'Failed to load profile' })

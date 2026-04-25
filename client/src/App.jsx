@@ -1,8 +1,9 @@
-import { lazy, Suspense } from 'react'
+import { Suspense } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './context/AuthContext'
 import { usePageTracking } from './hooks/useAnalytics'
 import ErrorBoundary from './components/common/ErrorBoundary'
+import { lazyWithRetry as lazy } from './utils/lazyWithRetry'
 
 // Page tracker component
 function PageTracker() {
@@ -13,8 +14,13 @@ function PageTracker() {
 // Loading fallback for lazy-loaded routes
 function PageLoader() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="spinner w-8 h-8" />
+    <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--mb-navy, #0F1E3D)' }}>
+      <div style={{
+        width: 32, height: 32, borderRadius: '50%',
+        border: '2px solid rgba(201, 169, 97, 0.2)',
+        borderTopColor: 'var(--mb-gold, #C9A961)',
+        animation: 'spin 0.8s linear infinite',
+      }} />
     </div>
   )
 }
@@ -27,10 +33,13 @@ import Landing from './pages/Landing'
 
 // Lazy-loaded pages - only loaded when the route is visited
 const Login = lazy(() => import('./pages/Login'))
+const PublicFixtures = lazy(() => import('./pages/PublicFixtures'))
 const Register = lazy(() => import('./pages/Register'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Chat = lazy(() => import('./pages/Chat'))
 const Tactics = lazy(() => import('./pages/Tactics'))
+const TacticsLoader = lazy(() => import('./pages/teacher/TacticsLoader').then(m => ({ default: m.default })))
+const TacticsRedirect = lazy(() => import('./pages/teacher/TacticsLoader').then(m => ({ default: m.TacticsRedirect })))
 const Training = lazy(() => import('./pages/Training'))
 const Pupils = lazy(() => import('./pages/Pupils'))
 const PupilDetail = lazy(() => import('./pages/PupilDetail'))
@@ -50,15 +59,13 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const MagicLinkVerify = lazy(() => import('./pages/MagicLinkVerify'))
 const Terms = lazy(() => import('./pages/Terms'))
 const Admin = lazy(() => import('./pages/Admin'))
-const Blog = lazy(() => import('./pages/Blog'))
-const BlogPost = lazy(() => import('./pages/BlogPost'))
-const GrassrootsCoaching = lazy(() => import('./pages/GrassrootsCoaching'))
-const YouthCoaches = lazy(() => import('./pages/YouthCoaches'))
-const TrainingPlans = lazy(() => import('./pages/TrainingPlans'))
-const FeaturePage = lazy(() => import('./pages/features/FeaturePage'))
+const AdminReseedDemo = lazy(() => import('./pages/AdminReseedDemo'))
+const About = lazy(() => import('./pages/About'))
+const RequestDemoAccess = lazy(() => import('./pages/RequestDemoAccess'))
 const WatchStream = lazy(() => import('./pages/WatchStream'))
 const Onboarding = lazy(() => import('./pages/Onboarding'))
 const EnterpriseBilling = lazy(() => import('./pages/EnterpriseBilling'))
+const SSOCallback = lazy(() => import('./pages/SSOCallback'))
 
 // School pages
 const SchoolLayout = lazy(() => import('./pages/school/SchoolLayout'))
@@ -90,7 +97,9 @@ const TeacherAssessment = lazy(() => import('./pages/teacher/TeacherAssessment')
 const TeacherReports = lazy(() => import('./pages/teacher/TeacherReports'))
 const TeacherCurriculum = lazy(() => import('./pages/teacher/TeacherCurriculum'))
 const TeacherTeams = lazy(() => import('./pages/teacher/TeacherTeams'))
+const TeacherTeamDetail = lazy(() => import('./pages/teacher/TeacherTeamDetail'))
 const TeacherFixtures = lazy(() => import('./pages/teacher/TeacherFixtures'))
+const BlockFixtureCreation = lazy(() => import('./pages/teacher/BlockFixtureCreation'))
 const TeacherSessions = lazy(() => import('./pages/teacher/TeacherSessions'))
 const TeacherDevelopment = lazy(() => import('./pages/teacher/TeacherDevelopment'))
 const TeacherClassDetail = lazy(() => import('./pages/teacher/TeacherClassDetail'))
@@ -98,17 +107,26 @@ const TeacherClassDetail = lazy(() => import('./pages/teacher/TeacherClassDetail
 // Head of Department pages
 const HoDOverview = lazy(() => import('./pages/teacher/HoDOverview'))
 const HoDTeachers = lazy(() => import('./pages/teacher/HoDTeachers'))
+const HoDStaffActivity = lazy(() => import('./pages/teacher/HoDStaffActivity'))
 const HoDTeams = lazy(() => import('./pages/teacher/HoDTeams'))
 const HoDClasses = lazy(() => import('./pages/teacher/HoDClasses'))
 const HoDPupils = lazy(() => import('./pages/teacher/HoDPupils'))
 const HoDPupilProfile = lazy(() => import('./pages/teacher/HoDPupilProfile'))
 const HoDReporting = lazy(() => import('./pages/teacher/HoDReporting'))
+const WindowReportsList = lazy(() => import('./pages/teacher/WindowReportsList'))
+const ReportDetail = lazy(() => import('./pages/teacher/ReportDetail'))
 const TeacherSafeguarding = lazy(() => import('./pages/teacher/TeacherSafeguarding'))
 const VoiceObservationReview = lazy(() => import('./pages/teacher/VoiceObservationReview'))
 const VoiceSafeguardingReview = lazy(() => import('./pages/teacher/VoiceSafeguardingReview'))
 const HoDVoiceSettings = lazy(() => import('./pages/teacher/HoDVoiceSettings'))
+const GDPRDashboard = lazy(() => import('./pages/teacher/GDPRDashboard'))
+const HoDSSOSettings = lazy(() => import('./pages/teacher/HoDSSOSettings'))
+const HoDTestPersonas = lazy(() => import('./pages/teacher/HoDTestPersonas'))
+const HoDAssessmentOverview = lazy(() => import('./pages/teacher/HoDAssessmentOverview'))
+const HoDConsent = lazy(() => import('./pages/teacher/HoDConsent'))
+const TeacherSettings = lazy(() => import('./pages/teacher/TeacherSettings'))
 
-// Pupil Portal pages
+// Pupil Portal pages (legacy sidebar layout)
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
 const PupilSports = lazy(() => import('./pages/pupil/PupilSports'))
 const PupilWeek = lazy(() => import('./pages/pupil/PupilWeek'))
@@ -118,9 +136,18 @@ const PupilClipsPage = lazy(() => import('./pages/pupil/PupilClipsPage'))
 const PupilAssistantPage = lazy(() => import('./pages/pupil/PupilAssistantPage'))
 const PupilAchievements = lazy(() => import('./pages/pupil/PupilAchievements'))
 
+// Sports Lounge (v1.8 mobile-first pupil portal)
+const SportsLoungeLayout = lazy(() => import('./pages/pupil-lounge/SportsLoungeLayout'))
+const SLTodayPage = lazy(() => import('./pages/pupil-lounge/TodayPage'))
+const SLSchedulePage = lazy(() => import('./pages/pupil-lounge/SchedulePage'))
+const SLMySportsPage = lazy(() => import('./pages/pupil-lounge/MySportsPage'))
+const SLSportDetailPage = lazy(() => import('./pages/pupil-lounge/SportDetailPage'))
+const SLProgressPage = lazy(() => import('./pages/pupil-lounge/ProgressPage'))
+const SLMePage = lazy(() => import('./pages/pupil-lounge/MePage'))
+
 // Protected route wrapper
 function ProtectedRoute({ children, allowedRoles = [] }) {
-  const { user, loading } = useAuth()
+  const { user, loading, impersonating } = useAuth()
 
   if (loading) {
     return <PageLoader />
@@ -130,9 +157,14 @@ function ProtectedRoute({ children, allowedRoles = [] }) {
     return <Navigate to="/login" replace />
   }
 
+  // Allow impersonating users through role gates (HoD viewing as pupil)
+  if (impersonating) {
+    return children
+  }
+
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role)) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil" replace />
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/teacher" replace />
   }
@@ -150,7 +182,7 @@ function PublicRoute({ children }) {
 
   if (user) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil" replace />
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/teacher" replace />
   }
@@ -168,7 +200,7 @@ function CatchAllRedirect() {
 
   if (user) {
     if (user.role === 'player') {
-      return <Navigate to="/pupil" replace />
+      return <Navigate to="/pupil-lounge" replace />
     }
     return <Navigate to="/teacher" replace />
   }
@@ -199,16 +231,14 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/magic/:token" element={<MagicLinkVerify />} />
+        <Route path="/sso-callback" element={<SSOCallback />} />
         <Route path="/terms" element={<Terms />} />
-        <Route path="/blog" element={<Blog />} />
-        <Route path="/blog/:slug" element={<BlogPost />} />
-        <Route path="/grassroots-football-coaching" element={<GrassrootsCoaching />} />
-        <Route path="/youth-football-coaches" element={<YouthCoaches />} />
-        <Route path="/football-training-plans" element={<TrainingPlans />} />
-        <Route path="/features/:slug" element={<FeaturePage />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/request-demo" element={<RequestDemoAccess />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
+        <Route path="/sport/:slug" element={<PublicFixtures />} />
 
-        {/* Enterprise billing (Touchline staff only) */}
+        {/* Enterprise billing (MoonBoots staff only) */}
         <Route path="/enterprise-billing" element={<EnterpriseBilling />} />
 
         {/* Onboarding wizard */}
@@ -276,6 +306,7 @@ export default function App() {
           <Route path="lounge" element={<TeacherLounge />} />
           <Route path="settings" element={<Settings />} />
           <Route path="admin" element={<Admin />} />
+          <Route path="admin/reseed-demo" element={<AdminReseedDemo />} />
         </Route>
 
         {/* Teacher Hub */}
@@ -292,10 +323,13 @@ export default function App() {
           <Route path="reports" element={<TeacherReports />} />
           <Route path="curriculum" element={<TeacherCurriculum />} />
           <Route path="teams" element={<TeacherTeams />} />
+          <Route path="teams/:teamId" element={<TeacherTeamDetail />} />
+          <Route path="teams/:teamId/tactics" element={<TacticsLoader />} />
+          <Route path="teams/:teamId/fixtures/block" element={<BlockFixtureCreation />} />
           <Route path="fixtures" element={<TeacherFixtures />} />
           <Route path="sessions" element={<TeacherSessions />} />
           <Route path="development" element={<TeacherDevelopment />} />
-          <Route path="tactics" element={<Tactics />} />
+          <Route path="tactics" element={<TacticsRedirect />} />
           <Route path="video" element={<VideoLibrary />} />
           <Route path="film-room" element={<FilmRoom />} />
           <Route path="assistant" element={<Chat />} />
@@ -303,35 +337,60 @@ export default function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="hod" element={<HoDOverview />} />
           <Route path="hod/teachers" element={<HoDTeachers />} />
+          <Route path="hod/staff-activity" element={<HoDStaffActivity />} />
           <Route path="hod/teams" element={<HoDTeams />} />
           <Route path="hod/classes" element={<HoDClasses />} />
           <Route path="hod/pupils" element={<HoDPupils />} />
           <Route path="hod/pupils/:id" element={<HoDPupilProfile />} />
           <Route path="hod/reporting" element={<HoDReporting />} />
+          <Route path="hod/assessment-overview" element={<HoDAssessmentOverview />} />
+          <Route path="hod/consent" element={<HoDConsent />} />
+          <Route path="hod/reporting/windows/:windowId" element={<WindowReportsList />} />
+          <Route path="hod/reporting/windows/:windowId/reports/:reportId" element={<ReportDetail />} />
           <Route path="voice-review/:audioSourceId" element={<VoiceObservationReview />} />
           <Route path="hod/voice-safeguarding" element={<VoiceSafeguardingReview />} />
           <Route path="hod/voice-settings" element={<HoDVoiceSettings />} />
+          <Route path="hod/gdpr" element={<GDPRDashboard />} />
+          <Route path="hod/sso-settings" element={<HoDSSOSettings />} />
+          <Route path="hod/test-personas" element={<HoDTestPersonas />} />
+          {/* Three-tier settings */}
+          <Route path="settings" element={<Navigate to="/teacher/settings/profile" replace />} />
+          <Route path="settings/:tab" element={<TeacherSettings />} />
         </Route>
 
-        {/* Pupil Portal */}
-        <Route path="/pupil" element={
+        {/* Old Pupil Portal redirects to Sports Lounge */}
+        <Route path="/pupil/*" element={<Navigate to="/pupil-lounge/today" replace />} />
+        <Route path="/pupil" element={<Navigate to="/pupil-lounge/today" replace />} />
+
+        {/* Sports Lounge (v1.8 mobile-first pupil portal) */}
+        <Route path="/pupil-lounge" element={
           <ProtectedRoute allowedRoles={['player']}>
-            <PupilLayout />
+            <SportsLoungeLayout />
           </ProtectedRoute>
         }>
-          <Route index element={<PupilSports />} />
-          <Route path="week" element={<PupilWeek />} />
-          <Route path="development" element={<PupilDevelopmentPage />} />
-          <Route path="training" element={<PupilTrainingPage />} />
-          <Route path="clips" element={<PupilClipsPage />} />
-          <Route path="assistant" element={<PupilAssistantPage />} />
-          <Route path="achievements" element={<PupilAchievements />} />
+          <Route index element={<Navigate to="today" replace />} />
+          <Route path="today" element={<SLTodayPage />} />
+          <Route path="schedule" element={<SLSchedulePage />} />
+          <Route path="sports" element={<SLMySportsPage />} />
+          <Route path="sports/:sportKey" element={<SLSportDetailPage />} />
+          <Route path="progress" element={<SLProgressPage />} />
+          <Route path="me" element={<SLMePage />} />
         </Route>
 
         {/* Legacy redirects */}
-        <Route path="/pupil-lounge" element={<Navigate to="/pupil" replace />} />
-        <Route path="/player-lounge" element={<Navigate to="/pupil" replace />} />
+        <Route path="/player-lounge" element={<Navigate to="/pupil-lounge" replace />} />
         <Route path="/dashboard" element={<Navigate to="/teacher" replace />} />
+        {/* Old Settings tab redirects */}
+        <Route path="/settings/profile"      element={<Navigate to="/teacher/settings/profile" replace />} />
+        <Route path="/settings/team"         element={<Navigate to="/teacher/settings/teams" replace />} />
+        <Route path="/settings/branding"     element={<Navigate to="/teacher/settings/branding" replace />} />
+        <Route path="/settings/billing"      element={<Navigate to="/teacher/settings/licence" replace />} />
+        <Route path="/settings/invites"      element={<Navigate to="/teacher/settings/staff-directory" replace />} />
+        <Route path="/settings/qualifications" element={<Navigate to="/teacher/settings/qualifications" replace />} />
+        <Route path="/settings/knowledge-base" element={<Navigate to="/teacher/settings/knowledge-base" replace />} />
+        <Route path="/settings/tactics"      element={<Navigate to="/teacher/teams" replace />} />
+        <Route path="/settings/streaming"    element={<Navigate to="/teacher/settings" replace />} />
+        <Route path="/settings"              element={<Navigate to="/teacher/settings/profile" replace />} />
 
         {/* Catch all - redirect based on auth status */}
         <Route path="*" element={<CatchAllRedirect />} />

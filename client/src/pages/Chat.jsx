@@ -10,7 +10,7 @@ import {
   Sparkles,
   User,
   Loader2,
-  Target,
+  GraduationCap,
   Calendar,
   Users,
   Trophy,
@@ -21,39 +21,39 @@ import toast from 'react-hot-toast'
 
 const suggestedPrompts = [
   {
-    icon: Target,
-    category: 'Tactics',
+    icon: GraduationCap,
+    category: 'Curriculum PE',
     prompts: [
-      'How should we set up against a team that plays 4-4-2?',
-      'What are good pressing triggers for U13s?',
-      'Create a Plan B if we are losing at half-time',
+      'Plan a Year 7 athletics unit for a mixed-ability group',
+      'Write report comments for a pupil who excels in teamwork but struggles with technique',
+      'What should a Key Stage 3 gymnastics assessment cover?',
     ],
   },
   {
     icon: Calendar,
-    category: 'Training',
+    category: 'Sessions',
     prompts: [
-      'Design a 90-minute session focused on passing and movement',
-      'Give me 3 drills to improve our defensive shape',
-      'What should we practice before a cup final?',
+      'Design a 60-minute rugby session for Year 8 beginners, RFU-aligned',
+      'Give me 3 hockey drills that develop close control for Year 5',
+      'Plan a cricket net session that follows ECB bowling directives for U11s',
     ],
   },
   {
     icon: Users,
-    category: 'Players',
+    category: 'Pupils',
     prompts: [
       'How do I develop a pupil who is technically good but lacks confidence?',
-      'What positions suit a quick but small pupil?',
-      'Give me development goals for a central midfielder',
+      'Write development goals for a Year 9 netball player moving to centre',
+      'How should I adapt PE assessment for a pupil with SEND needs?',
     ],
   },
   {
     icon: Trophy,
-    category: 'Match Day',
+    category: 'Fixtures',
     prompts: [
-      'Write a pre-match team talk for an important game',
-      'What should I say at half-time when we are 2-0 down?',
-      'How do I handle a pupil who is disappointed not to start?',
+      'Write a pre-match team talk for a school cup semi-final',
+      'How do I manage squad rotation fairly across a football fixture block?',
+      'What should I cover in a post-match debrief with Year 10?',
     ],
   },
 ]

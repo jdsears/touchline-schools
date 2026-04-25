@@ -6,9 +6,17 @@ import { Toaster } from 'react-hot-toast'
 import App from './App'
 import { AuthProvider } from './context/AuthContext'
 import { TeamProvider } from './context/TeamContext'
+import { ThemeProvider } from './context/ThemeContext'
 import CookieConsent from './components/common/CookieConsent'
 import InstallPrompt from './components/common/InstallPrompt'
 import IOSInstallInstructions from './components/common/IOSInstallInstructions'
+import '@fontsource/source-serif-4/400.css'
+import '@fontsource/source-serif-4/600.css'
+import '@fontsource/source-serif-4/700.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
 import './index.css'
 
 // Register service worker for PWA
@@ -33,6 +41,7 @@ if ('serviceWorker' in navigator) {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+    <ThemeProvider defaultTheme="light">
     <HelmetProvider>
     <BrowserRouter>
       <AuthProvider>
@@ -62,11 +71,14 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             }}
           />
           <CookieConsent />
+          {/* Install prompts disabled until branding is fully updated
           <InstallPrompt />
           <IOSInstallInstructions />
+          */}
         </TeamProvider>
       </AuthProvider>
     </BrowserRouter>
     </HelmetProvider>
+    </ThemeProvider>
   </React.StrictMode>
 )

@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { generatePlayerIDP, analyzePlayerAttributes, extractPlayerAttributes } from '../services/claudeService.js'
+import { getQuoteForPupil } from '../services/motivationalQuoteService.js'
 import { normalizePlayerPositions, normalizePositions } from '../utils/pupilUtils.js'
 import { sendParentInviteEmail, sendAchievementEmail } from '../services/emailService.js'
 import { getFrontendUrl } from '../utils/urlUtils.js'
@@ -32,6 +33,257 @@ const BADGE_TYPES = {
 // Get available badge types - MUST be before /:id route
 router.get('/badge-types', authenticateToken, async (req, res) => {
   res.json(BADGE_TYPES)
+})
+
+// ── Pupil self-service (used by pupil portal) ──────────────────────
+
+// GET /me - own profile: pupil record + sports + teams + teaching groups
+router.get('/me', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT p.id, p.name, p.first_name, p.last_name, p.year_group, p.house, p.school_id,
+              p.gcse_pe_candidate
+       FROM pupils p WHERE p.user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) {
+      return res.json({ pupil: null, sports: [], teams: [], teachingGroups: [] })
+    }
+    const pupil = pupilRes.rows[0]
+
+    const teamsRes = await pool.query(
+      `SELECT t.id, t.name, t.sport, t.gender, t.age_group,
+              t.formation, t.team_format, t.positions, t.game_model
+       FROM teams t
+       JOIN team_memberships tm ON tm.team_id = t.id
+       WHERE tm.pupil_id = $1
+       ORDER BY t.sport, t.name`,
+      [pupil.id]
+    )
+    const groupsRes = await pool.query(
+      `SELECT tg.id, tg.name, tg.year_group, tg.key_stage
+       FROM teaching_groups tg
+       JOIN teaching_group_pupils tgp ON tgp.teaching_group_id = tg.id
+       WHERE tgp.pupil_id = $1
+       ORDER BY tg.name`,
+      [pupil.id]
+    )
+    // Distinct sports from teams + observations
+    const sportsRes = await pool.query(
+      `SELECT DISTINCT sport FROM (
+         SELECT t.sport FROM teams t
+         JOIN team_memberships tm ON tm.team_id = t.id WHERE tm.pupil_id = $1 AND t.sport IS NOT NULL
+         UNION
+         SELECT sport FROM observations WHERE pupil_id = $1 AND sport IS NOT NULL
+       ) s ORDER BY sport`,
+      [pupil.id]
+    )
+
+    res.json({
+      pupil,
+      sports: sportsRes.rows.map(r => r.sport),
+      teams: teamsRes.rows,
+      teachingGroups: groupsRes.rows,
+    })
+  } catch (err) {
+    console.error('Error in /pupils/me:', err)
+    res.status(500).json({ error: 'Failed to load profile' })
+  }
+})
+
+// GET /me/development - own confirmed observations (newest first)
+router.get('/me/development', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) return res.json([])
+    const pupilId = pupilRes.rows[0].id
+
+    const obsRes = await pool.query(
+      `SELECT o.id, o.type, o.content, o.sport, o.context_type, o.created_at,
+              u.name AS observer_name
+       FROM observations o
+       LEFT JOIN users u ON u.id = o.observer_id
+       WHERE o.pupil_id = $1
+         AND COALESCE(o.review_state, 'confirmed') = 'confirmed'
+         AND o.visible_to_pupil = TRUE
+       ORDER BY o.created_at DESC
+       LIMIT 50`,
+      [pupilId]
+    )
+    res.json(obsRes.rows)
+  } catch (err) {
+    console.error('Error in /pupils/me/development:', err)
+    res.status(500).json({ error: 'Failed to load development data' })
+  }
+})
+
+// GET /me/schedule - unified schedule: fixtures, training, lessons for a date range
+router.get('/me/schedule', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) return res.json([])
+    const pupilId = pupilRes.rows[0].id
+
+    const from = req.query.from || new Date().toISOString().split('T')[0]
+    const to = req.query.to || (() => {
+      const d = new Date()
+      d.setDate(d.getDate() + 14)
+      return d.toISOString().split('T')[0]
+    })()
+
+    // 1. Fixtures: pupil is on a team that has matches in the date range
+    const fixturesRes = await pool.query(`
+      SELECT m.id, 'fixture' AS type,
+        COALESCE(m.opponent, 'TBC') AS title,
+        COALESCE(m.date, m.match_date) AS date,
+        m.match_time AS start_time,
+        NULL::TIME AS end_time,
+        m.location AS venue,
+        jsonb_build_object(
+          'opponent', m.opponent,
+          'home_away', m.home_away,
+          'kit_type', m.kit_type,
+          'meet_time', m.meet_time,
+          'team_name', t.name,
+          'team_id', t.id,
+          'sport', t.sport,
+          'score_for', m.score_for,
+          'score_against', m.score_against
+        ) AS extra
+      FROM matches m
+      JOIN teams t ON t.id = m.team_id
+      JOIN team_memberships tm ON tm.team_id = t.id AND tm.pupil_id = $1
+      WHERE COALESCE(m.date, m.match_date) BETWEEN $2 AND $3
+      ORDER BY COALESCE(m.date, m.match_date), m.match_time NULLS LAST
+    `, [pupilId, from, to])
+
+    // 2. Training: pupil is on a team that has training sessions
+    const trainingRes = await pool.query(`
+      SELECT ts.id, 'training' AS type,
+        COALESCE(ts.focus_areas, ts.focus, 'Training') AS title,
+        ts.date,
+        ts.time AS start_time,
+        NULL::TIME AS end_time,
+        ts.location AS venue,
+        jsonb_build_object(
+          'session_type', ts.session_type,
+          'duration', ts.duration,
+          'meet_time', ts.meet_time,
+          'team_name', t.name,
+          'team_id', t.id,
+          'sport', t.sport,
+          'share_plan', COALESCE(ts.share_plan_with_players, false)
+        ) AS extra
+      FROM training_sessions ts
+      JOIN teams t ON t.id = ts.team_id
+      JOIN team_memberships tm ON tm.team_id = t.id AND tm.pupil_id = $1
+      WHERE ts.date BETWEEN $2 AND $3
+      ORDER BY ts.date, ts.time NULLS LAST
+    `, [pupilId, from, to])
+
+    // 3. Lessons: pupil is in a teaching group that has lesson plans scheduled
+    const lessonsRes = await pool.query(`
+      SELECT lp.id, 'lesson' AS type,
+        lp.title,
+        lp.lesson_date AS date,
+        NULL::TIME AS start_time,
+        NULL::TIME AS end_time,
+        NULL AS venue,
+        jsonb_build_object(
+          'duration', lp.duration,
+          'status', lp.status,
+          'group_name', tg.name,
+          'group_id', tg.id,
+          'sport', su.sport,
+          'unit_name', su.unit_name
+        ) AS extra
+      FROM lesson_plans lp
+      JOIN teaching_groups tg ON tg.id = lp.teaching_group_id
+      JOIN teaching_group_pupils tgp ON tgp.teaching_group_id = tg.id AND tgp.pupil_id = $1
+      LEFT JOIN sport_units su ON su.id = lp.sport_unit_id
+      WHERE lp.lesson_date BETWEEN $2 AND $3
+      ORDER BY lp.lesson_date
+    `, [pupilId, from, to])
+
+    // Merge and sort chronologically
+    const events = [
+      ...fixturesRes.rows,
+      ...trainingRes.rows,
+      ...lessonsRes.rows,
+    ].sort((a, b) => {
+      const dateComp = (a.date || '').localeCompare(b.date || '')
+      if (dateComp !== 0) return dateComp
+      return (a.start_time || '').localeCompare(b.start_time || '')
+    })
+
+    res.json(events)
+  } catch (err) {
+    console.error('Error in /pupils/me/schedule:', err)
+    res.status(500).json({ error: 'Failed to load schedule' })
+  }
+})
+
+// GET /me/quote - daily motivational quote based on year group
+router.get('/me/quote', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id, year_group FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) {
+      return res.json({ text: '', attribution: '' })
+    }
+    const { id, year_group } = pupilRes.rows[0]
+    const today = new Date().toISOString().split('T')[0]
+    const quote = getQuoteForPupil(id, today, year_group || 8)
+    res.json(quote)
+  } catch (err) {
+    console.error('Error in /pupils/me/quote:', err)
+    res.status(500).json({ error: 'Failed to load quote' })
+  }
+})
+
+// GET /me/assessments - own assessment grades grouped by sport/strand
+router.get('/me/assessments', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id
+    const pupilRes = await pool.query(
+      `SELECT id FROM pupils WHERE user_id = $1 LIMIT 1`,
+      [userId]
+    )
+    if (pupilRes.rows.length === 0) return res.json([])
+    const pupilId = pupilRes.rows[0].id
+
+    const result = await pool.query(`
+      SELECT pa.id, pa.grade, pa.score, pa.teacher_notes, pa.assessed_at,
+             pa.assessment_type,
+             su.sport, su.unit_name,
+             cs.strand_name,
+             ac.criterion_name
+      FROM pupil_assessments pa
+      LEFT JOIN sport_units su ON su.id = pa.unit_id
+      LEFT JOIN assessment_criteria ac ON ac.id = pa.criteria_id
+      LEFT JOIN curriculum_strands cs ON cs.id = ac.strand_id
+      WHERE pa.pupil_id = $1
+      ORDER BY pa.assessed_at DESC NULLS LAST
+      LIMIT 50
+    `, [pupilId])
+
+    res.json(result.rows)
+  } catch (err) {
+    console.error('Error in /pupils/me/assessments:', err)
+    res.status(500).json({ error: 'Failed to load assessments' })
+  }
 })
 
 // Get pupil
@@ -142,24 +394,56 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
 
-    // Verify the pupil belongs to the user's team
-    const playerCheck = await pool.query('SELECT team_id FROM pupils WHERE id = $1', [id])
-    if (playerCheck.rows.length === 0) {
+    // Resolve the pupil and every school they belong to (via extra-curricular
+    // team OR via a timetabled teaching group). A pupil may legitimately have
+    // no team (curriculum-only), so team_id alone cannot gate access.
+    const pupilCheck = await pool.query(
+      `SELECT p.id, p.team_id,
+              (SELECT t.school_id FROM teams t WHERE t.id = p.team_id) AS team_school_id,
+              (SELECT tg.school_id FROM teaching_group_pupils tgp
+                 JOIN teaching_groups tg ON tg.id = tgp.teaching_group_id
+                 WHERE tgp.pupil_id = p.id LIMIT 1) AS class_school_id
+       FROM pupils p WHERE p.id = $1`,
+      [id]
+    )
+    if (pupilCheck.rows.length === 0) {
       return res.status(404).json({ message: 'Pupil not found' })
     }
-    if (playerCheck.rows[0].team_id !== req.user.team_id && !req.user.is_admin) {
+    const pupil = pupilCheck.rows[0]
+    const pupilSchoolIds = [pupil.team_school_id, pupil.class_school_id].filter(Boolean)
+
+    // Allow: site admin, same team, or any school member in a school the pupil belongs to
+    const isOwnTeam = pupil.team_id && pupil.team_id === req.user.team_id
+    let hasSchoolAccess = false
+    if (!isOwnTeam && !req.user.is_admin && pupilSchoolIds.length > 0) {
+      const schoolCheck = await pool.query(
+        `SELECT 1 FROM school_members sm
+         WHERE sm.user_id = $1 AND sm.school_id = ANY($2::uuid[]) LIMIT 1`,
+        [req.user.id, pupilSchoolIds]
+      )
+      hasSchoolAccess = schoolCheck.rows.length > 0
+    }
+    if (!isOwnTeam && !req.user.is_admin && !hasSchoolAccess) {
       return res.status(403).json({ message: 'Access denied' })
     }
 
+    // HoDs and teachers see all observations (both teacher-only and pupil-visible);
+    // the pupil-facing Sports Lounge has its own separate endpoint that enforces
+    // visible_to_pupil = true. The visible_to_pupil column is surfaced here so the
+    // client can show a badge distinguishing teacher-only vs pupil-visible entries.
     const result = await pool.query(
-      `SELECT o.*, u.name as observer_name,
-              m.opponent as match_opponent, m.date as match_date,
-              ts.date as training_date, ts.focus_areas as training_focus
+      `SELECT o.*, COALESCE(u.name, 'Staff member') as observer_name,
+              m.opponent as match_opponent, COALESCE(m.date, m.match_date) as match_date,
+              ts.session_date as training_date, ts.focus as training_focus,
+              tg.name as teaching_group_name
        FROM observations o
-       JOIN users u ON o.observer_id = u.id
+       LEFT JOIN users u ON o.observer_id = u.id
        LEFT JOIN matches m ON o.match_id = m.id
        LEFT JOIN training_sessions ts ON o.training_session_id = ts.id
-       WHERE o.pupil_id = $1 ORDER BY o.created_at DESC`,
+       LEFT JOIN teaching_groups tg ON o.teaching_group_id = tg.id
+       WHERE o.pupil_id = $1
+         AND COALESCE(o.review_state, 'confirmed') <> 'rejected'
+       ORDER BY o.created_at DESC`,
       [id]
     )
 
@@ -174,25 +458,29 @@ router.post('/:id/observations', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
 
-    // Verify the pupil belongs to the user's team
     const playerCheck = await pool.query('SELECT team_id FROM pupils WHERE id = $1', [id])
     if (playerCheck.rows.length === 0) {
       return res.status(404).json({ message: 'Pupil not found' })
     }
-    if (playerCheck.rows[0].team_id !== req.user.team_id && !req.user.is_admin) {
-      return res.status(403).json({ message: 'Access denied' })
+    const isOwnTeam = playerCheck.rows[0].team_id === req.user.team_id
+    if (!isOwnTeam && !req.user.is_admin) {
+      const schoolCheck = await pool.query(
+        `SELECT 1 FROM school_members sm JOIN teams t ON t.school_id = sm.school_id WHERE sm.user_id = $1 AND t.id = $2 LIMIT 1`,
+        [req.user.id, playerCheck.rows[0].team_id]
+      )
+      if (schoolCheck.rows.length === 0) return res.status(403).json({ message: 'Access denied' })
     }
 
-    const { type, content, context, contextType, matchId, trainingSessionId } = req.body
+    const { type, content, context, contextType, matchId, trainingSessionId, sport, teachingGroupId, visibleToPupil } = req.body
 
     if (!type || !content) {
       return res.status(400).json({ message: 'Type and content are required' })
     }
 
     const result = await pool.query(
-      `INSERT INTO observations (pupil_id, observer_id, type, content, context, context_type, match_id, training_session_id)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [id, req.user.id, type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null]
+      `INSERT INTO observations (pupil_id, observer_id, type, content, context, context_type, match_id, training_session_id, sport, teaching_group_id, visible_to_pupil)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *`,
+      [id, req.user.id, type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, sport || null, teachingGroupId || null, visibleToPupil === true]
     )
 
     res.status(201).json(result.rows[0])
@@ -215,7 +503,7 @@ router.put('/:id/observations/:obsId', authenticateToken, async (req, res, next)
       return res.status(403).json({ message: 'Access denied' })
     }
 
-    const { type, content, context, contextType, matchId, trainingSessionId } = req.body
+    const { type, content, context, contextType, matchId, trainingSessionId, visibleToPupil } = req.body
 
     if (!type || !content) {
       return res.status(400).json({ message: 'Type and content are required' })
@@ -238,9 +526,10 @@ router.put('/:id/observations/:obsId', authenticateToken, async (req, res, next)
         context = $3,
         context_type = $4,
         match_id = $5,
-        training_session_id = $6
-       WHERE id = $7 AND pupil_id = $8 RETURNING *`,
-      [type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, obsId, id]
+        training_session_id = $6,
+        visible_to_pupil = $7
+       WHERE id = $8 AND pupil_id = $9 RETURNING *`,
+      [type, content, context || null, contextType || 'general', matchId || null, trainingSessionId || null, visibleToPupil === true, obsId, id]
     )
 
     // Fetch the updated observation with observer name and context info
@@ -766,22 +1055,28 @@ router.get('/:id/zone', authenticateToken, async (req, res, next) => {
 
     // Get upcoming matches (include prep_notes for pupil match prep view)
     const upcomingMatchesResult = await pool.query(
-      `SELECT id, opponent, date, is_home, location, notes, meetup_time, meetup_location, prep_notes,
+      `SELECT id, opponent, COALESCE(date, match_date) AS date,
+              (home_away = 'home') AS is_home, location, team_notes AS notes,
+              meetup_time, meetup_location, prep_notes,
               kit_type, squad_announced,
               (SELECT status FROM match_availability WHERE match_id = matches.id AND pupil_id = $2) as my_availability
        FROM matches
-       WHERE team_id = $1 AND date >= CURRENT_DATE
-       ORDER BY date`,
+       WHERE team_id = $1 AND COALESCE(date, match_date) >= CURRENT_DATE
+       ORDER BY COALESCE(date, match_date)`,
       [pupil.team_id, id]
     )
 
     // Get recent matches (include report, videos, notes for pupil view)
     const recentMatchesResult = await pool.query(
-      `SELECT id, opponent, date, is_home, location, result, goals_for, goals_against,
-              report, notes, veo_link, video_url, player_of_match_id, squad_announced
+      `SELECT id, opponent, COALESCE(date, match_date) AS date,
+              (home_away = 'home') AS is_home, location,
+              CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
+                THEN score_for || ' - ' || score_against ELSE NULL END AS result,
+              score_for AS goals_for, score_against AS goals_against,
+              report, team_notes AS notes, veo_link, video_url, player_of_match_id, squad_announced
        FROM matches
-       WHERE team_id = $1 AND date < CURRENT_DATE AND result IS NOT NULL
-       ORDER BY date DESC
+       WHERE team_id = $1 AND COALESCE(date, match_date) < CURRENT_DATE AND score_for IS NOT NULL
+       ORDER BY COALESCE(date, match_date) DESC
        LIMIT 5`,
       [pupil.team_id]
     )

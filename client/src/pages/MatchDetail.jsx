@@ -1,5 +1,5 @@
 // MatchDetail.jsx
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -49,10 +49,13 @@ import api from '../services/api'
 import { teamService, videoService } from '../services/api'
 import { useAuth } from '../context/AuthContext'
 import { useTeam } from '../context/TeamContext'
+import { useSportTaxonomy } from '../hooks/useSportTaxonomy'
 import toast from 'react-hot-toast'
 import AIMarkdown from '../components/AIMarkdown'
 import FormationPitch, { formationsByFormat, defaultFormationByFormat } from '../components/FormationPitch'
 import VideoUpload from '../components/VideoUpload'
+import FixtureTravelPanel from '../components/FixtureTravelPanel'
+import PublicReportPanel from '../components/PublicReportPanel'
 import PlayingTimeCalculator from '../components/PlayingTimeCalculator'
 
 const tabs = [
@@ -142,6 +145,8 @@ export default function MatchDetail() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const { updateMatch, team, pupils, branding } = useTeam()
+  const taxonomy = useSportTaxonomy(team?.sport)
+  const sport = team?.sport || 'football'
 
   const isManager = user?.role === 'manager' || user?.role === 'assistant'
 
@@ -237,6 +242,18 @@ export default function MatchDetail() {
   const [subData, setSubData] = useState({ player_off_id: '', player_on_id: '', minute: '' })
   const [savingSub, setSavingSub] = useState(false)
 
+  // Sport-specific match events
+  const [matchEvents, setMatchEvents] = useState([])
+  const [showEventModal, setShowEventModal] = useState(false)
+  const [eventData, setEventData] = useState({ event_type: '', pupil_id: '', secondary_pupil_id: '', minute: '', notes: '' })
+  const [savingEvent, setSavingEvent] = useState(false)
+
+  // Pupil match stats
+  const [pupilStats, setPupilStats] = useState([])
+  const [showStatsModal, setShowStatsModal] = useState(false)
+  const [editingStats, setEditingStats] = useState({})
+  const [savingStats, setSavingStats] = useState(false)
+
   useEffect(() => {
     loadMatch()
   }, [id])
@@ -322,6 +339,16 @@ export default function MatchDetail() {
         const subsRes = await teamService.getMatchSubstitutions(id)
         setMatchSubs(subsRes.data || [])
       } catch { setMatchSubs([]) }
+      // Load sport-specific match events
+      try {
+        const eventsRes = await teamService.getMatchEvents(id)
+        setMatchEvents(eventsRes.data || [])
+      } catch { setMatchEvents([]) }
+      // Load pupil match stats
+      try {
+        const statsRes = await teamService.getMatchPupilStats(id)
+        setPupilStats(statsRes.data || [])
+      } catch { setPupilStats([]) }
     } catch (error) {
       console.error('Failed to load match:', error)
       toast.error('Failed to load match details')
@@ -475,7 +502,7 @@ export default function MatchDetail() {
         force: isReannounce ? true : undefined,
       })
       if (result?.duplicate) {
-        toast.success('Squad already announced — no duplicate emails sent.')
+        toast.success('Squad already announced - no duplicate emails sent.')
         setShowAnnounceModal(false)
         loadMatch()
         return
@@ -484,10 +511,10 @@ export default function MatchDetail() {
       const total = result?.players_notified || 0
       if (result?.email_enabled === false) {
         toast.success(isReannounce ? 'Squad updated!' : 'Squad announced!')
-        toast('Email notifications are not configured — pupils will only see in-app notifications.', { icon: '⚠️', duration: 5000 })
+        toast('Email notifications are not configured - pupils will only see in-app notifications.', { icon: '⚠️', duration: 5000 })
       } else if (sent === 0 && total > 0) {
         toast.success(isReannounce ? 'Squad updated!' : 'Squad announced!')
-        toast(`No emails sent — none of the ${total} pupils have linked Pupil Lounge accounts.`, { icon: '⚠️', duration: 6000 })
+        toast(`No emails sent - none of the ${total} pupils have linked Pupil Lounge accounts.`, { icon: '⚠️', duration: 6000 })
       } else if (sent < total) {
         toast.success(`${isReannounce ? 'Squad updated' : 'Squad announced'}! ${sent}/${total} emails sent.`)
         toast(`${total - sent} pupil${total - sent > 1 ? 's don\'t' : ' doesn\'t'} have a linked Pupil Lounge account.`, { icon: '⚠️', duration: 6000 })
@@ -746,6 +773,63 @@ export default function MatchDetail() {
       toast.success('Substitution removed')
     } catch {
       toast.error('Failed to remove substitution')
+    }
+  }
+
+  // Sport-specific match events
+  async function handleAddEvent(e) {
+    e.preventDefault()
+    setSavingEvent(true)
+    try {
+      const eventType = taxonomy?.matchEventTypes?.find(t => t.key === eventData.event_type)
+      await teamService.addMatchEvent(id, {
+        event_type: eventData.event_type,
+        pupil_id: eventData.pupil_id || null,
+        secondary_pupil_id: eventData.secondary_pupil_id || null,
+        minute: eventData.minute ? parseInt(eventData.minute) : null,
+        value: eventType?.points ?? 1,
+        notes: eventData.notes || null,
+      })
+      const eventsRes = await teamService.getMatchEvents(id)
+      setMatchEvents(eventsRes.data || [])
+      setShowEventModal(false)
+      setEventData({ event_type: '', pupil_id: '', secondary_pupil_id: '', minute: '', notes: '' })
+      toast.success('Event added')
+    } catch {
+      toast.error('Failed to add event')
+    } finally {
+      setSavingEvent(false)
+    }
+  }
+
+  async function handleDeleteEvent(eventId) {
+    try {
+      await teamService.deleteMatchEvent(id, eventId)
+      setMatchEvents(prev => prev.filter(e => e.id !== eventId))
+      toast.success('Event removed')
+    } catch {
+      toast.error('Failed to remove event')
+    }
+  }
+
+  async function handleSavePupilStats() {
+    setSavingStats(true)
+    try {
+      const entries = Object.entries(editingStats).map(([pupilId, data]) => ({
+        pupil_id: pupilId,
+        stats: data.stats || {},
+        rating: data.rating || null,
+        notes: data.notes || null,
+      }))
+      await teamService.bulkUpdatePupilStats(id, entries)
+      const statsRes = await teamService.getMatchPupilStats(id)
+      setPupilStats(statsRes.data || [])
+      setShowStatsModal(false)
+      toast.success('Pupil stats saved')
+    } catch {
+      toast.error('Failed to save stats')
+    } finally {
+      setSavingStats(false)
     }
   }
 
@@ -1357,6 +1441,14 @@ export default function MatchDetail() {
               </div>
             </div>
 
+            {/* Travel arrangements (away fixtures) */}
+            <FixtureTravelPanel matchId={id} isAway={!match.is_home} />
+
+            {/* Public match report (for completed matches) */}
+            {resultDisplay && (
+              <PublicReportPanel matchId={id} reportText={match.match_report_text} reportStatus={match.match_report_status} />
+            )}
+
             {/* Goalscorers & Assists - Only show when match has a result */}
             {resultDisplay && (
               <div className="card p-6">
@@ -1489,6 +1581,149 @@ export default function MatchDetail() {
                         <Plus className="w-4 h-4" /> Add Substitution
                       </button>
                     )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Sport-specific Match Events - show for non-football or when taxonomy loaded */}
+            {resultDisplay && taxonomy && sport !== 'football' && (
+              <div className="card p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-display font-semibold text-white flex items-center gap-2">
+                    <Target className="w-5 h-5 text-pitch-400" />
+                    Match Events
+                  </h2>
+                  {isManager && (
+                    <button onClick={() => { setEventData({ event_type: taxonomy.matchEventTypes[0]?.key || '', pupil_id: '', secondary_pupil_id: '', minute: '', notes: '' }); setShowEventModal(true) }} className="btn-secondary text-sm">
+                      <Plus className="w-4 h-4" /> Add Event
+                    </button>
+                  )}
+                </div>
+
+                {matchEvents.length > 0 ? (
+                  <div className="space-y-2">
+                    {matchEvents.map(evt => {
+                      const evtType = taxonomy.matchEventTypes?.find(t => t.key === evt.event_type)
+                      return (
+                        <div key={evt.id} className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 border border-navy-700">
+                          <div className="flex items-center gap-3">
+                            {evt.minute != null && (
+                              <span className="w-8 h-8 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center shrink-0">
+                                {evt.minute}'
+                              </span>
+                            )}
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-pitch-500/20 text-pitch-400 font-medium">
+                                  {evtType?.label || evt.event_type}
+                                </span>
+                                {evt.pupil_name && (
+                                  <p className="text-sm font-medium text-white">
+                                    {evt.pupil_number && <span className="text-navy-400 mr-1">#{evt.pupil_number}</span>}
+                                    {evt.pupil_name}
+                                  </p>
+                                )}
+                              </div>
+                              {evt.secondary_pupil_name && (
+                                <p className="text-xs text-navy-400">
+                                  {evtType?.secondaryLabel || 'Assist'}: {evt.secondary_pupil_number && `#${evt.secondary_pupil_number} `}{evt.secondary_pupil_name}
+                                </p>
+                              )}
+                              {evt.notes && <p className="text-xs text-navy-500 mt-0.5">{evt.notes}</p>}
+                            </div>
+                          </div>
+                          {isManager && (
+                            <button onClick={() => handleDeleteEvent(evt.id)} className="p-1 text-navy-500 hover:text-alert-400 transition-colors" title="Remove event">
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-navy-400">
+                    <Target className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No match events recorded yet</p>
+                    {isManager && (
+                      <button onClick={() => { setEventData({ event_type: taxonomy.matchEventTypes[0]?.key || '', pupil_id: '', secondary_pupil_id: '', minute: '', notes: '' }); setShowEventModal(true) }} className="btn-primary mt-4">
+                        <Plus className="w-4 h-4" /> Add Event
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Pupil Match Stats - show when we have squad and result */}
+            {resultDisplay && taxonomy && squad.length > 0 && (
+              <div className="card p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-display font-semibold text-white flex items-center gap-2">
+                    <Users className="w-5 h-5 text-energy-400" />
+                    Pupil Stats
+                  </h2>
+                  {isManager && (
+                    <button
+                      onClick={() => {
+                        const initial = {}
+                        squad.forEach(p => {
+                          const existing = pupilStats.find(s => s.pupil_id === p.pupil_id)
+                          initial[p.pupil_id] = {
+                            stats: existing?.stats || {},
+                            rating: existing?.rating || null,
+                            notes: existing?.notes || '',
+                            name: p.name,
+                            squad_number: p.squad_number,
+                          }
+                        })
+                        setEditingStats(initial)
+                        setShowStatsModal(true)
+                      }}
+                      className="btn-secondary text-sm"
+                    >
+                      <Edit2 className="w-4 h-4" /> {pupilStats.length > 0 ? 'Edit Stats' : 'Add Stats'}
+                    </button>
+                  )}
+                </div>
+
+                {pupilStats.length > 0 ? (
+                  <div className="space-y-2">
+                    {pupilStats.map(ps => {
+                      const statFields = taxonomy.pupilStatFields || []
+                      const filledStats = statFields.filter(f => ps.stats?.[f.key] != null && ps.stats[f.key] !== '' && ps.stats[f.key] !== 0)
+                      return (
+                        <div key={ps.id} className="p-3 rounded-lg bg-navy-800/50 border border-navy-700">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="text-sm font-medium text-white">
+                              {ps.squad_number && <span className="text-navy-400 mr-1">#{ps.squad_number}</span>}
+                              {ps.pupil_name}
+                            </p>
+                            {ps.rating && (
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded ${ps.rating >= 8 ? 'bg-pitch-500/20 text-pitch-400' : ps.rating >= 6 ? 'bg-energy-500/20 text-energy-400' : 'bg-alert-500/20 text-alert-400'}`}>
+                                {ps.rating}/10
+                              </span>
+                            )}
+                          </div>
+                          {filledStats.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-1">
+                              {filledStats.map(f => (
+                                <span key={f.key} className="text-xs text-navy-300 bg-navy-700/50 px-2 py-0.5 rounded">
+                                  {f.label}: <strong className="text-white">{ps.stats[f.key]}</strong>
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {ps.notes && <p className="text-xs text-navy-500 mt-1">{ps.notes}</p>}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-6 text-navy-400">
+                    <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                    <p>No pupil stats recorded yet</p>
                   </div>
                 )}
               </div>
@@ -1769,7 +2004,7 @@ export default function MatchDetail() {
                         )
                       })}
                       {squad.filter(s => s.is_starting).length === 0 && (
-                        <p className="text-sm text-navy-500 italic">No starters selected — use the pupil list below to set starting lineup</p>
+                        <p className="text-sm text-navy-500 italic">No starters selected - use the pupil list below to set starting lineup</p>
                       )}
                     </div>
                   </div>
@@ -2538,7 +2773,7 @@ Corners, free kicks, etc...`}
                   )}
                 </div>
                 <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
-                  <mux-pupil
+                  <mux-player
                     playback-id={matchVideo.mux_playback_id}
                     stream-type="on-demand"
                     style={{ width: '100%', height: '100%' }}
@@ -2553,7 +2788,7 @@ Corners, free kicks, etc...`}
                 <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
                 <div>
                   <p className="text-white font-medium">Video processing</p>
-                  <p className="text-sm text-navy-400">Your video is being transcoded — check back shortly</p>
+                  <p className="text-sm text-navy-400">Your video is being transcoded - check back shortly</p>
                 </div>
               </div>
             )}
@@ -2737,7 +2972,7 @@ Corners, free kicks, etc...`}
                     <div key={clip.id} className="bg-navy-800/50 rounded-lg overflow-hidden group">
                       <div className="aspect-video relative">
                         {clip.mux_playback_id ? (
-                          <mux-pupil
+                          <mux-player
                             playback-id={clip.mux_playback_id}
                             stream-type="on-demand"
                             style={{ width: '100%', height: '100%' }}
@@ -3382,6 +3617,137 @@ Corners, free kicks, etc...`}
                   </button>
                 </div>
               </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Add Match Event Modal */}
+      <AnimatePresence>
+        {showEventModal && taxonomy && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="card max-w-md w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 pb-0">
+                <h3 className="text-lg font-semibold text-white">Add Match Event</h3>
+                <button onClick={() => setShowEventModal(false)} className="text-navy-500 hover:text-white"><X className="w-5 h-5" /></button>
+              </div>
+              <form onSubmit={handleAddEvent} className="p-6 space-y-4">
+                <div>
+                  <label className="text-xs text-navy-400 mb-1 block">Event Type</label>
+                  <select value={eventData.event_type} onChange={e => setEventData(prev => ({ ...prev, event_type: e.target.value }))} className="input w-full">
+                    <option value="">Select event type</option>
+                    {(taxonomy.matchEventTypes || []).map(t => (
+                      <option key={t.key} value={t.key}>{t.label}{t.points > 0 ? ` (${t.points} pts)` : ''}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-navy-400 mb-1 block">Pupil</label>
+                  <select value={eventData.pupil_id} onChange={e => setEventData(prev => ({ ...prev, pupil_id: e.target.value }))} className="input w-full">
+                    <option value="">Select pupil</option>
+                    {(pupils || []).map(p => (
+                      <option key={p.id} value={p.id}>{p.squad_number ? `#${p.squad_number} ` : ''}{p.name}</option>
+                    ))}
+                  </select>
+                </div>
+                {taxonomy.matchEventTypes?.find(t => t.key === eventData.event_type)?.hasSecondary && (
+                  <div>
+                    <label className="text-xs text-navy-400 mb-1 block">{taxonomy.matchEventTypes.find(t => t.key === eventData.event_type)?.secondaryLabel || 'Assist'}</label>
+                    <select value={eventData.secondary_pupil_id} onChange={e => setEventData(prev => ({ ...prev, secondary_pupil_id: e.target.value }))} className="input w-full">
+                      <option value="">None</option>
+                      {(pupils || []).filter(p => p.id !== eventData.pupil_id).map(p => (
+                        <option key={p.id} value={p.id}>{p.squad_number ? `#${p.squad_number} ` : ''}{p.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                <div>
+                  <label className="text-xs text-navy-400 mb-1 block">Minute</label>
+                  <input type="number" min="1" max="120" value={eventData.minute} onChange={e => setEventData(prev => ({ ...prev, minute: e.target.value }))} className="input w-full" placeholder="e.g. 23" />
+                </div>
+                <div>
+                  <label className="text-xs text-navy-400 mb-1 block">Notes (optional)</label>
+                  <input type="text" value={eventData.notes} onChange={e => setEventData(prev => ({ ...prev, notes: e.target.value }))} className="input w-full" placeholder="Any details" />
+                </div>
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={() => setShowEventModal(false)} className="btn-secondary flex-1">Cancel</button>
+                  <button type="submit" disabled={savingEvent || !eventData.event_type} className="btn-primary flex-1">
+                    {savingEvent ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+                    Add Event
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Pupil Stats Modal */}
+      <AnimatePresence>
+        {showStatsModal && taxonomy && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+            <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+              <div className="flex items-center justify-between p-6 pb-0">
+                <h3 className="text-lg font-semibold text-white">Pupil Match Stats</h3>
+                <button onClick={() => setShowStatsModal(false)} className="text-navy-500 hover:text-white"><X className="w-5 h-5" /></button>
+              </div>
+              <div className="p-6 space-y-4">
+                {Object.entries(editingStats).map(([pupilId, data]) => (
+                  <div key={pupilId} className="p-4 rounded-lg bg-navy-800/50 border border-navy-700 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-white">
+                        {data.squad_number && <span className="text-navy-400 mr-1">#{data.squad_number}</span>}
+                        {data.name}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs text-navy-400">Rating</label>
+                        <select
+                          value={data.rating || ''}
+                          onChange={e => setEditingStats(prev => ({ ...prev, [pupilId]: { ...prev[pupilId], rating: e.target.value ? parseInt(e.target.value) : null } }))}
+                          className="input w-20 text-sm"
+                        >
+                          <option value="">-</option>
+                          {[1,2,3,4,5,6,7,8,9,10].map(n => <option key={n} value={n}>{n}</option>)}
+                        </select>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                      {(taxonomy.pupilStatFields || []).map(field => (
+                        <div key={field.key}>
+                          <label className="text-xs text-navy-500 block mb-0.5">{field.label}</label>
+                          {field.type === 'select' ? (
+                            <select
+                              value={data.stats?.[field.key] || ''}
+                              onChange={e => setEditingStats(prev => ({ ...prev, [pupilId]: { ...prev[pupilId], stats: { ...prev[pupilId].stats, [field.key]: e.target.value } } }))}
+                              className="input w-full text-sm"
+                            >
+                              <option value="">-</option>
+                              {(field.options || []).map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          ) : (
+                            <input
+                              type="number"
+                              min="0"
+                              step={field.step || 1}
+                              value={data.stats?.[field.key] ?? ''}
+                              onChange={e => setEditingStats(prev => ({ ...prev, [pupilId]: { ...prev[pupilId], stats: { ...prev[pupilId].stats, [field.key]: e.target.value ? parseFloat(e.target.value) : null } } }))}
+                              className="input w-full text-sm"
+                              placeholder="0"
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <div className="flex gap-3 pt-2">
+                  <button type="button" onClick={() => setShowStatsModal(false)} className="btn-secondary flex-1">Cancel</button>
+                  <button onClick={handleSavePupilStats} disabled={savingStats} className="btn-primary flex-1">
+                    {savingStats ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+                    Save Stats
+                  </button>
+                </div>
+              </div>
             </motion.div>
           </motion.div>
         )}

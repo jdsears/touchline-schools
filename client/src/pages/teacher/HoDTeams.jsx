@@ -50,18 +50,18 @@ export default function HoDTeams() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white">All Teams</h1>
-        <p className="text-navy-400 mt-1">Every extra-curricular team across the school</p>
+        <h1 className="text-2xl font-bold text-primary">All Teams</h1>
+        <p className="text-secondary mt-1">Every extra-curricular team across the school</p>
       </div>
 
       {/* Sport filter */}
       {sports.length > 1 && (
         <div className="flex flex-wrap items-center gap-2 mb-6">
-          <Filter className="w-4 h-4 text-navy-500" />
+          <Filter className="w-4 h-4 text-tertiary" />
           <button
             onClick={() => setSportFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              sportFilter === 'all' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-navy-800 text-navy-400 hover:text-white'
+              sportFilter === 'all' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
             }`}
           >
             All ({teams.length})
@@ -71,7 +71,7 @@ export default function HoDTeams() {
               key={sport}
               onClick={() => setSportFilter(sport)}
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors capitalize ${
-                sportFilter === sport ? 'bg-pitch-600/20 text-pitch-400' : 'bg-navy-800 text-navy-400 hover:text-white'
+                sportFilter === sport ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
               }`}
             >
               {SPORT_ICONS[sport]} {sport} ({teams.filter(t => t.sport === sport).length})
@@ -83,47 +83,47 @@ export default function HoDTeams() {
       {filtered.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map(team => (
-            <div key={team.id} className="bg-navy-900 rounded-xl border border-navy-800 p-5">
+            <div key={team.id} className="bg-card rounded-xl border border-border-default p-5">
               <div className="flex items-start gap-4">
-                <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl ${SPORT_COLORS[team.sport] || 'bg-navy-800 text-navy-400'}`}>
+                <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-xl ${SPORT_COLORS[team.sport] || 'bg-subtle text-secondary'}`}>
                   {SPORT_ICONS[team.sport] || <Shield className="w-6 h-6" />}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold text-white truncate">{team.name}</h3>
+                  <h3 className="text-base font-semibold text-primary truncate">{team.name}</h3>
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="px-2 py-0.5 bg-navy-800 rounded text-xs text-navy-300 capitalize">{team.sport}</span>
-                    {team.age_group && <span className="text-xs text-navy-400">{team.age_group}</span>}
+                    <span className="px-2 py-0.5 bg-subtle rounded text-xs text-secondary capitalize">{team.sport}</span>
+                    {team.age_group && <span className="text-xs text-secondary">{team.age_group}</span>}
                     {team.gender && team.gender !== 'mixed' && (
-                      <span className="text-xs text-navy-400 capitalize">{team.gender}</span>
+                      <span className="text-xs text-secondary capitalize">{team.gender}</span>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="mt-4 pt-3 border-t border-navy-800 flex items-center justify-between">
+              <div className="mt-4 pt-3 border-t border-border-default flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-1.5 text-navy-400">
+                  <div className="flex items-center gap-1.5 text-secondary">
                     <Users className="w-3.5 h-3.5" />
                     <span className="text-xs">{team.pupil_count || 0} pupils</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-navy-400">
+                  <div className="flex items-center gap-1.5 text-secondary">
                     <Trophy className="w-3.5 h-3.5" />
                     <span className="text-xs">{team.match_count || 0} matches</span>
                   </div>
                 </div>
                 {team.coach_name && (
-                  <span className="text-xs text-navy-500">{team.coach_name}</span>
+                  <span className="text-xs text-tertiary">{team.coach_name}</span>
                 )}
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-navy-500" />
+        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
+            <Shield className="w-8 h-8 text-tertiary" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No teams yet</h3>
-          <p className="text-navy-400 text-sm">Teams will appear here as they are created.</p>
+          <h3 className="text-lg font-semibold text-primary mb-2">No teams yet</h3>
+          <p className="text-secondary text-sm">Teams will appear here as they are created.</p>
         </div>
       )}
     </div>

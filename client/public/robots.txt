@@ -1,38 +1,24 @@
-# Touchline - Robots.txt
-# https://touchline.xyz
+# MoonBoots Sports
+# https://moonbootssports.com
 
 User-agent: *
 Allow: /
-Allow: /login
-Allow: /register
-Allow: /pricing
-Allow: /blog
+Allow: /about
+Allow: /request-demo
 Allow: /terms
-Allow: /grassroots-football-coaching
-Allow: /youth-football-coaches
-Allow: /football-training-plans
-Allow: /features/
-Allow: /club-payments
-Allow: /watch/
+Allow: /login
 
 # Disallow authenticated app routes
 Disallow: /admin
 Disallow: /dashboard
-Disallow: /chat
-Disallow: /tactics
-Disallow: /training
-Disallow: /players
-Disallow: /matches
-Disallow: /fixtures
-Disallow: /league
-Disallow: /lounge
+Disallow: /teacher
+Disallow: /pupil
+Disallow: /school
+Disallow: /onboarding
 Disallow: /settings
-Disallow: /player-lounge
-Disallow: /invite
-Disallow: /club/
 
 # Disallow API routes
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://touchline.xyz/sitemap.xml
+Sitemap: https://moonbootssports.com/sitemap.xml

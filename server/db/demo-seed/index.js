@@ -1,0 +1,221 @@
+/**
+ * Demo seed orchestrator for Ashworth Park Academy prospect demo instance.
+ *
+ * Usage:
+ *   node server/db/demo-seed/index.js          # seed (idempotent - wipes first)
+ *   node server/db/demo-seed/index.js --wipe   # wipe only, no re-seed
+ *
+ * IMPORTANT: Before using "Ashworth Park Academy" as the school name, verify no
+ * real UK school uses this name in a relevant catchment area. A web search
+ * is required before this goes into production.
+ */
+
+import pool from '../../config/database.js'
+import dotenv from 'dotenv'
+import { seedSchool } from './school.js'
+import { seedStaff } from './staff.js'
+import { seedPupils } from './pupils.js'
+import { seedTeams } from './teams.js'
+import { seedCurriculum } from './curriculum.js'
+import { seedFixtures } from './fixtures.js'
+import { seedSafeguarding } from './safeguarding.js'
+import { seedAuditLog } from './auditLog.js'
+import { seedTestPersonas } from './test-personas.js'
+import { seedLessons } from './lessons.js'
+import { seedAssessments } from './assessments.js'
+import { seedReports } from './reports.js'
+import { seedFixturesExtra } from './fixturesExtra.js'
+import { seedMedicalNotes } from '../seeds/seed-medical-notes.js'
+import { seedSendNotes } from '../seeds/seed-send-notes.js'
+import { seedIdps } from '../seeds/seed-idps.js'
+import { seedAchievements } from '../seeds/seed-achievements.js'
+import { seedSafeguardingFlags } from '../seeds/seed-safeguarding-flags.js'
+import { seedV2Capabilities } from './v2Capabilities.js'
+
+dotenv.config()
+
+const DEMO_SCHOOL_SLUG = 'ashworth-park-demo'
+
+export async function wipeDemoTenant() {
+  const schoolResult = await pool.query(
+    `SELECT id FROM schools WHERE slug = $1`,
+    [DEMO_SCHOOL_SLUG]
+  )
+  if (schoolResult.rows.length === 0) {
+    console.log('[demo-seed] No demo tenant found to wipe.')
+    return
+  }
+  const schoolId = schoolResult.rows[0].id
+
+  // Get demo user IDs before deleting the school (to clean up users table too)
+  // Exclude protected_from_reset users — they survive wipes
+  const userResult = await pool.query(
+    `SELECT u.id FROM users u
+     JOIN school_members sm ON sm.user_id = u.id
+     WHERE sm.school_id = $1 AND u.is_demo_user = true
+       AND COALESCE(u.protected_from_reset, false) = false`,
+    [schoolId]
+  )
+  const demoUserIds = userResult.rows.map(r => r.id)
+
+  // Also detach protected pupils from teams (team_id) before cascade deletes them
+  await pool.query(`
+    UPDATE pupils SET team_id = NULL
+    WHERE COALESCE(protected_from_reset, false) = true
+      AND team_id IN (SELECT id FROM teams WHERE school_id = $1)
+  `, [schoolId])
+
+  console.log(`[demo-seed] Wiping demo tenant ${schoolId} (${demoUserIds.length} wipeable users, protected users kept)...`)
+
+  // Clean up optional demo-prospect tables if they exist in this deployment.
+  // Older / non-prospect deployments may not have these tables at all.
+  const tableExists = async (name) => {
+    const r = await pool.query(`SELECT to_regclass($1) AS t`, [`public.${name}`])
+    return r.rows[0].t !== null
+  }
+  if (await tableExists('demo_telemetry_events')) {
+    await pool.query(`DELETE FROM demo_telemetry_events WHERE prospect_id IN (
+      SELECT id FROM demo_prospects WHERE created_by IN (SELECT id FROM users WHERE is_admin = true)
+      UNION
+      SELECT id FROM demo_prospects WHERE id IS NOT NULL
+    )`)
+  }
+  if (await tableExists('demo_prospect_credentials')) {
+    await pool.query(`DELETE FROM demo_prospect_credentials WHERE user_id = ANY($1::uuid[])`, [demoUserIds])
+  }
+  if (await tableExists('demo_prospects')) {
+    await pool.query(`DELETE FROM demo_prospects WHERE id IN (
+      SELECT prospect_id FROM demo_prospect_credentials WHERE user_id = ANY($1::uuid[])
+    )`, [demoUserIds]).catch(() => {}) // subquery depends on credentials table; swallow if partial
+  }
+
+  // Clean up v2.0 tables that reference the school
+  for (const tbl of ['concussion_followups', 'concussion_incidents', 'mis_sync_log', 'mis_integrations', 'venues', 'fixture_travel', 'travel_assignments', 'pupil_consents', 'consent_types']) {
+    await pool.query(`DELETE FROM ${tbl} WHERE school_id = $1`, [schoolId]).catch(() => {})
+  }
+
+  // Delete the school (cascades to school_members, teams, teaching_groups, etc.)
+  await pool.query(`DELETE FROM schools WHERE id = $1`, [schoolId])
+
+  // Delete demo users (after school cascade).
+  // observations.observer_id is NOT NULL REFERENCES users(id) with no
+  // ON DELETE action, so observations pinned to protected pupils block
+  // the user delete. DELETE those observations outright — they're stale
+  // demo data and will be re-seeded against fresh staff IDs.
+  if (demoUserIds.length > 0) {
+    await pool.query(
+      `DELETE FROM observations WHERE observer_id = ANY($1::uuid[])`,
+      [demoUserIds]
+    ).catch(err => console.warn('[demo-seed] Could not delete stale observations:', err.message))
+
+    // Other tables that may reference users(id) without ON DELETE SET NULL.
+    // Add more as we hit them — each is guarded so missing tables/columns
+    // don't abort the wipe.
+    const nullReferences = [
+      { table: 'pupil_medical_notes', col: 'last_reviewed_by_user_id' },
+      { table: 'pupil_safeguarding_notes', col: 'added_by_user_id' },
+      { table: 'pupil_safeguarding_notes', col: 'resolved_by_user_id' },
+      { table: 'pupil_idp_goals', col: 'created_by_user_id' },
+      { table: 'pupil_achievements', col: 'awarded_by' },
+    ]
+    for (const { table, col } of nullReferences) {
+      await pool.query(
+        `UPDATE ${table} SET ${col} = NULL WHERE ${col} = ANY($1::uuid[])`,
+        [demoUserIds]
+      ).catch(() => {})
+    }
+
+    await pool.query(`DELETE FROM users WHERE id = ANY($1::uuid[])`, [demoUserIds])
+  }
+
+  console.log('[demo-seed] Demo tenant wiped.')
+}
+
+// Reusable seed orchestration. Captures progress log lines so callers (e.g.
+// the admin HTTP endpoint) can return them in a response.
+export async function runDemoSeed({ wipeOnly = false, onLog } = {}) {
+  const log = (msg) => {
+    console.log(msg)
+    onLog?.(msg)
+  }
+
+  await wipeDemoTenant()
+
+  if (wipeOnly) {
+    log('[demo-seed] Wipe-only mode. Done.')
+    return { wiped: true, seeded: false }
+  }
+
+  log('[demo-seed] Seeding Ashworth Park Academy...')
+
+  const school = await seedSchool()
+  log(`[demo-seed] School: ${school.id}`)
+
+  const staff = await seedStaff(school.id)
+  log(`[demo-seed] Staff: ${Object.keys(staff).join(', ')}`)
+
+  const pupils = await seedPupils(school.id)
+  log(`[demo-seed] Pupils: ${pupils.length}`)
+
+  const teams = await seedTeams(school.id, staff, pupils)
+  log(`[demo-seed] Teams: ${teams.length}`)
+
+  await seedCurriculum(school.id, staff, pupils)
+  log('[demo-seed] Curriculum seeded')
+
+  await seedLessons(school.id, staff)
+  log('[demo-seed] Lessons seeded')
+
+  await seedAssessments(school.id)
+  log('[demo-seed] Assessments seeded')
+
+  await seedReports(school.id)
+  log('[demo-seed] Reports seeded')
+
+  await seedFixtures(school.id, teams, staff, pupils)
+  log('[demo-seed] Fixtures seeded')
+
+  await seedFixturesExtra(school.id)
+  log('[demo-seed] Extra fixtures seeded')
+
+  await seedSafeguarding(school.id, staff)
+  log('[demo-seed] Safeguarding seeded')
+
+  await seedAuditLog(school.id, staff)
+  log('[demo-seed] Audit log seeded')
+
+  const testPersonas = await seedTestPersonas(school.id)
+  log(`[demo-seed] Test personas: ${Object.keys(testPersonas).join(', ')}`)
+
+  await seedMedicalNotes().catch(e => log(`[demo-seed] Medical notes failed: ${e.message}`))
+  log('[demo-seed] Medical notes seeded')
+
+  await seedSendNotes().catch(e => log(`[demo-seed] SEND notes failed: ${e.message}`))
+  log('[demo-seed] SEND notes seeded')
+
+  await seedIdps().catch(e => log(`[demo-seed] IDP goals failed: ${e.message}`))
+  log('[demo-seed] IDP goals seeded')
+
+  await seedAchievements().catch(e => log(`[demo-seed] Achievements failed: ${e.message}`))
+  log('[demo-seed] Achievements seeded')
+
+  await seedSafeguardingFlags().catch(e => log(`[demo-seed] Safeguarding flags failed: ${e.message}`))
+  log('[demo-seed] Safeguarding flags seeded')
+
+  await seedV2Capabilities(school.id).catch(e => log(`[demo-seed] v2.0 capabilities failed: ${e.message}`))
+  log('[demo-seed] v2.0 capabilities seeded (venues, consents, reports, concussion, MIS)')
+
+  log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
+  return { wiped: true, seeded: true, schoolId: school.id }
+}
+
+// Run if called directly
+if (process.argv[1]?.includes('demo-seed/index.js')) {
+  const wipeOnly = process.argv.includes('--wipe')
+  runDemoSeed({ wipeOnly })
+    .then(() => process.exit(0))
+    .catch((err) => {
+      console.error('[demo-seed] Error:', err)
+      process.exit(1)
+    })
+}

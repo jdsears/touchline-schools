@@ -1,4 +1,4 @@
-const CACHE_NAME = 'touchline-v2';
+const CACHE_NAME = 'moonboots-v1';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -38,13 +38,13 @@ self.addEventListener('push', (event) => {
     body: data.body || '',
     icon: data.icon || '/icons/icon-192.png',
     badge: '/icons/icon-192.png',
-    tag: data.tag || 'touchline-notification',
+    tag: data.tag || 'moonboots-notification',
     data: { url: data.url || '/' },
     vibrate: [200, 100, 200],
   };
 
   event.waitUntil(
-    self.registration.showNotification(data.title || 'Touchline', options)
+    self.registration.showNotification(data.title || 'MoonBoots Sports', options)
   );
 });
 
@@ -68,9 +68,28 @@ self.addEventListener('notificationclick', (event) => {
   );
 });
 
-// Fetch - network first, fallback to cache
+// Pupil API endpoints safe to cache for offline viewing
+const PUPIL_CACHE = 'moonboots-pupil-v1';
+const CACHEABLE_API = ['/api/pupils/me', '/api/pupils/me/development', '/api/pupils/me/quote'];
+
+// Cache pupil API responses (network first, stale fallback)
 self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests and API calls
+  if (event.request.method === 'GET' && CACHEABLE_API.some(p => event.request.url.includes(p))) {
+    event.respondWith(
+      fetch(event.request)
+        .then((response) => {
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(PUPIL_CACHE).then((cache) => cache.put(event.request, clone));
+          }
+          return response;
+        })
+        .catch(() => caches.match(event.request))
+    );
+    return;
+  }
+
+  // Skip non-GET requests and other API calls
   if (event.request.method !== 'GET') return;
   if (event.request.url.includes('/api/')) return;
 

@@ -93,12 +93,12 @@ export default function TeacherClasses() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">My Classes</h1>
-          <p className="text-navy-400 mt-1">Manage your teaching groups and sport units</p>
+          <h1 className="text-2xl font-bold text-primary">My Classes</h1>
+          <p className="text-secondary mt-1">Manage your teaching groups and sport units</p>
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span className="text-sm font-medium">New Class</span>
@@ -108,32 +108,32 @@ export default function TeacherClasses() {
       {/* Create modal */}
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-navy-900 rounded-xl border border-navy-700 w-full max-w-md mx-4 p-6">
+          <div className="bg-card rounded-xl border border-border-strong w-full max-w-md mx-4 p-6">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-semibold text-white">Create Teaching Group</h2>
-              <button onClick={() => setShowCreate(false)} className="text-navy-400 hover:text-white">
+              <h2 className="text-lg font-semibold text-primary">Create Teaching Group</h2>
+              <button onClick={() => setShowCreate(false)} className="text-secondary hover:text-link">
                 <X className="w-5 h-5" />
               </button>
             </div>
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
-                <label className="block text-sm text-navy-300 mb-1">Class Name</label>
+                <label className="block text-sm text-secondary mb-1">Class Name</label>
                 <input
                   type="text"
                   placeholder="e.g., Year 9 Group B PE"
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                   autoFocus
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-navy-300 mb-1">Year Group</label>
+                  <label className="block text-sm text-secondary mb-1">Year Group</label>
                   <select
                     value={form.year_group}
                     onChange={e => setForm({ ...form, year_group: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
                   >
                     {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(y => (
                       <option key={y} value={y}>Year {y} ({KEY_STAGES[y]})</option>
@@ -141,37 +141,37 @@ export default function TeacherClasses() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm text-navy-300 mb-1">Group ID (optional)</label>
+                  <label className="block text-sm text-secondary mb-1">Group ID (optional)</label>
                   <input
                     type="text"
                     placeholder="e.g., B"
                     value={form.group_identifier}
                     onChange={e => setForm({ ...form, group_identifier: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                   />
                 </div>
               </div>
               <div>
-                <label className="block text-sm text-navy-300 mb-1">Academic Year</label>
+                <label className="block text-sm text-secondary mb-1">Academic Year</label>
                 <input
                   type="text"
                   value={form.academic_year}
                   onChange={e => setForm({ ...form, academic_year: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
                 />
               </div>
               <div className="flex gap-3 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowCreate(false)}
-                  className="flex-1 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={creating}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {creating ? 'Creating...' : 'Create'}
                 </button>
@@ -184,13 +184,13 @@ export default function TeacherClasses() {
       {/* Search */}
       {groups.length > 0 && (
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tertiary" />
           <input
             type="text"
             placeholder="Search classes..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+            className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
           />
         </div>
       )}
@@ -202,7 +202,7 @@ export default function TeacherClasses() {
             <Link
               key={group.id}
               to={`/teacher/classes/${group.id}`}
-              className="block bg-navy-900 rounded-xl border border-navy-800 p-5 hover:border-navy-600 transition-colors"
+              className="block bg-card rounded-xl border border-border-default p-5 hover:border-border-strong transition-colors"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
@@ -210,23 +210,23 @@ export default function TeacherClasses() {
                     <GraduationCap className="w-6 h-6 text-pitch-400" />
                   </div>
                   <div>
-                    <h3 className="text-base font-semibold text-white">{group.name}</h3>
+                    <h3 className="text-base font-semibold text-primary">{group.name}</h3>
                     <div className="flex items-center gap-3 mt-1">
-                      <span className="text-xs text-navy-400">Year {group.year_group}</span>
-                      <span className="text-xs text-navy-600">|</span>
-                      <span className="text-xs text-navy-400">{group.key_stage}</span>
-                      <span className="text-xs text-navy-600">|</span>
-                      <span className="text-xs text-navy-400">{group.academic_year}</span>
+                      <span className="text-xs text-secondary">Year {group.year_group}</span>
+                      <span className="text-xs text-tertiary">|</span>
+                      <span className="text-xs text-secondary">{group.key_stage}</span>
+                      <span className="text-xs text-tertiary">|</span>
+                      <span className="text-xs text-secondary">{group.academic_year}</span>
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right">
-                    <div className="flex items-center gap-1 text-navy-400">
+                    <div className="flex items-center gap-1 text-secondary">
                       <Users className="w-3.5 h-3.5" />
                       <span className="text-sm">{group.pupil_count || 0} pupils</span>
                     </div>
-                    <div className="flex items-center gap-1 text-navy-400 mt-0.5">
+                    <div className="flex items-center gap-1 text-secondary mt-0.5">
                       <BookOpen className="w-3.5 h-3.5" />
                       <span className="text-sm">{group.unit_count || 0} units</span>
                     </div>
@@ -235,38 +235,38 @@ export default function TeacherClasses() {
                   {group.units && (
                     <div className="hidden md:flex flex-wrap gap-1 max-w-xs">
                       {group.units.filter(Boolean).map(u => (
-                        <span key={u.id} className="px-2 py-0.5 bg-navy-800 rounded text-xs text-navy-300 capitalize">
+                        <span key={u.id} className="px-2 py-0.5 bg-subtle rounded text-xs text-secondary capitalize">
                           {u.sport}
                         </span>
                       ))}
                     </div>
                   )}
-                  <ChevronRight className="w-5 h-5 text-navy-600" />
+                  <ChevronRight className="w-5 h-5 text-tertiary" />
                 </div>
               </div>
             </Link>
           ))}
         </div>
       ) : groups.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
-            <GraduationCap className="w-8 h-8 text-navy-500" />
+        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
+            <GraduationCap className="w-8 h-8 text-tertiary" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No teaching groups yet</h3>
-          <p className="text-navy-400 text-sm max-w-md mx-auto mb-6">
+          <h3 className="text-lg font-semibold text-primary mb-2">No teaching groups yet</h3>
+          <p className="text-secondary text-sm max-w-md mx-auto mb-6">
             Create a teaching group for each of your timetabled PE classes. Add pupils, then assign
             sport units for each term.
           </p>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg transition-colors mx-auto"
+            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors mx-auto"
           >
             <Plus className="w-4 h-4" />
             <span className="text-sm font-medium">Create Teaching Group</span>
           </button>
         </div>
       ) : (
-        <p className="text-navy-400 text-sm text-center py-8">No classes match your search.</p>
+        <p className="text-secondary text-sm text-center py-8">No classes match your search.</p>
       )}
     </div>
   )

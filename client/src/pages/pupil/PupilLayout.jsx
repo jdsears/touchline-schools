@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
+import { useSchoolBranding } from '../../hooks/useSchoolBranding'
 import {
   Home,
   Calendar,
@@ -16,6 +17,7 @@ import {
   X,
   ChevronRight,
   User,
+  ArrowLeft,
 } from 'lucide-react'
 
 const pupilNav = [
@@ -28,7 +30,7 @@ const pupilNav = [
   { name: 'Achievements', href: '/achievements', icon: Trophy },
 ]
 
-function SidebarContent({ user, logout, setSidebarOpen, pathname }) {
+function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding }) {
   const basePath = '/pupil'
 
   return (
@@ -36,11 +38,15 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname }) {
       {/* Header */}
       <div className="flex items-center justify-between h-16 px-4 border-b border-navy-800">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-amber-400 flex items-center justify-center">
-            <User className="w-5 h-5 text-navy-950" />
-          </div>
+          {schoolBranding?.logoUrl ? (
+            <img src={schoolBranding.logoUrl} alt="" className="w-8 h-8 rounded-lg object-cover" />
+          ) : (
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: schoolBranding?.primaryColor || '#f59e0b' }}>
+              <User className="w-5 h-5" style={{ color: schoolBranding ? 'var(--school-primary-text)' : '#0B1C2D' }} />
+            </div>
+          )}
           <div>
-            <div className="text-sm font-semibold text-white">My Portal</div>
+            <div className="text-sm font-semibold text-white">{schoolBranding?.schoolName || 'My Portal'}</div>
             <div className="text-xs text-navy-400">{user?.name}</div>
           </div>
         </div>
@@ -68,10 +74,11 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname }) {
               className={`
                 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                 ${isActive
-                  ? 'bg-amber-400/20 text-amber-400'
+                  ? 'text-white'
                   : 'text-navy-400 hover:text-white hover:bg-navy-800'
                 }
               `}
+              style={isActive ? { backgroundColor: `color-mix(in srgb, var(--school-secondary) 20%, transparent)`, color: 'var(--school-secondary)' } : undefined}
             >
               <item.icon className="w-5 h-5" />
               <span className="font-medium">{item.name}</span>
@@ -106,13 +113,40 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname }) {
   )
 }
 
+function ImpersonationBanner() {
+  const { impersonating, endImpersonation } = useAuth()
+  const navigate = useNavigate()
+
+  if (!impersonating) return null
+
+  function handleEnd() {
+    endImpersonation()
+    navigate('/teacher/hod/test-personas')
+  }
+
+  return (
+    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-black px-4 py-1.5 flex items-center justify-between text-sm font-medium">
+      <span>Viewing as: {impersonating} (test persona)</span>
+      <button
+        onClick={handleEnd}
+        className="flex items-center gap-1.5 px-3 py-1 bg-black/20 hover:bg-black/30 rounded text-xs font-semibold transition-colors"
+      >
+        <ArrowLeft className="w-3 h-3" />
+        Return to HoD
+      </button>
+    </div>
+  )
+}
+
 export default function PupilLayout() {
-  const { user, logout } = useAuth()
+  const { user, logout, impersonating } = useAuth()
   const location = useLocation()
+  const schoolBranding = useSchoolBranding()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className={`min-h-screen bg-navy-950 ${impersonating ? 'pt-9' : ''}`}>
+      <ImpersonationBanner />
       {/* Mobile backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -140,6 +174,7 @@ export default function PupilLayout() {
           logout={logout}
           setSidebarOpen={setSidebarOpen}
           pathname={location.pathname}
+          schoolBranding={schoolBranding}
         />
       </aside>
 

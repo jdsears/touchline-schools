@@ -425,7 +425,7 @@ router.post('/:schoolId/guardians/invite-all', authenticateToken, loadSchool, re
   }
 })
 
-// Claim guardian invite (public, no auth — or with auth to link)
+// Claim guardian invite (public, no auth - or with auth to link)
 router.get('/guardian-invite/:token', async (req, res, next) => {
   try {
     const { token } = req.params
@@ -471,7 +471,7 @@ router.get('/guardian-invite/:token', async (req, res, next) => {
   }
 })
 
-// Claim guardian invite — link user to guardian
+// Claim guardian invite - link user to guardian
 router.post('/guardian-invite/:token/claim', authenticateToken, async (req, res, next) => {
   try {
     const { token } = req.params
@@ -505,7 +505,7 @@ router.post('/guardian-invite/:token/claim', authenticateToken, async (req, res,
     if (userRes.rows[0]?.role === 'parent' || userRes.rows[0]?.role === 'pupil') {
       // Already appropriate role
     } else {
-      // Don't downgrade managers/coaches — they can also be parents
+      // Don't downgrade managers/coaches - they can also be parents
     }
 
     // Add user to school as parent member (if not already)
@@ -570,7 +570,7 @@ router.post('/guardian-invite/:token/register', async (req, res, next) => {
       return res.status(400).json({ error: 'An account with this email already exists. Please log in instead.' })
     }
 
-    // Create parent user (no team creation — parents don't own teams)
+    // Create parent user (no team creation - parents don't own teams)
     const passwordHash = await bcrypt.hash(password, 10)
     const userResult = await pool.query(
       `INSERT INTO users (name, email, password_hash, role)

@@ -16,9 +16,9 @@ const steps = [
   {
     icon: Sparkles,
     color: 'pitch',
-    title: 'Welcome to Touchline!',
+    title: 'Welcome to MoonBoots Sports!',
     description:
-      "You've got your very own AI coaching assistant called Pep. Ask Pep for help with training plans, match preparation, tactics, and pupil development — anytime you need a hand.",
+      "You've got your very own AI coaching assistant called Pep. Ask Pep for help with training plans, match preparation, tactics, and pupil development - anytime you need a hand.",
     cta: 'Meet Pep',
     href: '/chat',
   },

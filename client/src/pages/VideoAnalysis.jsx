@@ -1,4 +1,4 @@
-import '@mux/mux-pupil'
+import '@mux/mux-player'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,13 +32,15 @@ import {
   Square,
 } from 'lucide-react'
 import { teamService, videoService } from '../services/api'
+import { useSportTaxonomy } from '../hooks/useSportTaxonomy'
 import { purchaseVideoCredits, confirmVideoCredits } from '../services/billing'
 import { useTeam } from '../context/TeamContext'
 import toast from 'react-hot-toast'
 import AIMarkdown from '../components/AIMarkdown'
 import VideoUpload from '../components/VideoUpload'
 
-const clipCategories = [
+// Default clip categories - overridden by sport-specific taxonomy when loaded
+const DEFAULT_CLIP_CATEGORIES = [
   { value: 'general', label: 'General', color: 'navy' },
   { value: 'highlight', label: 'Highlight', color: 'pitch' },
   { value: 'coaching_point', label: 'Coaching Point', color: 'energy' },
@@ -57,6 +59,8 @@ function formatTime(seconds) {
 export default function VideoAnalysis() {
   const { id, videoId: videoIdParam } = useParams()
   const { team, pupils } = useTeam()
+  const taxonomy = useSportTaxonomy(team?.sport)
+  const clipCategories = taxonomy?.clipCategories || DEFAULT_CLIP_CATEGORIES
 
   const [match, setMatch] = useState(null)
   const [video, setVideo] = useState(null)
@@ -110,7 +114,7 @@ export default function VideoAnalysis() {
     loadData()
   }, [id, videoIdParam])
 
-  // Listen for timeupdate on mux-pupil
+  // Listen for timeupdate on mux-player
   useEffect(() => {
     const el = playerRef.current
     if (!el) return
@@ -137,7 +141,7 @@ export default function VideoAnalysis() {
         // Show error if the most recent analysis failed (so user knows what happened)
         const mostRecent = allAnalyses[0]
         if (mostRecent?.status === 'failed') {
-          setAnalysisError(mostRecent.error || 'Analysis failed — please try again')
+          setAnalysisError(mostRecent.error || 'Analysis failed - please try again')
         } else {
           setAnalysisError(null)
         }
@@ -151,7 +155,7 @@ export default function VideoAnalysis() {
             setAnalysing(true)
             setAnalysisProgress(inProgress.progress || 'Analysing...')
           }
-          // Stale processing records (>60 min) are ignored — backend will clean them up
+          // Stale processing records (>60 min) are ignored - backend will clean them up
         }
 
         // Load match context if video is linked to a match
@@ -187,7 +191,7 @@ export default function VideoAnalysis() {
             // Show error if the most recent analysis failed
             const mostRecentMatch = matchAnalyses[0]
             if (mostRecentMatch?.status === 'failed') {
-              setAnalysisError(mostRecentMatch.error || 'Analysis failed — please try again')
+              setAnalysisError(mostRecentMatch.error || 'Analysis failed - please try again')
             } else {
               setAnalysisError(null)
             }
@@ -227,7 +231,7 @@ export default function VideoAnalysis() {
     const pollStarted = Date.now()
     let lastProgress = ''
     let lastProgressChange = Date.now()
-    // Deep analysis processes 480 frames in 24 batches — needs much longer timeouts
+    // Deep analysis processes 480 frames in 24 batches - needs much longer timeouts
     const isDeep = analysisDepth === 'deep'
     const stuckTimeout = isDeep ? 20 : 12  // minutes without progress change
     const totalTimeout = isDeep ? 50 : 30  // minutes total polling time
@@ -268,8 +272,8 @@ export default function VideoAnalysis() {
           setAnalysing(false)
           setAnalysisProgress('')
           setProcessingAnalysisId(null)
-          setAnalysisError('Analysis appears to have stalled — please try again')
-          toast.error('Analysis appears to have stalled — please try again')
+          setAnalysisError('Analysis appears to have stalled - please try again')
+          toast.error('Analysis appears to have stalled - please try again')
           setAnalyses(all.filter(a => a.status === 'complete' || !a.status))
           return
         }
@@ -280,7 +284,7 @@ export default function VideoAnalysis() {
           setAnalysing(false)
           setAnalysisProgress('')
           setProcessingAnalysisId(null)
-          const errorMsg = mostRecent.error || 'Analysis failed — please try again'
+          const errorMsg = mostRecent.error || 'Analysis failed - please try again'
           setAnalysisError(errorMsg)
           toast.error(errorMsg)
           setAnalyses(all.filter(a => a.status !== 'failed'))
@@ -372,11 +376,11 @@ export default function VideoAnalysis() {
     try {
       const result = await purchaseVideoCredits(packId)
       if (result.success) {
-        // Dev/test mode — credits granted immediately
+        // Dev/test mode - credits granted immediately
         toast.success(`${result.credits} analysis credit${result.credits > 1 ? 's' : ''} added!`)
         setShowCreditPurchase(false)
       } else if (result.clientSecret) {
-        // Stripe mode — would need Stripe Elements confirmation
+        // Stripe mode - would need Stripe Elements confirmation
         // For now, confirm directly (in production, integrate Stripe payment sheet)
         await confirmVideoCredits(result.clientSecret, result.credits)
         toast.success(`${result.credits} analysis credit${result.credits > 1 ? 's' : ''} added!`)
@@ -400,7 +404,7 @@ export default function VideoAnalysis() {
     try {
       await videoService.approveAnalysis(analysisId, { includeRatings })
       setAnalyses(prev => prev.map(a => a.id === analysisId ? { ...a, approved: true } : a))
-      toast.success('Analysis approved — pupil notes saved to profiles')
+      toast.success('Analysis approved - pupil notes saved to profiles')
     } catch (error) {
       toast.error(error.response?.data?.message || 'Failed to approve analysis')
     }
@@ -558,7 +562,7 @@ export default function VideoAnalysis() {
     const fieldsEmpty = !raw.observations || raw.observations.length === 0
 
     if (summaryLooksLikeJson && fieldsEmpty) {
-      // Strip markdown code fences — handle 3+ backticks, same-line or multi-line
+      // Strip markdown code fences - handle 3+ backticks, same-line or multi-line
       const cleaned = raw.summary.replace(/^`{3,}(?:json)?\s*/i, '').replace(/\s*`{3,}\s*$/i, '').trim()
 
       // Try full JSON parse first
@@ -588,7 +592,7 @@ export default function VideoAnalysis() {
               formations: parsed.formations || raw.formations,
             }
           } catch {
-            // Full parse failed — extract individual fields with regex
+            // Full parse failed - extract individual fields with regex
             const result = { ...raw }
 
             // Extract summary text so it displays readably instead of raw JSON
@@ -706,7 +710,7 @@ export default function VideoAnalysis() {
                       {video?.mux_playback_id ? (
                         <div className="space-y-4">
                           <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
-                            <mux-pupil
+                            <mux-player
                               ref={playerRef}
                               playback-id={video.mux_playback_id}
                               stream-type="on-demand"
@@ -725,7 +729,7 @@ export default function VideoAnalysis() {
                         <div className="aspect-video bg-navy-800 rounded-lg flex flex-col items-center justify-center">
                           <Loader2 className="w-12 h-12 text-caution-400 animate-spin mb-4" />
                           <p className="text-white font-medium">Processing Video</p>
-                          <p className="text-sm text-navy-400">Mux is transcoding — usually 1-2 minutes</p>
+                          <p className="text-sm text-navy-400">Mux is transcoding - usually 1-2 minutes</p>
                         </div>
                       ) : showUploader ? (
                         <VideoUpload
@@ -739,7 +743,7 @@ export default function VideoAnalysis() {
                           <Upload className="w-16 h-16 text-navy-600 mb-4" />
                           <p className="text-navy-400 mb-2">No video uploaded yet</p>
                           <p className="text-sm text-navy-500 text-center max-w-xs mb-4">
-                            Upload your match video for AI analysis — uploads go direct to cloud
+                            Upload your match video for AI analysis - uploads go direct to cloud
                           </p>
                           <button onClick={() => setShowUploader(true)} className="btn-primary">
                             <Upload className="w-4 h-4" /> Upload Video
@@ -955,7 +959,7 @@ export default function VideoAnalysis() {
                       <div className="flex-1">
                         <h2 className="font-display text-lg font-semibold text-white">The Gaffer's Analysis</h2>
                         <p className="text-sm text-navy-400">
-                          {latestAnalysis.frames_analysed} frames analysed{match?.opponent && ` — vs ${match.opponent}`}
+                          {latestAnalysis.frames_analysed} frames analysed{match?.opponent && ` - vs ${match.opponent}`}
                         </p>
                       </div>
                       {!latestAnalysis.approved && !editing && (
@@ -979,7 +983,7 @@ export default function VideoAnalysis() {
                     {editing && (
                       <div className="p-3 rounded-lg bg-energy-500/10 border border-energy-500/30 mb-6 flex items-center gap-2">
                         <Pencil className="w-4 h-4 text-energy-400 shrink-0" />
-                        <p className="text-sm text-energy-300">Editing mode — adjust the AI analysis, then save your changes before approving.</p>
+                        <p className="text-sm text-energy-300">Editing mode - adjust the AI analysis, then save your changes before approving.</p>
                       </div>
                     )}
 
@@ -1184,7 +1188,7 @@ export default function VideoAnalysis() {
                         {latestAnalysis.approved ? (
                           <div className="flex items-center gap-2 text-pitch-400">
                             <CheckCircle className="w-4 h-4" />
-                            <span className="text-sm font-medium">Approved — pupil notes saved to profiles</span>
+                            <span className="text-sm font-medium">Approved - pupil notes saved to profiles</span>
                           </div>
                         ) : (
                           <div className="space-y-3">
@@ -1334,7 +1338,7 @@ export default function VideoAnalysis() {
                           <div className="absolute inset-0 flex items-center justify-center"><Video className="w-8 h-8 text-navy-600" /></div>
                         )}
                         <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-xs text-white font-mono">
-                          {formatTime(clip.start_time)} — {formatTime(clip.end_time)}
+                          {formatTime(clip.start_time)} - {formatTime(clip.end_time)}
                         </div>
                       </div>
                       <div className="p-4">

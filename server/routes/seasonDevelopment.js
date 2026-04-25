@@ -431,13 +431,13 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
 
 Analyse the following season data and write a Season Development Review answering these 4 questions with specific pupil names:
 
-1. **Most Improved Players** — Who has shown the most growth this season? Consider observation trends, attribute snapshots, and awards.
-2. **Hardest Trainers** — Who consistently shows up and puts in effort? Use attendance rates and effort ratings.
-3. **Breakthrough Candidates** — Who might break through next season? Look for rising indicators: increasing observations, recent awards, high effort but fewer match starts.
-4. **Players Needing Support** — Who might need extra coaching attention? Low attendance, few observations, no recent awards, or declining engagement.
+1. **Most Improved Players** - Who has shown the most growth this season? Consider observation trends, attribute snapshots, and awards.
+2. **Hardest Trainers** - Who consistently shows up and puts in effort? Use attendance rates and effort ratings.
+3. **Breakthrough Candidates** - Who might break through next season? Look for rising indicators: increasing observations, recent awards, high effort but fewer match starts.
+4. **Players Needing Support** - Who might need extra coaching attention? Low attendance, few observations, no recent awards, or declining engagement.
 
 Also provide:
-5. **Squad Development Score** — An overall 1-10 rating for the squad's development progress this season with a brief justification.
+5. **Squad Development Score** - An overall 1-10 rating for the squad's development progress this season with a brief justification.
 
 ## Squad
 ${playerList}
@@ -454,7 +454,7 @@ ${achievementData || 'No achievements awarded yet'}
 ## Pupil of the Match Awards
 ${potmData || 'No POTM awards yet'}
 
-Keep it practical and encouraging — this is grassroots youth football. Use pupil first names where possible. Be specific (cite data points) not vague. If data is limited for a category, say so honestly and suggest what the coach should start tracking. Format with markdown headers matching the 5 sections above.`
+Keep it practical and encouraging - this is grassroots youth football. Use pupil first names where possible. Be specific (cite data points) not vague. If data is limited for a category, say so honestly and suggest what the coach should start tracking. Format with markdown headers matching the 5 sections above.`
       }],
     })
 

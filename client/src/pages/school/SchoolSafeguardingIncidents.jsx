@@ -80,6 +80,18 @@ export default function ClubSafeguardingIncidents() {
     else setLoading(false)
   }, [school?.id])
 
+  // Auto-expand incident from ?highlight= query param
+  useEffect(() => {
+    if (!loading && incidents.length > 0) {
+      const params = new URLSearchParams(location.search)
+      const highlight = params.get('highlight')
+      if (highlight && incidents.some(i => i.id === highlight)) {
+        setExpandedId(highlight)
+        loadIncidentDetail(highlight)
+      }
+    }
+  }, [loading, incidents.length])
+
   async function loadIncidents() {
     try {
       const res = await clubSafeguardingService.getIncidents(school.id)

@@ -58,7 +58,7 @@ export default function HoDVoiceSettings() {
   if (!settings) {
     return (
       <div className="p-6 text-center">
-        <p className="text-navy-400">Unable to load voice observation settings.</p>
+        <p className="text-secondary">Unable to load voice observation settings.</p>
       </div>
     )
   }
@@ -66,20 +66,20 @@ export default function HoDVoiceSettings() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
           <Mic className="w-7 h-7 text-pitch-400" />
           Voice Observations Settings
         </h1>
-        <p className="text-navy-400 mt-1">Configure voice observations for your school</p>
+        <p className="text-secondary mt-1">Configure voice observations for your school</p>
       </div>
 
       <div className="space-y-6">
         {/* Enable/Disable */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-6">
+        <div className="bg-card rounded-xl border border-border-default p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-base font-semibold text-white">Enable Voice Observations</h3>
-              <p className="text-sm text-navy-400 mt-1">
+              <h3 className="text-base font-semibold text-primary">Enable Voice Observations</h3>
+              <p className="text-sm text-secondary mt-1">
                 When enabled, teachers see a record button in the Teacher Hub and can
                 speak observations that are transcribed and filed against pupils.
               </p>
@@ -88,7 +88,7 @@ export default function HoDVoiceSettings() {
               onClick={() => setSettings({ ...settings, voice_observations_enabled: !settings.voice_observations_enabled })}
               className={`
                 relative w-14 h-7 rounded-full transition-colors
-                ${settings.voice_observations_enabled ? 'bg-pitch-600' : 'bg-navy-700'}
+                ${settings.voice_observations_enabled ? 'bg-pitch-600' : 'bg-border-default'}
               `}
             >
               <div className={`
@@ -100,19 +100,19 @@ export default function HoDVoiceSettings() {
         </div>
 
         {/* Retention settings */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-6">
-          <h3 className="text-base font-semibold text-white mb-1 flex items-center gap-2">
+        <div className="bg-card rounded-xl border border-border-default p-6">
+          <h3 className="text-base font-semibold text-primary mb-1 flex items-center gap-2">
             <Clock className="w-5 h-5 text-amber-400" />
             Retention Policy
           </h3>
-          <p className="text-sm text-navy-400 mb-4">
+          <p className="text-sm text-secondary mb-4">
             Raw audio and transcripts are automatically purged after the configured retention window.
             Confirmed observations are retained per your standard pupil data policy.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-navy-300 mb-1">Audio retention (days)</label>
+              <label className="block text-sm text-secondary mb-1">Audio retention (days)</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -120,13 +120,13 @@ export default function HoDVoiceSettings() {
                   max={30}
                   value={settings.audio_retention_days}
                   onChange={e => setSettings({ ...settings, audio_retention_days: Math.min(30, Math.max(1, parseInt(e.target.value) || 7)) })}
-                  className="w-24 px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-24 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
                 />
-                <span className="text-xs text-navy-500">1-30 days (default 7)</span>
+                <span className="text-xs text-tertiary">1-30 days (default 7)</span>
               </div>
             </div>
             <div>
-              <label className="block text-sm text-navy-300 mb-1">Transcript retention (days)</label>
+              <label className="block text-sm text-secondary mb-1">Transcript retention (days)</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
@@ -134,21 +134,21 @@ export default function HoDVoiceSettings() {
                   max={90}
                   value={settings.transcript_retention_days}
                   onChange={e => setSettings({ ...settings, transcript_retention_days: Math.min(90, Math.max(7, parseInt(e.target.value) || 30)) })}
-                  className="w-24 px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-24 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
                 />
-                <span className="text-xs text-navy-500">7-90 days (default 30)</span>
+                <span className="text-xs text-tertiary">7-90 days (default 30)</span>
               </div>
             </div>
           </div>
         </div>
 
         {/* Safeguarding info */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-6">
-          <h3 className="text-base font-semibold text-white mb-1 flex items-center gap-2">
+        <div className="bg-card rounded-xl border border-border-default p-6">
+          <h3 className="text-base font-semibold text-primary mb-1 flex items-center gap-2">
             <Shield className="w-5 h-5 text-alert-400" />
             Safeguarding
           </h3>
-          <div className="space-y-2 text-sm text-navy-400">
+          <div className="space-y-2 text-sm text-secondary">
             <p>The AI automatically flags observations that may indicate safeguarding concerns. Flagged observations are routed to the DSL review surface and are not filed as routine observations.</p>
             <p>Only the teacher who recorded and the DSL can access raw audio and transcripts during the retention window.</p>
             <p>Pupil voices captured in the background are filtered out by the AI before transcripts reach the review screen.</p>
@@ -160,7 +160,7 @@ export default function HoDVoiceSettings() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Settings

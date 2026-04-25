@@ -6,13 +6,32 @@ import { v4 as uuidv4 } from 'uuid'
 const router = express.Router()
 router.use(authenticateToken)
 
-// Helper to get the user's school_id
-async function getUserSchoolId(userId) {
-  const result = await pool.query(
-    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC LIMIT 1`,
+// Helper to get the user's school_id — checks school_members first, then
+// falls back to teaching_groups (covers teachers not yet fully onboarded).
+// Site admins (is_admin = true) resolve to the first school so demo/admin
+// views behave the same way as the HoD School Overview dashboard.
+async function getUserSchoolId(user) {
+  const userId = typeof user === 'object' ? user.id : user
+  const isAdmin = typeof user === 'object' ? user.is_admin : false
+
+  const direct = await pool.query(
+    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at DESC NULLS LAST LIMIT 1`,
     [userId]
   )
-  return result.rows[0]?.school_id || null
+  if (direct.rows[0]?.school_id) return direct.rows[0].school_id
+
+  const via = await pool.query(
+    `SELECT school_id FROM teaching_groups WHERE teacher_id = $1 LIMIT 1`,
+    [userId]
+  )
+  if (via.rows[0]?.school_id) return via.rows[0].school_id
+
+  if (isAdmin) {
+    const fallback = await pool.query('SELECT id FROM schools ORDER BY created_at ASC LIMIT 1')
+    return fallback.rows[0]?.id || null
+  }
+
+  return null
 }
 
 // ==========================================
@@ -22,7 +41,7 @@ async function getUserSchoolId(userId) {
 // GET /windows - List reporting windows for the school
 router.get('/windows', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     const result = await pool.query(
@@ -46,7 +65,7 @@ router.get('/windows', async (req, res) => {
 // POST /windows - Create a reporting window
 router.post('/windows', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     const { name, academic_year, term, opens_at, closes_at, year_groups } = req.body
@@ -90,6 +109,26 @@ router.put('/windows/:id', async (req, res) => {
       return res.status(404).json({ error: 'Reporting window not found' })
     }
 
+    // Audit log for consequential status changes (publish / close)
+    if (status === 'published' || status === 'closed') {
+      const w = result.rows[0]
+      const countRes = await pool.query(
+        `SELECT COUNT(*) FROM pupil_reports WHERE reporting_window_id = $1 AND status = 'submitted'`,
+        [w.id]
+      )
+      await pool.query(
+        `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, metadata, created_at)
+         VALUES ($1, $2, $3, 'reporting_window', $4, $5, NOW())`,
+        [
+          w.school_id, req.user.id,
+          status === 'published' ? 'window_published' : 'window_closed',
+          w.id,
+          JSON.stringify({ window_name: w.name, report_count: parseInt(countRes.rows[0].count), status }),
+        ]
+      ).catch(() => {}) // audit failures are non-fatal
+
+    }
+
     res.json(result.rows[0])
   } catch (error) {
     console.error('Error updating reporting window:', error)
@@ -129,7 +168,7 @@ router.get('/windows/:windowId/reports', async (req, res) => {
 // GET /my-reports - Get reports the current teacher needs to write
 router.get('/my-reports', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     // Find open reporting windows
@@ -139,31 +178,37 @@ router.get('/my-reports', async (req, res) => {
     )
 
     if (windowsResult.rows.length === 0) {
-      return res.json({ windows: [], pupils_to_report: [] })
+      return res.json({ windows: [], pupils_to_report: [], existing_reports: {} })
     }
 
-    // Get pupils in the teacher's teaching groups
+    // Get pupils in the teacher's teaching groups (scoped to this school)
     const pupilsResult = await pool.query(
       `SELECT DISTINCT p.id, p.first_name, p.last_name, p.year_group,
+              tg.id AS teaching_group_id,
               tg.name AS class_name,
               (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name))
                FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
        FROM teaching_group_pupils tgp
        JOIN pupils p ON tgp.pupil_id = p.id
        JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
-       WHERE tg.teacher_id = $1
+       WHERE tg.teacher_id = $1 AND tg.school_id = $2
        ORDER BY p.year_group ASC, p.last_name ASC`,
-      [req.user.id]
+      [req.user.id, schoolId]
     )
 
-    // Get existing reports by this teacher for open windows
-    const existingResult = await pool.query(
-      `SELECT pr.pupil_id, pr.reporting_window_id, pr.status, pr.id
+    // Get existing reports for any window (by anyone) for these pupils in open windows
+    const windowIds = windowsResult.rows.map(w => w.id)
+    const pupilIds = pupilsResult.rows.map(p => p.id)
+
+    const existingResult = pupilIds.length > 0 ? await pool.query(
+      `SELECT pr.id, pr.pupil_id, pr.reporting_window_id, pr.status,
+              pr.attainment_grade, pr.effort_grade,
+              pr.teacher_comment, pr.generated_by
        FROM pupil_reports pr
-       WHERE pr.generated_by = $1
-         AND pr.reporting_window_id = ANY($2)`,
-      [req.user.id, windowsResult.rows.map(w => w.id)]
-    )
+       WHERE pr.reporting_window_id = ANY($1)
+         AND pr.pupil_id = ANY($2)`,
+      [windowIds, pupilIds]
+    ) : { rows: [] }
 
     const existingMap = {}
     for (const r of existingResult.rows) {
@@ -224,6 +269,31 @@ router.post('/reports', async (req, res) => {
   } catch (error) {
     console.error('Error saving report:', error)
     res.status(500).json({ error: 'Failed to save report' })
+  }
+})
+
+// GET /reports/:id - Get a single pupil report with pupil and unit details
+router.get('/reports/:id', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT pr.*,
+              p.first_name, p.last_name, p.year_group, p.house,
+              su.sport AS unit_sport, su.unit_name,
+              u.name AS teacher_name,
+              tg.name AS class_name
+       FROM pupil_reports pr
+       JOIN pupils p ON pr.pupil_id = p.id
+       LEFT JOIN sport_units su ON pr.unit_id = su.id
+       LEFT JOIN users u ON pr.generated_by = u.id
+       LEFT JOIN teaching_groups tg ON su.teaching_group_id = tg.id
+       WHERE pr.id = $1`,
+      [req.params.id]
+    )
+    if (result.rows.length === 0) return res.status(404).json({ error: 'Report not found' })
+    res.json(result.rows[0])
+  } catch (error) {
+    console.error('Error loading report:', error)
+    res.status(500).json({ error: 'Failed to load report' })
   }
 })
 

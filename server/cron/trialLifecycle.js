@@ -1,7 +1,7 @@
 import pool from '../config/database.js'
 import { sendEmail, isEmailEnabled } from '../services/emailService.js'
 
-const APP_URL = process.env.FRONTEND_URL || 'https://touchline.xyz'
+const APP_URL = process.env.FRONTEND_URL || 'https://app.moonbootssports.com'
 
 /**
  * Daily trial lifecycle scanner.
@@ -60,7 +60,7 @@ export async function scanTrialLifecycle() {
 
     const elapsed = ((Date.now() - startTime) / 1000).toFixed(2)
     console.log(
-      `[TrialLifecycle] Scan complete in ${elapsed}s — ` +
+      `[TrialLifecycle] Scan complete in ${elapsed}s - ` +
       `${stats.teamsChecked} teams checked, ` +
       `${stats.emailsSent} emails sent`
     )

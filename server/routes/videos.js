@@ -4,14 +4,21 @@ import { authenticateToken } from '../middleware/auth.js'
 import mux from '../services/mux.js'
 import { analyseVideoWithMux, savePlayerObservations } from '../services/videoAnalysisService.js'
 import { checkAndIncrementUsage, getEntitlements } from '../services/billingService.js'
+import { getTaxonomy, SPORTS } from '../constants/sportTaxonomy.js'
 
 const router = Router()
+
+// GET /api/videos/sport-taxonomy/:sport - return clip categories & capabilities for a sport
+router.get('/sport-taxonomy/:sport', authenticateToken, (req, res) => {
+  const sport = SPORTS.includes(req.params.sport) ? req.params.sport : 'football'
+  res.json(getTaxonomy(sport))
+})
 
 // =============================================
 // Mux Direct Upload
 // =============================================
 
-// POST /api/videos/upload — Create a Mux direct upload URL
+// POST /api/videos/upload - Create a Mux direct upload URL
 router.post('/upload', authenticateToken, async (req, res, next) => {
   try {
     const { title, videoType, teamId, matchId, isClip, recordedAt } = req.body
@@ -20,16 +27,16 @@ router.post('/upload', authenticateToken, async (req, res, next) => {
       return res.status(400).json({ message: 'Title and teamId are required' })
     }
 
-    // Derive CORS origin from the actual browser request — this ensures the Mux
+    // Derive CORS origin from the actual browser request - this ensures the Mux
     // upload URL CORS policy matches the exact origin the browser will send,
     // regardless of trailing slashes, www subdomain, or env var mismatches.
-    let corsOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'https://touchline.xyz'
+    let corsOrigin = process.env.FRONTEND_URL || process.env.CORS_ORIGIN || 'https://app.moonbootssports.com'
     if (req.headers.origin) {
       corsOrigin = req.headers.origin
     } else if (req.headers.referer) {
       try { corsOrigin = new URL(req.headers.referer).origin } catch {}
     }
-    // Strip trailing slashes — Mux needs a clean origin (protocol + host only)
+    // Strip trailing slashes - Mux needs a clean origin (protocol + host only)
     corsOrigin = corsOrigin.replace(/\/+$/, '')
 
     // Create direct upload in Mux
@@ -152,7 +159,7 @@ router.post('/webhooks/mux', async (req, res, next) => {
 // Video CRUD
 // =============================================
 
-// GET /api/videos/:teamId — list videos for a team
+// GET /api/videos/:teamId - list videos for a team
 router.get('/:teamId', authenticateToken, async (req, res, next) => {
   try {
     const { teamId } = req.params
@@ -242,7 +249,7 @@ router.get('/:teamId', authenticateToken, async (req, res, next) => {
   }
 })
 
-// GET /api/videos/video/:id — single video with clips
+// GET /api/videos/video/:id - single video with clips
 router.get('/video/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -329,7 +336,7 @@ router.get('/video/:id', authenticateToken, async (req, res, next) => {
   }
 })
 
-// DELETE /api/videos/video/:id — delete video and Mux asset
+// DELETE /api/videos/video/:id - delete video and Mux asset
 router.delete('/video/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -357,7 +364,7 @@ router.delete('/video/:id', authenticateToken, async (req, res, next) => {
   }
 })
 
-// PUT /api/videos/video/:id — update video title, type, match assignment
+// PUT /api/videos/video/:id - update video title, type, match assignment
 router.put('/video/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -406,7 +413,7 @@ router.put('/video/:id', authenticateToken, async (req, res, next) => {
   }
 })
 
-// PUT /api/videos/video/:id/assign — assign video to a match
+// PUT /api/videos/video/:id/assign - assign video to a match
 router.put('/video/:id/assign', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
@@ -429,7 +436,7 @@ router.put('/video/:id/assign', authenticateToken, async (req, res, next) => {
 // Clips
 // =============================================
 
-// POST /api/videos/video/:id/clips — create a clip
+// POST /api/videos/video/:id/clips - create a clip
 router.post('/video/:id/clips', authenticateToken, async (req, res, next) => {
   try {
     const { title, description, startTime, endTime, clipType, playerTags } = req.body
@@ -495,7 +502,7 @@ router.delete('/clips/:clipId', authenticateToken, async (req, res, next) => {
   }
 })
 
-// PUT /api/videos/clips/:clipId/tag — add/update pupil tag on clip
+// PUT /api/videos/clips/:clipId/tag - add/update pupil tag on clip
 router.put('/clips/:clipId/tag', authenticateToken, async (req, res, next) => {
   try {
     const { pupilId, feedback, rating } = req.body
@@ -598,14 +605,14 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
         context = {
           opponent: match.opponent,
           ageGroup: match.age_group,
-          matchDate: match.date,
-          goalsFor: match.goals_for,
-          goalsAgainst: match.goals_against,
-          result: match.result,
+          matchDate: match.date || match.match_date,
+          goalsFor: match.score_for,
+          goalsAgainst: match.score_against,
+          result: match.score_for != null && match.score_against != null
+            ? `${match.score_for} - ${match.score_against}` : null,
           competition: match.competition,
-          isHome: match.is_home,
-          // Starting formation: prefer match-specific formation, then team default
-          startingFormation: match.formation_used || match.team_formation || null,
+          isHome: match.home_away === 'home',
+          startingFormation: match.team_formation || null,
           matchFormations: match.formations || null,
           teamFormations: match.team_formations || null,
         }
@@ -698,12 +705,13 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
       squadPlayers = playersResult.rows
     }
 
-    // Load team name
-    const teamResult = await pool.query('SELECT name FROM teams WHERE id = $1', [video.team_id])
+    // Load team name and sport
+    const teamResult = await pool.query('SELECT name, sport FROM teams WHERE id = $1', [video.team_id])
     const teamName = teamResult.rows[0]?.name || null
+    const sport = teamResult.rows[0]?.sport || 'football'
 
     // Run in background
-    analyseVideoWithMux(video, { analysisType, pupilId, clipId, context, teamColour, teamName, squadPlayers, userId: req.user.id, depth }).catch(err => {
+    analyseVideoWithMux(video, { analysisType, pupilId, clipId, context, teamColour, teamName, sport, squadPlayers, userId: req.user.id, depth }).catch(err => {
       console.error('Video analysis failed:', err)
     })
   } catch (error) {
@@ -717,7 +725,7 @@ router.get('/video/:id/analysis', authenticateToken, async (req, res, next) => {
     // Mark stale processing records as failed (stuck for >60 minutes)
     // Deep analysis processes 480 frames in 24 batches and can take up to 50 minutes
     await pool.query(
-      `UPDATE video_ai_analysis SET status = 'failed', error = 'Analysis timed out — please try again', progress = NULL
+      `UPDATE video_ai_analysis SET status = 'failed', error = 'Analysis timed out - please try again', progress = NULL
        WHERE video_id = $1 AND status = 'processing' AND created_at < NOW() - INTERVAL '60 minutes'`,
       [req.params.id]
     )
@@ -732,7 +740,7 @@ router.get('/video/:id/analysis', authenticateToken, async (req, res, next) => {
   }
 })
 
-// POST /api/videos/analysis/:analysisId/cancel — cancel a running analysis
+// POST /api/videos/analysis/:analysisId/cancel - cancel a running analysis
 router.post('/analysis/:analysisId/cancel', authenticateToken, async (req, res, next) => {
   try {
     const { analysisId } = req.params
@@ -750,7 +758,7 @@ router.post('/analysis/:analysisId/cancel', authenticateToken, async (req, res, 
   }
 })
 
-// PUT /api/videos/analysis/:analysisId — edit analysis before approving
+// PUT /api/videos/analysis/:analysisId - edit analysis before approving
 router.put('/analysis/:analysisId', authenticateToken, async (req, res, next) => {
   try {
     const { analysisId } = req.params
@@ -805,7 +813,7 @@ router.put('/analysis/:analysisId', authenticateToken, async (req, res, next) =>
   }
 })
 
-// POST /api/videos/analysis/:analysisId/approve — approve analysis and save pupil observations
+// POST /api/videos/analysis/:analysisId/approve - approve analysis and save pupil observations
 router.post('/analysis/:analysisId/approve', authenticateToken, async (req, res, next) => {
   try {
     const { analysisId } = req.params

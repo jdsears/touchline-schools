@@ -1,4 +1,4 @@
-import { useState, useId } from 'react'
+import { useState } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Lock, ArrowRight, Loader2, CheckCircle, Eye, EyeOff } from 'lucide-react'
@@ -6,23 +6,11 @@ import { authService } from '../services/auth'
 import toast from 'react-hot-toast'
 import SEO from '../components/common/SEO'
 
-function TouchlineMark({ className = "w-10 h-8" }) {
-  const id = useId()
-  const gradId = `tl-arc-${id}`
+function MoonBootsMark() {
   return (
-    <svg viewBox="0 10 64 38" className={className} xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id={gradId} x1="0%" y1="0%" x2="100%" y2="0%">
-          <stop offset="0%" stopColor="#2ED573"/>
-          <stop offset="100%" stopColor="#F5A623"/>
-        </linearGradient>
-      </defs>
-      <g fill="none">
-        <path d="M12 44 C18 12, 46 12, 52 44" stroke={`url(#${gradId})`} strokeWidth="4.5" strokeLinecap="round"/>
-        <line x1="8" y1="44" x2="56" y2="44" stroke="#2ED573" strokeWidth="3.5" strokeLinecap="round"/>
-        <circle cx="32" cy="44" r="5" fill="#2ED573"/>
-      </g>
-    </svg>
+    <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ backgroundColor: 'var(--mb-gold)' }}>
+      <span style={{ color: 'var(--mb-navy)', fontFamily: 'Poppins, system-ui, sans-serif', fontWeight: 700, fontSize: '0.875rem' }}>M</span>
+    </div>
   )
 }
 
@@ -70,8 +58,8 @@ export default function ResetPassword() {
         className="w-full max-w-md"
       >
         <Link to="/" className="inline-flex items-center gap-2 mb-8">
-          <TouchlineMark className="w-10 h-6" />
-          <span className="font-display font-semibold text-navy-50 text-xl">Touchline</span>
+          <MoonBootsMark />
+          <span className="font-bold text-navy-50 text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
         </Link>
 
         {success ? (

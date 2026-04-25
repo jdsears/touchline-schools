@@ -93,27 +93,6 @@ DO $$ BEGIN
 EXCEPTION WHEN duplicate_object THEN NULL;
 END $$;
 
--- Observations table
-CREATE TABLE IF NOT EXISTS observations (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
-  observer_id UUID NOT NULL REFERENCES users(id),
-  type VARCHAR(50) NOT NULL,
-  content TEXT NOT NULL,
-  context VARCHAR(255),
-  context_type VARCHAR(20) DEFAULT 'general',
-  match_id UUID REFERENCES matches(id) ON DELETE SET NULL,
-  training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Add context columns to observations if not exist
-DO $$ BEGIN
-  ALTER TABLE observations ADD COLUMN IF NOT EXISTS context_type VARCHAR(20) DEFAULT 'general';
-  ALTER TABLE observations ADD COLUMN IF NOT EXISTS training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL;
-EXCEPTION WHEN duplicate_column THEN NULL;
-END $$;
-
 -- Matches table with availability tracking
 CREATE TABLE IF NOT EXISTS matches (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -219,6 +198,27 @@ CREATE TABLE IF NOT EXISTS training_sessions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Observations table
+CREATE TABLE IF NOT EXISTS observations (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  player_id UUID NOT NULL REFERENCES players(id) ON DELETE CASCADE,
+  observer_id UUID NOT NULL REFERENCES users(id),
+  type VARCHAR(50) NOT NULL,
+  content TEXT NOT NULL,
+  context VARCHAR(255),
+  context_type VARCHAR(20) DEFAULT 'general',
+  match_id UUID REFERENCES matches(id) ON DELETE SET NULL,
+  training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add context columns to observations if not exist
+DO $$ BEGIN
+  ALTER TABLE observations ADD COLUMN IF NOT EXISTS context_type VARCHAR(20) DEFAULT 'general';
+  ALTER TABLE observations ADD COLUMN IF NOT EXISTS training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL;
+EXCEPTION WHEN duplicate_column THEN NULL;
+END $$;
 
 -- Tactics table
 CREATE TABLE IF NOT EXISTS tactics (
@@ -778,7 +778,7 @@ CREATE TABLE IF NOT EXISTS grant_drafts (
 
 CREATE INDEX IF NOT EXISTS idx_grant_drafts_club ON grant_drafts(club_id);
 
--- Match Goals — individual goalscorer and assist tracking per match
+-- Match Goals - individual goalscorer and assist tracking per match
 CREATE TABLE IF NOT EXISTS match_goals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
@@ -793,7 +793,7 @@ CREATE TABLE IF NOT EXISTS match_goals (
 CREATE INDEX IF NOT EXISTS idx_match_goals_match ON match_goals(match_id);
 CREATE INDEX IF NOT EXISTS idx_match_goals_scorer ON match_goals(scorer_player_id) WHERE scorer_player_id IS NOT NULL;
 
--- Knowledge Base Documents — coaching resources uploaded by coaches
+-- Knowledge Base Documents - coaching resources uploaded by coaches
 CREATE TABLE IF NOT EXISTS knowledge_base_documents (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
@@ -818,7 +818,7 @@ CREATE INDEX IF NOT EXISTS idx_kb_documents_team ON knowledge_base_documents(tea
 CREATE INDEX IF NOT EXISTS idx_kb_documents_category ON knowledge_base_documents(category);
 CREATE INDEX IF NOT EXISTS idx_kb_documents_status ON knowledge_base_documents(status);
 
--- Knowledge Base Chunks — parsed, searchable units of coaching knowledge
+-- Knowledge Base Chunks - parsed, searchable units of coaching knowledge
 CREATE TABLE IF NOT EXISTS knowledge_base_chunks (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   document_id UUID NOT NULL REFERENCES knowledge_base_documents(id) ON DELETE CASCADE,

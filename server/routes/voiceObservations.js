@@ -13,6 +13,78 @@ import os from 'os'
 const router = express.Router()
 router.use(authenticateToken)
 
+// Self-heal the voice schema if the Phase 11 migration was skipped
+// (runMigrations swallows errors from earlier phases, which can prevent
+// Phase 11 from running on affected deployments). Runs once per process.
+let schemaEnsured = null
+function ensureVoiceSchema() {
+  if (schemaEnsured) return schemaEnsured
+  schemaEnsured = (async () => {
+    try {
+      await pool.query(`CREATE TABLE IF NOT EXISTS audio_sources (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+        context_type TEXT NOT NULL DEFAULT 'general'
+          CHECK (context_type IN ('session', 'match', 'half_time', 'post_fixture', 'lesson', 'general')),
+        context_id UUID,
+        duration_seconds INTEGER,
+        storage_url TEXT,
+        transcript TEXT,
+        transcript_generated_at TIMESTAMPTZ,
+        extraction_completed_at TIMESTAMPTZ,
+        retention_expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_teacher ON audio_sources(teacher_id)`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_school ON audio_sources(school_id)`)
+      await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_retention ON audio_sources(retention_expires_at)`)
+
+      // Processing error column — lets the pipeline surface failures to
+      // the client instead of hanging the UI on silent failures.
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE audio_sources ADD COLUMN IF NOT EXISTS processing_error TEXT;
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+      // Observations table voice fields (from Phase 11a)
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'typed';
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS audio_source_id UUID;
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS transcript_fragment TEXT;
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS confidence REAL;
+        ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT DEFAULT 'confirmed';
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+      // Schools voice config (from Phase 11d)
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE schools ADD COLUMN IF NOT EXISTS voice_observations_enabled BOOLEAN DEFAULT false;
+        ALTER TABLE schools ADD COLUMN IF NOT EXISTS audio_retention_days INTEGER DEFAULT 7;
+        ALTER TABLE schools ADD COLUMN IF NOT EXISTS transcript_retention_days INTEGER DEFAULT 30;
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+      // Pupil nicknames (from Phase 11c)
+      await pool.query(`DO $$ BEGIN
+        ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT[];
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+      console.log('[VoiceObservations] Schema ensured')
+    } catch (err) {
+      console.error('[VoiceObservations] ensureVoiceSchema failed:', err.message)
+      schemaEnsured = null // allow retry on next request
+      throw err
+    }
+  })()
+  return schemaEnsured
+}
+
+// Run once on module load (fire-and-forget; requests will await it if needed)
+ensureVoiceSchema().catch(() => {})
+
 // Rate limit: max 20 uploads per teacher per hour
 const voiceUploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -35,18 +107,42 @@ const audioUpload = multer({
   },
 })
 
+// Helper to get user's school ID.
+// Teachers reach a school via school_members (staff roster) OR via teaching_groups
+// (class assignment). Site admins may not be in either table, so fall back to the
+// first school in the DB so they can still use features while demoing.
+async function getUserSchoolId(userId) {
+  const direct = await pool.query(
+    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC NULLS LAST LIMIT 1`,
+    [userId]
+  )
+  if (direct.rows[0]?.school_id) return direct.rows[0].school_id
+  const via = await pool.query(
+    `SELECT school_id FROM teaching_groups WHERE teacher_id = $1 LIMIT 1`,
+    [userId]
+  )
+  if (via.rows[0]?.school_id) return via.rows[0].school_id
+  // Admin fallback: if user is a site admin not on any school roster,
+  // use the first school so they can demo all features.
+  const admin = await pool.query(`SELECT is_admin FROM users WHERE id = $1`, [userId])
+  if (admin.rows[0]?.is_admin) {
+    const fallback = await pool.query(`SELECT id FROM schools ORDER BY created_at ASC LIMIT 1`)
+    return fallback.rows[0]?.id || null
+  }
+  return null
+}
+
 // Middleware: check voice observations feature flag
 async function requireVoiceEnabled(req, res, next) {
   try {
+    const schoolId = await getUserSchoolId(req.user.id)
+    if (!schoolId) {
+      return res.status(403).json({ error: 'No school access' })
+    }
     const schoolResult = await pool.query(
-      `SELECT s.voice_observations_enabled
-       FROM school_members sm
-       JOIN schools s ON sm.school_id = s.id
-       WHERE sm.user_id = $1
-       LIMIT 1`,
-      [req.user.id]
+      `SELECT voice_observations_enabled FROM schools WHERE id = $1`,
+      [schoolId]
     )
-
     if (schoolResult.rows.length === 0 || !schoolResult.rows[0].voice_observations_enabled) {
       return res.status(403).json({ error: 'Voice observations are not enabled for your school' })
     }
@@ -57,17 +153,9 @@ async function requireVoiceEnabled(req, res, next) {
   }
 }
 
-// Helper to get user's school ID
-async function getUserSchoolId(userId) {
-  const result = await pool.query(
-    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC LIMIT 1`,
-    [userId]
-  )
-  return result.rows[0]?.school_id || null
-}
-
 // POST /upload - Upload audio and start processing pipeline
 router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.single('audio'), async (req, res) => {
+  let stage = 'init'
   try {
     if (!req.file) {
       return res.status(400).json({ error: 'Audio file is required' })
@@ -83,12 +171,17 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
       return res.status(400).json({ error: `context_type must be one of: ${validContextTypes.join(', ')}` })
     }
 
+    stage = 'ensure_schema'
+    await ensureVoiceSchema()
+
+    stage = 'resolve_school'
     const schoolId = await getUserSchoolId(req.user.id)
     if (!schoolId) {
       return res.status(403).json({ error: 'No school access' })
     }
 
     // Get school retention settings
+    stage = 'read_retention'
     const retentionResult = await pool.query(
       'SELECT audio_retention_days FROM schools WHERE id = $1',
       [schoolId]
@@ -98,39 +191,57 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     const audioSourceId = uuidv4()
     const storageKey = `audio_sources/${schoolId}/${req.user.id}/${audioSourceId}${path.extname(req.file.originalname) || '.webm'}`
 
-    // Upload to object storage
+    // Read the bytes BEFORE handing off to storage. We pass this buffer to the
+    // transcription pipeline so it never has to re-fetch the audio — works
+    // regardless of whether cloud storage is configured or the returned URL
+    // is publicly fetchable.
+    stage = 'read_audio_bytes'
+    const audioBuffer = fs.readFileSync(req.file.path)
+
+    // Upload to object storage (for retention / audit trail)
+    stage = 'upload_to_storage'
     let storageUrl
     try {
       storageUrl = await uploadFile(req.file.path, storageKey, {
         contentType: req.file.mimetype,
       })
     } catch (err) {
-      console.error('Audio upload to storage failed:', err)
+      console.error('[VoiceObservations] Storage upload failed:', err)
       // Fall back to local file path if storage fails
       storageUrl = req.file.path
     }
 
     // Clean up temp file if uploaded to cloud
     if (storageUrl !== req.file.path && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path)
+      try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
     }
 
     // Create audio_sources record
+    stage = 'insert_audio_source'
     await pool.query(
       `INSERT INTO audio_sources (id, teacher_id, school_id, context_type, context_id, storage_url, retention_expires_at)
        VALUES ($1, $2, $3, $4, $5, $6, NOW() + INTERVAL '1 day' * $7)`,
       [audioSourceId, req.user.id, schoolId, context_type, context_id || null, storageUrl, retentionDays]
     )
 
-    // Audit log
-    await pool.query(
-      `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details)
-       VALUES ($1, $2, 'voice_recording_completed', 'audio_source', $3, $4)`,
-      [schoolId, req.user.id, audioSourceId, JSON.stringify({ context_type, context_id, file_size: req.file.size })]
-    )
+    // Audit log (best-effort — don't 500 the upload if audit insert fails)
+    stage = 'audit_log'
+    try {
+      await pool.query(
+        `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details)
+         VALUES ($1, $2, 'voice_recording_completed', 'audio_source', $3, $4)`,
+        [schoolId, req.user.id, audioSourceId, JSON.stringify({ context_type, context_id, file_size: req.file.size })]
+      )
+    } catch (err) {
+      console.error('[VoiceObservations] Audit log insert failed (non-fatal):', err.message)
+    }
 
-    // Kick off async processing (non-blocking)
-    processVoiceObservation(audioSourceId, req.user.id, schoolId)
+    // Kick off async processing (non-blocking). Pass the in-memory audio
+    // buffer so the pipeline doesn't have to re-fetch storage_url — some
+    // storage backends (local disk mode) return a URL that isn't publicly
+    // fetchable by external transcription providers.
+    stage = 'enqueue_pipeline'
+    processVoiceObservation(audioSourceId, req.user.id, schoolId, audioBuffer)
       .catch(err => console.error(`[VoiceObservations] Pipeline error for ${audioSourceId}:`, err))
 
     res.status(201).json({
@@ -141,10 +252,13 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
   } catch (error) {
     // Clean up temp file on error
     if (req.file && fs.existsSync(req.file.path)) {
-      fs.unlinkSync(req.file.path)
+      try { fs.unlinkSync(req.file.path) } catch { /* ignore */ }
     }
-    console.error('Voice upload error:', error)
-    res.status(500).json({ error: 'Failed to process voice observation' })
+    console.error(`[VoiceObservations] Upload failed at stage "${stage}":`, error)
+    res.status(500).json({
+      error: `Failed to process voice observation (${stage}): ${error.message || 'unknown error'}`,
+      stage,
+    })
   }
 })
 
@@ -156,6 +270,7 @@ router.get('/status/:audioSourceId', async (req, res) => {
               transcript IS NOT NULL AS has_transcript,
               transcript_generated_at,
               extraction_completed_at,
+              processing_error,
               created_at
        FROM audio_sources
        WHERE id = $1 AND teacher_id = $2`,
@@ -168,7 +283,8 @@ router.get('/status/:audioSourceId', async (req, res) => {
 
     const source = result.rows[0]
     let status = 'processing'
-    if (source.extraction_completed_at) status = 'ready_for_review'
+    if (source.processing_error) status = 'error'
+    else if (source.extraction_completed_at) status = 'ready_for_review'
     else if (source.has_transcript) status = 'extracting'
 
     res.json({ ...source, status })

@@ -181,7 +181,7 @@ export default function VideoUpload({
     // Check network before attempting upload
     if (typeof navigator !== 'undefined' && !navigator.onLine) {
       setStatus('error')
-      setError('You appear to be offline — check your connection and try again')
+      setError('You appear to be offline - check your connection and try again')
       return
     }
 
@@ -204,7 +204,7 @@ export default function VideoUpload({
       setVideoId(data.videoId)
 
       // 2. Upload via Mux UpChunk (chunked PUT with Content-Range headers)
-      // Uses standard HTTP PUT instead of TUS protocol — avoids CORS preflight
+      // Uses standard HTTP PUT instead of TUS protocol - avoids CORS preflight
       // failures caused by TUS-specific headers (Tus-Resumable, Upload-Length, etc.)
       const upload = UpChunk.createUpload({
         endpoint: data.uploadUrl,
@@ -232,15 +232,15 @@ export default function VideoUpload({
         const msg = String(detail?.detail?.message || detail?.detail || '')
         let errorMsg
         if (typeof navigator !== 'undefined' && !navigator.onLine) {
-          errorMsg = 'You are offline — reconnect and try again'
+          errorMsg = 'You are offline - reconnect and try again'
         } else if (msg.includes('403') || msg.includes('401')) {
-          errorMsg = 'Upload permission denied — the upload link may have expired'
+          errorMsg = 'Upload permission denied - the upload link may have expired'
         } else if (msg.includes('404') || msg.includes('410')) {
-          errorMsg = 'Upload session expired — please try again for a fresh link'
+          errorMsg = 'Upload session expired - please try again for a fresh link'
         } else if (msg.includes('500') || msg.includes('502') || msg.includes('503')) {
-          errorMsg = 'Video service temporarily unavailable — try again shortly'
+          errorMsg = 'Video service temporarily unavailable - try again shortly'
         } else {
-          errorMsg = 'Upload failed — check your connection and try again'
+          errorMsg = 'Upload failed - check your connection and try again'
         }
         setError(errorMsg)
         toast.error('Upload failed. Please try again.')
@@ -306,12 +306,12 @@ export default function VideoUpload({
             MP4, MOV, AVI, MKV, or WebM up to {formatBytes(maxSize)}
           </p>
           <p className="text-xs text-navy-500 mt-2">
-            Uploads directly to cloud — no server timeout issues
+            Uploads directly to cloud - no server timeout issues
           </p>
         </div>
       )}
 
-      {/* Selected File — Ready to upload */}
+      {/* Selected File - Ready to upload */}
       {file && status === 'idle' && (
         <div className="bg-navy-800 rounded-xl p-4 space-y-4">
           <div className="flex items-center gap-4">
@@ -336,7 +336,7 @@ export default function VideoUpload({
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="e.g. Morley U13 vs Hethersett — 25 Jan"
+              placeholder="e.g. Morley U13 vs Hethersett - 25 Jan"
               className="input w-full"
             />
           </div>
@@ -369,7 +369,7 @@ export default function VideoUpload({
                     <option value="">None</option>
                     {matches.map(m => (
                       <option key={m.id} value={m.id}>
-                        {m.opponent} — {new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                        {m.opponent} - {new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </option>
                     ))}
                   </select>
@@ -382,7 +382,7 @@ export default function VideoUpload({
                     <option value="">None</option>
                     {trainingSessions.map(s => (
                       <option key={s.id} value={s.id}>
-                        {s.title || 'Training'} — {new Date(s.session_date || s.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
+                        {s.title || 'Training'} - {new Date(s.session_date || s.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </option>
                     ))}
                   </select>
@@ -422,7 +422,7 @@ export default function VideoUpload({
             <div className="flex-1 min-w-0">
               <p className="text-white font-medium truncate">{file?.name}</p>
               <p className="text-sm text-navy-400">
-                {paused ? 'Reconnecting — upload will resume automatically...' : 'Uploading to cloud...'}
+                {paused ? 'Reconnecting - upload will resume automatically...' : 'Uploading to cloud...'}
               </p>
             </div>
           </div>
@@ -435,7 +435,7 @@ export default function VideoUpload({
           <p className="text-sm text-navy-400 text-center">{progress}%</p>
           {paused && (
             <p className="text-xs text-caution-400 text-center mt-2">
-              Keep this screen open — upload resumes when connection returns
+              Keep this screen open - upload resumes when connection returns
             </p>
           )}
         </div>
@@ -450,7 +450,7 @@ export default function VideoUpload({
             </div>
             <div className="flex-1">
               <p className="text-white font-medium">Processing video</p>
-              <p className="text-sm text-navy-400">Mux is transcoding — usually 1-2 minutes...</p>
+              <p className="text-sm text-navy-400">Mux is transcoding - usually 1-2 minutes...</p>
             </div>
           </div>
           {onCancel && (
@@ -461,7 +461,7 @@ export default function VideoUpload({
               }}
               className="mt-4 w-full text-sm text-navy-400 hover:text-white py-2"
             >
-              Processing in background — close this panel
+              Processing in background - close this panel
             </button>
           )}
         </div>

@@ -1,10 +1,10 @@
 import { Helmet } from 'react-helmet-async'
 
 const defaultMeta = {
-  title: 'Touchline | AI-Powered Coaching & School Management for Grassroots Football',
-  description: 'Touchline gives grassroots football coaches AI-powered tools for tactics, training sessions, pupil development, and school management. Free plan available.',
-  image: 'https://touchline.xyz/touchline-og-image.png',
-  url: 'https://touchline.xyz',
+  title: 'MoonBoots Sports: The PE department platform for UK schools',
+  description: 'Bespoke PE department platform for UK schools. Curriculum PE, extra-curricular sport, assessment, reporting, and NGB-aligned AI coaching across 17 sports.',
+  image: 'https://app.moonbootssports.com/og-image.png',
+  url: 'https://app.moonbootssports.com',
 }
 
 /**
@@ -26,7 +26,7 @@ export default function SEO({
   noIndex = false,
 }) {
   const fullTitle = title
-    ? `${title} | Touchline`
+    ? `${title} | MoonBoots Sports`
     : defaultMeta.title
   const canonicalUrl = `${defaultMeta.url}${path}`
 

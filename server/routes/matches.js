@@ -1,7 +1,10 @@
+// Canonical column names: see server/routes/teams.js header comment.
+// SELECT queries include legacy aliases (is_home, goals_for, etc.) for compat.
+
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { generateMatchPrep, generateMatchReport, generatePepTalk } from '../services/claudeService.js'
+import { generateMatchPrep, generateMatchReport, generatePepTalk, generatePublicMatchReport } from '../services/claudeService.js'
 import { sendPotmEmail, sendSquadAnnouncementEmail, sendAvailabilityRequestEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
 import { sendPushToUser } from '../services/pushService.js'
 import { normalizePositions } from '../utils/pupilUtils.js'
@@ -50,7 +53,15 @@ const videoUpload = multer({
 router.get('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const result = await pool.query('SELECT * FROM matches WHERE id = $1', [id])
+    const result = await pool.query(
+      `SELECT m.*,
+        (m.home_away = 'home') AS is_home,
+        m.score_for AS goals_for,
+        m.score_against AS goals_against,
+        m.team_notes AS notes,
+        CASE WHEN m.score_for IS NOT NULL AND m.score_against IS NOT NULL
+          THEN m.score_for || ' - ' || m.score_against ELSE NULL END AS result
+       FROM matches m WHERE m.id = $1`, [id])
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Match not found' })
     }
@@ -64,29 +75,35 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
 router.put('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { opponent, date, location, isHome, result: matchResult,
-            formationUsed, formations, notes, veoLink, videoUrl,
-            goalsFor, goalsAgainst, kitType, meetTime } = req.body
+    const { opponent, date, location, isHome, formations, notes,
+            veoLink, videoUrl, goalsFor, goalsAgainst, kitType, meetTime } = req.body
 
+    const homeAway = isHome === undefined ? undefined : (isHome ? 'home' : 'away')
     const dbResult = await pool.query(
       `UPDATE matches SET
         opponent = COALESCE($1, opponent),
+        match_date = COALESCE($2, match_date),
         date = COALESCE($2, date),
         location = COALESCE($3, location),
-        is_home = COALESCE($4, is_home),
-        result = COALESCE($5, result),
-        formation_used = COALESCE($6, formation_used),
-        notes = COALESCE($7, notes),
-        veo_link = COALESCE($8, veo_link),
-        video_url = COALESCE($9, video_url),
-        formations = COALESCE($10::jsonb, formations),
-        goals_for = COALESCE($11, goals_for),
-        goals_against = COALESCE($12, goals_against),
-        kit_type = COALESCE($13, kit_type),
-        meet_time = $14,
+        home_away = COALESCE($4, home_away),
+        team_notes = COALESCE($5, team_notes),
+        veo_link = COALESCE($6, veo_link),
+        video_url = COALESCE($7, video_url),
+        formations = COALESCE($8::jsonb, formations),
+        score_for = COALESCE($9, score_for),
+        score_against = COALESCE($10, score_against),
+        kit_type = COALESCE($11, kit_type),
+        meet_time = $12,
         updated_at = NOW()
-       WHERE id = $15 RETURNING *`,
-      [opponent, date, location, isHome, matchResult, formationUsed, notes, veoLink, videoUrl,
+       WHERE id = $13
+       RETURNING *,
+        (home_away = 'home') AS is_home,
+        score_for AS goals_for,
+        score_against AS goals_against,
+        team_notes AS notes,
+        CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
+          THEN score_for || ' - ' || score_against ELSE NULL END AS result`,
+      [opponent, date, location, homeAway, notes, veoLink, videoUrl,
        formations ? JSON.stringify(formations) : null, goalsFor, goalsAgainst, kitType || null, meetTime || null, id]
     )
 
@@ -451,10 +468,11 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
     const [recentResultsRes, leagueTableRes, squadObsRes, matchSquadRes] = await Promise.all([
       // Last 10 completed matches with scores
       pool.query(
-        `SELECT opponent, date, is_home, goals_for, goals_against, competition
+        `SELECT opponent, COALESCE(date, match_date) AS date, (home_away = 'home') AS is_home,
+                score_for AS goals_for, score_against AS goals_against, competition
          FROM matches
-         WHERE team_id = $1 AND goals_for IS NOT NULL AND goals_against IS NOT NULL AND id != $2
-         ORDER BY date DESC LIMIT 10`,
+         WHERE team_id = $1 AND score_for IS NOT NULL AND score_against IS NOT NULL AND id != $2
+         ORDER BY COALESCE(date, match_date) DESC LIMIT 10`,
         [match.team_id, id]
       ),
       // League table (if exists)
@@ -536,7 +554,7 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
 
     // Also include match squad pupil IDs if present
     if (matchSquadRes.rows.length > 0) {
-      // match_squads are definitive — override tactics-based available list
+      // match_squads are definitive - override tactics-based available list
       availablePlayerIds = []
       const squadPlayerRes = await pool.query(
         'SELECT p.id FROM match_squads ms JOIN pupils p ON ms.pupil_id = p.id WHERE ms.match_id = $1',
@@ -600,12 +618,12 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
       res.write(`data: ${JSON.stringify({ type: 'text', text })}\n\n`)
     })
 
-    // Wait for stream to complete — don't throw if we already have content
+    // Wait for stream to complete - don't throw if we already have content
     try {
       await stream.finalMessage()
     } catch (streamErr) {
       console.error('Stream finalization warning:', streamErr.message)
-      // If we got text, the generation succeeded — don't treat as error
+      // If we got text, the generation succeeded - don't treat as error
     }
 
     if (fullText) {
@@ -793,6 +811,74 @@ router.put('/:id/report', authenticateToken, async (req, res, next) => {
   }
 })
 
+// Generate public match report (AI draft)
+router.post('/:id/public-report/generate', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const match = await pool.query(
+      `SELECT m.*, t.name AS team_name, t.sport, t.age_group, t.school_id,
+              (SELECT name FROM pupils WHERE id = m.player_of_match_id) AS potm_name
+       FROM matches m JOIN teams t ON t.id = m.team_id WHERE m.id = $1`, [id]
+    )
+    if (!match.rows.length) return res.status(404).json({ message: 'Match not found' })
+    const m = match.rows[0]
+
+    const school = await pool.query('SELECT public_name_format FROM schools WHERE id = $1', [m.school_id])
+    const nameFormat = school.rows[0]?.public_name_format || 'first_initial'
+
+    const goals = await pool.query(
+      `SELECT mg.*, p.name AS scorer FROM match_goals mg LEFT JOIN pupils p ON p.id = mg.pupil_id WHERE mg.match_id = $1`,
+      [id]
+    ).catch(() => ({ rows: [] }))
+
+    const text = await generatePublicMatchReport({
+      teamName: m.team_name, opponent: m.opponent,
+      scoreFor: m.score_for, scoreAgainst: m.score_against,
+      sport: m.sport, ageGroup: m.age_group,
+      date: m.date || m.match_date, venue: m.location,
+      homeAway: m.home_away, coachNotes: m.team_notes,
+      potmName: m.potm_name, goals: goals.rows, nameFormat,
+    })
+
+    await pool.query(
+      `UPDATE matches SET match_report_text = $1, match_report_status = 'draft', updated_at = NOW() WHERE id = $2`,
+      [text, id]
+    )
+    res.json({ text, status: 'draft' })
+  } catch (error) {
+    console.error('Public report generation failed:', error)
+    res.status(500).json({ message: error.message || 'Failed to generate report' })
+  }
+})
+
+// Update public match report text (coach edits)
+router.put('/:id/public-report', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { text } = req.body
+    await pool.query(
+      `UPDATE matches SET match_report_text = $1, match_report_status = 'draft', updated_at = NOW() WHERE id = $2`,
+      [text, id]
+    )
+    res.json({ text, status: 'draft' })
+  } catch (error) { next(error) }
+})
+
+// Approve and publish public match report
+router.post('/:id/public-report/publish', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { publish } = req.body
+    const status = publish !== false ? 'published' : 'draft'
+    await pool.query(
+      `UPDATE matches SET match_report_status = $1, match_report_approved_by = $2,
+        match_report_approved_at = NOW(), updated_at = NOW() WHERE id = $3`,
+      [status, req.user.id, id]
+    )
+    res.json({ status })
+  } catch (error) { next(error) }
+})
+
 // Generate pre-match pep talk for a pupil
 router.post('/:id/pep-talk/:pupilId', authenticateToken, async (req, res, next) => {
   try {
@@ -847,7 +933,7 @@ router.post('/:id/pep-talk/:pupilId', authenticateToken, async (req, res, next) 
         }
       }
     } catch (err) {
-      // Non-critical — continue without video insights
+      // Non-critical - continue without video insights
       console.warn('Could not fetch video analysis for pep talk:', err.message)
     }
 
@@ -862,7 +948,7 @@ router.post('/:id/pep-talk/:pupilId', authenticateToken, async (req, res, next) 
 
 // ============== MATCH GOALS & ASSISTS ==============
 
-// GET /matches/:id/goals — list goals for a match
+// GET /matches/:id/goals - list goals for a match
 router.get('/:id/goals', authenticateToken, async (req, res, next) => {
   try {
     const result = await pool.query(
@@ -878,7 +964,7 @@ router.get('/:id/goals', authenticateToken, async (req, res, next) => {
     )
     res.json(result.rows)
   } catch (error) {
-    // Table may not exist yet — return empty array
+    // Table may not exist yet - return empty array
     if (error.code === '42P01') return res.json([])
     next(error)
   }
@@ -904,7 +990,7 @@ async function ensureMatchGoalsTable() {
   matchGoalsTableReady = true
 }
 
-// POST /matches/:id/goals — add a goal
+// POST /matches/:id/goals - add a goal
 router.post('/:id/goals', authenticateToken, async (req, res, next) => {
   try {
     await ensureMatchGoalsTable()
@@ -930,7 +1016,7 @@ router.post('/:id/goals', authenticateToken, async (req, res, next) => {
   }
 })
 
-// DELETE /matches/:id/goals/:goalId — remove a goal
+// DELETE /matches/:id/goals/:goalId - remove a goal
 router.delete('/:id/goals/:goalId', authenticateToken, async (req, res, next) => {
   try {
     await pool.query('DELETE FROM match_goals WHERE id = $1 AND match_id = $2', [req.params.goalId, req.params.id])
@@ -963,7 +1049,7 @@ router.get('/:id/substitutions', authenticateToken, async (req, res, next) => {
   }
 })
 
-// POST /matches/:id/substitutions — add a substitution
+// POST /matches/:id/substitutions - add a substitution
 router.post('/:id/substitutions', authenticateToken, async (req, res, next) => {
   try {
     const { pupil_off_id, pupil_on_id, minute, notes } = req.body
@@ -990,11 +1076,189 @@ router.post('/:id/substitutions', authenticateToken, async (req, res, next) => {
   }
 })
 
-// DELETE /matches/:id/substitutions/:subId — remove a substitution
+// DELETE /matches/:id/substitutions/:subId - remove a substitution
 router.delete('/:id/substitutions/:subId', authenticateToken, async (req, res, next) => {
   try {
     await pool.query('DELETE FROM match_substitutions WHERE id = $1 AND match_id = $2', [req.params.subId, req.params.id])
     res.json({ message: 'Substitution removed' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============== MATCH EVENTS (Sport-Specific) ==============
+
+// GET /matches/:id/events - list events for a match
+router.get('/:id/events', authenticateToken, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT me.*, p.name AS pupil_name, p.squad_number AS pupil_number,
+              sp.name AS secondary_pupil_name, sp.squad_number AS secondary_pupil_number
+       FROM match_events me
+       LEFT JOIN pupils p ON me.pupil_id = p.id
+       LEFT JOIN pupils sp ON me.secondary_pupil_id = sp.id
+       WHERE me.match_id = $1
+       ORDER BY me.minute ASC NULLS LAST, me.created_at ASC`,
+      [req.params.id]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// POST /matches/:id/events - add a match event
+router.post('/:id/events', authenticateToken, async (req, res, next) => {
+  try {
+    const { event_type, pupil_id, secondary_pupil_id, minute, value, details, notes } = req.body
+    if (!event_type) return res.status(400).json({ error: 'event_type is required' })
+    const result = await pool.query(
+      `INSERT INTO match_events (match_id, event_type, pupil_id, secondary_pupil_id, minute, value, details, notes)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING *`,
+      [req.params.id, event_type, pupil_id || null, secondary_pupil_id || null, minute || null, value || 1, details ? JSON.stringify(details) : '{}', notes || null]
+    )
+    res.status(201).json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// DELETE /matches/:id/events/:eventId - remove a match event
+router.delete('/:id/events/:eventId', authenticateToken, async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM match_events WHERE id = $1 AND match_id = $2', [req.params.eventId, req.params.id])
+    res.json({ message: 'Event removed' })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============== PUPIL MATCH STATS ==============
+
+// GET /matches/:id/pupil-stats - get all pupil stats for a match
+router.get('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
+  try {
+    const result = await pool.query(
+      `SELECT mps.*, p.name AS pupil_name, p.squad_number
+       FROM match_pupil_stats mps
+       JOIN pupils p ON mps.pupil_id = p.id
+       WHERE mps.match_id = $1
+       ORDER BY p.squad_number NULLS LAST, p.name`,
+      [req.params.id]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// PUT /matches/:id/pupil-stats/:pupilId - upsert stats for a pupil in a match
+router.put('/:id/pupil-stats/:pupilId', authenticateToken, async (req, res, next) => {
+  try {
+    const { stats, rating, notes } = req.body
+    const result = await pool.query(
+      `INSERT INTO match_pupil_stats (match_id, pupil_id, stats, rating, notes)
+       VALUES ($1, $2, $3, $4, $5)
+       ON CONFLICT (match_id, pupil_id)
+       DO UPDATE SET stats = $3, rating = $4, notes = $5, updated_at = NOW()
+       RETURNING *`,
+      [req.params.id, req.params.pupilId, JSON.stringify(stats || {}), rating || null, notes || null]
+    )
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// PUT /matches/:id/pupil-stats - bulk upsert stats for all pupils in a match
+router.put('/:id/pupil-stats', authenticateToken, async (req, res, next) => {
+  try {
+    const { entries } = req.body
+    if (!Array.isArray(entries)) return res.status(400).json({ error: 'entries array required' })
+    const results = []
+    for (const entry of entries) {
+      const { pupil_id, stats, rating, notes } = entry
+      if (!pupil_id) continue
+      const r = await pool.query(
+        `INSERT INTO match_pupil_stats (match_id, pupil_id, stats, rating, notes)
+         VALUES ($1, $2, $3, $4, $5)
+         ON CONFLICT (match_id, pupil_id)
+         DO UPDATE SET stats = $3, rating = $4, notes = $5, updated_at = NOW()
+         RETURNING *`,
+        [req.params.id, pupil_id, JSON.stringify(stats || {}), rating || null, notes || null]
+      )
+      results.push(r.rows[0])
+    }
+    res.json(results)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// GET /matches/pupil/:pupilId/season-stats - aggregate stats across all matches
+router.get('/pupil/:pupilId/season-stats', authenticateToken, async (req, res, next) => {
+  try {
+    const { pupilId } = req.params
+    const { team_id } = req.query
+
+    const teamFilter = team_id ? 'AND m.team_id = $2' : ''
+    const params = team_id ? [pupilId, team_id] : [pupilId]
+
+    const appearances = await pool.query(
+      `SELECT COUNT(DISTINCT ms.match_id) AS total,
+              COUNT(DISTINCT CASE WHEN ms.is_starting THEN ms.match_id END) AS starts,
+              COUNT(DISTINCT CASE WHEN NOT ms.is_starting THEN ms.match_id END) AS sub_appearances
+       FROM match_squads ms
+       JOIN matches m ON ms.match_id = m.id
+       WHERE ms.pupil_id = $1 ${teamFilter}`,
+      params
+    )
+
+    const events = await pool.query(
+      `SELECT me.event_type, COUNT(*) AS count, SUM(me.value) AS total_value
+       FROM match_events me
+       JOIN matches m ON me.match_id = m.id
+       WHERE me.pupil_id = $1 ${teamFilter}
+       GROUP BY me.event_type`,
+      params
+    )
+
+    const secondaryEvents = await pool.query(
+      `SELECT me.event_type, COUNT(*) AS count
+       FROM match_events me
+       JOIN matches m ON me.match_id = m.id
+       WHERE me.secondary_pupil_id = $1 ${teamFilter}
+       GROUP BY me.event_type`,
+      params
+    )
+
+    const ratings = await pool.query(
+      `SELECT AVG(mps.rating) AS avg_rating, COUNT(mps.rating) AS rated_matches
+       FROM match_pupil_stats mps
+       JOIN matches m ON mps.match_id = m.id
+       WHERE mps.pupil_id = $1 AND mps.rating IS NOT NULL ${teamFilter}`,
+      params
+    )
+
+    const legacyGoals = await pool.query(
+      `SELECT COUNT(*) AS goals FROM match_goals WHERE scorer_pupil_id = $1`, [pupilId]
+    )
+    const legacyAssists = await pool.query(
+      `SELECT COUNT(*) AS assists FROM match_goals WHERE assist_pupil_id = $1`, [pupilId]
+    )
+
+    res.json({
+      appearances: appearances.rows[0],
+      events: events.rows,
+      secondaryEvents: secondaryEvents.rows,
+      avgRating: ratings.rows[0]?.avg_rating ? parseFloat(ratings.rows[0].avg_rating).toFixed(1) : null,
+      ratedMatches: parseInt(ratings.rows[0]?.rated_matches || 0),
+      legacy: {
+        goals: parseInt(legacyGoals.rows[0]?.goals || 0),
+        assists: parseInt(legacyAssists.rows[0]?.assists || 0),
+      },
+    })
   } catch (error) {
     next(error)
   }
@@ -1076,7 +1340,7 @@ router.post('/:id/pupil-of-match', authenticateToken, async (req, res, next) => 
       } catch {}
     }
 
-    const matchInfo = `${match.is_home ? 'vs' : '@'} ${match.opponent}`
+    const matchInfo = `${match.home_away === 'home' ? 'vs' : '@'} ${match.opponent}`
 
     // Batch lookup all parent users in one query instead of N+1
     if (parentContacts.length > 0) {
@@ -1415,7 +1679,7 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
     )
 
     // Send emails BEFORE committing DB changes so a failure can be rolled back
-    const matchInfo = `${match.is_home ? 'vs' : '@'} ${match.opponent}`
+    const matchInfo = `${match.home_away === 'home' ? 'vs' : '@'} ${match.opponent}`
     const matchDate = new Date(match.date).toLocaleDateString('en-GB', {
       weekday: 'long',
       day: 'numeric',
@@ -1555,7 +1819,7 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
     const teamName = teamResult.rows[0]?.name || 'Your Team'
     const teamTz = teamResult.rows[0]?.timezone || 'Europe/London'
 
-    // Get pupils — optionally filter to only those who haven't responded
+    // Get pupils - optionally filter to only those who haven't responded
     const playersResult = await pool.query(
       `SELECT p.*, u.id as user_id, u.email as user_email
        FROM pupils p
@@ -1590,7 +1854,7 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
     }
 
     // Build email context
-    const matchInfo = `${match.is_home ? 'vs' : '@'} ${match.opponent}`
+    const matchInfo = `${match.home_away === 'home' ? 'vs' : '@'} ${match.opponent}`
     const matchDate = new Date(match.date).toLocaleDateString('en-GB', {
       weekday: 'long',
       day: 'numeric',

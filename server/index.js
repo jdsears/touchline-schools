@@ -30,7 +30,7 @@ import announcementRoutes from './routes/announcements.js'
 import suggestionRoutes from './routes/suggestions.js'
 import tusUploadRoutes from './routes/tusUpload.js'
 import adminRoutes from './routes/admin.js'
-import blogRoutes from './routes/blog.js'
+
 import supportRoutes from './routes/support.js'
 import streamingRoutes from './routes/streaming.js'
 import schoolRoutes from './routes/schools.js'
@@ -43,19 +43,51 @@ import knowledgeBaseRoutes from './routes/knowledgeBase.js'
 import seasonDevelopmentRoutes from './routes/seasonDevelopment.js'
 import videoLibraryRoutes from './routes/videoLibrary.js'
 import teachingGroupRoutes from './routes/teachingGroups.js'
+import lessonRoutes from './routes/lessons.js'
 import assessmentRoutes from './routes/assessments.js'
 import sportKnowledgeBaseRoutes from './routes/sportKnowledgeBase.js'
 import hodRoutes from './routes/headOfDepartment.js'
+import teacherDashboardRoutes from './routes/teacherDashboard.js'
+import calendarExportRoutes from './routes/calendarExport.js'
 import onboardingRoutes from './routes/onboarding.js'
 import pupilManagementRoutes from './routes/pupilManagement.js'
+import pupilProfileRoutes from './routes/pupilProfile.js'
 import reportingRoutes from './routes/reporting.js'
 import enterpriseBillingRoutes from './routes/enterpriseBilling.js'
 import voiceObservationRoutes from './routes/voiceObservations.js'
 import voiceSafeguardingRoutes from './routes/voiceSafeguarding.js'
+import gdprRoutes from './routes/gdpr.js'
+import ssoRoutes from './routes/sso.js'
+import demoRequestRoutes from './routes/demoRequests.js'
+import schoolSettingsRoutes from './routes/schoolSettings.js'
+import venueRoutes from './routes/venues.js'
+import fixtureTravelRoutes from './routes/fixtureTravel.js'
+import consentRoutes from './routes/consent.js'
+import publicFixtureRoutes from './routes/publicFixtures.js'
+import misRoutes from './routes/misIntegration.js'
+import concussionRoutes from './routes/concussion.js'
+
+// Demo seed
+import { seedSchool } from './db/demo-seed/school.js'
+import { seedStaff } from './db/demo-seed/staff.js'
+import { seedPupils } from './db/demo-seed/pupils.js'
+import { seedTeams } from './db/demo-seed/teams.js'
+import { seedCurriculum } from './db/demo-seed/curriculum.js'
+import { seedLessons } from './db/demo-seed/lessons.js'
+import { seedAssessments } from './db/demo-seed/assessments.js'
+import { seedReports } from './db/demo-seed/reports.js'
+import { seedFixtures } from './db/demo-seed/fixtures.js'
+import { seedFixturesExtra } from './db/demo-seed/fixturesExtra.js'
+import { seedSafeguarding } from './db/demo-seed/safeguarding.js'
+import { seedAuditLog } from './db/demo-seed/auditLog.js'
+import { seedTestPersonas } from './db/demo-seed/test-personas.js'
 
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
 import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
+import { scheduleDemoReset } from './cron/demoReset.js'
+
+import bcrypt from 'bcryptjs'
 
 // Middleware
 import { errorHandler } from './middleware/errorHandler.js'
@@ -73,11 +105,11 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const PORT = process.env.PORT || 3001
 
-// Canonical domain redirect: non-canonical hosts -> schools.touchline.xyz
+// Canonical domain redirect: non-canonical hosts -> app.moonbootssports.com
 // Handles: railway.app preview domain, www subdomain, any other alias.
 // HTTP -> HTTPS is handled by Railway's edge proxy, but if a request
 // somehow arrives as HTTP, the redirect below covers it too.
-const CANONICAL_HOST = 'schools.touchline.xyz'
+const CANONICAL_HOST = process.env.CANONICAL_HOST || 'app.moonbootssports.com'
 app.use((req, res, next) => {
   const host = (req.headers['x-forwarded-host'] || req.headers.host || '').replace(/:\d+$/, '')
   if (host && host !== CANONICAL_HOST) {
@@ -92,7 +124,7 @@ app.use((req, res, next) => {
 app.use(helmet({
   contentSecurityPolicy: false, // CSP can break inline scripts; enable and configure when ready
   crossOriginEmbedderPolicy: false, // Required for Mux video embeds
-  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow frontend (touchline.xyz) to load images/assets from Railway
+  crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow frontend (moonbootssports.com) to load images/assets from Railway
 }))
 
 // CORS configuration
@@ -124,7 +156,7 @@ app.use((req, res, next) => {
 })
 app.use(express.urlencoded({ extended: true }))
 
-// Serve uploaded files — public assets (logos, team assets) are open,
+// Serve uploaded files - public assets (logos, team assets) are open,
 // but club documents (registrations, compliance) require authentication
 app.use('/uploads/logos', express.static(path.join(__dirname, 'uploads/logos')))
 app.use('/uploads/videos', express.static(path.join(__dirname, 'uploads/videos')))
@@ -196,7 +228,7 @@ app.use('/api/announcements', announcementRoutes)
 app.use('/api/suggestions', suggestionRoutes)
 app.use('/api/uploads/video', tusUploadRoutes)
 app.use('/api/admin', adminRoutes)
-app.use('/api/blog', blogRoutes)
+// Blog routes removed in v1.5
 app.use('/api/support', supportRoutes)
 app.use('/api/streaming', streamingRoutes)
 app.use('/api/schools', schoolRoutes)
@@ -209,15 +241,29 @@ app.use('/api/knowledge-base', knowledgeBaseRoutes)
 app.use('/api/teams', seasonDevelopmentRoutes)
 app.use('/api/video-library', videoLibraryRoutes)
 app.use('/api/teaching-groups', teachingGroupRoutes)
+app.use('/api/lessons', lessonRoutes)
 app.use('/api/assessments', assessmentRoutes)
 app.use('/api/sport-knowledge', sportKnowledgeBaseRoutes)
 app.use('/api/hod', hodRoutes)
+app.use('/api/teacher-dashboard', teacherDashboardRoutes)
+app.use('/api/calendar', calendarExportRoutes)
 app.use('/api/onboarding', onboardingRoutes)
 app.use('/api/pupil-management', pupilManagementRoutes)
+app.use('/api/pupil-profile', pupilProfileRoutes)
 app.use('/api/reporting', reportingRoutes)
 app.use('/api/enterprise-billing', enterpriseBillingRoutes)
 app.use('/api/voice-observations', voiceObservationRoutes)
 app.use('/api/voice-safeguarding', voiceSafeguardingRoutes)
+app.use('/api/gdpr', gdprRoutes)
+app.use('/api/sso', ssoRoutes)
+app.use('/api/demo-requests', demoRequestRoutes)
+app.use('/api/settings', schoolSettingsRoutes)
+app.use('/api/venues', venueRoutes)
+app.use('/api/fixture-travel', fixtureTravelRoutes)
+app.use('/api/consent', consentRoutes)
+app.use('/api/public/sport', publicFixtureRoutes)
+app.use('/api/mis', misRoutes)
+app.use('/api/concussion', concussionRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -276,79 +322,259 @@ app.get('/api/feature-screenshots', async (req, res) => {
   }
 })
 
-// Health check
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+// Health check (verifies DB connectivity)
+app.get('/api/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1')
+    res.json({ status: 'ok', db: 'connected', timestamp: new Date().toISOString() })
+  } catch {
+    res.status(503).json({ status: 'unhealthy', db: 'disconnected', timestamp: new Date().toISOString() })
+  }
 })
 
-// Sitemap - dynamic, pulls blog posts from DB
+// Diagnostic endpoint to verify env vars are visible at runtime (no secrets exposed)
+app.get('/api/debug-env', (req, res) => {
+  const show = (name) => {
+    const v = process.env[name]
+    if (!v) return { set: false }
+    return { set: true, length: v.length, prefix: v.slice(0, 8) }
+  }
+  res.json({
+    ANTHROPIC_API_KEY: show('ANTHROPIC_API_KEY'),
+    ASSEMBLYAI_API_KEY: show('ASSEMBLYAI_API_KEY'),
+    OPENAI_API_KEY: show('OPENAI_API_KEY'),
+    DATABASE_URL: { set: !!process.env.DATABASE_URL },
+    JWT_SECRET: { set: !!process.env.JWT_SECRET },
+    NODE_ENV: process.env.NODE_ENV || 'not set',
+  })
+})
+
+// Debug endpoint - shows DB state to diagnose demo seed issues
+app.get('/api/debug-db', async (req, res) => {
+  try {
+    const tables = await pool.query(`SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' ORDER BY table_name`)
+    const checks = {}
+    const tableNames = tables.rows.map(r => r.table_name)
+
+    // Check key tables
+    for (const t of ['schools', 'clubs', 'users', 'school_members', 'club_members', 'teams', 'team_memberships', 'pupils', 'players', 'teaching_groups', 'matches']) {
+      checks[t] = tableNames.includes(t) ? 'exists' : 'missing'
+    }
+
+    // Schools detail
+    if (tableNames.includes('schools')) {
+      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'schools'`)
+      checks.schools_cols = cols.rows.map(r => r.column_name).sort()
+      const demo = await pool.query(`SELECT id, name, slug FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+      checks.demo_school = demo.rows[0] || 'NOT FOUND'
+    }
+
+    // Users detail
+    if (tableNames.includes('users')) {
+      const cols = await pool.query(`SELECT column_name FROM information_schema.columns WHERE table_name = 'users'`)
+      checks.users_cols = cols.rows.map(r => r.column_name).sort()
+      const admins = await pool.query(`SELECT name, email, is_admin, team_id, has_completed_onboarding FROM users WHERE is_admin = true`)
+      checks.admins = admins.rows
+      const total = await pool.query('SELECT COUNT(*) FROM users')
+      checks.users_total = parseInt(total.rows[0].count)
+      // Check school_members for admins
+      const adminSchoolLinks = await pool.query(`SELECT sm.user_id, sm.school_id, sm.role, sm.school_role FROM school_members sm JOIN users u ON u.id = sm.user_id WHERE u.is_admin = true`)
+      checks.admin_school_links = adminSchoolLinks.rows
+      // Check team_memberships for admins
+      const adminTeamLinks = await pool.query(`SELECT tm.user_id, tm.team_id, tm.role FROM team_memberships tm JOIN users u ON u.id = tm.user_id WHERE u.is_admin = true`)
+      checks.admin_team_links = adminTeamLinks.rows
+      // Check teams count for demo school
+      const demoTeams = await pool.query(`SELECT id, name, school_id, sport FROM teams WHERE school_id = $1`, [checks.demo_school?.id || '00000000-0000-0000-0000-000000000000'])
+      checks.demo_teams = demoTeams.rows.length > 0 ? demoTeams.rows.map(t => ({ id: t.id, name: t.name, sport: t.sport })) : 'NO TEAMS FOUND for school'
+    }
+
+    // Test the actual /teams/mine query for the first admin
+    if (checks.admins?.[0]?.team_id) {
+      const adminId = checks.admins.find(a => a.email === 'js@moonbootsconsultancy.net')
+      if (adminId) {
+        try {
+          const teamsTest = await pool.query(
+            `SELECT t.id, t.name, t.sport FROM teams t
+             LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+             WHERE tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')`,
+            [adminId.team_id] // using team_id as a proxy - need actual user id
+          )
+          checks.teams_query_test = teamsTest.rows
+        } catch (e) {
+          checks.teams_query_error = e.message
+        }
+        // Get actual user ID
+        try {
+          const uid = await pool.query(`SELECT id FROM users WHERE email = 'js@moonbootsconsultancy.net'`)
+          if (uid.rows.length > 0) {
+            const userId = uid.rows[0].id
+            checks.admin_user_id = userId
+            const teamsTest2 = await pool.query(
+              `SELECT t.id, t.name, t.sport, tm.role FROM teams t
+               JOIN team_memberships tm ON tm.team_id = t.id
+               WHERE tm.user_id = $1`,
+              [userId]
+            )
+            checks.admin_teams_direct = teamsTest2.rows
+            // Test the full /teams/mine query
+            try {
+              const fullTest = await pool.query(
+                `SELECT DISTINCT t.id, t.name, t.sport
+                 FROM teams t
+                 LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+                 WHERE t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))`,
+                [userId]
+              )
+              checks.full_teams_query = fullTest.rows
+            } catch (e) {
+              checks.full_teams_query_error = e.message
+            }
+          }
+        } catch (e) { checks.user_lookup_error = e.message }
+      }
+    }
+
+    res.json({ tables: tableNames, checks })
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// Manual seed trigger - shows errors in response so we can debug
+app.get('/api/trigger-seed', async (req, res) => {
+  const log = []
+  try {
+    log.push('Running prerequisites...')
+    await ensureDemoPrerequisites()
+    log.push('Prerequisites done')
+
+    // Comprehensive cleanup of demo data (delete all FK-dependent records before users)
+    const demoUserIds = `(SELECT id FROM users WHERE is_demo_user = true)`
+    await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
+    const cleanupTables = [
+      `DELETE FROM pupils WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM team_memberships WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM school_members WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM safeguarding_incidents WHERE reported_by IN ${demoUserIds}`,
+      `DELETE FROM audit_log WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM observations WHERE observer_id IN ${demoUserIds}`,
+      `DELETE FROM training_sessions WHERE coach_id IN ${demoUserIds}`,
+      `DELETE FROM matches WHERE created_by IN ${demoUserIds}`,
+      `DELETE FROM invites WHERE invited_by IN ${demoUserIds}`,
+      `DELETE FROM notifications WHERE user_id IN ${demoUserIds}`,
+      `DELETE FROM messages WHERE user_id IN ${demoUserIds}`,
+    ]
+    for (const sql of cleanupTables) {
+      try { await pool.query(sql) } catch (e) { /* table/column may not exist */ }
+    }
+    await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
+    log.push('Cleared old school and demo users')
+
+    const school = await seedSchool()
+    log.push(`School created: ${school.id}`)
+
+    const staff = await seedStaff(school.id)
+    log.push(`Staff created: ${Object.keys(staff).join(', ')}`)
+
+    const pupils = await seedPupils(school.id)
+    log.push(`Pupils created: ${pupils.length}`)
+
+    const teams = await seedTeams(school.id, staff, pupils)
+    log.push(`Teams created: ${teams.length}`)
+
+    try { await seedCurriculum(school.id, staff, pupils); log.push('Curriculum done') } catch (e) { log.push(`Curriculum FAILED: ${e.message}`) }
+    try { await seedLessons(school.id, staff); log.push('Lessons done') } catch (e) { log.push(`Lessons FAILED: ${e.message}`) }
+    try { await seedAssessments(school.id); log.push('Assessments done') } catch (e) { log.push(`Assessments FAILED: ${e.message}`) }
+    try { await seedReports(school.id); log.push('Reports done') } catch (e) { log.push(`Reports FAILED: ${e.message}`) }
+    try { await seedFixtures(school.id, teams, staff, pupils); log.push('Fixtures done') } catch (e) { log.push(`Fixtures FAILED: ${e.message}`) }
+    try { await seedFixturesExtra(school.id); log.push('Extra fixtures done') } catch (e) { log.push(`Extra fixtures FAILED: ${e.message}`) }
+    try { await seedSafeguarding(school.id, staff); log.push('Safeguarding done') } catch (e) { log.push(`Safeguarding FAILED: ${e.message}`) }
+    try { await seedAuditLog(school.id, staff); log.push('AuditLog done') } catch (e) { log.push(`AuditLog FAILED: ${e.message}`) }
+
+    // Link admins
+    await seedAdminUsersAndLink()
+    log.push('Admin users linked')
+
+    // Fix pupils with missing team_id
+    await fixPupilTeamIds()
+    log.push('Pupil team_id fix done')
+
+    // Seed test personas
+    try {
+      const personas = await seedTestPersonas(school.id)
+      log.push(`Test personas: Jamie=${personas.jamie?.pupilId}, Amelia=${personas.amelia?.pupilId}, Toby=${personas.toby?.pupilId}`)
+    } catch (e) { log.push(`Test personas FAILED: ${e.message}`) }
+
+    res.json({ success: true, log })
+  } catch (err) {
+    log.push(`FATAL: ${err.message}`)
+    log.push(err.stack?.split('\n').slice(0, 3).join('\n'))
+    res.status(500).json({ success: false, log })
+  }
+})
+
+// Test personas seed trigger (idempotent - safe to call multiple times)
+app.get('/api/trigger-seed-personas', async (req, res) => {
+  const log = []
+  try {
+    await ensureDemoPrerequisites()
+    log.push('Prerequisites done')
+
+    const schoolRow = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+    if (schoolRow.rows.length === 0) {
+      return res.status(400).json({ success: false, log: ['Demo school not found - run /api/trigger-seed first'] })
+    }
+    const schoolId = schoolRow.rows[0].id
+    log.push(`School: ${schoolId}`)
+
+    const result = await seedTestPersonas(schoolId)
+    log.push(`Jamie: ${result.jamie?.id}`)
+    log.push(`Amelia: ${result.amelia?.id}`)
+    log.push(`Toby: ${result.toby?.id}`)
+
+    res.json({ success: true, log })
+  } catch (err) {
+    log.push(`FATAL: ${err.message}`)
+    log.push(err.stack?.split('\n').slice(0, 3).join('\n'))
+    res.status(500).json({ success: false, log })
+  }
+})
+
+// Sitemap
 app.get('/sitemap.xml', async (req, res) => {
   try {
     const today = new Date().toISOString().split('T')[0]
+    const SITE_URL = process.env.FRONTEND_URL || 'https://app.moonbootssports.com'
 
-    // Static pages with priorities
-    const staticPages = [
+    const pages = [
       { loc: '/', changefreq: 'weekly', priority: '1.0' },
-      { loc: '/login', changefreq: 'monthly', priority: '0.8' },
-      { loc: '/blog', changefreq: 'weekly', priority: '0.8' },
+      { loc: '/about', changefreq: 'monthly', priority: '0.8' },
+      { loc: '/request-demo', changefreq: 'monthly', priority: '0.8' },
       { loc: '/terms', changefreq: 'monthly', priority: '0.5' },
+      { loc: '/login', changefreq: 'monthly', priority: '0.5' },
     ]
 
-  // All feature pages
-  const featurePages = [
-    'session-planner', 'player-development', 'video-analysis',
-    'tactical-advisor', 'tactics-board', 'match-prep',
-    'live-streaming', 'safeguarding', 'ai-intelligence',
-  ].map(slug => ({
-    loc: `/features/${slug}`, changefreq: 'monthly', priority: '0.8',
-  }))
-
-  // Fetch published blog posts from database
-  let blogPages = []
-  try {
-    const result = await pool.query(
-      `SELECT slug, updated_at, published_at FROM blog_posts
-       WHERE status = 'published' ORDER BY published_at DESC`
-    )
-    blogPages = result.rows.map(post => ({
-      loc: `/blog/${post.slug}`,
-      lastmod: (post.updated_at || post.published_at || new Date()).toISOString().split('T')[0],
-      changefreq: 'monthly',
-      priority: '0.7',
-    }))
-  } catch (err) {
-    console.error('Sitemap: failed to fetch blog posts', err.message)
-  }
-
-  const allPages = [
-    ...staticPages.map(p => ({ ...p, lastmod: today })),
-    ...featurePages.map(p => ({ ...p, lastmod: today })),
-    ...blogPages,
-  ]
-
-  const urls = allPages.map(p => `  <url>
-    <loc>https://schools.touchline.xyz${p.loc}</loc>
-    <lastmod>${p.lastmod}</lastmod>
+    const urls = pages.map(p => `  <url>
+    <loc>${SITE_URL}${p.loc}</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>${p.changefreq}</changefreq>
     <priority>${p.priority}</priority>
   </url>`).join('\n')
 
-  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls}
 </urlset>`
 
-  res.set('Content-Type', 'text/xml; charset=utf-8')
-  res.set('Cache-Control', 'public, max-age=3600')
-  res.send(sitemap)
+    res.set('Content-Type', 'text/xml; charset=utf-8')
+    res.set('Cache-Control', 'public, max-age=3600')
+    res.send(sitemap)
   } catch (err) {
-    // Always return valid XML even on error — Googlebot can't parse error JSON
     console.error('Sitemap generation error:', err.message)
     const fallback = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://schools.touchline.xyz/</loc></url>
-  <url><loc>https://schools.touchline.xyz/pricing</loc></url>
-  <url><loc>https://schools.touchline.xyz/blog</loc></url>
+  <url><loc>https://app.moonbootssports.com/</loc></url>
+  <url><loc>https://app.moonbootssports.com/about</loc></url>
 </urlset>`
     res.set('Content-Type', 'text/xml; charset=utf-8')
     res.status(200).send(fallback)
@@ -357,16 +583,15 @@ ${urls}
 
 // Robots.txt - dynamic
 app.get('/robots.txt', (req, res) => {
-  const robotsTxt = `# Touchline for Schools - Robots.txt
-# https://schools.touchline.xyz
+  const robotsTxt = `# MoonBoots Sports - Robots.txt
+# https://app.moonbootssports.com
 
 User-agent: *
 Allow: /
-Allow: /login
-Allow: /blog
+Allow: /about
+Allow: /request-demo
 Allow: /terms
-Allow: /features/
-Allow: /watch/
+Allow: /login
 
 # Disallow authenticated app routes
 Disallow: /admin
@@ -388,7 +613,7 @@ Disallow: /club/
 Disallow: /api/
 
 # Sitemap
-Sitemap: https://schools.touchline.xyz/sitemap.xml
+Sitemap: https://app.moonbootssports.com/sitemap.xml
 `
 
   res.set('Content-Type', 'text/plain; charset=utf-8')
@@ -419,6 +644,299 @@ if (process.env.NODE_ENV === 'production') {
 // Error handler
 app.use(errorHandler)
 
+// Ensure critical tables/columns exist for demo seed (migration may have failed partway)
+async function ensureDemoPrerequisites() {
+  const stmts = [
+    // Rename clubs -> schools if needed
+    `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'schools') THEN IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'clubs') THEN ALTER TABLE clubs RENAME TO schools; END IF; END IF; END $$`,
+    // Rename club_members -> school_members if needed
+    `DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'school_members') THEN IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_members') THEN ALTER TABLE club_members RENAME TO school_members; END IF; END IF; END $$`,
+  ]
+  // Rename club_id -> school_id in all tables that still have the old column name
+  const clubIdTables = ['school_members', 'teams', 'school_announcements', 'school_comms_log', 'compliance_records', 'safeguarding_roles', 'safeguarding_incidents', 'compliance_alerts', 'school_events', 'event_registrations', 'session_schedule', 'match_reports', 'ai_insights', 'ai_usage', 'grant_drafts', 'teaching_groups', 'pupils']
+  for (const t of clubIdTables) {
+    stmts.push(`DO $$ BEGIN IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${t}' AND column_name = 'club_id') THEN ALTER TABLE ${t} RENAME COLUMN club_id TO school_id; END IF; END $$`)
+  }
+  // Add missing columns on schools (if table exists)
+  const schoolCols = ['school_type TEXT', 'urn TEXT', 'voice_observations_enabled BOOLEAN DEFAULT false', 'audio_retention_days INTEGER DEFAULT 7', 'transcript_retention_days INTEGER DEFAULT 30', 'is_demo_tenant BOOLEAN DEFAULT false']
+  for (const col of schoolCols) stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS ${col}`)
+  // Add missing columns on school_members (if table exists)
+  const smCols = ['school_role TEXT', 'can_view_all_classes BOOLEAN DEFAULT false', 'can_view_all_teams BOOLEAN DEFAULT false', 'can_manage_curriculum BOOLEAN DEFAULT false', 'can_view_reports BOOLEAN DEFAULT false', 'can_manage_safeguarding BOOLEAN DEFAULT false']
+  for (const col of smCols) stmts.push(`ALTER TABLE school_members ADD COLUMN IF NOT EXISTS ${col}`)
+  // Add missing columns on teams
+  stmts.push(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS school_id UUID`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS sport TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS gender TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS season_type TEXT`, `ALTER TABLE teams ADD COLUMN IF NOT EXISTS owner_id UUID`)
+  // Ensure pupils has team_id column (needed by team queries)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS team_id UUID`)
+  // Ensure team_memberships exists
+  stmts.push(`CREATE TABLE IF NOT EXISTS team_memberships (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), team_id UUID REFERENCES teams(id) ON DELETE CASCADE, user_id UUID REFERENCES users(id) ON DELETE CASCADE, pupil_id UUID, role TEXT DEFAULT 'player', is_primary BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(user_id, team_id))`)
+  // Ensure pupils table exists (may still be named players)
+  stmts.push(`DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupils') THEN IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'players') THEN ALTER TABLE players RENAME TO pupils; ELSE CREATE TABLE pupils (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name TEXT NOT NULL, school_id UUID, year_group INTEGER, house TEXT, date_of_birth DATE, is_active BOOLEAN DEFAULT true, user_id UUID, created_at TIMESTAMPTZ DEFAULT NOW()); END IF; END IF; END $$`)
+  // Add missing columns on pupils
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS year_group INTEGER`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS house TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT true`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS user_id UUID`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS school_id UUID`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS first_name TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS last_name TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS protected_from_reset BOOLEAN DEFAULT false`)
+  stmts.push(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS gcse_pe_candidate BOOLEAN NOT NULL DEFAULT FALSE`)
+  // v1.7 test persona columns
+  stmts.push(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_test_persona BOOLEAN DEFAULT false`)
+  stmts.push(`ALTER TABLE users ADD COLUMN IF NOT EXISTS protected_from_reset BOOLEAN DEFAULT false`)
+  // Add missing columns on teaching_groups
+  stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS group_identifier TEXT`)
+  stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS academic_year TEXT`)
+  stmts.push(`ALTER TABLE teaching_groups ADD COLUMN IF NOT EXISTS key_stage TEXT DEFAULT 'KS3'`)
+  // Add 'date' column to matches (many queries use m.date, table has match_date)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS date DATE`)
+  stmts.push(`UPDATE matches SET date = match_date WHERE date IS NULL AND match_date IS NOT NULL`)
+  // v1.6 school profile columns
+  const schoolProfileCols = ['school_type TEXT', 'urn TEXT', 'head_teacher_name TEXT', 'head_teacher_email TEXT', 'safeguarding_lead_name TEXT', 'safeguarding_lead_email TEXT', 'dpo_name TEXT', 'dpo_email TEXT', 'accent_color TEXT']
+  for (const col of schoolProfileCols) stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS ${col}`)
+  // Add missing columns on observations
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT`)
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT`)
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS sport TEXT`)
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS teaching_group_id UUID`)
+  stmts.push(`ALTER TABLE observations ADD COLUMN IF NOT EXISTS visible_to_pupil BOOLEAN NOT NULL DEFAULT FALSE`)
+  // Add missing columns on reporting_windows
+  stmts.push(`ALTER TABLE reporting_windows ADD COLUMN IF NOT EXISTS year_groups TEXT`)
+  // Add missing columns on pupil_assessments and pupil_reports
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS assessed_by UUID`)
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS unit_id UUID`)
+  // Rename sport_unit_id to unit_id if it exists (schema fix)
+  stmts.push(`DO $$ BEGIN IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pupil_assessments' AND column_name = 'sport_unit_id') AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'pupil_assessments' AND column_name = 'unit_id') THEN ALTER TABLE pupil_assessments RENAME COLUMN sport_unit_id TO unit_id; END IF; END $$`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS unit_id UUID`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS sport TEXT`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS attainment_grade TEXT`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teacher_comment TEXT`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS generated_by UUID`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teaching_group_id UUID`)
+  stmts.push(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teacher_id UUID`)
+  // assessment_criteria: seed uses 'criterion' and 'key_stage' columns
+  stmts.push(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS criterion TEXT`)
+  stmts.push(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS key_stage TEXT`)
+  // pupil_assessments: seed uses 'criteria_id' and 'assessment_type' and 'teacher_notes'
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS criteria_id UUID`)
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS assessment_type TEXT DEFAULT 'formative'`)
+  stmts.push(`ALTER TABLE pupil_assessments ADD COLUMN IF NOT EXISTS teacher_notes TEXT`)
+  // Create all tables the demo seed needs (Phases 8-12 of migration that may not have run)
+  const createTables = [
+    `CREATE TABLE IF NOT EXISTS teacher_sports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, sport TEXT NOT NULL, role TEXT DEFAULT 'coach', created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teacher_id, sport))`,
+    `CREATE TABLE IF NOT EXISTS audit_log (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, user_id UUID, action TEXT NOT NULL, entity_type TEXT, entity_id UUID, details JSONB, ip_address TEXT, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS teaching_groups (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, year_group INTEGER, group_identifier TEXT, teacher_id UUID, academic_year TEXT, key_stage TEXT DEFAULT 'KS3', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS teaching_group_pupils (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, pupil_id UUID, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(teaching_group_id, pupil_id))`,
+    `CREATE TABLE IF NOT EXISTS sport_units (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, sport TEXT NOT NULL, unit_name TEXT NOT NULL, curriculum_area TEXT, start_date DATE, end_date DATE, term TEXT, lesson_count INTEGER, display_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS assessment_scales (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, key_stage TEXT, scale_type TEXT DEFAULT 'descriptive', grades JSONB, is_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS curriculum_strands (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, key_stage TEXT, strand_name TEXT NOT NULL, description TEXT, display_order INTEGER DEFAULT 0, is_system_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS assessment_criteria (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), strand_id UUID, sport TEXT, criterion_name TEXT NOT NULL, description TEXT, display_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS pupil_assessments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID, unit_id UUID, strand_id UUID, criterion_id UUID, grade TEXT, teacher_id UUID, assessed_at TIMESTAMPTZ DEFAULT NOW(), created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS reporting_windows (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, name TEXT NOT NULL, academic_year TEXT, term TEXT, opens_at TIMESTAMPTZ, closes_at TIMESTAMPTZ, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS pupil_reports (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID NOT NULL, reporting_window_id UUID, teaching_group_id UUID, teacher_id UUID, unit_id UUID, overall_grade TEXT, effort_grade TEXT, comment TEXT, ai_draft TEXT, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS lesson_plans (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE CASCADE, sport_unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL, teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE, title TEXT NOT NULL, lesson_date DATE, duration INTEGER DEFAULT 60, learning_objectives TEXT, activities TEXT, equipment TEXT, differentiation TEXT, homework TEXT, status TEXT DEFAULT 'draft', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS data_export_requests (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, pupil_id UUID, request_type TEXT NOT NULL, status TEXT DEFAULT 'pending', created_at TIMESTAMPTZ DEFAULT NOW(), completed_at TIMESTAMPTZ)`,
+    `CREATE TABLE IF NOT EXISTS data_deletion_log (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, pupil_reference TEXT, reason TEXT, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS gdpr_consent_records (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID, pupil_id UUID, consent_type TEXT NOT NULL, granted BOOLEAN DEFAULT false, withdrawn_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    // v1.6 Settings restructure tables
+    `CREATE TABLE IF NOT EXISTS school_sports_configuration (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, sport_key TEXT NOT NULL, active BOOLEAN DEFAULT true, ngb_framework_key TEXT, grading_scale_override_id UUID, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(school_id, sport_key))`,
+    `CREATE TABLE IF NOT EXISTS school_academic_structure (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL UNIQUE, year_groups_offered JSONB DEFAULT '[]', house_system JSONB, term_dates JSONB DEFAULT '[]', assessment_windows JSONB DEFAULT '[]', reporting_windows_config JSONB DEFAULT '[]', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS school_licence (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL UNIQUE, term_start DATE, term_end DATE, seat_count INTEGER DEFAULT 0, sport_count INTEGER DEFAULT 0, commercial_contact_name TEXT, commercial_contact_email TEXT, notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS staff_qualifications (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL, school_id UUID, qualification_type TEXT NOT NULL, qualification_name TEXT NOT NULL, issue_date DATE, expiry_date DATE, reference_number TEXT, document_url TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS knowledge_base_resources (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, uploader_id UUID, title TEXT NOT NULL, file_url TEXT, file_type TEXT, file_size INTEGER, sports JSONB DEFAULT '[]', year_groups JSONB DEFAULT '[]', description TEXT, visibility TEXT DEFAULT 'all', created_at TIMESTAMPTZ DEFAULT NOW(), archived_at TIMESTAMPTZ)`,
+    `CREATE TABLE IF NOT EXISTS reporting_templates (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, template_type TEXT NOT NULL, name TEXT NOT NULL, structure JSONB DEFAULT '{}', tone_guidance TEXT, is_default BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS fixture_defaults (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, sport_key TEXT, age_group TEXT, match_duration_minutes INTEGER, default_home_ground_address TEXT, default_travel_arrangement TEXT, default_kit_config JSONB DEFAULT '{}', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(school_id, sport_key, age_group))`,
+    `CREATE TABLE IF NOT EXISTS notification_preferences (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL UNIQUE, fixture_reminders BOOLEAN DEFAULT true, assessment_deadlines BOOLEAN DEFAULT true, report_due_dates BOOLEAN DEFAULT true, pupil_observations BOOLEAN DEFAULT true, safeguarding_concerns BOOLEAN DEFAULT true, weekly_digest BOOLEAN DEFAULT false, monthly_summary BOOLEAN DEFAULT false, product_updates BOOLEAN DEFAULT false, email_enabled BOOLEAN DEFAULT true, push_enabled BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS user_accessibility (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL UNIQUE, font_size TEXT DEFAULT 'medium', reduced_motion BOOLEAN DEFAULT false, high_contrast BOOLEAN DEFAULT false, screen_reader_optimised BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS venues (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, name TEXT NOT NULL, address TEXT, postcode TEXT, latitude DOUBLE PRECISION, longitude DOUBLE PRECISION, parking_notes TEXT, changing_room_notes TEXT, pitch_layout_notes TEXT, contact_name TEXT, contact_phone TEXT, accessibility_notes TEXT, is_school_venue BOOLEAN DEFAULT false, last_visited_date DATE, archived_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS fixture_travel (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), match_id UUID NOT NULL UNIQUE, transport_mode TEXT NOT NULL DEFAULT 'school_coach', departure_location TEXT, departure_time TIME, return_time TIME, contact_phone TEXT, special_instructions TEXT, coordinator_notes TEXT, parent_lifts_requested BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS travel_assignments (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), match_id UUID NOT NULL, pupil_id UUID NOT NULL, transport_mode TEXT NOT NULL DEFAULT 'team', driver_name TEXT, driver_capacity INTEGER, notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(match_id, pupil_id))`,
+    `CREATE TABLE IF NOT EXISTS mis_integrations (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL UNIQUE, provider TEXT NOT NULL DEFAULT 'isams', api_endpoint TEXT, api_key_encrypted TEXT, sync_frequency TEXT DEFAULT 'nightly', sync_scope TEXT DEFAULT 'pupils_staff', last_sync_at TIMESTAMPTZ, last_sync_status TEXT, last_sync_summary JSONB, consecutive_failures INTEGER DEFAULT 0, is_test_mode BOOLEAN DEFAULT true, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS mis_sync_log (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, status TEXT NOT NULL, summary JSONB, is_dry_run BOOLEAN DEFAULT false, error_message TEXT, started_at TIMESTAMPTZ DEFAULT NOW(), completed_at TIMESTAMPTZ)`,
+    `CREATE TABLE IF NOT EXISTS concussion_incidents (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID NOT NULL, match_id UUID, school_id UUID NOT NULL, occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), reported_by_user_id UUID NOT NULL, severity TEXT DEFAULT 'awaiting_assessment', symptoms_observed JSONB DEFAULT '[]', immediate_action_taken TEXT, doctor_assessment_required BOOLEAN DEFAULT true, parent_notified_at TIMESTAMPTZ, return_to_play_status TEXT DEFAULT 'excluded', return_to_play_protocol_started_at TIMESTAMPTZ, fully_cleared_at TIMESTAMPTZ, notes TEXT, external_platform_id TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS concussion_followups (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), incident_id UUID NOT NULL REFERENCES concussion_incidents(id) ON DELETE CASCADE, stage INTEGER NOT NULL DEFAULT 1, followup_date DATE NOT NULL, completed_at TIMESTAMPTZ, notes TEXT, completed_by_user_id UUID, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS consent_types (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, name TEXT NOT NULL, description TEXT, is_per_term BOOLEAN DEFAULT false, is_per_fixture BOOLEAN DEFAULT false, expiry_period_months INTEGER, requires_text_acknowledgement BOOLEAN DEFAULT true, default_response TEXT DEFAULT 'no_default', display_order INTEGER DEFAULT 0, created_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS pupil_consents (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), pupil_id UUID NOT NULL, consent_type_id UUID NOT NULL REFERENCES consent_types(id) ON DELETE CASCADE, status TEXT NOT NULL DEFAULT 'pending', granted_at TIMESTAMPTZ, granted_by_parent_email TEXT, expires_at TIMESTAMPTZ, parent_signature_text TEXT, consent_text_version TEXT, ip_address TEXT, notes TEXT, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(pupil_id, consent_type_id))`,
+  ]
+  for (const sql of createTables) stmts.push(sql)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS venue_id UUID REFERENCES venues(id) ON DELETE SET NULL`)
+  stmts.push(`CREATE INDEX IF NOT EXISTS idx_venues_school ON venues(school_id)`)
+  stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS public_fixtures_enabled BOOLEAN DEFAULT false`)
+  stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS public_name_format TEXT DEFAULT 'first_initial'`)
+  stmts.push(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_text TEXT`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_status TEXT DEFAULT 'none'`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_approved_by UUID`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_approved_at TIMESTAMPTZ`)
+
+  for (const sql of stmts) {
+    try { await pool.query(sql) } catch (e) { console.warn('[DemoPrereq]', e.message.slice(0, 80)) }
+  }
+}
+
+// Seed demo school if it doesn't exist
+async function ensureDemoSchool() {
+  try {
+    await ensureDemoPrerequisites()
+    const exists = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+    if (exists.rows.length > 0) {
+      // Check if school was fully seeded (has demo users)
+      const demoUsers = await pool.query(`SELECT COUNT(*) FROM users WHERE is_demo_user = true`)
+      if (parseInt(demoUsers.rows[0].count) > 0) {
+        return console.log('[DemoSeed] Demo school fully seeded.')
+      }
+      // School exists but has no demo data - wipe everything and re-seed
+      console.log('[DemoSeed] Demo school exists but is empty, wiping and re-seeding...')
+      const dui = `(SELECT id FROM users WHERE is_demo_user = true)`
+      await pool.query(`DELETE FROM schools WHERE slug = 'ashworth-park-demo'`)
+      for (const sql of [
+        `DELETE FROM pupils WHERE user_id IN ${dui}`,
+        `DELETE FROM team_memberships WHERE user_id IN ${dui}`,
+        `DELETE FROM school_members WHERE user_id IN ${dui}`,
+        `DELETE FROM safeguarding_incidents WHERE reported_by IN ${dui}`,
+        `DELETE FROM audit_log WHERE user_id IN ${dui}`,
+        `DELETE FROM observations WHERE observer_id IN ${dui}`,
+        `DELETE FROM notifications WHERE user_id IN ${dui}`,
+      ]) { try { await pool.query(sql) } catch (e) { /* ok */ } }
+      await pool.query(`DELETE FROM users WHERE is_demo_user = true`)
+    }
+
+    console.log('[DemoSeed] Seeding Ashworth Park Academy...')
+    const school = await seedSchool()
+    console.log('[DemoSeed] School:', school.id)
+    const staff = await seedStaff(school.id)
+    console.log('[DemoSeed] Staff done')
+    const pupils = await seedPupils(school.id)
+    console.log('[DemoSeed] Pupils:', pupils.length)
+    const teams = await seedTeams(school.id, staff, pupils)
+    console.log('[DemoSeed] Teams:', teams.length)
+    await seedCurriculum(school.id, staff, pupils).catch(e => console.error('[DemoSeed] Curriculum:', e.message))
+    await seedLessons(school.id, staff).catch(e => console.error('[DemoSeed] Lessons:', e.message))
+    await seedAssessments(school.id).catch(e => console.error('[DemoSeed] Assessments:', e.message))
+    await seedReports(school.id).catch(e => console.error('[DemoSeed] Reports:', e.message))
+    await seedFixtures(school.id, teams, staff, pupils).catch(e => console.error('[DemoSeed] Fixtures:', e.message))
+    await seedFixturesExtra(school.id).catch(e => console.error('[DemoSeed] Extra fixtures:', e.message))
+    await seedSafeguarding(school.id, staff).catch(e => console.error('[DemoSeed] Safeguarding:', e.message))
+    await seedAuditLog(school.id, staff).catch(e => console.error('[DemoSeed] AuditLog:', e.message))
+    console.log('[DemoSeed] Done.')
+  } catch (err) {
+    console.error('[DemoSeed] FAILED:', err.message)
+  }
+}
+
+// Ensure admin users exist and link to demo school
+// Retroactively fix pupils data gaps for existing records
+async function fixPupilTeamIds() {
+  try {
+    // Fix team_id from team_memberships
+    const teamFix = await pool.query(`
+      UPDATE pupils p
+      SET team_id = tm.team_id
+      FROM team_memberships tm
+      WHERE tm.pupil_id = p.id
+        AND p.team_id IS NULL
+        AND tm.is_primary = true
+    `)
+    if (teamFix.rowCount > 0) {
+      console.log(`[DataFix] Set team_id on ${teamFix.rowCount} pupils from team_memberships`)
+    }
+
+    // Fix first_name / last_name from name (for records created before split was added)
+    const nameFix = await pool.query(`
+      UPDATE pupils
+      SET first_name = split_part(name, ' ', 1),
+          last_name = CASE
+            WHEN position(' ' in name) > 0
+            THEN substring(name from position(' ' in name) + 1)
+            ELSE ''
+          END
+      WHERE name IS NOT NULL
+        AND (first_name IS NULL OR first_name = '')
+    `)
+    if (nameFix.rowCount > 0) {
+      console.log(`[DataFix] Split name into first/last for ${nameFix.rowCount} pupils`)
+    }
+  } catch (err) {
+    console.warn('[DataFix] fixPupilTeamIds:', err.message)
+  }
+}
+
+async function seedAdminUsersAndLink() {
+  const admins = [
+    { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
+    { name: 'Peter Taylor', email: 'petertaylor1983@gmail.com' },
+  ]
+  const pw = 'MoonBoots2026!'
+  for (const a of admins) {
+    try {
+      let userId
+      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [a.email.toLowerCase()])
+      if (exists.rows.length > 0) {
+        userId = exists.rows[0].id
+        if (!exists.rows[0].is_admin) await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [userId])
+      } else {
+        const hash = await bcrypt.hash(pw, 10)
+        const r = await pool.query(`INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true) RETURNING id`, [a.name, a.email.toLowerCase(), hash])
+        userId = r.rows[0].id
+        console.log(`[Admin] Created: ${a.email}`)
+      }
+      // Try to link to demo school
+      try {
+        const school = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
+        if (school.rows.length > 0) {
+          const sid = school.rows[0].id
+          await pool.query(`INSERT INTO school_members (school_id, user_id, role, school_role, can_view_all_classes, can_view_all_teams, can_manage_curriculum, can_view_reports, can_manage_safeguarding, joined_at) VALUES ($1, $2, 'teacher', 'head_of_pe', true, true, true, true, true, NOW()) ON CONFLICT (school_id, user_id) DO NOTHING`, [sid, userId])
+          const allTeams = await pool.query(`SELECT id FROM teams WHERE school_id = $1`, [sid])
+          if (allTeams.rows.length > 0) {
+            // Set primary team_id to first team
+            await pool.query(`UPDATE users SET team_id = $1, has_completed_onboarding = true WHERE id = $2`, [allTeams.rows[0].id, userId])
+            // Add as manager of ALL teams in the school
+            for (const t of allTeams.rows) {
+              await pool.query(`INSERT INTO team_memberships (team_id, user_id, role, is_primary, created_at) VALUES ($1, $2, 'manager', $3, NOW()) ON CONFLICT (user_id, team_id) DO NOTHING`, [t.id, userId, t.id === allTeams.rows[0].id])
+            }
+          }
+        }
+      } catch (linkErr) { console.warn(`[Admin] Link failed for ${a.email}:`, linkErr.message) }
+    } catch (err) { console.error(`[Admin] Failed ${a.email}:`, err.message) }
+  }
+}
+
+// Ensure admin users exist (runs independently of migrations)
+async function seedAdminUsers() {
+  const admins = [
+    { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
+    { name: 'Peter Taylor', email: 'petertaylor1983@gmail.com' },
+  ]
+  const defaultPassword = 'MoonBoots2026!'
+
+  for (const admin of admins) {
+    try {
+      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [admin.email.toLowerCase()])
+      let userId
+      if (exists.rows.length > 0) {
+        userId = exists.rows[0].id
+        if (!exists.rows[0].is_admin) {
+          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [userId])
+          console.log(`[Admin] Promoted ${admin.email} to admin`)
+        }
+      } else {
+        const hash = await bcrypt.hash(defaultPassword, 10)
+        const result = await pool.query(
+          `INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true) RETURNING id`,
+          [admin.name, admin.email.toLowerCase(), hash]
+        )
+        userId = result.rows[0].id
+        console.log(`[Admin] Created admin: ${admin.email}`)
+      }
+
+    } catch (err) {
+      console.error(`[Admin] Failed to seed ${admin.email}:`, err.message)
+    }
+  }
+}
+
 // Run migrations and start server
 runMigrations().then(() => {
   // Create HTTP server with custom timeouts for large video uploads
@@ -435,6 +953,12 @@ runMigrations().then(() => {
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
     console.log(`⏱️  Upload timeout: 30 minutes`)
 
+    // Seed demo school then link admin users (all errors caught internally)
+    ensureDemoSchool()
+      .then(() => seedAdminUsersAndLink())
+      .then(() => fixPupilTeamIds())
+      .catch(err => console.error('[Startup] Seed error:', err))
+
     // Run lifecycle scanners on startup (delayed 30s to let DB settle),
     // then every 24 hours
     const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000
@@ -446,6 +970,9 @@ runMigrations().then(() => {
         purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Scheduled scan error:', err))
       }, TWENTY_FOUR_HOURS)
     }, 30_000)
+
+    // Demo tenant nightly reset (03:00 UK time) - only when DEMO_RESET_ENABLED=true
+    scheduleDemoReset()
   })
 })
 

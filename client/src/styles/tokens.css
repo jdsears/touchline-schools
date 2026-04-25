@@ -1,0 +1,160 @@
+/* Design tokens for Touchline Schools
+ * Light theme is default. Dark theme activates via [data-theme="dark"].
+ * Components consume these via Tailwind utilities (bg-page, text-primary, etc.)
+ * or directly via var(--color-*).
+ */
+
+:root,
+[data-theme="light"] {
+  /* Page backgrounds */
+  --color-bg-page: #FAFAF7;
+  --color-bg-card: #FFFFFF;
+  --color-bg-subtle: #F5F3EC;
+  --color-bg-elevated: #FFFFFF;
+  --color-bg-input: #FFFFFF;
+
+  /* Text */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #6B6B6B;
+  --color-text-tertiary: #A8A8A8;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-link: #0F1E3D;
+  --color-text-link-hover: #1A3057;
+
+  /* Borders */
+  --color-border-strong: #D8D8D4;
+  --color-border-default: #E8E8E4;
+  --color-border-subtle: #F0EDE5;
+  --color-border-focus: #0F1E3D;
+
+  /* Brand */
+  --color-brand-navy: #0F1E3D;
+  --color-brand-navy-hover: #1A3057;
+  --color-brand-gold: #C9A961;
+  --color-brand-gold-deep: #A88A47;
+
+  /* Status */
+  --color-success: #2F7A4A;
+  --color-success-bg: #E8F2EC;
+  --color-warning: #B07B1A;
+  --color-warning-bg: #FBF3E2;
+  --color-error: #A8351F;
+  --color-error-bg: #F7E4DF;
+  --color-info: #2B5078;
+  --color-info-bg: #E1E8F0;
+
+  /* Sport accents */
+  --color-sport-football: #0F1E3D;
+  --color-sport-rugby: #B07B1A;
+  --color-sport-cricket: #2F7A4A;
+  --color-sport-hockey: #2B5078;
+  --color-sport-netball: #6B4B7B;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(15, 30, 61, 0.04);
+  --shadow-md: 0 2px 8px rgba(15, 30, 61, 0.06);
+  --shadow-lg: 0 8px 24px rgba(15, 30, 61, 0.08);
+
+  /* Radii */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+
+  /* Transitions */
+  --transition-fast: 120ms ease-out;
+  --transition-base: 200ms ease-out;
+  --transition-slow: 320ms ease-out;
+
+  /* Scrollbar (light) */
+  --color-scrollbar-track: #F0EDE5;
+  --color-scrollbar-thumb: #D8D8D4;
+  --color-scrollbar-thumb-hover: #C0C0BC;
+}
+
+[data-theme="dark"] {
+  --color-bg-page: #070F18;
+  --color-bg-card: #0B1C2D;
+  --color-bg-subtle: #0E1F30;
+  --color-bg-elevated: #12263A;
+  --color-bg-input: #0E1F30;
+
+  --color-text-primary: #F5F7FA;
+  --color-text-secondary: #A3ADBF;
+  --color-text-tertiary: #5A6B82;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-link: #C9A961;
+  --color-text-link-hover: #E2C97A;
+
+  --color-border-strong: #3D4F66;
+  --color-border-default: #12263A;
+  --color-border-subtle: #0E1F30;
+  --color-border-focus: #C9A961;
+
+  --color-brand-navy: #0F1E3D;
+  --color-brand-navy-hover: #1A3057;
+  --color-brand-gold: #C9A961;
+  --color-brand-gold-deep: #A88A47;
+
+  --color-success: #2ED573;
+  --color-success-bg: rgba(46, 213, 115, 0.12);
+  --color-warning: #F5A623;
+  --color-warning-bg: rgba(245, 166, 35, 0.12);
+  --color-error: #f87171;
+  --color-error-bg: rgba(248, 113, 113, 0.12);
+  --color-info: #60a5fa;
+  --color-info-bg: rgba(96, 165, 250, 0.12);
+
+  --color-sport-football: #2ED573;
+  --color-sport-rugby: #F5A623;
+  --color-sport-cricket: #34d399;
+  --color-sport-hockey: #60a5fa;
+  --color-sport-netball: #c084fc;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+  --color-scrollbar-track: #0B1C2D;
+  --color-scrollbar-thumb: #12263A;
+  --color-scrollbar-thumb-hover: #3D4F66;
+}
+
+/* Typography tokens */
+:root {
+  --font-serif: 'Source Serif 4', 'Crimson Pro', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', Consolas, 'Courier New', monospace;
+  --font-display: 'Outfit', system-ui, sans-serif;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.8125rem;
+  --text-base: 0.9375rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2rem;
+
+  --leading-xs: 1rem;
+  --leading-sm: 1.25rem;
+  --leading-base: 1.5rem;
+  --leading-lg: 1.75rem;
+  --leading-xl: 1.875rem;
+  --leading-2xl: 2.25rem;
+  --leading-3xl: 2.5rem;
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing (8px grid) */
+  --space-1: 0.5rem;
+  --space-2: 1rem;
+  --space-3: 1.5rem;
+  --space-4: 2rem;
+  --space-5: 3rem;
+  --space-6: 4rem;
+  --space-7: 6rem;
+}

@@ -97,6 +97,9 @@ export const teamService = {
   // Matches
   getMatches: (teamId) => api.get(`/teams/${teamId}/matches`),
   addMatch: (teamId, data) => api.post(`/teams/${teamId}/matches`, data),
+  bulkAddMatches: (teamId, matches) => api.post(`/teams/${teamId}/matches/bulk`, { matches }),
+  validateMatches: (teamId, matches) => api.post(`/teams/${teamId}/matches/validate`, { matches }),
+  generateSeasonFixtures: (teamId) => api.post(`/teams/${teamId}/matches/generate-season`),
   getMatch: (matchId) => api.get(`/matches/${matchId}`),
   updateMatch: (matchId, data) => api.put(`/matches/${matchId}`, data),
   deleteMatch: (matchId) => api.delete(`/matches/${matchId}`),
@@ -106,6 +109,9 @@ export const teamService = {
   generateMatchReport: (matchId) => api.post(`/matches/${matchId}/report/generate`),
   publishMatchReport: (matchId, published = true) => api.post(`/matches/${matchId}/report/publish`, { published }),
   updateMatchReport: (matchId, content) => api.put(`/matches/${matchId}/report`, { content }),
+  generatePublicReport: (matchId) => api.post(`/matches/${matchId}/public-report/generate`),
+  updatePublicReport: (matchId, text) => api.put(`/matches/${matchId}/public-report`, { text }),
+  publishPublicReport: (matchId, publish = true) => api.post(`/matches/${matchId}/public-report/publish`, { publish }),
 
   // Match Goals & Assists
   getMatchGoals: (matchId) => api.get(`/matches/${matchId}/goals`),
@@ -116,6 +122,17 @@ export const teamService = {
   getMatchSubstitutions: (matchId) => api.get(`/matches/${matchId}/substitutions`),
   addMatchSubstitution: (matchId, data) => api.post(`/matches/${matchId}/substitutions`, data),
   deleteMatchSubstitution: (matchId, subId) => api.delete(`/matches/${matchId}/substitutions/${subId}`),
+
+  // Match events (sport-specific)
+  getMatchEvents: (matchId) => api.get(`/matches/${matchId}/events`),
+  addMatchEvent: (matchId, data) => api.post(`/matches/${matchId}/events`, data),
+  deleteMatchEvent: (matchId, eventId) => api.delete(`/matches/${matchId}/events/${eventId}`),
+
+  // Pupil match stats
+  getMatchPupilStats: (matchId) => api.get(`/matches/${matchId}/pupil-stats`),
+  updatePupilStats: (matchId, pupilId, data) => api.put(`/matches/${matchId}/pupil-stats/${pupilId}`, data),
+  bulkUpdatePupilStats: (matchId, entries) => api.put(`/matches/${matchId}/pupil-stats`, { entries }),
+  getPupilSeasonStats: (pupilId, teamId) => api.get(`/matches/pupil/${pupilId}/season-stats${teamId ? `?team_id=${teamId}` : ''}`),
 
   // Availability
   getMatchAvailability: (matchId) => api.get(`/matches/${matchId}/availability`),
@@ -249,6 +266,7 @@ export const videoService = {
   tagPlayer: (clipId, data) => api.put(`/videos/clips/${clipId}/tag`, data),
   getPupilClips: (pupilId) => api.get(`/videos/pupil/${pupilId}/clips`),
   assignVideo: (videoId, data) => api.put(`/videos/video/${videoId}/assign`, data),
+  getSportTaxonomy: (sport) => api.get(`/videos/sport-taxonomy/${sport}`),
 }
 
 // Film Room (video library) service
@@ -370,6 +388,11 @@ export const streamingService = {
   // Public endpoints (no auth required)
   getPublicStream: (shareCode) => api.get(`/streaming/watch/${shareCode}`),
   verifyPin: (shareCode, pin) => api.post(`/streaming/watch/${shareCode}`, { pin }),
+}
+
+// School branding (lightweight, for any authenticated user)
+export const schoolBrandingService = {
+  getMyBranding: () => api.get('/schools/my-branding'),
 }
 
 // School service (CRM & school management)
@@ -633,10 +656,61 @@ export const knowledgeBaseService = {
 }
 
 // Teacher Hub cross-team service (extra-curricular)
+export const concussionService = {
+  getPupilIncidents: (pupilId) => api.get(`/concussion/pupil/${pupilId}`),
+  getIncident: (id) => api.get(`/concussion/${id}`),
+  create: (data) => api.post('/concussion', data),
+  completeStage: (id, stage, notes) => api.post(`/concussion/${id}/followup/${stage}/complete`, { notes }),
+  getActiveIncidents: () => api.get('/concussion/school/active'),
+}
+
+export const misService = {
+  getConfig: () => api.get('/mis/config'),
+  saveConfig: (data) => api.put('/mis/config', data),
+  getHistory: () => api.get('/mis/history'),
+  sync: (dryRun = false) => api.post('/mis/sync', { dryRun }),
+}
+
+export const consentService = {
+  getTypes: () => api.get('/consent/types'),
+  seedDefaults: () => api.post('/consent/types/seed-defaults'),
+  createType: (data) => api.post('/consent/types', data),
+  getOverview: () => api.get('/consent/overview'),
+  getPupilConsents: (pupilId) => api.get(`/consent/pupil/${pupilId}`),
+  grant: (data) => api.post('/consent/grant', data),
+  getExpiring: (days = 30) => api.get('/consent/expiring', { params: { days } }),
+  expireOverdue: () => api.post('/consent/expire-overdue'),
+  bulkReset: () => api.post('/consent/bulk-reset'),
+}
+
+export const travelService = {
+  get: (matchId) => api.get(`/fixture-travel/${matchId}`),
+  save: (matchId, data) => api.put(`/fixture-travel/${matchId}`, data),
+  saveAssignments: (matchId, assignments) => api.put(`/fixture-travel/${matchId}/assignments`, { assignments }),
+}
+
+export const venueService = {
+  list: () => api.get('/venues'),
+  get: (id) => api.get(`/venues/${id}`),
+  create: (data) => api.post('/venues', data),
+  update: (id, data) => api.put(`/venues/${id}`, data),
+  archive: (id) => api.delete(`/venues/${id}`),
+}
+
 export const teacherService = {
   getMyTeams: () => api.get('/teams/mine'),
   getMyFixtures: () => api.get('/teams/mine/fixtures'),
   getMySessions: () => api.get('/teams/mine/sessions'),
+  getDashboardToday: () => api.get('/teacher-dashboard/today'),
+  getDashboardClasses: () => api.get('/teacher-dashboard/my-classes'),
+  getDashboardTeams: () => api.get('/teacher-dashboard/my-teams'),
+  getDashboardAttention: () => api.get('/teacher-dashboard/attention'),
+}
+
+export const calendarService = {
+  getTokens: () => api.get('/calendar/tokens'),
+  createToken: (scope, scopeId) => api.post('/calendar/tokens', { scope, scope_id: scopeId }),
+  revokeToken: (id) => api.delete(`/calendar/tokens/${id}`),
 }
 
 // Teaching Groups service (curriculum PE classes)
@@ -651,6 +725,15 @@ export const teachingGroupService = {
   addUnit: (id, data) => api.post(`/teaching-groups/${id}/units`, data),
   updateUnit: (id, unitId, data) => api.put(`/teaching-groups/${id}/units/${unitId}`, data),
   removeUnit: (id, unitId) => api.delete(`/teaching-groups/${id}/units/${unitId}`),
+}
+
+// Lesson plans service
+export const lessonService = {
+  list: () => api.get('/lessons'),
+  create: (data) => api.post('/lessons', data),
+  update: (id, data) => api.put(`/lessons/${id}`, data),
+  remove: (id) => api.delete(`/lessons/${id}`),
+  generate: (data) => api.post('/lessons/generate', data),
 }
 
 // Assessment service (curriculum PE assessment)
@@ -672,6 +755,7 @@ export const reportingService = {
   createWindow: (data) => api.post('/reporting/windows', data),
   updateWindow: (id, data) => api.put(`/reporting/windows/${id}`, data),
   getWindowReports: (windowId) => api.get(`/reporting/windows/${windowId}/reports`),
+  getReport: (reportId) => api.get(`/reporting/reports/${reportId}`),
   getMyReports: () => api.get('/reporting/my-reports'),
   saveReport: (data) => api.post('/reporting/reports', data),
   generateAIDraft: (data) => api.post('/reporting/reports/ai-draft', data),
@@ -684,6 +768,16 @@ export const pupilManagementService = {
   getProfile: (id) => api.get(`/pupil-management/${id}/profile`),
   update: (id, data) => api.put(`/pupil-management/${id}`, data),
   create: (data) => api.post('/pupil-management', data),
+}
+
+// Expanded pupil profile (medical, SEND, safeguarding, IDP, achievements)
+export const pupilProfileService = {
+  getCore: (id) => api.get(`/pupil-profile/${id}`),
+  getIdpGoals: (id) => api.get(`/pupil-profile/${id}/idp-goals`),
+  getAchievements: (id) => api.get(`/pupil-profile/${id}/achievements`),
+  getMedical: (id) => api.get(`/pupil-profile/${id}/medical`),
+  getSend: (id) => api.get(`/pupil-profile/${id}/send`),
+  getSafeguarding: (id) => api.get(`/pupil-profile/${id}/safeguarding`),
 }
 
 // Onboarding service
@@ -711,6 +805,15 @@ export const hodService = {
   getClasses: () => api.get('/hod/classes'),
   assignTeacherSport: (userId, sport, role) => api.post(`/hod/teachers/${userId}/sports`, { sport, role }),
   removeTeacherSport: (userId, sport) => api.delete(`/hod/teachers/${userId}/sports/${sport}`),
+  updateTeacherRole: (schoolId, memberId, role) => api.put(`/schools/${schoolId}/members/${memberId}`, { role }),
+  getSchoolMembers: (schoolId) => api.get(`/schools/${schoolId}/members`),
+  getTestPersonas: () => api.get('/hod/test-personas'),
+  impersonateTestPersona: (pupilId) => api.post(`/hod/test-personas/${pupilId}/impersonate`),
+  getSchoolOverviewToday: () => api.get('/hod/school-overview/today'),
+  getSchoolOverviewAttention: () => api.get('/hod/school-overview/attention'),
+  getSchoolOverviewWeekly: () => api.get('/hod/school-overview/weekly-summary'),
+  getStaffActivityReport: (params) => api.get('/hod/staff-activity-report', { params }),
+  getAssessmentHeatmap: (term) => api.get('/hod/assessments/heatmap', { params: { term } }),
 }
 
 // Voice Observations service
@@ -743,6 +846,60 @@ export const sportKnowledgeService = {
   update: (id, data) => api.put(`/sport-knowledge/${id}`, data),
   remove: (id) => api.delete(`/sport-knowledge/${id}`),
   getForAI: (sport, schoolId) => api.get(`/sport-knowledge/for-ai/${sport}`, { params: { school_id: schoolId } }),
+}
+
+export const ssoService = {
+  getProviders: () => api.get('/sso/providers'),
+  getConfig: () => api.get('/sso/config'),
+  updateConfig: (data) => api.put('/sso/config', data),
+  getDomains: () => api.get('/sso/domains'),
+  addDomain: (domain) => api.post('/sso/domains', { domain }),
+  removeDomain: (domain) => api.delete(`/sso/domains/${encodeURIComponent(domain)}`),
+}
+
+export const gdprService = {
+  getOverview: () => api.get('/gdpr/overview'),
+  getPupils: (params) => api.get('/gdpr/pupils', { params }),
+  requestExport: (pupilId, reason) => api.post('/gdpr/export', { pupil_id: pupilId, reason }),
+  downloadExport: (token) => api.get(`/gdpr/export/${token}/download`, { responseType: 'blob' }),
+  getRequests: () => api.get('/gdpr/requests'),
+  requestDeletion: (pupilId, reason) => api.post('/gdpr/deletion', { pupil_id: pupilId, reason, confirm: true }),
+  getDeletionLog: () => api.get('/gdpr/deletion-log'),
+  getConsent: (pupilId) => api.get(`/gdpr/consent/${pupilId}`),
+  updateConsent: (data) => api.post('/gdpr/consent', data),
+  batchConsent: (data) => api.post('/gdpr/consent/batch', data),
+}
+
+// Three-tier school settings
+export const settingsService = {
+  // Meta
+  getTiers: () => api.get('/settings/tiers'),
+  // School
+  getSchoolProfile: () => api.get('/settings/school/profile'),
+  updateSchoolProfile: (data) => api.put('/settings/school/profile', data),
+  getSchoolBranding: () => api.get('/settings/school/branding'),
+  getSportsConfig: () => api.get('/settings/school/sports'),
+  updateSportsConfig: (sports) => api.put('/settings/school/sports', { sports }),
+  getAcademicStructure: () => api.get('/settings/school/academic'),
+  updateAcademicStructure: (data) => api.put('/settings/school/academic', data),
+  getStaffDirectory: () => api.get('/settings/school/staff'),
+  getLicence: () => api.get('/settings/school/licence'),
+  getAuditLog: (params) => api.get('/settings/school/audit', { params }),
+  // Department
+  getFixtureDefaults: () => api.get('/settings/department/fixture-defaults'),
+  updateFixtureDefaults: (data) => api.put('/settings/department/fixture-defaults', data),
+  getReportingTemplates: () => api.get('/settings/department/reporting-templates'),
+  createReportingTemplate: (data) => api.post('/settings/department/reporting-templates', data),
+  // Personal
+  getNotifications: () => api.get('/settings/personal/notifications'),
+  updateNotifications: (data) => api.put('/settings/personal/notifications', data),
+  getAccessibility: () => api.get('/settings/personal/accessibility'),
+  updateAccessibility: (data) => api.put('/settings/personal/accessibility', data),
+  getQualifications: () => api.get('/settings/personal/qualifications'),
+  addQualification: (data) => api.post('/settings/personal/qualifications', data),
+  removeQualification: (id) => api.delete(`/settings/personal/qualifications/${id}`),
+  // Admin
+  updateAdminBranding: (schoolId, data) => api.put(`/settings/admin/branding/${schoolId}`, data),
 }
 
 export default api

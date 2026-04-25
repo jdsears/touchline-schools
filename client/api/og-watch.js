@@ -23,7 +23,7 @@ export default async function handler(request) {
   }
 
   const teamName = meta.teamName || 'Live Stream'
-  const title = `${teamName} — Watch Live on Touchline`
+  const title = `${teamName} - Watch Live on Touchline`
   const description = meta.hasPin
     ? `Watch ${teamName} live! You'll need the PIN from your coach to tune in.`
     : `Watch ${teamName} live on Touchline!`
@@ -56,7 +56,7 @@ export default async function handler(request) {
 </head>
 <body>
   <h1>${esc(teamName)}</h1>
-  <p>${esc(statusText)} — ${esc(description)}</p>
+  <p>${esc(statusText)} - ${esc(description)}</p>
   <a href="${esc(watchUrl)}">Watch on Touchline</a>
 </body>
 </html>`

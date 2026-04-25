@@ -43,7 +43,7 @@ export default function EnterpriseBilling() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">Enterprise Billing</h1>
-        <p className="text-navy-400 mt-1">Manage school subscription statuses (Touchline staff only)</p>
+        <p className="text-navy-400 mt-1">Manage school subscription statuses (MoonBoots Sports staff only)</p>
       </div>
 
       {schools.length > 0 ? (

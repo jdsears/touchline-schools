@@ -1,36 +1,141 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { teacherService, matchService } from '../../services/api'
-import { Trophy, Plus, Calendar, MapPin, Filter, ChevronRight } from 'lucide-react'
-import toast from 'react-hot-toast'
+import { teacherService } from '../../services/api'
+import { Trophy, Calendar as CalIcon, List, MapPin, ChevronLeft, ChevronRight, X, Clock, Shirt, CalendarPlus } from 'lucide-react'
+import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, addMonths, subMonths, isToday, isWeekend } from 'date-fns'
 
-const SPORT_ICONS = {
-  football: '\u26BD',
-  rugby: '\uD83C\uDFC9',
-  cricket: '\uD83C\uDFCF',
-  hockey: '\uD83C\uDFD1',
-  netball: '\uD83E\uDD3E',
+const SPORT_ICONS = { football: '\u26BD', rugby: '\uD83C\uDFC9', cricket: '\uD83C\uDFCF', hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E' }
+const SPORT_DOT = { football: 'bg-navy-300', rugby: 'bg-amber-500', cricket: 'bg-emerald-500', hockey: 'bg-sky-500', netball: 'bg-purple-500' }
+
+function resultBadge(m) {
+  const gf = parseInt(m.score_for ?? m.goals_for)
+  const ga = parseInt(m.score_against ?? m.goals_against)
+  if (isNaN(gf) || isNaN(ga)) return null
+  const w = gf > ga ? 'W' : gf < ga ? 'L' : 'D'
+  const c = { W: 'bg-pitch-600/20 text-pitch-400', L: 'bg-alert-600/20 text-alert-400', D: 'bg-amber-400/20 text-amber-400' }
+  return { label: w, score: `${gf}-${ga}`, color: c[w] }
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })
+function FixtureCard({ match, compact }) {
+  const result = resultBadge(match)
+  const d = match.date || match.match_date
+  return (
+    <Link to={`/matches/${match.id}`} className={`block bg-card rounded-xl border border-border-default ${compact ? 'p-3' : 'p-4'} hover:border-border-strong transition-colors`}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-9 h-9 rounded-lg bg-subtle flex items-center justify-center text-base shrink-0">
+            {SPORT_ICONS[match.sport] || <Trophy className="w-4 h-4 text-secondary" />}
+          </div>
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <span className="text-sm font-medium text-primary truncate">{match.team_name}</span>
+              <span className="text-tertiary text-xs">vs</span>
+              <span className="text-sm font-medium text-primary truncate">{match.opponent || 'TBC'}</span>
+            </div>
+            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-secondary flex-wrap">
+              {!compact && d && <span>{format(new Date(d), 'EEE d MMM')}</span>}
+              {match.match_time && <span className="flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" />{match.match_time.slice(0, 5)}</span>}
+              <span className="flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" />{match.home_away === 'home' ? 'Home' : 'Away'}</span>
+              {match.kit_type && <span className="flex items-center gap-0.5"><Shirt className="w-2.5 h-2.5" />{match.kit_type}</span>}
+            </div>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          {result ? (
+            <>
+              <span className="text-base font-bold text-primary">{result.score}</span>
+              <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${result.color}`}>{result.label}</span>
+            </>
+          ) : (
+            <>
+              <a href={`/api/calendar/event/fixture/${match.id}.ics`} onClick={e => e.stopPropagation()} download title="Add to calendar" className="p-1 text-tertiary hover:text-pitch-400 transition-colors">
+                <CalendarPlus className="w-3.5 h-3.5" />
+              </a>
+              <span className="px-2 py-0.5 bg-subtle rounded text-[10px] text-secondary">Upcoming</span>
+            </>
+          )}
+        </div>
+      </div>
+    </Link>
+  )
 }
 
-function formatTime(dateStr) {
-  if (!dateStr) return ''
-  const d = new Date(dateStr)
-  return d.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+function CalendarView({ fixtures, month, setMonth, selectedDate, onSelectDate }) {
+  const calStart = startOfWeek(startOfMonth(month), { weekStartsOn: 1 })
+  const calEnd = endOfWeek(endOfMonth(month), { weekStartsOn: 1 })
+  const days = eachDayOfInterval({ start: calStart, end: calEnd })
+
+  const byDate = useMemo(() => {
+    const m = {}
+    fixtures.forEach(f => { const k = (f.date || f.match_date)?.split('T')[0]; if (k) { if (!m[k]) m[k] = []; m[k].push(f) } })
+    return m
+  }, [fixtures])
+
+  return (
+    <div>
+      <div className="flex items-center justify-between mb-4">
+        <button onClick={() => setMonth(m => subMonths(m, 1))} className="p-1.5 text-secondary hover:text-link"><ChevronLeft size={18} /></button>
+        <h2 className="text-sm font-bold text-primary">{format(month, 'MMMM yyyy')}</h2>
+        <button onClick={() => setMonth(m => addMonths(m, 1))} className="p-1.5 text-secondary hover:text-link"><ChevronRight size={18} /></button>
+      </div>
+      <div className="grid grid-cols-7 gap-px text-center text-[10px] text-tertiary mb-1">
+        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => <div key={d} className="py-1">{d}</div>)}
+      </div>
+      <div className="grid grid-cols-7 gap-px">
+        {days.map(day => {
+          const key = format(day, 'yyyy-MM-dd')
+          const df = byDate[key] || []
+          const inMonth = isSameMonth(day, month)
+          const isT = isToday(day)
+          const isWe = isWeekend(day)
+          const isSel = selectedDate && isSameDay(day, selectedDate)
+          return (
+            <button
+              key={key}
+              onClick={() => onSelectDate(df.length > 0 ? day : null)}
+              className={`relative p-1.5 min-h-[44px] rounded-lg text-center text-xs transition-colors ${
+                !inMonth ? 'text-navy-700' : isWe ? 'bg-subtle text-secondary' : 'text-secondary hover:bg-subtle'
+              } ${isSel ? 'ring-1 ring-pitch-500' : ''}`}
+            >
+              <span className={isT ? 'w-6 h-6 inline-flex items-center justify-center rounded-full ring-2 ring-amber-400/60 text-amber-400 font-bold' : ''}>
+                {format(day, 'd')}
+              </span>
+              {df.length > 0 && (
+                <div className="flex justify-center gap-0.5 mt-1">
+                  {df.slice(0, 3).map((f, i) => (
+                    <div key={i} className={`w-1.5 h-1.5 rounded-full ${SPORT_DOT[f.sport] || 'bg-pitch-500'}`} title={`${f.team_name} vs ${f.opponent}`} />
+                  ))}
+                  {df.length > 3 && <span className="text-[8px] text-tertiary">+{df.length - 3}</span>}
+                </div>
+              )}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
-function resultBadge(match) {
-  if (match.goals_for == null || match.goals_against == null) return null
-  const gf = parseInt(match.goals_for)
-  const ga = parseInt(match.goals_against)
-  if (gf > ga) return { label: 'W', color: 'bg-pitch-600/20 text-pitch-400' }
-  if (gf < ga) return { label: 'L', color: 'bg-alert-600/20 text-alert-400' }
-  return { label: 'D', color: 'bg-amber-400/20 text-amber-400' }
+function DayPanel({ date, fixtures, onClose }) {
+  const dayFixtures = fixtures.filter(f => {
+    const d = (f.date || f.match_date)?.split('T')[0]
+    return d === format(date, 'yyyy-MM-dd')
+  })
+  return (
+    <div className="bg-card rounded-xl border border-border-default p-4 mt-4">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-sm font-bold text-primary">{format(date, 'EEEE d MMMM yyyy')}</h3>
+        <button onClick={onClose} className="p-1 text-secondary hover:text-link"><X size={16} /></button>
+      </div>
+      {dayFixtures.length === 0 ? (
+        <p className="text-tertiary text-sm py-2">No fixtures on this day</p>
+      ) : (
+        <div className="space-y-2">
+          {dayFixtures.map(f => <FixtureCard key={f.id} match={f} compact />)}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function TeacherFixtures() {
@@ -38,173 +143,91 @@ export default function TeacherFixtures() {
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(true)
   const [sportFilter, setSportFilter] = useState('all')
-  const [timeFilter, setTimeFilter] = useState('all') // all, upcoming, results
+  const [timeFilter, setTimeFilter] = useState('all')
+  const [venueFilter, setVenueFilter] = useState('all')
+  const [view, setView] = useState('list')
+  const [calMonth, setCalMonth] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(null)
 
   useEffect(() => {
-    loadData()
+    Promise.all([teacherService.getMyFixtures(), teacherService.getMyTeams()])
+      .then(([f, t]) => { setFixtures(f.data); setTeams(t.data) })
+      .catch(err => console.error('Failed to load fixtures:', err))
+      .finally(() => setLoading(false))
   }, [])
 
-  async function loadData() {
-    try {
-      const [fixturesRes, teamsRes] = await Promise.all([
-        teacherService.getMyFixtures(),
-        teacherService.getMyTeams(),
-      ])
-      setFixtures(fixturesRes.data)
-      setTeams(teamsRes.data)
-    } catch (err) {
-      console.error('Failed to load fixtures:', err)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const now = new Date()
   const sports = [...new Set(fixtures.map(f => f.sport).filter(Boolean))]
 
-  let filtered = fixtures
-  if (sportFilter !== 'all') filtered = filtered.filter(f => f.sport === sportFilter)
-  if (timeFilter === 'upcoming') filtered = filtered.filter(f => new Date(f.date) >= now)
-  if (timeFilter === 'results') filtered = filtered.filter(f => f.goals_for != null)
+  const filtered = useMemo(() => {
+    const now = new Date()
+    let list = [...fixtures]
+    if (sportFilter !== 'all') list = list.filter(f => f.sport === sportFilter)
+    if (venueFilter !== 'all') list = list.filter(f => f.home_away === venueFilter)
+    if (timeFilter === 'upcoming') list = list.filter(f => new Date(f.date || f.match_date) >= now)
+    if (timeFilter === 'results') list = list.filter(f => f.score_for != null || f.goals_for != null)
+    list.sort((a, b) => {
+      const da = new Date(a.date || a.match_date), db = new Date(b.date || b.match_date)
+      return timeFilter === 'results' ? db - da : da - db
+    })
+    return list
+  }, [fixtures, sportFilter, timeFilter, venueFilter])
 
-  if (loading) {
-    return (
-      <div className="p-6 flex items-center justify-center min-h-[50vh]">
-        <div className="spinner w-8 h-8" />
-      </div>
-    )
-  }
+  if (loading) return <div className="p-6 flex items-center justify-center min-h-[50vh]"><div className="spinner w-8 h-8" /></div>
 
   return (
-    <div className="p-6 max-w-7xl mx-auto">
-      <div className="flex items-center justify-between mb-8">
+    <div className="p-4 md:p-6 max-w-5xl mx-auto">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Fixtures & Results</h1>
-          <p className="text-navy-400 mt-1">School matches across all your teams</p>
+          <h1 className="text-xl md:text-2xl font-bold text-primary">Fixtures & Results</h1>
+          <p className="text-secondary text-sm mt-0.5">{fixtures.length} matches across {teams.length} team{teams.length !== 1 ? 's' : ''}</p>
+        </div>
+        <div className="flex items-center gap-1 bg-subtle rounded-lg p-0.5">
+          <button onClick={() => setView('list')} className={`p-1.5 rounded ${view === 'list' ? 'bg-border-default text-primary' : 'text-secondary'}`}><List size={16} /></button>
+          <button onClick={() => setView('calendar')} className={`p-1.5 rounded ${view === 'calendar' ? 'bg-border-default text-primary' : 'text-secondary'}`}><CalIcon size={16} /></button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-4 mb-6">
-        {/* Time filter */}
-        <div className="flex items-center gap-2">
-          {['all', 'upcoming', 'results'].map(f => (
-            <button
-              key={f}
-              onClick={() => setTimeFilter(f)}
-              className={`px-3 py-1.5 rounded-lg text-sm transition-colors capitalize ${
-                timeFilter === f
-                  ? 'bg-pitch-600/20 text-pitch-400'
-                  : 'bg-navy-800 text-navy-400 hover:text-white'
-              }`}
-            >
-              {f === 'all' ? 'All' : f === 'upcoming' ? 'Upcoming' : 'Results'}
-            </button>
-          ))}
-        </div>
-
-        {/* Sport filter */}
+      <div className="flex flex-wrap items-center gap-2 mb-5">
+        {['all', 'upcoming', 'results'].map(f => (
+          <button key={f} onClick={() => setTimeFilter(f)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${timeFilter === f ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'}`}>
+            {f === 'all' ? 'All' : f}
+          </button>
+        ))}
+        <div className="w-px h-5 bg-border-default" />
+        {['all', 'home', 'away'].map(v => (
+          <button key={v} onClick={() => setVenueFilter(v)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${venueFilter === v ? 'bg-amber-500/20 text-amber-400' : 'bg-subtle text-secondary hover:text-link'}`}>
+            {v === 'all' ? 'H/A' : v}
+          </button>
+        ))}
         {sports.length > 1 && (
-          <div className="flex items-center gap-2 border-l border-navy-700 pl-4">
-            {sports.map(sport => (
-              <button
-                key={sport}
-                onClick={() => setSportFilter(sportFilter === sport ? 'all' : sport)}
-                className={`px-3 py-1.5 rounded-lg text-sm transition-colors capitalize ${
-                  sportFilter === sport
-                    ? 'bg-pitch-600/20 text-pitch-400'
-                    : 'bg-navy-800 text-navy-400 hover:text-white'
-                }`}
-              >
-                {SPORT_ICONS[sport] || ''} {sport}
+          <>
+            <div className="w-px h-5 bg-border-default" />
+            {sports.map(s => (
+              <button key={s} onClick={() => setSportFilter(sportFilter === s ? 'all' : s)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${sportFilter === s ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'}`}>
+                {SPORT_ICONS[s] || ''} {s}
               </button>
             ))}
-          </div>
+          </>
         )}
       </div>
 
-      {/* Fixture list */}
-      {filtered.length > 0 ? (
-        <div className="space-y-3">
-          {filtered.map(match => {
-            const result = resultBadge(match)
-            const isUpcoming = new Date(match.date) >= now
-
-            return (
-              <div
-                key={match.id}
-                className="bg-navy-900 rounded-xl border border-navy-800 p-5 hover:border-navy-600 transition-colors"
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    {/* Sport icon */}
-                    <div className="w-10 h-10 rounded-lg bg-navy-800 flex items-center justify-center text-lg">
-                      {SPORT_ICONS[match.sport] || <Trophy className="w-5 h-5 text-navy-400" />}
-                    </div>
-
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-medium text-white">{match.team_name}</span>
-                        <span className="text-navy-600">vs</span>
-                        <span className="text-sm font-medium text-white">{match.opponent || 'TBC'}</span>
-                      </div>
-                      <div className="flex items-center gap-3 mt-1">
-                        <span className="text-xs text-navy-400 flex items-center gap-1">
-                          <Calendar className="w-3 h-3" />
-                          {formatDate(match.date)} {formatTime(match.date)}
-                        </span>
-                        {match.location && (
-                          <span className="text-xs text-navy-400 flex items-center gap-1">
-                            <MapPin className="w-3 h-3" />
-                            {match.is_home ? 'Home' : 'Away'}
-                          </span>
-                        )}
-                        <span className="px-1.5 py-0.5 bg-navy-800 rounded text-xs text-navy-400 capitalize">{match.sport}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    {result ? (
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-white">
-                          {match.goals_for} - {match.goals_against}
-                        </span>
-                        <span className={`px-2 py-0.5 rounded text-xs font-bold ${result.color}`}>
-                          {result.label}
-                        </span>
-                      </div>
-                    ) : isUpcoming ? (
-                      <span className="px-2 py-0.5 bg-navy-800 rounded text-xs text-navy-400">Upcoming</span>
-                    ) : (
-                      <span className="px-2 py-0.5 bg-navy-800 rounded text-xs text-navy-400">No result</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-        </div>
-      ) : teams.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
-            <Trophy className="w-8 h-8 text-navy-500" />
+      {view === 'calendar' ? (
+        <>
+          <div className="bg-card rounded-xl border border-border-default p-4">
+            <CalendarView fixtures={filtered} month={calMonth} setMonth={setCalMonth} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No teams assigned</h3>
-          <p className="text-navy-400 text-sm max-w-md mx-auto">
-            Once you have extra-curricular teams, their fixtures will appear here.
-          </p>
+          {selectedDate && <DayPanel date={selectedDate} fixtures={filtered} onClose={() => setSelectedDate(null)} />}
+        </>
+      ) : filtered.length > 0 ? (
+        <div className="space-y-2">
+          {filtered.map(m => <FixtureCard key={m.id} match={m} />)}
         </div>
       ) : (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
-            <Trophy className="w-8 h-8 text-navy-500" />
-          </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No fixtures yet</h3>
-          <p className="text-navy-400 text-sm max-w-md mx-auto">
-            Add fixtures from each team's page to see them here. Fixtures across all your teams
-            will be shown in one combined view.
-          </p>
+        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
+          <Trophy className="w-8 h-8 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-semibold text-primary mb-1">{teams.length === 0 ? 'No teams assigned' : 'No fixtures match your filters'}</h3>
+          <p className="text-secondary text-sm">{teams.length === 0 ? 'Once you have teams, fixtures appear here.' : 'Try changing the filters above.'}</p>
         </div>
       )}
     </div>

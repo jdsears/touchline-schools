@@ -416,7 +416,7 @@ function AddVideoModal({ sections, teamId, onClose, onAdded }) {
   }
 
   const handleUploadComplete = () => {
-    toast.success('Video uploaded — processing...')
+    toast.success('Video uploaded - processing...')
     onAdded()
   }
 
@@ -457,7 +457,7 @@ function AddVideoModal({ sections, teamId, onClose, onAdded }) {
           {/* Common fields */}
           <div>
             <label className="label">Title</label>
-            <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="input w-full" placeholder="e.g. Pressing from the front — City vs Arsenal" />
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} className="input w-full" placeholder="e.g. Pressing from the front - City vs Arsenal" />
           </div>
           <div>
             <label className="label">Section</label>

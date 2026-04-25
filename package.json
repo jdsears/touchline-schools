@@ -1,7 +1,7 @@
 {
-  "name": "touchline-schools",
-  "version": "1.0.0",
-  "description": "Multi-sport platform for UK secondary school PE departments",
+  "name": "moonboots-sports",
+  "version": "1.3.0",
+  "description": "Multi-sport platform for UK school PE departments",
   "private": true,
   "workspaces": [
     "client",
@@ -25,6 +25,8 @@
   "author": "MoonBoots Consultancy",
   "license": "UNLICENSED",
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/source-serif-4": "^5.2.9",
     "pdfkit": "^0.18.0"
   }
 }

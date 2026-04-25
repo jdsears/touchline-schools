@@ -79,7 +79,7 @@ export default function CookieConsent() {
                         Cookies
                       </h3>
                       <p className="text-navy-300 text-sm mb-4">
-                        We use essential cookies to make Touchline work and anonymised analytics to improve it.
+                        We use essential cookies to make MoonBoots Sports work and anonymised analytics to improve it.
                         We don't use advertising, marketing, or third-party tracking cookies.
                         Learn more in our{' '}
                         <Link to="/terms" className="text-pitch-400 hover:underline">

@@ -15,8 +15,22 @@ import { v4 as uuidv4 } from 'uuid'
  * @param {string} audioSourceId - The audio_sources record ID
  * @param {string} teacherId - The teacher's user ID
  * @param {string} schoolId - The school ID
+ * @param {Buffer} [audioBuffer] - Raw audio bytes to transcribe. Preferred over
+ *   re-fetching the storage URL because not all storage backends return a
+ *   publicly fetchable URL (e.g. local/disk mode).
  */
-export async function processVoiceObservation(audioSourceId, teacherId, schoolId) {
+async function recordError(audioSourceId, message) {
+  try {
+    await pool.query(
+      `UPDATE audio_sources SET processing_error = $1, updated_at = NOW() WHERE id = $2`,
+      [String(message || 'unknown error').slice(0, 1000), audioSourceId]
+    )
+  } catch (err) {
+    console.error('[VoicePipeline] Could not record processing_error:', err.message)
+  }
+}
+
+export async function processVoiceObservation(audioSourceId, teacherId, schoolId, audioBuffer = null) {
   try {
     // 1. Get the audio source record
     const audioResult = await pool.query(
@@ -52,20 +66,29 @@ export async function processVoiceObservation(audioSourceId, teacherId, schoolId
     const pupils = pupilsResult.rows
     const customVocabulary = buildCustomVocabulary(pupils)
 
-    // 3. Transcribe
+    // 3. Transcribe. Prefer the in-memory buffer (works regardless of storage
+    // backend). Fall back to the storage URL only if no buffer was provided
+    // AND the URL looks publicly fetchable (http/https).
     console.log(`[VoicePipeline] Transcribing audio source ${audioSourceId}...`)
     let transcriptionResult
     try {
-      transcriptionResult = await transcribe(audioSource.storage_url, {
+      const audioInput = audioBuffer
+        ? audioBuffer
+        : (audioSource.storage_url && /^https?:\/\//i.test(audioSource.storage_url)
+            ? audioSource.storage_url
+            : null)
+      if (!audioInput) {
+        throw new Error(
+          `No transcribable audio: storage_url is not a public URL (${audioSource.storage_url}) and no buffer provided`
+        )
+      }
+      transcriptionResult = await transcribe(audioInput, {
         customVocabulary,
         languageCode: 'en_gb',
       })
     } catch (err) {
       console.error(`[VoicePipeline] Transcription failed for ${audioSourceId}:`, err.message)
-      await pool.query(
-        `UPDATE audio_sources SET updated_at = NOW() WHERE id = $1`,
-        [audioSourceId]
-      )
+      await recordError(audioSourceId, `Transcription failed: ${err.message}`)
       await logAudit(schoolId, teacherId, 'voice_transcription_failed', 'audio_source', audioSourceId, { error: err.message })
       return
     }
@@ -137,6 +160,7 @@ export async function processVoiceObservation(audioSourceId, teacherId, schoolId
       })
     } catch (err) {
       console.error(`[VoicePipeline] Extraction failed for ${audioSourceId}:`, err.message)
+      await recordError(audioSourceId, `Extraction failed: ${err.message}`)
       await logAudit(schoolId, teacherId, 'voice_extraction_failed', 'audio_source', audioSourceId, { error: err.message })
       return
     }
@@ -189,6 +213,7 @@ export async function processVoiceObservation(audioSourceId, teacherId, schoolId
     console.log(`[VoicePipeline] Processing complete for ${audioSourceId}: ${extraction.observations.length} observations extracted`)
   } catch (error) {
     console.error(`[VoicePipeline] Unexpected error processing ${audioSourceId}:`, error)
+    await recordError(audioSourceId, `Pipeline error: ${error.message}`)
   }
 }
 

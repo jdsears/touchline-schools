@@ -7,7 +7,7 @@ export default function InstallPrompt() {
 
   useEffect(() => {
     // Don't show if user already dismissed
-    if (localStorage.getItem('touchline-install-dismissed')) return
+    if (localStorage.getItem('mb-install-dismissed')) return
 
     const handler = (e) => {
       e.preventDefault()
@@ -20,7 +20,7 @@ export default function InstallPrompt() {
   }, [])
 
   const dismiss = () => {
-    localStorage.setItem('touchline-install-dismissed', 'true')
+    localStorage.setItem('mb-install-dismissed', 'true')
     setShowPrompt(false)
   }
 

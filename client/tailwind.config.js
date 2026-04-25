@@ -7,7 +7,36 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Touchline Brand - Deep navy backgrounds
+        // Semantic tokens (resolve to CSS variables, theme-aware)
+        page: 'var(--color-bg-page)',
+        card: 'var(--color-bg-card)',
+        subtle: 'var(--color-bg-subtle)',
+        elevated: 'var(--color-bg-elevated)',
+        'input-bg': 'var(--color-bg-input)',
+        primary: 'var(--color-text-primary)',
+        secondary: 'var(--color-text-secondary)',
+        tertiary: 'var(--color-text-tertiary)',
+        'on-dark': 'var(--color-text-on-dark)',
+        link: 'var(--color-text-link)',
+        'link-hover': 'var(--color-text-link-hover)',
+        'border-strong': 'var(--color-border-strong)',
+        'border-default': 'var(--color-border-default)',
+        'border-subtle': 'var(--color-border-subtle)',
+        'border-focus': 'var(--color-border-focus)',
+        'brand-navy': 'var(--color-brand-navy)',
+        'brand-navy-hover': 'var(--color-brand-navy-hover)',
+        'brand-gold': 'var(--color-brand-gold)',
+        'brand-gold-deep': 'var(--color-brand-gold-deep)',
+        success: 'var(--color-success)',
+        'success-bg': 'var(--color-success-bg)',
+        warning: 'var(--color-warning)',
+        'warning-bg': 'var(--color-warning-bg)',
+        error: 'var(--color-error)',
+        'error-bg': 'var(--color-error-bg)',
+        info: 'var(--color-info)',
+        'info-bg': 'var(--color-info-bg)',
+
+        // Touchline Brand - Deep navy backgrounds (kept for existing component compat)
         navy: {
           50: '#F5F7FA',   // Text primary
           100: '#E1E5EB',
@@ -91,6 +120,7 @@ export default {
       },
       fontFamily: {
         display: ['Outfit', 'system-ui', 'sans-serif'],
+        serif: ['Source Serif 4', 'Crimson Pro', 'Georgia', 'serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Consolas', 'monospace'],
       },
@@ -102,12 +132,23 @@ export default {
         'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1)',
         'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1)',
         'inner-glow': 'inset 0 2px 4px 0 rgba(255, 255, 255, 0.06)',
+        'token-sm': 'var(--shadow-sm)',
+        'token-md': 'var(--shadow-md)',
+        'token-lg': 'var(--shadow-lg)',
+      },
+      borderRadius: {
+        'token-sm': 'var(--radius-sm)',
+        'token-md': 'var(--radius-md)',
+        'token-lg': 'var(--radius-lg)',
+        'token-xl': 'var(--radius-xl)',
       },
       animation: {
         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
         'slide-up': 'slideUp 0.3s ease-out',
         'slide-down': 'slideDown 0.3s ease-out',
         'fade-in': 'fadeIn 0.2s ease-out',
+        'sheet-up': 'sheetUp 0.25s ease-out',
+        'page-in': 'pageIn 0.15s ease-out',
       },
       keyframes: {
         slideUp: {
@@ -119,6 +160,14 @@ export default {
           '100%': { transform: 'translateY(0)', opacity: '1' },
         },
         fadeIn: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        sheetUp: {
+          '0%': { transform: 'translateY(100%)' },
+          '100%': { transform: 'translateY(0)' },
+        },
+        pageIn: {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
         },

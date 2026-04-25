@@ -67,12 +67,12 @@ export default function ClubBilling() {
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
-      toast.success('Subscription activated! Welcome to Touchline.')
+      toast.success('Subscription activated! Welcome to MoonBoots Sports.')
       // Reload to get updated status
       loadSubscription()
     }
     if (searchParams.get('canceled') === 'true') {
-      toast('Checkout canceled — no charges were made.', { icon: 'ℹ️' })
+      toast('Checkout canceled - no charges were made.', { icon: 'ℹ️' })
     }
   }, [searchParams])
 
@@ -97,7 +97,7 @@ export default function ClubBilling() {
       const currentUrl = window.location.href.split('?')[0]
       const result = await createCheckoutSession(
         planId,
-        null, // teamId — backend will use the user's team
+        null, // teamId - backend will use the user's team
         `${currentUrl}?success=true`,
         `${currentUrl}?canceled=true`,
       )
@@ -144,7 +144,7 @@ export default function ClubBilling() {
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Billing & Subscription</h1>
-        <p className="text-navy-400 text-sm mt-1">Manage your school's Touchline subscription</p>
+        <p className="text-navy-400 text-sm mt-1">Manage your school's MoonBoots Sports subscription</p>
       </div>
 
       {/* Current plan status */}

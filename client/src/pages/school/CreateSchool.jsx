@@ -130,12 +130,12 @@ export default function CreateClub() {
 
           {showDpa && (
             <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-80 overflow-y-auto border border-navy-700">
-              <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) — v1.0</h3>
+              <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) - v1.0</h3>
 
-              <p>This Data Processing Agreement ("DPA") forms part of the agreement between Touchline ("Processor") and the School ("Controller") for the use of the Touchline platform.</p>
+              <p>This Data Processing Agreement ("DPA") forms part of the agreement between MoonBoots Sports ("Processor") and the School ("Controller") for the use of the MoonBoots Sports platform.</p>
 
               <h4 className="font-medium text-navy-200">1. Roles & Responsibilities</h4>
-              <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. The School determines what personal data is collected, the purpose of collection, and is responsible for ensuring lawful basis for processing. Touchline acts as a <strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions through the platform.</p>
+              <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. The School determines what personal data is collected, the purpose of collection, and is responsible for ensuring lawful basis for processing. MoonBoots Sports acts as a <strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions through the platform.</p>
 
               <h4 className="font-medium text-navy-200">2. Data Processed</h4>
               <p>Personal data processed includes: pupil names, dates of birth, medical information, emergency contacts, passport-style photographs, identity documents, guardian contact details, payment information (via Stripe), and consent records.</p>
@@ -145,12 +145,12 @@ export default function CreateClub() {
                 <li>Ensure a lawful basis exists for collecting and processing personal data (e.g. consent, legitimate interest, or contractual necessity).</li>
                 <li>Respond to data subject access requests (DSARs) within 30 days.</li>
                 <li>Report data breaches to the ICO within 72 hours of becoming aware.</li>
-                <li>Ensure that all data entered into Touchline is accurate and up to date.</li>
+                <li>Ensure that all data entered into MoonBoots Sports is accurate and up to date.</li>
                 <li>Not upload or store data that is unlawful, offensive, or in breach of any regulation.</li>
                 <li>Inform guardians/parents about how their data is processed and their rights.</li>
               </ul>
 
-              <h4 className="font-medium text-navy-200">4. Touchline Obligations</h4>
+              <h4 className="font-medium text-navy-200">4. MoonBoots Sports Obligations</h4>
               <ul className="list-disc pl-4 space-y-1">
                 <li>Process data only as instructed by the School through the platform.</li>
                 <li>Implement appropriate technical and organisational security measures (encryption in transit, access controls, secure hosting).</li>
@@ -164,10 +164,10 @@ export default function CreateClub() {
               <p>Data is retained while the School's account is active. Upon account closure, all School data (including pupil records, documents, and payment history) is deleted within 30 days. Clubs may request early deletion at any time.</p>
 
               <h4 className="font-medium text-navy-200">6. Security Measures</h4>
-              <p>Touchline implements: HTTPS/TLS encryption in transit, JWT-based authentication, role-based access controls, authenticated file access for sensitive documents, rate limiting, and regular security reviews.</p>
+              <p>MoonBoots Sports implements: HTTPS/TLS encryption in transit, JWT-based authentication, role-based access controls, authenticated file access for sensitive documents, rate limiting, and regular security reviews.</p>
 
               <h4 className="font-medium text-navy-200">7. Breach Notification</h4>
-              <p>In the event of a personal data breach, Touchline will notify the School without undue delay and no later than 48 hours after becoming aware of the breach.</p>
+              <p>In the event of a personal data breach, MoonBoots Sports will notify the School without undue delay and no later than 48 hours after becoming aware of the breach.</p>
 
               <h4 className="font-medium text-navy-200">8. Governing Law</h4>
               <p>This DPA is governed by the laws of England and Wales and is subject to the jurisdiction of the English courts.</p>
