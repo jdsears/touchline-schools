@@ -1207,7 +1207,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">
               {team?.name ? `${team.name} — Tactics` : 'Tactics'}
             </h1>
-            <p className="text-navy-400 capitalize">
+            <p className="text-secondary capitalize">
               {sportKey !== 'football' ? `${sportConfig.label || sportKey} · ` : ''}Build your formation and game model
             </p>
           </div>
@@ -1249,7 +1249,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           className={`px-2 py-0.5 rounded text-xs font-medium transition-all ${
                             activeFormat === size
                               ? 'bg-pitch-500 text-white'
-                              : 'bg-navy-700 text-navy-400 hover:bg-navy-600'
+                              : 'bg-border-default text-secondary hover:bg-navy-600'
                           }`}
                         >
                           {size}v{size}
@@ -1298,13 +1298,13 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
 
               {/* Tactical Phase Toggle - only for sports that support phases */}
               {supportsPhases && <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="text-sm text-navy-400 mr-2">View:</span>
+                <span className="text-sm text-secondary mr-2">View:</span>
                 <button
                   onClick={() => setTacticalPhase(null)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                     tacticalPhase === null
                       ? 'bg-navy-600 text-white'
-                      : 'bg-navy-800/50 text-navy-400 hover:bg-navy-700/50'
+                      : 'bg-subtle text-secondary hover:bg-border-default/50'
                   }`}
                 >
                   <Circle className="w-3.5 h-3.5" />
@@ -1315,7 +1315,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                     tacticalPhase === PHASES.IN_POSSESSION
                       ? 'bg-pitch-500 text-white'
-                      : 'bg-navy-800/50 text-navy-400 hover:bg-pitch-500/20'
+                      : 'bg-subtle text-secondary hover:bg-pitch-500/20'
                   }`}
                 >
                   <Swords className="w-3.5 h-3.5" />
@@ -1326,7 +1326,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                     tacticalPhase === PHASES.OUT_OF_POSSESSION
                       ? 'bg-alert-500 text-white'
-                      : 'bg-navy-800/50 text-navy-400 hover:bg-alert-500/20'
+                      : 'bg-subtle text-secondary hover:bg-alert-500/20'
                   }`}
                 >
                   <Shield className="w-3.5 h-3.5" />
@@ -1337,7 +1337,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                     tacticalPhase === PHASES.TRANSITION
                       ? 'bg-energy-500 text-white'
-                      : 'bg-navy-800/50 text-navy-400 hover:bg-energy-500/20'
+                      : 'bg-subtle text-secondary hover:bg-energy-500/20'
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5" />
@@ -1352,14 +1352,14 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       className={`p-2 rounded-lg transition-all ${
                         tacticalSettings.showMovements
                           ? 'bg-energy-500/20 text-energy-400'
-                          : 'bg-navy-800/50 text-navy-500 hover:text-navy-300'
+                          : 'bg-subtle text-tertiary hover:text-secondary'
                       }`}
                     >
                       <Move className="w-4 h-4" />
                     </button>
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-navy-800 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-navy-700">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-subtle rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-border-strong">
                       <div className="text-xs font-semibold text-white">Movement Arrows</div>
-                      <div className="text-[10px] text-navy-400 mt-0.5">Show pupil movement patterns for the current phase</div>
+                      <div className="text-[10px] text-secondary mt-0.5">Show pupil movement patterns for the current phase</div>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-navy-800" />
                     </div>
                   </div>
@@ -1370,14 +1370,14 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       className={`p-2 rounded-lg transition-all ${
                         tacticalSettings.showZones
                           ? 'bg-purple-500/20 text-purple-400'
-                          : 'bg-navy-800/50 text-navy-500 hover:text-navy-300'
+                          : 'bg-subtle text-tertiary hover:text-secondary'
                       }`}
                     >
                       <Grid3x3 className="w-4 h-4" />
                     </button>
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-navy-800 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-navy-700">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-subtle rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-border-strong">
                       <div className="text-xs font-semibold text-white">Half-Spaces & Channels</div>
-                      <div className="text-[10px] text-navy-400 mt-0.5">Display vertical pitch zones: wings, half-spaces, central</div>
+                      <div className="text-[10px] text-secondary mt-0.5">Display vertical pitch zones: wings, half-spaces, central</div>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-navy-800" />
                     </div>
                   </div>
@@ -1388,14 +1388,14 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       className={`p-2 rounded-lg transition-all ${
                         tacticalSettings.showThirds
                           ? 'bg-pitch-500/20 text-pitch-400'
-                          : 'bg-navy-800/50 text-navy-500 hover:text-navy-300'
+                          : 'bg-subtle text-tertiary hover:text-secondary'
                       }`}
                     >
                       <Layers className="w-4 h-4" />
                     </button>
-                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-navy-800 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-navy-700">
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-subtle rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-border-strong">
                       <div className="text-xs font-semibold text-white">Pitch Thirds</div>
-                      <div className="text-[10px] text-navy-400 mt-0.5">Show attacking, middle, and defensive thirds</div>
+                      <div className="text-[10px] text-secondary mt-0.5">Show attacking, middle, and defensive thirds</div>
                       <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-navy-800" />
                     </div>
                   </div>
@@ -1406,14 +1406,14 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       className={`p-2 rounded-lg transition-all ${
                         tacticalSettings.showPressingZones
                           ? 'bg-alert-500/20 text-alert-400'
-                          : 'bg-navy-800/50 text-navy-500 hover:text-navy-300'
+                          : 'bg-subtle text-tertiary hover:text-secondary'
                       }`}
                     >
                       {tacticalSettings.showPressingZones ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                     </button>
-                    <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-navy-800 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-navy-700">
+                    <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-subtle rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50 border border-border-strong">
                       <div className="text-xs font-semibold text-white">Pressing Zones</div>
-                      <div className="text-[10px] text-navy-400 mt-0.5">Show high, mid, and low pressing trigger areas</div>
+                      <div className="text-[10px] text-secondary mt-0.5">Show high, mid, and low pressing trigger areas</div>
                       <div className="absolute top-full right-4 -mt-px border-4 border-transparent border-t-navy-800" />
                     </div>
                   </div>
@@ -1784,7 +1784,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           }
                           ${assignedPlayer
                             ? 'bg-white text-navy-900'
-                            : 'bg-white/90 text-navy-600 border-2 border-dashed border-navy-400'
+                            : 'bg-white/90 text-tertiary border-2 border-dashed border-navy-400'
                           }
                         `}
                         title={
@@ -1810,7 +1810,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
 
               </div>
 
-              <p className="text-sm text-navy-500 mt-4 text-center">
+              <p className="text-sm text-tertiary mt-4 text-center">
                 {tacticalPhase
                   ? `Viewing ${tacticalPhase === PHASES.IN_POSSESSION ? 'attacking' : tacticalPhase === PHASES.OUT_OF_POSSESSION ? 'defensive' : 'transition'} shape. Drag ball to see position shifts.`
                   : swapMode && selectedPosition
@@ -1849,19 +1849,19 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           : isBench
                             ? 'bg-energy-500/10 border border-energy-500/30'
                             : selectedPosition
-                              ? 'bg-navy-800/50 cursor-pointer hover:bg-navy-700/50 border border-transparent hover:border-pitch-500/50'
-                              : 'bg-navy-800/50 border border-transparent'
+                              ? 'bg-subtle cursor-pointer hover:bg-border-default/50 border border-transparent hover:border-pitch-500/50'
+                              : 'bg-subtle border border-transparent'
                         }
                       `}
                     >
                       <div className={`
                         w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
-                        ${isAssigned ? 'bg-pitch-500 text-white' : isBench ? 'bg-energy-500 text-white' : 'bg-navy-700 text-navy-300'}
+                        ${isAssigned ? 'bg-pitch-500 text-white' : isBench ? 'bg-energy-500 text-white' : 'bg-border-default text-secondary'}
                       `}>
                         {pupil.squad_number || '-'}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <span className={isAssigned ? 'text-white' : isBench ? 'text-white' : 'text-navy-300'}>
+                        <span className={isAssigned ? 'text-white' : isBench ? 'text-white' : 'text-secondary'}>
                           {pupil.name}
                         </span>
                         {isAssigned && assignedPosition && (
@@ -1881,7 +1881,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             e.stopPropagation()
                             removePlayerFromPosition(assignedPosition.id)
                           }}
-                          className="p-1 text-navy-400 hover:text-alert-400 transition-colors"
+                          className="p-1 text-secondary hover:text-alert-400 transition-colors"
                           title="Remove from position"
                         >
                           <UserMinus className="w-4 h-4" />
@@ -1892,7 +1892,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             e.stopPropagation()
                             toggleBenchPlayer(pupil.id)
                           }}
-                          className={`p-1 transition-colors ${isBench ? 'text-energy-400 hover:text-energy-300' : 'text-navy-500 hover:text-energy-400'}`}
+                          className={`p-1 transition-colors ${isBench ? 'text-energy-400 hover:text-energy-300' : 'text-tertiary hover:text-energy-400'}`}
                           title={isBench ? 'Remove from bench' : 'Add to bench'}
                         >
                           <ArrowRightLeft className="w-4 h-4" />
@@ -1901,16 +1901,16 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     </div>
                   )
                 }) : (
-                  <p className="text-navy-500 text-sm">No pupils added yet</p>
+                  <p className="text-tertiary text-sm">No pupils added yet</p>
                 )}
               </div>
 
               {pupils.length > 0 && (
                 <div className="mt-3 space-y-1">
-                  <p className="text-xs text-navy-500">
+                  <p className="text-xs text-tertiary">
                     {assignedPlayerIds.length} of {positions.length} starting &middot; {benchPlayerIds.filter(id => !assignedPlayerIds.includes(id)).length} on bench
                   </p>
-                  <p className="text-xs text-navy-600">
+                  <p className="text-xs text-tertiary">
                     Click <ArrowRightLeft className="w-3 h-3 inline" /> to toggle bench
                   </p>
                 </div>
@@ -1930,19 +1930,19 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     const playerOff = getPlayerById(sub.playerOffId)
                     const playerOn = getPlayerById(sub.playerOnId)
                     return (
-                      <div key={sub.id} className="flex items-center gap-2 p-2 bg-navy-800/50 rounded-lg text-sm">
+                      <div key={sub.id} className="flex items-center gap-2 p-2 bg-subtle rounded-lg text-sm">
                         <span className="text-energy-400 font-medium w-10">{sub.minute}'</span>
                         <div className="flex-1 flex items-center gap-1">
                           <span className="text-alert-400">{playerOff?.squad_number || '?'}</span>
-                          <ArrowRightLeft className="w-3 h-3 text-navy-500" />
+                          <ArrowRightLeft className="w-3 h-3 text-tertiary" />
                           <span className="text-pitch-400">{playerOn?.squad_number || '?'}</span>
-                          <span className="text-navy-400 text-xs ml-1 truncate">
+                          <span className="text-secondary text-xs ml-1 truncate">
                             {formatPlayerName(playerOff?.name)} / {formatPlayerName(playerOn?.name)}
                           </span>
                         </div>
                         <button
                           onClick={() => removePlannedSub(sub.id)}
-                          className="p-1 text-navy-500 hover:text-alert-400"
+                          className="p-1 text-tertiary hover:text-alert-400"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -1951,7 +1951,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   })}
                 </div>
               ) : (
-                <p className="text-navy-500 text-sm mb-4">No substitutions planned</p>
+                <p className="text-tertiary text-sm mb-4">No substitutions planned</p>
               )}
 
               <button
@@ -1978,7 +1978,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   { key: 'throw_ins_long', label: 'Long Throw-ins' },
                 ]).map(({ key, label, hasFoot }) => (
                   <div key={key}>
-                    <label className="text-xs text-navy-400 block mb-1">{label}</label>
+                    <label className="text-xs text-secondary block mb-1">{label}</label>
                     <div className={hasFoot ? 'flex gap-2' : ''}>
                       <select
                         value={setPieceTakers[key] || ''}
@@ -2018,30 +2018,30 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 {/* Defensive Line */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm text-navy-400">Defensive Line</label>
-                    <span className="text-xs text-navy-500">
+                    <label className="text-sm text-secondary">Defensive Line</label>
+                    <span className="text-xs text-tertiary">
                       {tacticalSettings.defensiveLine < 35 ? 'Deep' : tacticalSettings.defensiveLine > 65 ? 'High' : 'Medium'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <ChevronDown className="w-4 h-4 text-navy-500" />
+                    <ChevronDown className="w-4 h-4 text-tertiary" />
                     <input
                       type="range"
                       min="0"
                       max="100"
                       value={tacticalSettings.defensiveLine}
                       onChange={(e) => setTacticalSettings(s => ({ ...s, defensiveLine: parseInt(e.target.value) }))}
-                      className="flex-1 h-2 bg-navy-700 rounded-lg appearance-none cursor-pointer accent-alert-500"
+                      className="flex-1 h-2 bg-border-default rounded-lg appearance-none cursor-pointer accent-alert-500"
                     />
-                    <ChevronUp className="w-4 h-4 text-navy-500" />
+                    <ChevronUp className="w-4 h-4 text-tertiary" />
                   </div>
                 </div>
 
                 {/* Compactness */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm text-navy-400">Compactness</label>
-                    <span className="text-xs text-navy-500">
+                    <label className="text-sm text-secondary">Compactness</label>
+                    <span className="text-xs text-tertiary">
                       {tacticalSettings.compactness < 35 ? 'Spread' : tacticalSettings.compactness > 65 ? 'Compact' : 'Balanced'}
                     </span>
                   </div>
@@ -2051,15 +2051,15 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     max="100"
                     value={tacticalSettings.compactness}
                     onChange={(e) => setTacticalSettings(s => ({ ...s, compactness: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-navy-700 rounded-lg appearance-none cursor-pointer accent-energy-500"
+                    className="w-full h-2 bg-border-default rounded-lg appearance-none cursor-pointer accent-energy-500"
                   />
                 </div>
 
                 {/* Attacking Width */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm text-navy-400">Width (Attack)</label>
-                    <span className="text-xs text-navy-500">
+                    <label className="text-sm text-secondary">Width (Attack)</label>
+                    <span className="text-xs text-tertiary">
                       {tacticalSettings.attackingWidth < 35 ? 'Narrow' : tacticalSettings.attackingWidth > 65 ? 'Wide' : 'Normal'}
                     </span>
                   </div>
@@ -2069,15 +2069,15 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     max="100"
                     value={tacticalSettings.attackingWidth}
                     onChange={(e) => setTacticalSettings(s => ({ ...s, attackingWidth: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-navy-700 rounded-lg appearance-none cursor-pointer accent-pitch-500"
+                    className="w-full h-2 bg-border-default rounded-lg appearance-none cursor-pointer accent-pitch-500"
                   />
                 </div>
 
                 {/* Defensive Width */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-sm text-navy-400">Width (Defense)</label>
-                    <span className="text-xs text-navy-500">
+                    <label className="text-sm text-secondary">Width (Defense)</label>
+                    <span className="text-xs text-tertiary">
                       {tacticalSettings.defensiveWidth < 35 ? 'Narrow' : tacticalSettings.defensiveWidth > 65 ? 'Wide' : 'Normal'}
                     </span>
                   </div>
@@ -2087,13 +2087,13 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     max="100"
                     value={tacticalSettings.defensiveWidth}
                     onChange={(e) => setTacticalSettings(s => ({ ...s, defensiveWidth: parseInt(e.target.value) }))}
-                    className="w-full h-2 bg-navy-700 rounded-lg appearance-none cursor-pointer accent-alert-500"
+                    className="w-full h-2 bg-border-default rounded-lg appearance-none cursor-pointer accent-alert-500"
                   />
                 </div>
 
                 {/* Pressing Trigger Zone */}
                 <div>
-                  <label className="text-sm text-navy-400 block mb-2">Pressing Trigger</label>
+                  <label className="text-sm text-secondary block mb-2">Pressing Trigger</label>
                   <div className="flex gap-2">
                     {['high', 'mid', 'low'].map((zone) => (
                       <button
@@ -2104,7 +2104,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             ? zone === 'high' ? 'bg-alert-500 text-white' :
                               zone === 'mid' ? 'bg-energy-500 text-white' :
                               'bg-pitch-500 text-white'
-                            : 'bg-navy-800/50 text-navy-400 hover:bg-navy-700/50'
+                            : 'bg-subtle text-secondary hover:bg-border-default/50'
                         }`}
                       >
                         {zone}
@@ -2114,7 +2114,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 </div>
               </div>
 
-              <p className="text-xs text-navy-500 mt-4">
+              <p className="text-xs text-tertiary mt-4">
                 Select a tactical phase to see these settings applied on the pitch
               </p>
             </div>}
@@ -2128,23 +2128,23 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
 
               <div className="space-y-3 text-sm">
                 <div>
-                  <span className="text-navy-400">Style:</span>
+                  <span className="text-secondary">Style:</span>
                   <span className="ml-2 text-white">{gameModel.style || 'Not set'}</span>
                 </div>
                 <div>
-                  <span className="text-navy-400">Build-up:</span>
+                  <span className="text-secondary">Build-up:</span>
                   <span className="ml-2 text-white">{gameModel.buildUp || 'Not set'}</span>
                 </div>
                 <div>
-                  <span className="text-navy-400">Pressing:</span>
+                  <span className="text-secondary">Pressing:</span>
                   <span className="ml-2 text-white">{gameModel.pressing || 'Not set'}</span>
                 </div>
                 <div>
-                  <span className="text-navy-400">In possession:</span>
+                  <span className="text-secondary">In possession:</span>
                   <span className="ml-2 text-white">{gameModel.inPossession || 'Not set'}</span>
                 </div>
                 <div>
-                  <span className="text-navy-400">Out of possession:</span>
+                  <span className="text-secondary">Out of possession:</span>
                   <span className="ml-2 text-white">{gameModel.outOfPossession || 'Not set'}</span>
                 </div>
               </div>
@@ -2188,11 +2188,11 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               className="modal-content max-w-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Edit Game Model</h2>
                 <button
                   onClick={() => setShowGameModel(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2280,7 +2280,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 </div>
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex justify-end gap-3">
+              <div className="p-6 border-t border-border-default flex justify-end gap-3">
                 <button
                   onClick={() => setShowGameModel(false)}
                   className="btn-secondary"
@@ -2318,11 +2318,11 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               className="modal-content max-w-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Plan Substitutions</h2>
                 <button
                   onClick={() => setShowSubPlanner(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2337,7 +2337,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     <div>
                       <label className="label">Minute</label>
                       <div className="relative">
-                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-500" />
+                        <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tertiary" />
                         <input
                           type="number"
                           min="1"
@@ -2413,7 +2413,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         const playerOff = getPlayerById(sub.playerOffId)
                         const playerOn = getPlayerById(sub.playerOnId)
                         return (
-                          <div key={sub.id} className="flex items-center gap-3 p-3 bg-navy-800/50 rounded-lg">
+                          <div key={sub.id} className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
                             <div className="w-12 h-12 bg-energy-500/20 rounded-lg flex items-center justify-center">
                               <span className="text-energy-400 font-bold text-lg">{sub.minute}'</span>
                             </div>
@@ -2423,19 +2423,19 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                                 <span className="text-alert-400 font-medium">
                                   {playerOff?.squad_number} {playerOff?.name}
                                 </span>
-                                <ArrowRightLeft className="w-4 h-4 text-navy-500" />
+                                <ArrowRightLeft className="w-4 h-4 text-tertiary" />
                                 <span className="text-pitch-400 font-medium">
                                   {playerOn?.squad_number} {playerOn?.name}
                                 </span>
                               </div>
                               {sub.notes && (
-                                <p className="text-xs text-navy-400 mt-1">{sub.notes}</p>
+                                <p className="text-xs text-secondary mt-1">{sub.notes}</p>
                               )}
                             </div>
 
                             <button
                               onClick={() => removePlannedSub(sub.id)}
-                              className="p-2 text-navy-500 hover:text-alert-400 transition-colors"
+                              className="p-2 text-tertiary hover:text-alert-400 transition-colors"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -2455,13 +2455,13 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         {pupil.squad_number} {formatPlayerName(pupil.name)}
                       </span>
                     )) : (
-                      <span className="text-navy-500 text-sm">No subs selected. Use the <ArrowRightLeft className="w-3 h-3 inline" /> button in Available Players to add subs.</span>
+                      <span className="text-tertiary text-sm">No subs selected. Use the <ArrowRightLeft className="w-3 h-3 inline" /> button in Available Players to add subs.</span>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex justify-end gap-3">
+              <div className="p-6 border-t border-border-default flex justify-end gap-3">
                 <button
                   onClick={() => setShowSubPlanner(false)}
                   className="btn-secondary"
@@ -2499,21 +2499,21 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               className="modal-content max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
                   <Bookmark className="w-5 h-5 text-energy-400" />
                   Save Custom Formation
                 </h2>
                 <button
                   onClick={() => setShowSaveFormation(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
 
               <div className="p-6 space-y-4">
-                <p className="text-sm text-navy-400">
+                <p className="text-sm text-secondary">
                   Save the current pupil positions as a custom formation you can reuse later.
                 </p>
 
@@ -2532,10 +2532,10 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
 
                 {customFormations.length > 0 && (
                   <div>
-                    <p className="text-xs text-navy-500 mb-2">Your saved formations:</p>
+                    <p className="text-xs text-tertiary mb-2">Your saved formations:</p>
                     <div className="flex flex-wrap gap-2">
                       {customFormations.map(cf => (
-                        <span key={cf.id} className="px-2 py-1 bg-navy-700 rounded text-xs text-navy-300">
+                        <span key={cf.id} className="px-2 py-1 bg-border-default rounded text-xs text-secondary">
                           {cf.name}
                         </span>
                       ))}
@@ -2544,7 +2544,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 )}
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex justify-end gap-3">
+              <div className="p-6 border-t border-border-default flex justify-end gap-3">
                 <button
                   onClick={() => {
                     setShowSaveFormation(false)

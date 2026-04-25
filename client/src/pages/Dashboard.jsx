@@ -255,7 +255,7 @@ export default function Dashboard() {
             <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">
               Welcome back, {user?.name?.split(' ')[0]}!
             </h1>
-            <p className="text-navy-400">
+            <p className="text-secondary">
               Here's what's happening with {team?.name || 'your team'}
             </p>
           </div>
@@ -265,20 +265,20 @@ export default function Dashboard() {
             {user?.role === 'manager' && (
               <button
                 onClick={() => setShowQuickStart(true)}
-                className="p-2 rounded-xl bg-navy-800/50 border border-navy-700 text-navy-400 hover:text-pitch-400 hover:border-pitch-500/30 transition-colors"
+                className="p-2 rounded-xl bg-subtle border border-border-strong text-secondary hover:text-pitch-400 hover:border-pitch-500/30 transition-colors"
                 title="Quick Start Guide"
               >
                 <HelpCircle className="w-5 h-5" />
               </button>
             )}
             {/* Current Date & Time */}
-            <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-navy-800/50 border border-navy-700">
+            <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-subtle border border-border-strong">
               <CalendarDays className="w-5 h-5 text-pitch-400" />
               <div>
                 <p className="text-white font-medium">
                   {format(currentTime, 'EEEE, d MMMM yyyy')}
                 </p>
-                <p className="text-sm text-navy-400">
+                <p className="text-sm text-secondary">
                   {format(currentTime, 'h:mm a')} • {(() => { const m = currentTime.getMonth(); const y = currentTime.getFullYear(); return m >= 7 ? `${y}/${String(y+1).slice(2)}` : `${y-1}/${String(y).slice(2)}`; })()} Season
                 </p>
               </div>
@@ -293,7 +293,7 @@ export default function Dashboard() {
                 <Clock className="w-5 h-5 text-energy-400" />
                 <div>
                   <p className="text-energy-400 font-bold">{getNextMatchCountdown()}</p>
-                  <p className="text-sm text-navy-400">until {nextMatch.opponent}</p>
+                  <p className="text-sm text-secondary">until {nextMatch.opponent}</p>
                 </div>
               </Link>
             )}
@@ -314,7 +314,7 @@ export default function Dashboard() {
             to={action.href}
             className={`
               card p-4 flex flex-col items-center justify-center gap-3 text-center
-              hover:border-navy-700 transition-all group
+              hover:border-border-strong transition-all group
             `}
           >
             <div className={`
@@ -326,7 +326,7 @@ export default function Dashboard() {
             `}>
               <action.icon className="w-6 h-6" />
             </div>
-            <span className="text-sm font-medium text-navy-300 group-hover:text-white transition-colors">
+            <span className="text-sm font-medium text-secondary group-hover:text-white transition-colors">
               {action.name}
             </span>
           </Link>
@@ -343,14 +343,14 @@ export default function Dashboard() {
           className="lg:col-span-2"
         >
           <div className="card overflow-hidden h-full">
-            <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+            <div className="p-4 border-b border-border-default flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-pitch-400" />
                 </div>
                 <div>
                   <h2 className="font-display font-semibold text-white">Pep</h2>
-                  <p className="text-sm text-navy-400">Your AI coaching assistant</p>
+                  <p className="text-sm text-secondary">Your AI coaching assistant</p>
                 </div>
               </div>
               <Link to="/chat" className="btn-ghost btn-sm">
@@ -360,7 +360,7 @@ export default function Dashboard() {
             </div>
 
             <div className="p-4 space-y-3">
-              <p className="text-navy-300">Quick suggestions:</p>
+              <p className="text-secondary">Quick suggestions:</p>
               <div className="flex flex-wrap gap-2">
                 {[
                   'Prepare for next match',
@@ -371,7 +371,7 @@ export default function Dashboard() {
                   <Link
                     key={suggestion}
                     to={`/chat?q=${encodeURIComponent(suggestion)}`}
-                    className="px-3 py-1.5 rounded-lg bg-navy-800 text-sm text-navy-300 hover:text-white hover:bg-navy-700 transition-colors"
+                    className="px-3 py-1.5 rounded-lg bg-subtle text-sm text-secondary hover:text-white hover:bg-border-default transition-colors"
                   >
                     {suggestion}
                   </Link>
@@ -388,7 +388,7 @@ export default function Dashboard() {
           transition={{ delay: 0.3 }}
         >
           <div className="card h-full flex flex-col">
-            <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+            <div className="p-4 border-b border-border-default flex items-center justify-between">
               <h2 className="font-display font-semibold text-white flex items-center gap-2">
                 <Megaphone className="w-5 h-5 text-alert-400" />
                 Team Announcements
@@ -404,7 +404,7 @@ export default function Dashboard() {
 
             {/* New Announcement Form */}
             {showAnnouncementForm && (
-              <form onSubmit={handleCreateAnnouncement} className="p-4 bg-navy-800/50 border-b border-navy-800">
+              <form onSubmit={handleCreateAnnouncement} className="p-4 bg-subtle border-b border-border-default">
                 <input
                   type="text"
                   placeholder="Announcement title..."
@@ -436,7 +436,7 @@ export default function Dashboard() {
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Clock className="w-4 h-4 text-navy-400" />
+                      <Clock className="w-4 h-4 text-secondary" />
                       <select
                         value={newAnnouncement.expires_at}
                         onChange={e => setNewAnnouncement(prev => ({ ...prev, expires_at: e.target.value }))}
@@ -472,12 +472,12 @@ export default function Dashboard() {
                         className="input w-full text-sm ml-6"
                       />
                     )}
-                    <label className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer">
+                    <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
                       <input
                         type="checkbox"
                         checked={newAnnouncement.send_email}
                         onChange={e => setNewAnnouncement(prev => ({ ...prev, send_email: e.target.checked }))}
-                        className="w-4 h-4 rounded border-navy-600 bg-navy-700 text-pitch-500 focus:ring-pitch-500"
+                        className="w-4 h-4 rounded border-border-strong bg-border-default text-pitch-500 focus:ring-pitch-500"
                       />
                       <Mail className="w-4 h-4" />
                       Also send via email
@@ -494,9 +494,9 @@ export default function Dashboard() {
                           <option value="selected">Selected pupils only</option>
                         </select>
                         {newAnnouncement.email_recipients === 'selected' && (
-                          <div className="max-h-32 overflow-y-auto bg-navy-900 rounded-lg p-2 space-y-1">
+                          <div className="max-h-32 overflow-y-auto bg-card rounded-lg p-2 space-y-1">
                             {pupils.map(pupil => (
-                              <label key={pupil.id} className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer hover:text-white">
+                              <label key={pupil.id} className="flex items-center gap-2 text-sm text-secondary cursor-pointer hover:text-white">
                                 <input
                                   type="checkbox"
                                   checked={newAnnouncement.selected_pupil_ids.includes(pupil.id)}
@@ -507,7 +507,7 @@ export default function Dashboard() {
                                       setNewAnnouncement(prev => ({ ...prev, selected_pupil_ids: prev.selected_pupil_ids.filter(id => id !== pupil.id) }))
                                     }
                                   }}
-                                  className="w-3 h-3 rounded border-navy-600 bg-navy-700 text-pitch-500"
+                                  className="w-3 h-3 rounded border-border-strong bg-border-default text-pitch-500"
                                 />
                                 {pupil.name}
                               </label>
@@ -515,7 +515,7 @@ export default function Dashboard() {
                           </div>
                         )}
                         {newAnnouncement.email_recipients === 'matchday_squad' && (
-                          <p className="text-xs text-navy-500">Emails will be sent to parents of pupils in the next match squad</p>
+                          <p className="text-xs text-tertiary">Emails will be sent to parents of pupils in the next match squad</p>
                         )}
                       </div>
                     )}
@@ -530,7 +530,7 @@ export default function Dashboard() {
                 {announcements.map(announcement => (
                   <div
                     key={announcement.id}
-                    className={`p-4 cursor-pointer hover:bg-navy-800/50 transition-colors ${
+                    className={`p-4 cursor-pointer hover:bg-subtle transition-colors ${
                       announcement.priority === 'high' ? 'bg-alert-500/5' :
                       announcement.priority === 'urgent' ? 'bg-alert-500/10' : ''
                     }`}
@@ -548,22 +548,22 @@ export default function Dashboard() {
                             <span className="badge-alert text-xs animate-pulse">Urgent</span>
                           )}
                         </div>
-                        <p className="text-navy-300 text-sm mt-1 line-clamp-2">{announcement.content}</p>
-                        <p className="text-xs text-navy-500 mt-2">
+                        <p className="text-secondary text-sm mt-1 line-clamp-2">{announcement.content}</p>
+                        <p className="text-xs text-tertiary mt-2">
                           {format(parseISO(announcement.created_at), 'MMM d, h:mm a')}
                         </p>
                       </div>
                       <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => startEditAnnouncement(announcement)}
-                          className="text-navy-500 hover:text-pitch-400 p-1"
+                          className="text-tertiary hover:text-pitch-400 p-1"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteAnnouncement(announcement.id)}
-                          className="text-navy-500 hover:text-alert-400 p-1"
+                          className="text-tertiary hover:text-alert-400 p-1"
                           title="Delete"
                         >
                           <X className="w-4 h-4" />
@@ -575,9 +575,9 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="p-6 text-center flex-1 flex flex-col items-center justify-center">
-                <Megaphone className="w-8 h-8 text-navy-600 mx-auto mb-2" />
-                <p className="text-navy-400 text-sm">No announcements yet</p>
-                <p className="text-navy-500 text-xs mt-1">Send updates to pupils & parents</p>
+                <Megaphone className="w-8 h-8 text-tertiary mx-auto mb-2" />
+                <p className="text-secondary text-sm">No announcements yet</p>
+                <p className="text-tertiary text-xs mt-1">Send updates to pupils & parents</p>
               </div>
             )}
 
@@ -585,14 +585,14 @@ export default function Dashboard() {
             {(viewingAnnouncement || editingAnnouncement) && (
               <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50" onClick={() => { setViewingAnnouncement(null); setEditingAnnouncement(null); }}>
                 <div className="card w-full max-w-lg max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
-                  <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+                  <div className="p-4 border-b border-border-default flex items-center justify-between">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
                       <Megaphone className="w-5 h-5 text-alert-400" />
                       {editingAnnouncement ? 'Edit Announcement' : 'Announcement Details'}
                     </h3>
                     <button
                       onClick={() => { setViewingAnnouncement(null); setEditingAnnouncement(null); }}
-                      className="text-navy-400 hover:text-white"
+                      className="text-secondary hover:text-white"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -601,7 +601,7 @@ export default function Dashboard() {
                   {editingAnnouncement ? (
                     <form onSubmit={handleUpdateAnnouncement} className="p-4 space-y-4">
                       <div>
-                        <label className="block text-sm text-navy-400 mb-1">Title</label>
+                        <label className="block text-sm text-secondary mb-1">Title</label>
                         <input
                           type="text"
                           value={editingAnnouncement.title}
@@ -610,7 +610,7 @@ export default function Dashboard() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm text-navy-400 mb-1">Content</label>
+                        <label className="block text-sm text-secondary mb-1">Content</label>
                         <textarea
                           value={editingAnnouncement.content}
                           onChange={e => setEditingAnnouncement(prev => ({ ...prev, content: e.target.value }))}
@@ -619,7 +619,7 @@ export default function Dashboard() {
                       </div>
                       <div className="flex gap-4">
                         <div className="flex-1">
-                          <label className="block text-sm text-navy-400 mb-1">Priority</label>
+                          <label className="block text-sm text-secondary mb-1">Priority</label>
                           <select
                             value={editingAnnouncement.priority}
                             onChange={e => setEditingAnnouncement(prev => ({ ...prev, priority: e.target.value }))}
@@ -631,15 +631,15 @@ export default function Dashboard() {
                           </select>
                         </div>
                         <div className="flex-1">
-                          <label className="block text-sm text-navy-400 mb-1">Pinned</label>
+                          <label className="block text-sm text-secondary mb-1">Pinned</label>
                           <label className="flex items-center gap-2 mt-2 cursor-pointer">
                             <input
                               type="checkbox"
                               checked={editingAnnouncement.is_pinned || false}
                               onChange={e => setEditingAnnouncement(prev => ({ ...prev, is_pinned: e.target.checked }))}
-                              className="w-4 h-4 rounded border-navy-600 bg-navy-700 text-pitch-500"
+                              className="w-4 h-4 rounded border-border-strong bg-border-default text-pitch-500"
                             />
-                            <span className="text-sm text-navy-300">Pin to top</span>
+                            <span className="text-sm text-secondary">Pin to top</span>
                           </label>
                         </div>
                       </div>
@@ -664,12 +664,12 @@ export default function Dashboard() {
                           <span className="badge-alert text-xs animate-pulse">Urgent</span>
                         )}
                       </div>
-                      <p className="text-navy-300 whitespace-pre-wrap">{viewingAnnouncement.content}</p>
-                      <p className="text-xs text-navy-500 mt-4">
+                      <p className="text-secondary whitespace-pre-wrap">{viewingAnnouncement.content}</p>
+                      <p className="text-xs text-tertiary mt-4">
                         Posted {format(parseISO(viewingAnnouncement.created_at), 'MMMM d, yyyy \'at\' h:mm a')}
                         {viewingAnnouncement.created_by_name && ` by ${viewingAnnouncement.created_by_name}`}
                       </p>
-                      <div className="flex gap-2 mt-4 pt-4 border-t border-navy-800">
+                      <div className="flex gap-2 mt-4 pt-4 border-t border-border-default">
                         <button
                           onClick={() => startEditAnnouncement(viewingAnnouncement)}
                           className="btn-secondary flex-1"
@@ -710,15 +710,15 @@ export default function Dashboard() {
 
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-navy-400">Squad Size</span>
+                <span className="text-secondary">Squad Size</span>
                 <span className="font-semibold text-white">{pupils.length} pupils</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-navy-400">Age Group</span>
+                <span className="text-secondary">Age Group</span>
                 <span className="font-semibold text-white">{team?.age_group || '-'}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-navy-400">Formation</span>
+                <span className="text-secondary">Formation</span>
                 <span className="font-semibold text-white">{team?.formation || '4-3-3'}</span>
               </div>
             </div>
@@ -741,21 +741,21 @@ export default function Dashboard() {
               <Link to={`/matches/${nextMatch.id}`} className="block hover:opacity-80 transition-opacity">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-navy-400">Opponent</span>
+                    <span className="text-secondary">Opponent</span>
                     <span className="font-semibold text-white">{nextMatch.opponent}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-navy-400">Date</span>
+                    <span className="text-secondary">Date</span>
                     <span className="font-semibold text-energy-400">{formatMatchDate(nextMatch.date)}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-navy-400">Kick-off</span>
+                    <span className="text-secondary">Kick-off</span>
                     <span className="font-semibold text-white">
                       {nextMatch.time || format(parseISO(nextMatch.date), 'h:mm a')}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-navy-400">Venue</span>
+                    <span className="text-secondary">Venue</span>
                     <span className="font-semibold text-white flex items-center gap-1">
                       {nextMatch.is_home ? <Home className="w-4 h-4 text-pitch-400" /> : <Plane className="w-4 h-4 text-energy-400" />}
                       {nextMatch.is_home ? 'Home' : 'Away'}
@@ -765,8 +765,8 @@ export default function Dashboard() {
               </Link>
             ) : (
               <div className="flex flex-col items-center justify-center py-4 text-center">
-                <Calendar className="w-8 h-8 text-navy-600 mb-2" />
-                <p className="text-navy-400 text-sm">No upcoming matches</p>
+                <Calendar className="w-8 h-8 text-tertiary mb-2" />
+                <p className="text-secondary text-sm">No upcoming matches</p>
                 <Link to="/matches?new=true" className="btn-secondary btn-sm mt-3">
                   <Plus className="w-4 h-4" />
                   Add Match
@@ -786,7 +786,7 @@ export default function Dashboard() {
           transition={{ delay: 0.4 }}
         >
           <div className="card">
-            <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+            <div className="p-4 border-b border-border-default flex items-center justify-between">
               <h2 className="font-display font-semibold text-white flex items-center gap-2">
                 <Trophy className="w-5 h-5 text-caution-400" />
                 Recent Results
@@ -808,11 +808,11 @@ export default function Dashboard() {
                   <Link
                     key={match.id}
                     to={`/matches/${match.id}`}
-                    className="flex items-center justify-between p-4 hover:bg-navy-800/50 transition-colors"
+                    className="flex items-center justify-between p-4 hover:bg-subtle transition-colors"
                   >
                     <div>
                       <p className="font-medium text-white">vs {match.opponent}</p>
-                      <p className="text-sm text-navy-400">{formatMatchDate(match.date)}</p>
+                      <p className="text-sm text-secondary">{formatMatchDate(match.date)}</p>
                     </div>
                     <p className={`font-display font-bold text-lg ${getResultClass(match.result)}`}>
                       {match.result}
@@ -822,8 +822,8 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="p-8 text-center">
-                <Trophy className="w-8 h-8 text-navy-600 mx-auto mb-2" />
-                <p className="text-navy-400">No results yet</p>
+                <Trophy className="w-8 h-8 text-tertiary mx-auto mb-2" />
+                <p className="text-secondary">No results yet</p>
               </div>
             )}
           </div>
@@ -836,7 +836,7 @@ export default function Dashboard() {
           transition={{ delay: 0.4 }}
         >
           <div className="card">
-            <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+            <div className="p-4 border-b border-border-default flex items-center justify-between">
               <h2 className="font-display font-semibold text-white flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-energy-400" />
                 Upcoming Fixtures
@@ -858,18 +858,18 @@ export default function Dashboard() {
                   <Link
                     key={match.id}
                     to={`/matches/${match.id}`}
-                    className="flex items-center justify-between p-4 hover:bg-navy-800/50 transition-colors"
+                    className="flex items-center justify-between p-4 hover:bg-subtle transition-colors"
                   >
                     <div>
                       <p className="font-medium text-white">vs {match.opponent}</p>
-                      <p className="text-sm text-navy-400 flex items-center gap-1">
+                      <p className="text-sm text-secondary flex items-center gap-1">
                         {match.is_home ? <Home className="w-3 h-3" /> : <Plane className="w-3 h-3" />}
                         {match.location || (match.is_home ? 'Home' : 'Away')}
                       </p>
                     </div>
                     <div className="text-right">
                       <p className="font-medium text-energy-400">{formatMatchDate(match.date)}</p>
-                      <p className="text-sm text-navy-400">
+                      <p className="text-sm text-secondary">
                         {match.time || format(parseISO(match.date), 'h:mm a')}
                       </p>
                     </div>
@@ -878,8 +878,8 @@ export default function Dashboard() {
               </div>
             ) : (
               <div className="p-8 text-center">
-                <Calendar className="w-8 h-8 text-navy-600 mx-auto mb-2" />
-                <p className="text-navy-400 mb-4">No upcoming matches</p>
+                <Calendar className="w-8 h-8 text-tertiary mx-auto mb-2" />
+                <p className="text-secondary mb-4">No upcoming matches</p>
                 <Link to="/matches?new=true" className="btn-secondary btn-sm">
                   <Plus className="w-4 h-4" />
                   Add Match

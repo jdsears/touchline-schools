@@ -193,7 +193,7 @@ function KnowledgeBaseTab({ teamId }) {
         <div className="flex items-start justify-between mb-4">
           <div>
             <h2 className="font-display text-xl font-semibold text-white mb-1">Coaching Knowledge Base</h2>
-            <p className="text-navy-400 text-sm">
+            <p className="text-secondary text-sm">
               Add your coaching resources, session plans, and notes. The assistant will use this knowledge to give advice grounded in your methodology.
             </p>
           </div>
@@ -209,17 +209,17 @@ function KnowledgeBaseTab({ teamId }) {
         {/* Stats */}
         {stats && (
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            <div className="p-3 bg-navy-800/50 rounded-lg border border-navy-700">
+            <div className="p-3 bg-subtle rounded-lg border border-border-strong">
               <p className="text-2xl font-bold text-white">{stats.document_count || 0}</p>
-              <p className="text-xs text-navy-400">Documents</p>
+              <p className="text-xs text-secondary">Documents</p>
             </div>
-            <div className="p-3 bg-navy-800/50 rounded-lg border border-navy-700">
+            <div className="p-3 bg-subtle rounded-lg border border-border-strong">
               <p className="text-2xl font-bold text-white">{stats.total_chunks || 0}</p>
-              <p className="text-xs text-navy-400">Knowledge Chunks</p>
+              <p className="text-xs text-secondary">Knowledge Chunks</p>
             </div>
-            <div className="p-3 bg-navy-800/50 rounded-lg border border-navy-700">
+            <div className="p-3 bg-subtle rounded-lg border border-border-strong">
               <p className="text-2xl font-bold text-white">{stats.categories?.filter(Boolean).length || 0}</p>
-              <p className="text-xs text-navy-400">Categories</p>
+              <p className="text-xs text-secondary">Categories</p>
             </div>
           </div>
         )}
@@ -234,7 +234,7 @@ function KnowledgeBaseTab({ teamId }) {
         >
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-display text-lg font-semibold text-white">Add to Knowledge Base</h3>
-            <button onClick={() => setShowAddForm(false)} className="text-navy-400 hover:text-white">
+            <button onClick={() => setShowAddForm(false)} className="text-secondary hover:text-white">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -246,7 +246,7 @@ function KnowledgeBaseTab({ teamId }) {
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 addMode === 'text'
                   ? 'bg-pitch-500/20 text-pitch-400 border border-pitch-500/30'
-                  : 'bg-navy-800 text-navy-400 border border-navy-700 hover:text-white'
+                  : 'bg-subtle text-secondary border border-border-strong hover:text-white'
               }`}
             >
               <FileText className="w-4 h-4" />
@@ -257,7 +257,7 @@ function KnowledgeBaseTab({ teamId }) {
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 addMode === 'file'
                   ? 'bg-pitch-500/20 text-pitch-400 border border-pitch-500/30'
-                  : 'bg-navy-800 text-navy-400 border border-navy-700 hover:text-white'
+                  : 'bg-subtle text-secondary border border-border-strong hover:text-white'
               }`}
             >
               <Upload className="w-4 h-4" />
@@ -267,7 +267,7 @@ function KnowledgeBaseTab({ teamId }) {
 
           <form onSubmit={addMode === 'text' ? handleSubmitText : handleUploadFile} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-navy-300 mb-1">Title *</label>
+              <label className="block text-sm font-medium text-secondary mb-1">Title *</label>
               <input
                 type="text"
                 value={formData.title}
@@ -279,7 +279,7 @@ function KnowledgeBaseTab({ teamId }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-navy-300 mb-1">Description</label>
+              <label className="block text-sm font-medium text-secondary mb-1">Description</label>
               <input
                 type="text"
                 value={formData.description}
@@ -291,7 +291,7 @@ function KnowledgeBaseTab({ teamId }) {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-navy-300 mb-1">Category</label>
+                <label className="block text-sm font-medium text-secondary mb-1">Category</label>
                 <select
                   value={formData.category}
                   onChange={(e) => setFormData({ ...formData, category: e.target.value })}
@@ -303,7 +303,7 @@ function KnowledgeBaseTab({ teamId }) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-navy-300 mb-1">Age Group</label>
+                <label className="block text-sm font-medium text-secondary mb-1">Age Group</label>
                 <select
                   value={formData.ageGroup}
                   onChange={(e) => setFormData({ ...formData, ageGroup: e.target.value })}
@@ -318,8 +318,8 @@ function KnowledgeBaseTab({ teamId }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-navy-300 mb-1">
-                Tags <span className="text-navy-500">(comma-separated)</span>
+              <label className="block text-sm font-medium text-secondary mb-1">
+                Tags <span className="text-tertiary">(comma-separated)</span>
               </label>
               <input
                 type="text"
@@ -332,7 +332,7 @@ function KnowledgeBaseTab({ teamId }) {
 
             {addMode === 'text' ? (
               <div>
-                <label className="block text-sm font-medium text-navy-300 mb-1">Content *</label>
+                <label className="block text-sm font-medium text-secondary mb-1">Content *</label>
                 <textarea
                   value={formData.content}
                   onChange={(e) => setFormData({ ...formData, content: e.target.value })}
@@ -343,8 +343,8 @@ function KnowledgeBaseTab({ teamId }) {
               </div>
             ) : (
               <div>
-                <label className="block text-sm font-medium text-navy-300 mb-1">File</label>
-                <div className="border-2 border-dashed border-navy-700 rounded-lg p-6 text-center">
+                <label className="block text-sm font-medium text-secondary mb-1">File</label>
+                <div className="border-2 border-dashed border-border-strong rounded-lg p-6 text-center">
                   <input
                     type="file"
                     accept=".txt,.csv,.md"
@@ -353,15 +353,15 @@ function KnowledgeBaseTab({ teamId }) {
                     id="kb-file-upload"
                   />
                   <label htmlFor="kb-file-upload" className="cursor-pointer">
-                    <Upload className="w-8 h-8 text-navy-400 mx-auto mb-2" />
-                    <p className="text-sm text-navy-400">
+                    <Upload className="w-8 h-8 text-secondary mx-auto mb-2" />
+                    <p className="text-sm text-secondary">
                       {selectedFile ? (
                         <span className="text-pitch-400">{selectedFile.name}</span>
                       ) : (
                         <>Click to upload a <span className="text-white">text, CSV, or markdown</span> file</>
                       )}
                     </p>
-                    <p className="text-xs text-navy-500 mt-1">Max 5MB</p>
+                    <p className="text-xs text-tertiary mt-1">Max 5MB</p>
                   </label>
                 </div>
               </div>
@@ -403,9 +403,9 @@ function KnowledgeBaseTab({ teamId }) {
 
         {documents.length === 0 ? (
           <div className="text-center py-8">
-            <BookOpen className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-            <p className="text-navy-400 mb-1">No resources added yet</p>
-            <p className="text-sm text-navy-500">
+            <BookOpen className="w-12 h-12 text-tertiary mx-auto mb-3" />
+            <p className="text-secondary mb-1">No resources added yet</p>
+            <p className="text-sm text-tertiary">
               Add coaching guidelines, session plans, or your own notes to make the assistant's advice specific to your team.
             </p>
           </div>
@@ -414,7 +414,7 @@ function KnowledgeBaseTab({ teamId }) {
             {documents.map(doc => (
               <div
                 key={doc.id}
-                className="flex items-start justify-between p-4 bg-navy-800/50 rounded-lg border border-navy-700 hover:border-navy-600 transition-colors"
+                className="flex items-start justify-between p-4 bg-subtle rounded-lg border border-border-strong hover:border-border-strong transition-colors"
               >
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
@@ -436,18 +436,18 @@ function KnowledgeBaseTab({ teamId }) {
                       )}
                     </div>
                     {doc.description && (
-                      <p className="text-sm text-navy-400 truncate">{doc.description}</p>
+                      <p className="text-sm text-secondary truncate">{doc.description}</p>
                     )}
                     <div className="flex flex-wrap items-center gap-2 mt-2">
-                      <span className="px-2 py-0.5 bg-navy-700 text-navy-300 text-xs rounded">
+                      <span className="px-2 py-0.5 bg-border-default text-secondary text-xs rounded">
                         {KB_CATEGORIES.find(c => c.value === doc.category)?.label || doc.category}
                       </span>
                       {doc.age_group && (
-                        <span className="px-2 py-0.5 bg-navy-700 text-navy-300 text-xs rounded">
+                        <span className="px-2 py-0.5 bg-border-default text-secondary text-xs rounded">
                           {doc.age_group}
                         </span>
                       )}
-                      <span className="text-xs text-navy-500">
+                      <span className="text-xs text-tertiary">
                         {doc.chunk_count} chunk{doc.chunk_count !== 1 ? 's' : ''}
                       </span>
                       {doc.status !== 'ready' && (
@@ -462,7 +462,7 @@ function KnowledgeBaseTab({ teamId }) {
                 <button
                   onClick={() => handleDelete(doc.id)}
                   disabled={deleting === doc.id}
-                  className="text-navy-500 hover:text-alert-400 transition-colors ml-2 flex-shrink-0"
+                  className="text-tertiary hover:text-alert-400 transition-colors ml-2 flex-shrink-0"
                   title="Remove from knowledge base"
                 >
                   {deleting === doc.id ? (
@@ -478,27 +478,27 @@ function KnowledgeBaseTab({ teamId }) {
       </div>
 
       {/* Tips */}
-      <div className="card p-6 bg-navy-800/30 border-navy-700">
+      <div className="card p-6 bg-subtle border-border-strong">
         <h4 className="font-medium text-white mb-3 flex items-center gap-2">
           <BookOpen className="w-4 h-4 text-pitch-400" />
           What to add to your Knowledge Base
         </h4>
-        <ul className="space-y-2 text-sm text-navy-400">
+        <ul className="space-y-2 text-sm text-secondary">
           <li className="flex items-start gap-2">
             <span className="text-pitch-400 mt-0.5">•</span>
-            <span><strong className="text-navy-300">FA development guidelines</strong> are automatically added for your age group (marked <span className="px-1.5 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded">Auto</span>). They update when you change age group.</span>
+            <span><strong className="text-secondary">FA development guidelines</strong> are automatically added for your age group (marked <span className="px-1.5 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded">Auto</span>). They update when you change age group.</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-pitch-400 mt-0.5">•</span>
-            <span><strong className="text-navy-300">Session plan libraries</strong> and drill collections you use</span>
+            <span><strong className="text-secondary">Session plan libraries</strong> and drill collections you use</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-pitch-400 mt-0.5">•</span>
-            <span><strong className="text-navy-300">Your own coaching notes</strong> and observations from training and matches</span>
+            <span><strong className="text-secondary">Your own coaching notes</strong> and observations from training and matches</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-pitch-400 mt-0.5">•</span>
-            <span><strong className="text-navy-300">Team-specific methodology</strong> and principles of play</span>
+            <span><strong className="text-secondary">Team-specific methodology</strong> and principles of play</span>
           </li>
         </ul>
       </div>
@@ -631,11 +631,11 @@ function BillingTab({ teamId, userEmail }) {
           <CheckCircle className="w-5 h-5 text-pitch-400 flex-shrink-0" />
           <div>
             <p className="text-pitch-400 font-medium">Payment successful!</p>
-            <p className="text-sm text-navy-400">Your subscription is now active. Thank you for subscribing!</p>
+            <p className="text-sm text-secondary">Your subscription is now active. Thank you for subscribing!</p>
           </div>
           <button
             onClick={() => setShowSuccess(false)}
-            className="ml-auto text-navy-400 hover:text-white"
+            className="ml-auto text-secondary hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -649,17 +649,17 @@ function BillingTab({ teamId, userEmail }) {
         {entitlements?.billingExempt ? (
           <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
             <p className="text-amber-400 font-medium">Billing Exempt (Internal)</p>
-            <p className="text-sm text-navy-400">Full access to all features</p>
+            <p className="text-sm text-secondary">Full access to all features</p>
           </div>
         ) : entitlements?.isTrial ? (
           <div className="p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-lg">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-pitch-400 font-medium">Free Trial</p>
-                <p className="text-sm text-navy-400">{daysRemaining} days remaining</p>
+                <p className="text-sm text-secondary">{daysRemaining} days remaining</p>
               </div>
               <div className="text-right">
-                <p className="text-xs text-navy-500">Ends</p>
+                <p className="text-xs text-tertiary">Ends</p>
                 <p className="text-sm text-white">
                   {entitlements?.currentPeriodEnd
                     ? new Date(entitlements.currentPeriodEnd).toLocaleDateString()
@@ -669,11 +669,11 @@ function BillingTab({ teamId, userEmail }) {
             </div>
           </div>
         ) : subscription?.plan ? (
-          <div className="p-4 bg-navy-800/50 border border-navy-700 rounded-lg">
+          <div className="p-4 bg-subtle border border-border-strong rounded-lg">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-white font-medium">{subscription.plan.name}</p>
-                <p className="text-sm text-navy-400">{subscription.plan.priceFormatted}/{subscription.plan.interval}</p>
+                <p className="text-sm text-secondary">{subscription.plan.priceFormatted}/{subscription.plan.interval}</p>
               </div>
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 subscription.subscription?.status === 'active'
@@ -684,15 +684,15 @@ function BillingTab({ teamId, userEmail }) {
               </div>
             </div>
             {subscription.subscription?.currentPeriodEnd && (
-              <p className="text-xs text-navy-500 mt-2">
+              <p className="text-xs text-tertiary mt-2">
                 Renews {new Date(subscription.subscription.currentPeriodEnd).toLocaleDateString()}
               </p>
             )}
           </div>
         ) : (
-          <div className="p-4 bg-navy-800/50 border border-navy-700 rounded-lg">
+          <div className="p-4 bg-subtle border border-border-strong rounded-lg">
             <p className="text-white font-medium">No Active Plan</p>
-            <p className="text-sm text-navy-400">Upgrade to access all features</p>
+            <p className="text-sm text-secondary">Upgrade to access all features</p>
           </div>
         )}
 
@@ -722,7 +722,7 @@ function BillingTab({ teamId, userEmail }) {
       {/* Usage */}
       <div className="card p-6">
         <h2 className="font-display text-xl font-semibold text-white mb-2">Usage This Month</h2>
-        <p className="text-sm text-navy-400 mb-6">
+        <p className="text-sm text-secondary mb-6">
           {usage?.period ? `Period: ${usage.period}` : 'Current billing period'}
         </p>
 
@@ -743,14 +743,14 @@ function BillingTab({ teamId, userEmail }) {
       <div className="card p-6">
         <h2 className="font-display text-xl font-semibold text-white mb-4">Plan Details</h2>
         <div className="grid grid-cols-2 gap-4">
-          <div className="p-3 bg-navy-800/50 rounded-lg">
-            <p className="text-xs text-navy-400 mb-1">Teams</p>
+          <div className="p-3 bg-subtle rounded-lg">
+            <p className="text-xs text-secondary mb-1">Teams</p>
             <p className="text-lg font-semibold text-white">
               {entitlements?.teamLimit === Infinity ? 'Unlimited' : entitlements?.teamLimit || 0}
             </p>
           </div>
-          <div className="p-3 bg-navy-800/50 rounded-lg">
-            <p className="text-xs text-navy-400 mb-1">Players per Team</p>
+          <div className="p-3 bg-subtle rounded-lg">
+            <p className="text-xs text-secondary mb-1">Players per Team</p>
             <p className="text-lg font-semibold text-white">
               {entitlements?.playerLimitPerTeam || 25}
             </p>
@@ -758,7 +758,7 @@ function BillingTab({ teamId, userEmail }) {
         </div>
 
         {entitlements?.flags && Object.keys(entitlements.flags).length > 0 && (
-          <div className="mt-4 pt-4 border-t border-navy-800">
+          <div className="mt-4 pt-4 border-t border-border-default">
             <p className="text-sm font-medium text-white mb-3">Features Included</p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(entitlements.flags).filter(([_, enabled]) => enabled).map(([flag]) => (
@@ -786,14 +786,14 @@ function UsageBar({ label, current, limit, billingExempt }) {
   return (
     <div>
       <div className="flex items-center justify-between mb-1">
-        <span className="text-sm text-navy-300">{label}</span>
+        <span className="text-sm text-secondary">{label}</span>
         <span className={`text-sm font-medium ${
           isAtLimit ? 'text-alert-400' : isNearLimit ? 'text-amber-400' : 'text-white'
         }`}>
           {current} / {billingExempt || limit === Infinity ? '∞' : limit}
         </span>
       </div>
-      <div className="h-2 bg-navy-800 rounded-full overflow-hidden">
+      <div className="h-2 bg-subtle rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${
             isAtLimit ? 'bg-alert-500' : isNearLimit ? 'bg-amber-500' : 'bg-pitch-500'
@@ -953,7 +953,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
         className="card p-6"
       >
         <h2 className="font-display text-xl font-semibold text-white mb-4">Live Streaming</h2>
-        <p className="text-navy-400">Only team managers can configure streaming settings.</p>
+        <p className="text-secondary">Only team managers can configure streaming settings.</p>
       </motion.div>
     )
   }
@@ -972,7 +972,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
           </div>
           <div>
             <h2 className="font-display text-xl font-semibold text-white mb-1">Live Streaming</h2>
-            <p className="text-navy-400 text-sm">
+            <p className="text-secondary text-sm">
               Connect your camera to stream matches live to your team hub.
             </p>
           </div>
@@ -983,14 +983,14 @@ function StreamingTab({ teamId, userRole, teamName }) {
         /* Setup Card */
         <div className="card p-6">
           <h3 className="font-medium text-white mb-4">Set Up Live Streaming</h3>
-          <p className="text-navy-400 text-sm mb-6">
+          <p className="text-secondary text-sm mb-6">
             Generate RTMP credentials to connect your camera for live streaming.
             Once set up, you'll receive a URL and stream key to enter in your camera's streaming settings.
           </p>
 
-          <div className="p-4 bg-navy-800/50 rounded-lg border border-navy-700 mb-6">
+          <div className="p-4 bg-subtle rounded-lg border border-border-strong mb-6">
             <h4 className="font-medium text-white mb-2">How it works:</h4>
-            <ol className="space-y-2 text-sm text-navy-400">
+            <ol className="space-y-2 text-sm text-secondary">
               <li className="flex items-start gap-2">
                 <span className="text-pitch-400 font-medium">1.</span>
                 Click "Generate Credentials" below
@@ -1032,7 +1032,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 credentials?.status === 'active'
                   ? 'bg-pitch-500/20 text-pitch-400'
-                  : 'bg-navy-700 text-navy-400'
+                  : 'bg-border-default text-secondary'
               }`}>
                 {credentials?.status === 'active' ? 'Streaming' : 'Idle'}
               </div>
@@ -1056,7 +1056,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                     {copiedUrl ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="text-xs text-navy-500 mt-1">
+                <p className="text-xs text-tertiary mt-1">
                   Enter this in the "RTMP URL" field in your camera's streaming settings
                 </p>
               </div>
@@ -1075,7 +1075,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                     <button
                       type="button"
                       onClick={() => setShowStreamKey(!showStreamKey)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-400 hover:text-white"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-secondary hover:text-white"
                     >
                       {showStreamKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -1087,7 +1087,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                     {copiedKey ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                   </button>
                 </div>
-                <p className="text-xs text-navy-500 mt-1">
+                <p className="text-xs text-tertiary mt-1">
                   Enter this in the "Stream key" field in your camera's streaming settings. Keep this secret!
                 </p>
               </div>
@@ -1095,7 +1095,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
 
             {/* Last active */}
             {credentials?.lastActiveAt && (
-              <p className="text-xs text-navy-500 mt-4">
+              <p className="text-xs text-tertiary mt-4">
                 Last stream: {new Date(credentials.lastActiveAt).toLocaleString()}
               </p>
             )}
@@ -1104,7 +1104,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
           {/* Regenerate Key */}
           <div className="card p-6">
             <h3 className="font-medium text-white mb-2">Security</h3>
-            <p className="text-navy-400 text-sm mb-4">
+            <p className="text-secondary text-sm mb-4">
               If you believe your stream key has been compromised, you can regenerate it.
               You'll need to update the key in your streaming settings after regenerating.
             </p>
@@ -1115,7 +1115,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                   <AlertTriangle className="w-5 h-5 text-alert-400 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="text-alert-400 font-medium">Are you sure?</p>
-                    <p className="text-sm text-navy-400 mt-1">
+                    <p className="text-sm text-secondary mt-1">
                       This will invalidate your current stream key. You'll need to update
                       the key in your camera's streaming settings.
                     </p>
@@ -1157,7 +1157,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
               </div>
               <div>
                 <h3 className="font-medium text-white">Share with Friends & Family</h3>
-                <p className="text-navy-400 text-sm mt-1">
+                <p className="text-secondary text-sm mt-1">
                   Allow guests to watch your live stream without logging in.
                 </p>
               </div>
@@ -1182,7 +1182,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                   {copiedShareUrl ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
-              <p className="text-xs text-navy-500 mt-1">
+              <p className="text-xs text-tertiary mt-1">
                 Copy and share with friends and family - includes link{credentials?.guestPin ? ' and PIN' : ''}
               </p>
               {credentials?.shareCode && (
@@ -1225,7 +1225,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                   Save
                 </button>
               </div>
-              <p className="text-xs text-navy-500 mt-1">
+              <p className="text-xs text-tertiary mt-1">
                 {credentials?.hasGuestPin
                   ? 'PIN is set. Enter a new PIN to change it, or save empty to remove.'
                   : 'Set a PIN that guests must enter to watch the stream.'}
@@ -1233,11 +1233,11 @@ function StreamingTab({ teamId, userRole, teamName }) {
             </div>
 
             {/* Regenerate Share Code */}
-            <div className="pt-4 border-t border-navy-700">
+            <div className="pt-4 border-t border-border-strong">
               <button
                 onClick={handleRegenerateShareCode}
                 disabled={regeneratingShareCode}
-                className="btn-ghost text-navy-400 hover:text-white text-sm"
+                className="btn-ghost text-secondary hover:text-white text-sm"
               >
                 {regeneratingShareCode ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1246,7 +1246,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                 )}
                 Generate New Share Link
               </button>
-              <p className="text-xs text-navy-500 mt-1">
+              <p className="text-xs text-tertiary mt-1">
                 This will invalidate the old share link.
               </p>
             </div>
@@ -1257,8 +1257,8 @@ function StreamingTab({ teamId, userRole, teamName }) {
       {/* Help */}
       <div className="card p-6">
         <h3 className="font-medium text-white mb-4">Need Help?</h3>
-        <div className="p-4 bg-navy-800/50 rounded-lg border border-navy-700">
-          <p className="text-sm text-navy-400">
+        <div className="p-4 bg-subtle rounded-lg border border-border-strong">
+          <p className="text-sm text-secondary">
             For detailed setup instructions, check your camera manufacturer's documentation on RTMP streaming.
             The streaming destination should be configured in your camera's streaming settings.
           </p>
@@ -1455,14 +1455,14 @@ export default function Settings() {
     return (
       <div className="space-y-2">
         <label className="label">{label}</label>
-        {description && <p className="text-xs text-navy-500 -mt-1 mb-2">{description}</p>}
+        {description && <p className="text-xs text-tertiary -mt-1 mb-2">{description}</p>}
         <div className="flex items-center gap-3">
           <div className="relative">
             <input
               type="color"
               value={value}
               onChange={(e) => onChange(e.target.value)}
-              className="w-12 h-12 rounded-lg cursor-pointer border-2 border-navy-700"
+              className="w-12 h-12 rounded-lg cursor-pointer border-2 border-border-strong"
               style={{ backgroundColor: value }}
             />
           </div>
@@ -1483,7 +1483,7 @@ export default function Settings() {
               className={`w-8 h-8 rounded-lg border-2 transition-all ${
                 value.toUpperCase() === preset.color.toUpperCase()
                   ? 'border-white scale-110'
-                  : 'border-navy-700 hover:border-navy-500'
+                  : 'border-border-strong hover:border-navy-500'
               }`}
               style={{ backgroundColor: preset.color }}
               title={preset.name}
@@ -1527,7 +1527,7 @@ export default function Settings() {
     <div className="p-6 lg:p-8 max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">Settings</h1>
-        <p className="text-navy-400">Manage your account and team</p>
+        <p className="text-secondary">Manage your account and team</p>
       </div>
       
       <div className="flex flex-col md:flex-row gap-6">
@@ -1541,8 +1541,8 @@ export default function Settings() {
                   className={`
                     w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left transition-colors
                     ${activeTab === tab.id 
-                      ? 'bg-navy-800 text-white' 
-                      : 'text-navy-400 hover:text-white hover:bg-navy-800/50'
+                      ? 'bg-subtle text-white' 
+                      : 'text-secondary hover:text-white hover:bg-subtle'
                     }
                   `}
                 >
@@ -1589,10 +1589,10 @@ export default function Settings() {
               </form>
 
               {['manager', 'assistant'].includes(user?.role) && (
-                <div className="mt-6 pt-6 border-t border-navy-800">
+                <div className="mt-6 pt-6 border-t border-border-default">
                   <button
                     onClick={() => setShowQuickStart(true)}
-                    className="btn-ghost w-full text-navy-400 hover:text-white"
+                    className="btn-ghost w-full text-secondary hover:text-white"
                   >
                     <BookOpen className="w-4 h-4" />
                     Replay Quick Start Guide
@@ -1651,7 +1651,7 @@ export default function Settings() {
                     <option value={7}>7-a-side</option>
                     <option value={5}>5-a-side</option>
                   </select>
-                  <p className="text-xs text-navy-500 mt-1">
+                  <p className="text-xs text-tertiary mt-1">
                     {teamSettings.teamFormat === 9 && 'FA standard for U11/U12 - auto-set when age group changes'}
                     {teamSettings.teamFormat === 7 && 'FA standard for U9/U10 - auto-set when age group changes'}
                     {teamSettings.teamFormat === 5 && 'FA standard for U7/U8 - auto-set when age group changes'}
@@ -1669,7 +1669,7 @@ export default function Settings() {
                       <option key={tz} value={tz}>{tz.replace(/_/g, ' ')}</option>
                     ))}
                   </select>
-                  <p className="text-xs text-navy-500 mt-1">
+                  <p className="text-xs text-tertiary mt-1">
                     All match and training times will be displayed in this timezone
                   </p>
                 </div>
@@ -1688,7 +1688,7 @@ export default function Settings() {
               className="card p-6"
             >
               <h2 className="font-display text-xl font-semibold text-white mb-2">Team Formations</h2>
-              <p className="text-navy-400 text-sm mb-6">
+              <p className="text-secondary text-sm mb-6">
                 Select up to 3 formations your team typically plays. This helps the AI assistant understand your tactical approach.
               </p>
 
@@ -1697,7 +1697,7 @@ export default function Settings() {
                 <div className="space-y-2">
                   <label className="label">Selected Formations ({teamFormations.length}/3)</label>
                   {teamFormations.length === 0 ? (
-                    <p className="text-navy-500 text-sm">No formations selected yet</p>
+                    <p className="text-tertiary text-sm">No formations selected yet</p>
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {teamFormations.map((formation, index) => (
@@ -1709,7 +1709,7 @@ export default function Settings() {
                           <button
                             type="button"
                             onClick={() => setTeamFormations(teamFormations.filter((_, i) => i !== index))}
-                            className="text-navy-400 hover:text-alert-400 transition-colors"
+                            className="text-secondary hover:text-alert-400 transition-colors"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -1761,9 +1761,9 @@ export default function Settings() {
               </div>
 
               {/* Coaching Philosophy Section */}
-              <div className="mt-8 pt-8 border-t border-navy-800">
+              <div className="mt-8 pt-8 border-t border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white mb-2">Coaching Philosophy</h2>
-                <p className="text-navy-400 text-sm mb-4">
+                <p className="text-secondary text-sm mb-4">
                   Describe your coaching philosophy and approach. This will be used by Pep and other AI features to tailor their advice and session plans to match your style.
                 </p>
                 <textarea
@@ -1773,7 +1773,7 @@ export default function Settings() {
                   rows={5}
                   placeholder="e.g., I believe in pupil-led development with a focus on creativity and expression. We play a possession-based style and encourage pupils to take risks with the ball. Fun and enjoyment come first, but I want to build technically excellent pupils who understand the game..."
                 />
-                <p className="text-xs text-navy-500 mt-2">
+                <p className="text-xs text-tertiary mt-2">
                   {coachingPhilosophy.length}/500 characters
                 </p>
                 <button
@@ -1805,7 +1805,7 @@ export default function Settings() {
               className="card p-6"
             >
               <h2 className="font-display text-xl font-semibold text-white mb-2">Brand Colors</h2>
-              <p className="text-navy-400 text-sm mb-6">
+              <p className="text-secondary text-sm mb-6">
                 Customize the colors of your team hub. These colors will appear throughout the app.
               </p>
               <form onSubmit={handleSaveBranding} className="space-y-6">
@@ -1829,7 +1829,7 @@ export default function Settings() {
                 />
 
                 {/* Preview section */}
-                <div className="border-t border-navy-800 pt-6">
+                <div className="border-t border-border-default pt-6">
                   <h3 className="font-medium text-white mb-4">Preview</h3>
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-3">
@@ -1908,7 +1908,7 @@ export default function Settings() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-xs text-navy-500">
+                        <p className="text-xs text-tertiary">
                           Send this link to the coach. The link expires in 7 days.
                         </p>
                       </div>
@@ -1925,7 +1925,7 @@ export default function Settings() {
                   </div>
                 ) : (
                   <form onSubmit={handleSendInvite} className="space-y-4">
-                    <p className="text-navy-400 text-sm mb-2">
+                    <p className="text-secondary text-sm mb-2">
                       Generate an invite link for a coach or staff member.
                     </p>
                     <div>
@@ -1938,7 +1938,7 @@ export default function Settings() {
                         placeholder="coach@example.com"
                         required
                       />
-                      <p className="text-xs text-navy-500 mt-1">Used to identify them when they sign up</p>
+                      <p className="text-xs text-tertiary mt-1">Used to identify them when they sign up</p>
                     </div>
                     <div>
                       <label className="label">Role</label>
@@ -1961,7 +1961,7 @@ export default function Settings() {
 
               <div className="card p-6">
                 <h2 className="font-display text-xl font-semibold text-white mb-4">Invite Players/Parents</h2>
-                <p className="text-navy-400 text-sm mb-4">
+                <p className="text-secondary text-sm mb-4">
                   To invite parents, go to a pupil's profile and click the "Invite Parent" button.
                   This creates a personalized invite linked to their child's profile.
                 </p>
@@ -1980,11 +1980,11 @@ export default function Settings() {
               className="card p-6"
             >
               <h2 className="font-display text-xl font-semibold text-white mb-2">Coaching Qualifications</h2>
-              <p className="text-sm text-navy-400 mb-6">Record your coaching badges and certifications. These are used by School Intelligence for development suggestions.</p>
+              <p className="text-sm text-secondary mb-6">Record your coaching badges and certifications. These are used by School Intelligence for development suggestions.</p>
 
               <div className="space-y-3">
                 {qualifications.map((q, index) => (
-                  <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-navy-800/50 border border-navy-700">
+                  <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-subtle border border-border-strong">
                     <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-3">
                       <div>
                         <label className="label text-xs">Badge / Qualification</label>
@@ -2035,7 +2035,7 @@ export default function Settings() {
                     </div>
                     <button
                       onClick={() => removeQualification(index)}
-                      className="mt-6 p-1 text-navy-500 hover:text-alert-400 transition-colors"
+                      className="mt-6 p-1 text-tertiary hover:text-alert-400 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -2043,11 +2043,11 @@ export default function Settings() {
                 ))}
 
                 {qualifications.length === 0 && (
-                  <p className="text-navy-500 text-sm py-4 text-center">No qualifications recorded yet.</p>
+                  <p className="text-tertiary text-sm py-4 text-center">No qualifications recorded yet.</p>
                 )}
               </div>
 
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-navy-800">
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border-default">
                 <button onClick={addQualification} className="btn-secondary btn-sm">
                   <Plus className="w-4 h-4" /> Add Qualification
                 </button>
@@ -2078,7 +2078,7 @@ export default function Settings() {
               className="card p-6"
             >
               <h2 className="font-display text-xl font-semibold text-white mb-2">Parental Controls</h2>
-              <p className="text-navy-400 text-sm mb-6">
+              <p className="text-secondary text-sm mb-6">
                 Control your child's access to the AI assistant.
               </p>
 
@@ -2092,18 +2092,18 @@ export default function Settings() {
                   <div className={`p-4 rounded-lg border ${
                     !gafferDisabled
                       ? 'bg-pitch-500/10 border-pitch-500/30'
-                      : 'bg-navy-800/50 border-navy-700'
+                      : 'bg-subtle border-border-strong'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          !gafferDisabled ? 'bg-pitch-500/20' : 'bg-navy-700'
+                          !gafferDisabled ? 'bg-pitch-500/20' : 'bg-border-default'
                         }`}>
-                          <Shield className={`w-5 h-5 ${!gafferDisabled ? 'text-pitch-400' : 'text-navy-400'}`} />
+                          <Shield className={`w-5 h-5 ${!gafferDisabled ? 'text-pitch-400' : 'text-secondary'}`} />
                         </div>
                         <div>
                           <p className="font-medium text-white">The Gaffer AI</p>
-                          <p className={`text-sm ${!gafferDisabled ? 'text-pitch-400' : 'text-navy-400'}`}>
+                          <p className={`text-sm ${!gafferDisabled ? 'text-pitch-400' : 'text-secondary'}`}>
                             {!gafferDisabled ? 'Enabled - Your child can chat with The Gaffer' : 'Disabled - AI chat is turned off'}
                           </p>
                         </div>
@@ -2111,7 +2111,7 @@ export default function Settings() {
                       <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                         !gafferDisabled
                           ? 'bg-pitch-500/20 text-pitch-400'
-                          : 'bg-navy-700 text-navy-400'
+                          : 'bg-border-default text-secondary'
                       }`}>
                         {!gafferDisabled ? 'ON' : 'OFF'}
                       </div>
@@ -2140,13 +2140,13 @@ export default function Settings() {
                   </button>
 
                   {/* Info */}
-                  <div className="p-4 bg-navy-800/50 rounded-lg border border-navy-700">
+                  <div className="p-4 bg-subtle rounded-lg border border-border-strong">
                     <h4 className="font-medium text-white mb-2">About The Gaffer</h4>
-                    <p className="text-sm text-navy-400 mb-3">
+                    <p className="text-sm text-secondary mb-3">
                       The Gaffer is an AI coaching assistant that helps your child understand their development,
                       prepare for matches, and get personalized tips based on coach feedback.
                     </p>
-                    <ul className="space-y-2 text-sm text-navy-400">
+                    <ul className="space-y-2 text-sm text-secondary">
                       <li className="flex items-start gap-2">
                         <span className="text-pitch-400">•</span>
                         Answers questions about training and development

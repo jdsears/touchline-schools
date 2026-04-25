@@ -115,7 +115,7 @@ export default function Players() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">Players</h1>
-          <p className="text-navy-400">{pupils.length} pupils in your squad</p>
+          <p className="text-secondary">{pupils.length} pupils in your squad</p>
         </div>
         
         <div className="flex gap-2">
@@ -139,7 +139,7 @@ export default function Players() {
       {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
           <input
             type="text"
             value={search}
@@ -168,11 +168,11 @@ export default function Players() {
         </div>
       ) : filteredPlayers.length === 0 ? (
         <div className="card p-12 text-center">
-          <Users className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+          <Users className="w-12 h-12 text-tertiary mx-auto mb-4" />
           <h3 className="font-display text-xl font-semibold text-white mb-2">
             {pupils.length === 0 ? 'No pupils yet' : 'No pupils match your filters'}
           </h3>
-          <p className="text-navy-400 mb-6">
+          <p className="text-secondary mb-6">
             {pupils.length === 0
               ? 'Add your first pupil to get started'
               : 'Try adjusting your search or filters'
@@ -217,7 +217,7 @@ export default function Players() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-white truncate group-hover:text-pitch-400 transition-colors">
-                          {pupil.squad_number && <span className="text-navy-400 mr-1">#{pupil.squad_number}</span>}
+                          {pupil.squad_number && <span className="text-secondary mr-1">#{pupil.squad_number}</span>}
                           {pupil.name}
                         </p>
                         <div className="flex flex-wrap gap-1 mt-1">
@@ -228,7 +228,7 @@ export default function Players() {
                           ))}
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-navy-600 group-hover:text-navy-400 transition-colors" />
+                      <ChevronRight className="w-5 h-5 text-tertiary group-hover:text-secondary transition-colors" />
                     </Link>
                   </motion.div>
                 ))}
@@ -255,11 +255,11 @@ export default function Players() {
               className="modal-content"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Add Pupil</h2>
                 <button
                   onClick={() => setShowAddModal(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -319,8 +319,8 @@ export default function Players() {
                             ${isSelected
                               ? 'bg-pitch-600 text-white'
                               : isDisabled
-                                ? 'bg-navy-800 text-navy-600 cursor-not-allowed opacity-50'
-                                : 'bg-navy-800 text-navy-400 hover:text-white'
+                                ? 'bg-subtle text-tertiary cursor-not-allowed opacity-50'
+                                : 'bg-subtle text-secondary hover:text-white'
                             }
                           `}
                         >
@@ -508,14 +508,14 @@ export default function Players() {
           className="card w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
           onClick={e => e.stopPropagation()}
         >
-          <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+          <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-pitch-400" />
               <h2 className="text-xl font-display font-bold text-white">Import Players from Image</h2>
             </div>
             <button
               onClick={() => setShowImportModal(false)}
-              className="text-navy-400 hover:text-white"
+              className="text-secondary hover:text-white"
             >
               <X className="w-5 h-5" />
             </button>
@@ -524,7 +524,7 @@ export default function Players() {
           <div className="p-4 flex-1 overflow-y-auto">
             {!extractedPlayers ? (
               <>
-                <p className="text-navy-400 text-sm mb-4">
+                <p className="text-secondary text-sm mb-4">
                   Upload a screenshot of your pupil list or roster. AI will extract pupil names, dates of birth, and parent contact information.
                 </p>
 
@@ -534,7 +534,7 @@ export default function Players() {
                       <img
                         src={imagePreview}
                         alt="Pupil list"
-                        className="w-full rounded-lg border border-navy-700 max-h-64 object-contain bg-navy-900"
+                        className="w-full rounded-lg border border-border-strong max-h-64 object-contain bg-card"
                       />
                       <button
                         onClick={() => {
@@ -573,14 +573,14 @@ export default function Players() {
                     className={`block w-full p-8 border-2 border-dashed rounded-lg transition cursor-pointer text-center ${
                       isDragging
                         ? 'border-pitch-500 bg-pitch-500/10'
-                        : 'border-navy-600 hover:border-pitch-500'
+                        : 'border-border-strong hover:border-pitch-500'
                     }`}
                   >
-                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-pitch-400' : 'text-navy-500'}`} />
+                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-pitch-400' : 'text-tertiary'}`} />
                     <p className="text-white font-medium">
                       {isDragging ? 'Drop image here' : 'Click or drag & drop image'}
                     </p>
-                    <p className="text-sm text-navy-400 mt-1">PNG, JPG up to 10MB</p>
+                    <p className="text-sm text-secondary mt-1">PNG, JPG up to 10MB</p>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -594,7 +594,7 @@ export default function Players() {
             ) : (
               <>
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-navy-400 text-sm">
+                  <p className="text-secondary text-sm">
                     Found {extractedPlayers.length} pupils. Select which to import.
                   </p>
                   <button
@@ -617,7 +617,7 @@ export default function Players() {
                       className={`p-3 rounded-lg cursor-pointer transition border ${
                         selectedPlayers.includes(index)
                           ? 'bg-pitch-600/20 border-pitch-500'
-                          : 'bg-navy-800/50 border-navy-700 hover:border-navy-600'
+                          : 'bg-subtle border-border-strong hover:border-border-strong'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -630,13 +630,13 @@ export default function Players() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-white">{pupil.name}</p>
-                          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-navy-400">
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 mt-1 text-sm text-secondary">
                             {pupil.dateOfBirth && (
                               <span className="flex items-center gap-1">
                                 <Calendar className="w-3.5 h-3.5" />
                                 {formatDate(pupil.dateOfBirth)}
                                 {calculateAge(pupil.dateOfBirth) && (
-                                  <span className="text-navy-500">({calculateAge(pupil.dateOfBirth)} yrs)</span>
+                                  <span className="text-tertiary">({calculateAge(pupil.dateOfBirth)} yrs)</span>
                                 )}
                               </span>
                             )}
@@ -648,7 +648,7 @@ export default function Players() {
                             )}
                           </div>
                           {pupil.secondaryParentName && (
-                            <p className="text-xs text-navy-500 mt-1">
+                            <p className="text-xs text-tertiary mt-1">
                               + {pupil.secondaryParentName}
                             </p>
                           )}
@@ -662,8 +662,8 @@ export default function Players() {
           </div>
 
           {extractedPlayers && (
-            <div className="p-4 border-t border-navy-800 flex items-center justify-between">
-              <p className="text-sm text-navy-400">
+            <div className="p-4 border-t border-border-default flex items-center justify-between">
+              <p className="text-sm text-secondary">
                 {selectedPlayers.length} of {extractedPlayers.length} selected
               </p>
               <div className="flex gap-2">

@@ -11,13 +11,13 @@ const EFFORT_LABELS = ['', 'Low', 'Fair', 'Good', 'High', 'Outstanding']
 function ratingToColor(score) {
   if (score >= 30) return 'text-pitch-400'
   if (score >= 10) return 'text-pitch-500'
-  if (score > -10) return 'text-navy-400'
+  if (score > -10) return 'text-secondary'
   if (score > -30) return 'text-energy-400'
   return 'text-alert-400'
 }
 
 function ImprovementBadge({ score }) {
-  if (score === null || score === undefined) return <span className="text-xs text-navy-600">No data</span>
+  if (score === null || score === undefined) return <span className="text-xs text-tertiary">No data</span>
   const color = ratingToColor(score)
   const Icon = score > 5 ? TrendingUp : score < -5 ? TrendingDown : Minus
   return (
@@ -29,7 +29,7 @@ function ImprovementBadge({ score }) {
 }
 
 function EffortStars({ rating, size = 'sm' }) {
-  if (!rating) return <span className="text-xs text-navy-600">-</span>
+  if (!rating) return <span className="text-xs text-tertiary">-</span>
   const stars = Math.round(rating)
   const sz = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4'
   return (
@@ -45,15 +45,15 @@ function EffortStars({ rating, size = 'sm' }) {
 
 function StatCard({ icon: Icon, label, value, sub, color = 'text-pitch-400' }) {
   return (
-    <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+    <div className="bg-card border border-border-default rounded-xl p-4">
       <div className="flex items-center gap-2 mb-2">
-        <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-navy-800 ${color}`}>
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center bg-subtle ${color}`}>
           <Icon className="w-4 h-4" />
         </div>
-        <span className="text-xs text-navy-400">{label}</span>
+        <span className="text-xs text-secondary">{label}</span>
       </div>
       <div className="text-xl font-bold text-white">{value}</div>
-      {sub && <div className="text-xs text-navy-500 mt-0.5">{sub}</div>}
+      {sub && <div className="text-xs text-tertiary mt-0.5">{sub}</div>}
     </div>
   )
 }
@@ -150,7 +150,7 @@ export default function SeasonDevelopment() {
     return (
       <button
         onClick={() => toggleSort(col)}
-        className={`flex items-center gap-1 text-xs font-medium transition ${active ? 'text-pitch-400' : 'text-navy-400 hover:text-navy-300'} ${className}`}
+        className={`flex items-center gap-1 text-xs font-medium transition ${active ? 'text-pitch-400' : 'text-secondary hover:text-secondary'} ${className}`}
       >
         {children}
         {active && (sortDir === 'desc' ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />)}
@@ -161,11 +161,11 @@ export default function SeasonDevelopment() {
   if (loading) {
     return (
       <div className="p-4 sm:p-6 max-w-6xl mx-auto">
-        <div className="h-8 w-60 bg-navy-800 rounded animate-pulse mb-6" />
+        <div className="h-8 w-60 bg-subtle rounded animate-pulse mb-6" />
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-          {[1,2,3,4].map(i => <div key={i} className="h-24 bg-navy-900 rounded-xl animate-pulse" />)}
+          {[1,2,3,4].map(i => <div key={i} className="h-24 bg-card rounded-xl animate-pulse" />)}
         </div>
-        <div className="h-96 bg-navy-900 rounded-xl animate-pulse" />
+        <div className="h-96 bg-card rounded-xl animate-pulse" />
       </div>
     )
   }
@@ -173,9 +173,9 @@ export default function SeasonDevelopment() {
   if (!data) {
     return (
       <div className="p-4 sm:p-6 max-w-6xl mx-auto text-center py-20">
-        <TrendingUp className="w-12 h-12 mx-auto mb-4 text-navy-600" />
+        <TrendingUp className="w-12 h-12 mx-auto mb-4 text-tertiary" />
         <h2 className="text-xl font-bold text-white mb-2">No development data yet</h2>
-        <p className="text-navy-400 text-sm">Start recording training attendance, match observations, and pupil analyses to see development insights here.</p>
+        <p className="text-secondary text-sm">Start recording training attendance, match observations, and pupil analyses to see development insights here.</p>
       </div>
     )
   }
@@ -192,7 +192,7 @@ export default function SeasonDevelopment() {
           </div>
           <div>
             <h1 className="text-2xl font-bold text-white">Season Development</h1>
-            <p className="text-navy-400 text-sm mt-0.5">Track pupil growth, effort and breakthrough potential</p>
+            <p className="text-secondary text-sm mt-0.5">Track pupil growth, effort and breakthrough potential</p>
           </div>
         </div>
         <button
@@ -279,8 +279,8 @@ export default function SeasonDevelopment() {
               </ReviewSection>
             )}
             {aiReview.overall_summary && (
-              <div className="mt-4 pt-4 border-t border-navy-800">
-                <p className="text-sm text-navy-300 leading-relaxed">{aiReview.overall_summary}</p>
+              <div className="mt-4 pt-4 border-t border-border-default">
+                <p className="text-sm text-secondary leading-relaxed">{aiReview.overall_summary}</p>
               </div>
             )}
           </motion.div>
@@ -288,11 +288,11 @@ export default function SeasonDevelopment() {
       </AnimatePresence>
 
       {/* Pupil table */}
-      <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+      <div className="bg-card border border-border-default rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-navy-800">
+              <tr className="border-b border-border-default">
                 <th className="text-left px-4 py-3">
                   <SortHeader col="name">Pupil</SortHeader>
                 </th>
@@ -309,7 +309,7 @@ export default function SeasonDevelopment() {
                   <SortHeader col="observations" className="justify-center">Observations</SortHeader>
                 </th>
                 <th className="text-center px-3 py-3">
-                  <span className="text-xs text-navy-400">Achievements</span>
+                  <span className="text-xs text-secondary">Achievements</span>
                 </th>
                 <th className="px-3 py-3"></th>
               </tr>
@@ -325,7 +325,7 @@ export default function SeasonDevelopment() {
               ))}
               {sortedPlayers.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-navy-500">
+                  <td colSpan={7} className="px-4 py-8 text-center text-tertiary">
                     No pupil data available for this season
                   </td>
                 </tr>
@@ -343,14 +343,14 @@ function PlayerRow({ pupil, expanded, onToggle }) {
   return (
     <>
       <tr
-        className="border-b border-navy-800/50 hover:bg-navy-800/20 cursor-pointer transition"
+        className="border-b border-border-subtle hover:bg-subtle/20 cursor-pointer transition"
         onClick={onToggle}
       >
         <td className="px-4 py-3">
           <div>
             <span className="text-white font-medium">{pupil.name}</span>
             {pupil.position && (
-              <span className="ml-2 text-xs text-navy-500">{pupil.position}</span>
+              <span className="ml-2 text-xs text-tertiary">{pupil.position}</span>
             )}
           </div>
         </td>
@@ -366,7 +366,7 @@ function PlayerRow({ pupil, expanded, onToggle }) {
               {Math.round(training.attendance_rate)}%
             </span>
           ) : (
-            <span className="text-xs text-navy-600">-</span>
+            <span className="text-xs text-tertiary">-</span>
           )}
         </td>
         <td className="px-3 py-3">
@@ -375,7 +375,7 @@ function PlayerRow({ pupil, expanded, onToggle }) {
           </div>
         </td>
         <td className="px-3 py-3 text-center">
-          <span className="text-sm text-navy-300">{pupil.observations?.total || 0}</span>
+          <span className="text-sm text-secondary">{pupil.observations?.total || 0}</span>
         </td>
         <td className="px-3 py-3 text-center">
           <div className="flex items-center justify-center gap-1">
@@ -390,12 +390,12 @@ function PlayerRow({ pupil, expanded, onToggle }) {
               </span>
             )}
             {(!pupil.match?.potm_awards && !pupil.achievements?.list?.length) && (
-              <span className="text-xs text-navy-600">-</span>
+              <span className="text-xs text-tertiary">-</span>
             )}
           </div>
         </td>
         <td className="px-3 py-3">
-          <ChevronDown className={`w-4 h-4 text-navy-500 transition-transform ${expanded ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`w-4 h-4 text-tertiary transition-transform ${expanded ? 'rotate-180' : ''}`} />
         </td>
       </tr>
       <AnimatePresence>
@@ -424,22 +424,22 @@ function PlayerExpandedDetail({ pupil }) {
   const matches = pupil.match || {}
 
   return (
-    <div className="bg-navy-800/30 px-4 py-4 border-b border-navy-800">
+    <div className="bg-subtle px-4 py-4 border-b border-border-default">
       <div className="grid sm:grid-cols-3 gap-4">
         {/* Training */}
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-navy-400 uppercase tracking-wider">Training</h4>
+          <h4 className="text-xs font-medium text-secondary uppercase tracking-wider">Training</h4>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
-              <span className="text-navy-400">Sessions attended</span>
+              <span className="text-secondary">Sessions attended</span>
               <span className="text-white">{training.sessions_attended || 0} / {training.sessions_total || 0}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-navy-400">Avg effort</span>
+              <span className="text-secondary">Avg effort</span>
               <span className="text-white">{training.avg_effort ? `${training.avg_effort.toFixed(1)} / 5` : '-'}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-navy-400">Highest effort</span>
+              <span className="text-secondary">Highest effort</span>
               <span className="text-white">{training.max_effort || '-'}</span>
             </div>
           </div>
@@ -447,25 +447,25 @@ function PlayerExpandedDetail({ pupil }) {
 
         {/* Observations & Matches */}
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-navy-400 uppercase tracking-wider">Match Involvement</h4>
+          <h4 className="text-xs font-medium text-secondary uppercase tracking-wider">Match Involvement</h4>
           <div className="space-y-1 text-sm">
             <div className="flex justify-between">
-              <span className="text-navy-400">Appearances</span>
+              <span className="text-secondary">Appearances</span>
               <span className="text-white">{matches.appearances || 0}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-navy-400">Starts</span>
+              <span className="text-secondary">Starts</span>
               <span className="text-white">{matches.starts || 0}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-navy-400">Observations</span>
+              <span className="text-secondary">Observations</span>
               <span className="text-white">{observations.total || 0}</span>
             </div>
             {['technical', 'tactical', 'physical', 'mental'].map(type => (
               observations[type] > 0 && (
                 <div key={type} className="flex justify-between">
-                  <span className="text-navy-500 capitalize">{type}</span>
-                  <span className="text-navy-300">{observations[type]}</span>
+                  <span className="text-tertiary capitalize">{type}</span>
+                  <span className="text-secondary">{observations[type]}</span>
                 </div>
               )
             ))}
@@ -474,18 +474,18 @@ function PlayerExpandedDetail({ pupil }) {
 
         {/* Achievements */}
         <div className="space-y-2">
-          <h4 className="text-xs font-medium text-navy-400 uppercase tracking-wider">Achievements</h4>
+          <h4 className="text-xs font-medium text-secondary uppercase tracking-wider">Achievements</h4>
           {pupil.achievements?.list?.length > 0 ? (
             <div className="space-y-1">
               {pupil.achievements.list.map((a, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
                   <Trophy className="w-3 h-3 text-caution-400 shrink-0" />
-                  <span className="text-navy-300 truncate">{a.title || a.type}</span>
+                  <span className="text-secondary truncate">{a.title || a.type}</span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-navy-600">No achievements recorded</p>
+            <p className="text-xs text-tertiary">No achievements recorded</p>
           )}
           {pupil.match?.potm_awards > 0 && (
             <div className="flex items-center gap-2 text-sm mt-1">
@@ -498,12 +498,12 @@ function PlayerExpandedDetail({ pupil }) {
 
       {/* Development info */}
       {pupil.development?.has_snapshots && (
-        <div className="mt-4 pt-4 border-t border-navy-800">
-          <h4 className="text-xs font-medium text-navy-400 uppercase tracking-wider mb-2">Development</h4>
+        <div className="mt-4 pt-4 border-t border-border-default">
+          <h4 className="text-xs font-medium text-secondary uppercase tracking-wider mb-2">Development</h4>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-navy-400">Improvement Score:</span>
+            <span className="text-secondary">Improvement Score:</span>
             <ImprovementBadge score={pupil.development.improvement_score} />
-            <span className="text-xs text-navy-600">
+            <span className="text-xs text-tertiary">
               ({pupil.development.snapshot_count} snapshot{pupil.development.snapshot_count !== 1 ? 's' : ''})
             </span>
           </div>
@@ -520,7 +520,7 @@ function ReviewSection({ icon: Icon, title, color, children }) {
         <Icon className="w-4 h-4" />
         <h3 className="text-sm font-semibold">{title}</h3>
       </div>
-      <p className="text-sm text-navy-300 leading-relaxed pl-6">{children}</p>
+      <p className="text-sm text-secondary leading-relaxed pl-6">{children}</p>
     </div>
   )
 }

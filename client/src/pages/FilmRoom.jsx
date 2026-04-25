@@ -140,7 +140,7 @@ export default function FilmRoom() {
             <MonitorPlay className="w-7 h-7 text-pitch-400" />
             Film Room
           </h1>
-          <p className="text-navy-400 mt-1">Curate educational videos for your pupils</p>
+          <p className="text-secondary mt-1">Curate educational videos for your pupils</p>
         </div>
         <div className="flex gap-2">
           <button onClick={() => setShowAddSection(true)} className="btn-secondary text-sm">
@@ -155,7 +155,7 @@ export default function FilmRoom() {
       {/* Search + Section Tabs */}
       <div className="space-y-3">
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tertiary" />
           <input
             type="text"
             value={searchQuery}
@@ -168,7 +168,7 @@ export default function FilmRoom() {
           <button
             onClick={() => setActiveSection('all')}
             className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
-              activeSection === 'all' ? 'bg-pitch-500 text-white' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
+              activeSection === 'all' ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary hover:bg-border-default'
             }`}
           >
             All ({videos.length})
@@ -180,7 +180,7 @@ export default function FilmRoom() {
                 key={s.id}
                 onClick={() => setActiveSection(s.id)}
                 className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
-                  activeSection === s.id ? 'bg-pitch-500 text-white' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
+                  activeSection === s.id ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary hover:bg-border-default'
                 }`}
               >
                 {s.name} ({count})
@@ -193,8 +193,8 @@ export default function FilmRoom() {
       {/* Video Grid */}
       {filteredVideos.length === 0 ? (
         <div className="text-center py-16">
-          <Film className="w-12 h-12 text-navy-600 mx-auto mb-4" />
-          <p className="text-navy-400">
+          <Film className="w-12 h-12 text-tertiary mx-auto mb-4" />
+          <p className="text-secondary">
             {videos.length === 0 ? 'No videos yet. Add your first video to get started.' : 'No videos match your filter.'}
           </p>
         </div>
@@ -245,7 +245,7 @@ export default function FilmRoom() {
       {/* Add Section Modal */}
       {showAddSection && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowAddSection(false)}>
-          <div className="bg-navy-800 rounded-xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
+          <div className="bg-subtle rounded-xl p-6 w-full max-w-sm" onClick={e => e.stopPropagation()}>
             <h3 className="text-lg font-semibold text-white mb-4">Add Custom Section</h3>
             <input
               type="text"
@@ -265,21 +265,21 @@ export default function FilmRoom() {
       )}
 
       {/* Section Manager (collapsed by default) */}
-      <details className="bg-navy-800 rounded-xl">
-        <summary className="p-4 cursor-pointer text-navy-300 hover:text-white text-sm font-medium">
+      <details className="bg-subtle rounded-xl">
+        <summary className="p-4 cursor-pointer text-secondary hover:text-white text-sm font-medium">
           Manage Sections
         </summary>
         <div className="px-4 pb-4 space-y-2">
           {[...sections].sort((a, b) => a.display_order - b.display_order).map((s, idx) => (
-            <div key={s.id} className="flex items-center gap-2 bg-navy-900 rounded-lg p-2">
+            <div key={s.id} className="flex items-center gap-2 bg-card rounded-lg p-2">
               <span className="flex-1 text-sm text-white">{s.name}</span>
-              {s.is_predefined && <span className="text-xs text-navy-500">Default</span>}
+              {s.is_predefined && <span className="text-xs text-tertiary">Default</span>}
               <button onClick={() => handleMoveSection(s, 'up')} disabled={idx === 0}
-                className="p-1 text-navy-400 hover:text-white disabled:opacity-30">
+                className="p-1 text-secondary hover:text-white disabled:opacity-30">
                 <ChevronUp className="w-4 h-4" />
               </button>
               <button onClick={() => handleMoveSection(s, 'down')} disabled={idx === sections.length - 1}
-                className="p-1 text-navy-400 hover:text-white disabled:opacity-30">
+                className="p-1 text-secondary hover:text-white disabled:opacity-30">
                 <ChevronDown className="w-4 h-4" />
               </button>
               {!s.is_predefined && (
@@ -309,11 +309,11 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
   const isProcessing = video.source_type === 'mux' && video.mux_status !== 'ready'
 
   return (
-    <div className={`bg-navy-800 rounded-xl overflow-hidden border transition-colors ${
-      video.is_highlighted ? 'border-energy-500/50' : !video.is_visible ? 'border-navy-700 opacity-60' : 'border-navy-700'
+    <div className={`bg-subtle rounded-xl overflow-hidden border transition-colors ${
+      video.is_highlighted ? 'border-energy-500/50' : !video.is_visible ? 'border-border-strong opacity-60' : 'border-border-strong'
     }`}>
       {/* Thumbnail */}
-      <div className="relative aspect-video bg-navy-900">
+      <div className="relative aspect-video bg-card">
         {thumbnail ? (
           <img src={thumbnail} alt={video.title} className="w-full h-full object-cover" />
         ) : (
@@ -321,7 +321,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
             {isProcessing ? (
               <Loader2 className="w-8 h-8 text-caution-400 animate-spin" />
             ) : (
-              <Film className="w-8 h-8 text-navy-600" />
+              <Film className="w-8 h-8 text-tertiary" />
             )}
           </div>
         )}
@@ -331,7 +331,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
           </div>
         )}
         {!video.is_visible && (
-          <div className="absolute top-2 right-2 bg-navy-900/80 text-navy-300 text-xs px-2 py-0.5 rounded-full">
+          <div className="absolute top-2 right-2 bg-card text-secondary text-xs px-2 py-0.5 rounded-full">
             Hidden
           </div>
         )}
@@ -341,7 +341,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
           </div>
         )}
         {isProcessing && (
-          <div className="absolute inset-0 bg-navy-900/70 flex items-center justify-center">
+          <div className="absolute inset-0 bg-card/70 flex items-center justify-center">
             <span className="text-sm text-caution-400">Processing...</span>
           </div>
         )}
@@ -350,29 +350,29 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
       {/* Content */}
       <div className="p-3">
         <h3 className="text-white font-medium text-sm truncate">{video.title}</h3>
-        <p className="text-xs text-navy-400 mt-1">{video.section_name}</p>
-        {video.notes && <p className="text-xs text-navy-500 mt-1 line-clamp-2">{video.notes}</p>}
+        <p className="text-xs text-secondary mt-1">{video.section_name}</p>
+        {video.notes && <p className="text-xs text-tertiary mt-1 line-clamp-2">{video.notes}</p>}
 
         {/* Actions */}
-        <div className="flex items-center justify-between mt-3 pt-2 border-t border-navy-700">
+        <div className="flex items-center justify-between mt-3 pt-2 border-t border-border-strong">
           <button
             onClick={onShowWatchers}
-            className="text-xs text-navy-400 hover:text-pitch-400 flex items-center gap-1"
+            className="text-xs text-secondary hover:text-pitch-400 flex items-center gap-1"
           >
             <Users className="w-3.5 h-3.5" />
             {video.watch_count !== undefined ? `${video.watch_count} watched` : 'Watchers'}
           </button>
           <div className="flex gap-1">
-            <button onClick={onEdit} className="p-1.5 text-navy-400 hover:text-white" title="Edit">
+            <button onClick={onEdit} className="p-1.5 text-secondary hover:text-white" title="Edit">
               <Edit3 className="w-3.5 h-3.5" />
             </button>
-            <button onClick={onToggleHighlight} className="p-1.5 text-navy-400 hover:text-energy-400" title="Feature">
+            <button onClick={onToggleHighlight} className="p-1.5 text-secondary hover:text-energy-400" title="Feature">
               <Star className={`w-3.5 h-3.5 ${video.is_highlighted ? 'fill-energy-400 text-energy-400' : ''}`} />
             </button>
-            <button onClick={onToggleVisibility} className="p-1.5 text-navy-400 hover:text-white" title={video.is_visible ? 'Hide' : 'Show'}>
+            <button onClick={onToggleVisibility} className="p-1.5 text-secondary hover:text-white" title={video.is_visible ? 'Hide' : 'Show'}>
               {video.is_visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
             </button>
-            <button onClick={onDelete} className="p-1.5 text-navy-400 hover:text-alert-400" title="Delete">
+            <button onClick={onDelete} className="p-1.5 text-secondary hover:text-alert-400" title="Delete">
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -427,19 +427,19 @@ function AddVideoModal({ sections, teamId, onClose, onAdded }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-start justify-center p-4 pt-[10vh] overflow-y-auto" onClick={onClose}>
-      <div className="bg-navy-800 rounded-xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between p-4 border-b border-navy-700">
+      <div className="bg-subtle rounded-xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+        <div className="flex items-center justify-between p-4 border-b border-border-strong">
           <h2 className="text-lg font-semibold text-white">Add Video</h2>
-          <button onClick={onClose} className="p-1 text-navy-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} className="p-1 text-secondary hover:text-white"><X className="w-5 h-5" /></button>
         </div>
 
         <div className="p-4 space-y-4">
           {/* Mode Toggle */}
-          <div className="flex bg-navy-900 rounded-lg p-1">
+          <div className="flex bg-card rounded-lg p-1">
             <button
               onClick={() => setMode('youtube')}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                mode === 'youtube' ? 'bg-navy-700 text-white' : 'text-navy-400'
+                mode === 'youtube' ? 'bg-border-default text-white' : 'text-secondary'
               }`}
             >
               <Youtube className="w-4 h-4" /> YouTube
@@ -447,7 +447,7 @@ function AddVideoModal({ sections, teamId, onClose, onAdded }) {
             <button
               onClick={() => setMode('upload')}
               className={`flex-1 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
-                mode === 'upload' ? 'bg-navy-700 text-white' : 'text-navy-400'
+                mode === 'upload' ? 'bg-border-default text-white' : 'text-secondary'
               }`}
             >
               <Upload className="w-4 h-4" /> Upload
@@ -544,7 +544,7 @@ function EditVideoModal({ video, sections, onClose, onSaved }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div className="bg-navy-800 rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+      <div className="bg-subtle rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
         <h3 className="text-lg font-semibold text-white mb-4">Edit Video</h3>
         <div className="space-y-3">
           <div>
@@ -590,27 +590,27 @@ function WatcherDrawer({ video, onClose }) {
 
   return (
     <div className="fixed inset-0 bg-black/60 z-50 flex justify-end" onClick={onClose}>
-      <div className="bg-navy-800 w-full max-w-sm h-full overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="sticky top-0 bg-navy-800 border-b border-navy-700 p-4 flex items-center justify-between">
+      <div className="bg-subtle w-full max-w-sm h-full overflow-y-auto" onClick={e => e.stopPropagation()}>
+        <div className="sticky top-0 bg-subtle border-b border-border-strong p-4 flex items-center justify-between">
           <div>
             <h3 className="text-white font-semibold">Who's Watched</h3>
-            <p className="text-sm text-navy-400 truncate">{video.title}</p>
+            <p className="text-sm text-secondary truncate">{video.title}</p>
           </div>
-          <button onClick={onClose} className="p-1 text-navy-400 hover:text-white"><X className="w-5 h-5" /></button>
+          <button onClick={onClose} className="p-1 text-secondary hover:text-white"><X className="w-5 h-5" /></button>
         </div>
 
         {loading ? (
           <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 text-pitch-400 animate-spin" /></div>
         ) : data ? (
           <div className="p-4">
-            <p className="text-sm text-navy-400 mb-4">
+            <p className="text-sm text-secondary mb-4">
               {data.watched_count} of {data.total} pupils watched
             </p>
             <div className="space-y-2">
               {data.watchers.map(w => (
                 <div key={w.pupil_id} className="flex items-center gap-3 py-2">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                    w.watched ? 'bg-pitch-500/20 text-pitch-400' : 'bg-navy-700 text-navy-500'
+                    w.watched ? 'bg-pitch-500/20 text-pitch-400' : 'bg-border-default text-tertiary'
                   }`}>
                     {w.watched ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                   </div>
@@ -619,7 +619,7 @@ function WatcherDrawer({ video, onClose }) {
                       {w.squad_number ? `#${w.squad_number} ` : ''}{w.name}
                     </p>
                     {w.watched_at && (
-                      <p className="text-xs text-navy-500">
+                      <p className="text-xs text-tertiary">
                         {new Date(w.watched_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                       </p>
                     )}

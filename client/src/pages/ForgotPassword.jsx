@@ -35,7 +35,7 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-page flex items-center justify-center p-8">
       <SEO title="Forgot Password" path="/forgot-password" noIndex={true} />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -44,7 +44,7 @@ export default function ForgotPassword() {
       >
         <Link to="/" className="inline-flex items-center gap-2 mb-8">
           <MoonBootsMark />
-          <span className="font-bold text-navy-50 text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
+          <span className="font-bold text-primary text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
         </Link>
 
         {sent ? (
@@ -53,11 +53,11 @@ export default function ForgotPassword() {
               <CheckCircle className="w-8 h-8 text-pitch-400" />
             </div>
             <h1 className="font-display text-2xl font-bold text-white mb-2">Check your email</h1>
-            <p className="text-navy-400 mb-6">
+            <p className="text-secondary mb-6">
               If an account exists for <span className="text-white">{email}</span>,
               we've sent a link to reset your password. The link expires in 1 hour.
             </p>
-            <p className="text-navy-500 text-sm mb-6">
+            <p className="text-tertiary text-sm mb-6">
               Don't see it? Check your spam folder.
             </p>
             <div className="space-y-3">
@@ -68,7 +68,7 @@ export default function ForgotPassword() {
                 Try a different email
               </button>
               <div>
-                <Link to="/login" className="text-navy-400 hover:text-white text-sm flex items-center justify-center gap-1">
+                <Link to="/login" className="text-secondary hover:text-white text-sm flex items-center justify-center gap-1">
                   <ArrowLeft className="w-4 h-4" /> Back to sign in
                 </Link>
               </div>
@@ -77,7 +77,7 @@ export default function ForgotPassword() {
         ) : (
           <>
             <h1 className="font-display text-3xl font-bold text-white mb-2">Reset your password</h1>
-            <p className="text-navy-400 mb-8">
+            <p className="text-secondary mb-8">
               Enter your email address and we'll send you a link to reset your password.
             </p>
 
@@ -85,7 +85,7 @@ export default function ForgotPassword() {
               <div>
                 <label htmlFor="email" className="label">Email</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                   <input
                     id="email"
                     type="email"
@@ -106,7 +106,7 @@ export default function ForgotPassword() {
               </button>
             </form>
 
-            <p className="text-center text-navy-400 mt-6">
+            <p className="text-center text-secondary mt-6">
               <Link to="/login" className="text-pitch-400 hover:text-pitch-300 flex items-center justify-center gap-1">
                 <ArrowLeft className="w-4 h-4" /> Back to sign in
               </Link>

@@ -90,10 +90,10 @@ export default function WatchStream() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
           <Loader2 className="w-12 h-12 animate-spin text-pitch-400 mx-auto" />
-          <p className="text-navy-400 mt-4">Loading stream...</p>
+          <p className="text-secondary mt-4">Loading stream...</p>
         </div>
       </div>
     )
@@ -102,11 +102,11 @@ export default function WatchStream() {
   // Error state
   if (error && !pinRequired) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="text-center max-w-md">
           <AlertCircle className="w-16 h-16 text-alert-500 mx-auto mb-4" />
           <h1 className="text-xl font-display font-bold text-white mb-2">Unable to Load Stream</h1>
-          <p className="text-navy-400 mb-6">{error}</p>
+          <p className="text-secondary mb-6">{error}</p>
           <button onClick={checkStream} className="btn-primary">
             Try Again
           </button>
@@ -118,17 +118,17 @@ export default function WatchStream() {
   // PIN entry state
   if (pinRequired) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="card p-8 max-w-sm w-full text-center"
         >
-          <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
+          <div className="w-16 h-16 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
             <Lock className="w-8 h-8 text-pitch-400" />
           </div>
           <h1 className="text-xl font-display font-bold text-white mb-2">Enter PIN to Watch</h1>
-          <p className="text-navy-400 text-sm mb-6">
+          <p className="text-secondary text-sm mb-6">
             This stream is protected. Enter the PIN provided by the team to watch.
           </p>
 
@@ -171,14 +171,14 @@ export default function WatchStream() {
 
   // Stream view
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className="min-h-screen bg-page">
       {/* Header */}
-      <header className="bg-navy-900 border-b border-navy-800 px-4 py-3">
+      <header className="bg-card border-b border-border-default px-4 py-3">
         <div className="max-w-4xl mx-auto flex items-center gap-3">
           <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
             stream?.status === 'active'
               ? 'bg-gradient-to-br from-alert-500 to-energy-500 animate-pulse'
-              : 'bg-navy-700'
+              : 'bg-border-default'
           }`}>
             <Radio className="w-5 h-5 text-white" />
           </div>
@@ -186,7 +186,7 @@ export default function WatchStream() {
             <h1 className="font-display font-bold text-white">
               {stream?.streamName || stream?.teamName || 'Live Stream'}
             </h1>
-            <p className="text-xs text-navy-400">
+            <p className="text-xs text-secondary">
               {stream?.status === 'active' ? (
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
@@ -220,11 +220,11 @@ export default function WatchStream() {
           </motion.div>
         ) : (
           <div className="card p-12 text-center">
-            <div className="w-24 h-24 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-6">
-              <WifiOff className="w-12 h-12 text-navy-500" />
+            <div className="w-24 h-24 rounded-full bg-subtle flex items-center justify-center mx-auto mb-6">
+              <WifiOff className="w-12 h-12 text-tertiary" />
             </div>
             <h2 className="text-xl font-display font-semibold text-white mb-2">Stream Offline</h2>
-            <p className="text-navy-400 max-w-sm mx-auto mb-6">
+            <p className="text-secondary max-w-sm mx-auto mb-6">
               The live stream isn't active right now. Check back when the team starts streaming.
             </p>
             <button onClick={checkStream} className="btn-secondary">
@@ -235,7 +235,7 @@ export default function WatchStream() {
         )}
 
         {/* Footer info */}
-        <p className="text-center text-navy-500 text-xs mt-6">
+        <p className="text-center text-tertiary text-xs mt-6">
           Powered by MoonBoots Sports
         </p>
       </main>

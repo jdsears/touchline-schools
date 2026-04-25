@@ -101,7 +101,7 @@ const statusColors = {
   available: 'bg-green-500/20 text-green-400 border-green-500/30',
   unavailable: 'bg-red-500/20 text-red-400 border-red-500/30',
   maybe: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  pending: 'bg-navy-700 text-navy-400 border-navy-600'
+  pending: 'bg-border-default text-secondary border-border-strong'
 }
 
 const statusIcons = {
@@ -1181,14 +1181,14 @@ export default function MatchDetail() {
   if (!match) {
     return (
       <div className="p-6 lg:p-8 max-w-4xl mx-auto">
-        <Link to="/matches" className="inline-flex items-center gap-2 text-navy-400 hover:text-white mb-6">
+        <Link to="/matches" className="inline-flex items-center gap-2 text-secondary hover:text-white mb-6">
           <ArrowLeft className="w-4 h-4" />
           Back to Matches
         </Link>
         <div className="card p-8 text-center">
-          <AlertCircle className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-tertiary mx-auto mb-4" />
           <h1 className="font-display text-xl font-bold text-white mb-2">Match Not Found</h1>
-          <p className="text-navy-400">This match may have been deleted or doesn't exist.</p>
+          <p className="text-secondary">This match may have been deleted or doesn't exist.</p>
         </div>
       </div>
     )
@@ -1197,7 +1197,7 @@ export default function MatchDetail() {
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Back link */}
-      <Link to="/matches" className="inline-flex items-center gap-2 text-navy-400 hover:text-white mb-6">
+      <Link to="/matches" className="inline-flex items-center gap-2 text-secondary hover:text-white mb-6">
         <ArrowLeft className="w-4 h-4" />
         Back to Matches
       </Link>
@@ -1226,7 +1226,7 @@ export default function MatchDetail() {
                 <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-2">
                   {match.is_home ? `${team?.name || 'Us'} vs ${match.opponent}` : `${match.opponent} vs ${team?.name || 'Us'}`}
                 </h1>
-                <div className="flex flex-wrap items-center gap-4 text-sm text-navy-400">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-secondary">
                   <span className="flex items-center gap-1.5">
                     <Calendar className="w-4 h-4" />
                     {formatDate(match.date)}
@@ -1274,7 +1274,7 @@ export default function MatchDetail() {
             {/* Formation */}
             {match.formation_used && (
               <div className="flex items-center gap-2 text-sm">
-                <span className="text-navy-500">Formation:</span>
+                <span className="text-tertiary">Formation:</span>
                 <span className="badge-navy">{match.formation_used}</span>
               </div>
             )}
@@ -1287,7 +1287,7 @@ export default function MatchDetail() {
                 inline-block p-4 rounded-xl relative group
                 ${resultDisplay.outcome === 'win' ? 'bg-pitch-500/10 border border-pitch-500/20' :
                   resultDisplay.outcome === 'loss' ? 'bg-alert-500/10 border border-alert-500/20' :
-                  'bg-navy-800 border border-navy-700'}
+                  'bg-subtle border border-border-strong'}
               `}>
                 {isManager && (
                   <button
@@ -1295,22 +1295,22 @@ export default function MatchDetail() {
                       setResultData({ goalsFor: String(resultDisplay.goalsFor), goalsAgainst: String(resultDisplay.goalsAgainst) })
                       setShowResultModal(true)
                     }}
-                    className="absolute top-2 right-2 p-1.5 rounded-lg bg-navy-800/80 text-navy-400 hover:text-white hover:bg-navy-700 transition-colors opacity-0 group-hover:opacity-100"
+                    className="absolute top-2 right-2 p-1.5 rounded-lg bg-subtle/80 text-secondary hover:text-white hover:bg-border-default transition-colors opacity-0 group-hover:opacity-100"
                     title="Edit score"
                   >
                     <Pencil className="w-3.5 h-3.5" />
                   </button>
                 )}
-                <p className="text-xs text-navy-400 uppercase mb-1">Final Score</p>
+                <p className="text-xs text-secondary uppercase mb-1">Final Score</p>
                 <div className="flex items-center gap-3">
                   <span className="text-3xl font-bold text-white">{match.is_home ? resultDisplay.goalsFor : resultDisplay.goalsAgainst}</span>
-                  <span className="text-xl text-navy-500">-</span>
+                  <span className="text-xl text-tertiary">-</span>
                   <span className="text-3xl font-bold text-white">{match.is_home ? resultDisplay.goalsAgainst : resultDisplay.goalsFor}</span>
                 </div>
                 <p className={`text-sm font-medium mt-1 capitalize
                   ${resultDisplay.outcome === 'win' ? 'text-pitch-400' :
                     resultDisplay.outcome === 'loss' ? 'text-alert-400' :
-                    'text-navy-400'}
+                    'text-secondary'}
                 `}>
                   {resultDisplay.outcome}
                 </p>
@@ -1340,7 +1340,7 @@ export default function MatchDetail() {
                 flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors
                 ${activeTab === tab.id
                   ? 'bg-pitch-600 text-white'
-                  : 'bg-navy-800 text-navy-400 hover:text-white hover:bg-navy-700'
+                  : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                 }
               `}
             >
@@ -1365,7 +1365,7 @@ export default function MatchDetail() {
             {match.notes && (
               <div className="card p-6">
                 <h2 className="font-display font-semibold text-white mb-3">Match Notes</h2>
-                <p className="text-navy-300 whitespace-pre-wrap">{match.notes}</p>
+                <p className="text-secondary whitespace-pre-wrap">{match.notes}</p>
               </div>
             )}
 
@@ -1380,9 +1380,9 @@ export default function MatchDetail() {
                 </div>
                 <div className="text-left flex-1">
                   <p className="font-medium text-white">Match Prep</p>
-                  <p className="text-sm text-navy-400">AI tactical briefing</p>
+                  <p className="text-sm text-secondary">AI tactical briefing</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-navy-600" />
+                <ChevronRight className="w-5 h-5 text-tertiary" />
               </button>
 
               <Link
@@ -1394,9 +1394,9 @@ export default function MatchDetail() {
                 </div>
                 <div className="text-left flex-1">
                   <p className="font-medium text-white">Ask AI</p>
-                  <p className="text-sm text-navy-400">Chat about this match</p>
+                  <p className="text-sm text-secondary">Chat about this match</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-navy-600" />
+                <ChevronRight className="w-5 h-5 text-tertiary" />
               </Link>
 
               <button
@@ -1408,9 +1408,9 @@ export default function MatchDetail() {
                 </div>
                 <div className="text-left flex-1">
                   <p className="font-medium text-white">Video Analysis</p>
-                  <p className="text-sm text-navy-400">{match.veo_link ? 'View footage' : 'Add video'}</p>
+                  <p className="text-sm text-secondary">{match.veo_link ? 'View footage' : 'Add video'}</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-navy-600" />
+                <ChevronRight className="w-5 h-5 text-tertiary" />
               </button>
             </div>
 
@@ -1418,25 +1418,25 @@ export default function MatchDetail() {
             <div className="card p-6">
               <h2 className="font-display font-semibold text-white mb-4">Match Information</h2>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 rounded-lg bg-navy-800/50 text-center">
+                <div className="p-4 rounded-lg bg-subtle text-center">
                   <p className="text-2xl font-bold text-white">{match.is_home ? 'H' : 'A'}</p>
-                  <p className="text-xs text-navy-400 uppercase mt-1">Home/Away</p>
+                  <p className="text-xs text-secondary uppercase mt-1">Home/Away</p>
                 </div>
-                <div className="p-4 rounded-lg bg-navy-800/50 text-center">
+                <div className="p-4 rounded-lg bg-subtle text-center">
                   <p className="text-2xl font-bold text-white capitalize">{match.kit_type ? (match.kit_type === 'third' ? '3rd' : match.kit_type.charAt(0).toUpperCase() + match.kit_type.slice(1)) : (match.is_home ? 'Home' : 'Away')}</p>
-                  <p className="text-xs text-navy-400 uppercase mt-1">Kit</p>
+                  <p className="text-xs text-secondary uppercase mt-1">Kit</p>
                 </div>
-                <div className="p-4 rounded-lg bg-navy-800/50 text-center">
+                <div className="p-4 rounded-lg bg-subtle text-center">
                   <p className="text-2xl font-bold text-white">{match.formation_used || '-'}</p>
-                  <p className="text-xs text-navy-400 uppercase mt-1">Formation</p>
+                  <p className="text-xs text-secondary uppercase mt-1">Formation</p>
                 </div>
-                <div className="p-4 rounded-lg bg-navy-800/50 text-center">
+                <div className="p-4 rounded-lg bg-subtle text-center">
                   <p className="text-2xl font-bold text-white">{resultDisplay?.goalsFor ?? '-'}</p>
-                  <p className="text-xs text-navy-400 uppercase mt-1">Goals For</p>
+                  <p className="text-xs text-secondary uppercase mt-1">Goals For</p>
                 </div>
-                <div className="p-4 rounded-lg bg-navy-800/50 text-center">
+                <div className="p-4 rounded-lg bg-subtle text-center">
                   <p className="text-2xl font-bold text-white">{resultDisplay?.goalsAgainst ?? '-'}</p>
-                  <p className="text-xs text-navy-400 uppercase mt-1">Goals Against</p>
+                  <p className="text-xs text-secondary uppercase mt-1">Goals Against</p>
                 </div>
               </div>
             </div>
@@ -1470,7 +1470,7 @@ export default function MatchDetail() {
                 {matchGoals.length > 0 ? (
                   <div className="space-y-2">
                     {matchGoals.map(goal => (
-                      <div key={goal.id} className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 border border-navy-700">
+                      <div key={goal.id} className="flex items-center justify-between p-3 rounded-lg bg-subtle border border-border-strong">
                         <div className="flex items-center gap-3">
                           {goal.minute && (
                             <span className="w-8 h-8 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center shrink-0">
@@ -1480,7 +1480,7 @@ export default function MatchDetail() {
                           <div>
                             <div className="flex items-center gap-2">
                               <p className="text-sm font-medium text-white">
-                                {goal.scorer_number && <span className="text-navy-400 mr-1">#{goal.scorer_number}</span>}
+                                {goal.scorer_number && <span className="text-secondary mr-1">#{goal.scorer_number}</span>}
                                 {goal.scorer_name || 'Unknown'}
                               </p>
                               {goal.goal_type && goal.goal_type !== 'open_play' && (
@@ -1490,14 +1490,14 @@ export default function MatchDetail() {
                               )}
                             </div>
                             {goal.assist_name && (
-                              <p className="text-xs text-navy-400">
+                              <p className="text-xs text-secondary">
                                 Assist: {goal.assist_number && `#${goal.assist_number} `}{goal.assist_name}
                               </p>
                             )}
                           </div>
                         </div>
                         {isManager && (
-                          <button onClick={() => handleDeleteGoal(goal.id)} className="p-1 text-navy-500 hover:text-alert-400 transition-colors" title="Remove goal">
+                          <button onClick={() => handleDeleteGoal(goal.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove goal">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
@@ -1505,7 +1505,7 @@ export default function MatchDetail() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-navy-400">
+                  <div className="text-center py-6 text-secondary">
                     <Goal className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p>No goalscorers recorded yet</p>
                     {isManager && (
@@ -1539,7 +1539,7 @@ export default function MatchDetail() {
                 {matchSubs.length > 0 ? (
                   <div className="space-y-2">
                     {matchSubs.map(sub => (
-                      <div key={sub.id} className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 border border-navy-700">
+                      <div key={sub.id} className="flex items-center justify-between p-3 rounded-lg bg-subtle border border-border-strong">
                         <div className="flex items-center gap-3">
                           {sub.minute && (
                             <span className="w-8 h-8 rounded-full bg-energy-500/20 text-energy-400 text-xs font-bold flex items-center justify-center shrink-0">
@@ -1549,15 +1549,15 @@ export default function MatchDetail() {
                           <div className="flex items-center gap-2 text-sm">
                             {sub.player_off_name && (
                               <span className="text-alert-400">
-                                <span className="text-navy-400 mr-1">#{sub.player_off_number}</span>
+                                <span className="text-secondary mr-1">#{sub.player_off_number}</span>
                                 {sub.player_off_name}
                                 <span className="ml-1 text-xs text-alert-500">OFF</span>
                               </span>
                             )}
-                            <ArrowRightLeft className="w-3.5 h-3.5 text-navy-500" />
+                            <ArrowRightLeft className="w-3.5 h-3.5 text-tertiary" />
                             {sub.player_on_name && (
                               <span className="text-pitch-400">
-                                <span className="text-navy-400 mr-1">#{sub.player_on_number}</span>
+                                <span className="text-secondary mr-1">#{sub.player_on_number}</span>
                                 {sub.player_on_name}
                                 <span className="ml-1 text-xs text-pitch-500">ON</span>
                               </span>
@@ -1565,7 +1565,7 @@ export default function MatchDetail() {
                           </div>
                         </div>
                         {isManager && (
-                          <button onClick={() => handleDeleteSub(sub.id)} className="p-1 text-navy-500 hover:text-alert-400 transition-colors" title="Remove substitution">
+                          <button onClick={() => handleDeleteSub(sub.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove substitution">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
@@ -1573,7 +1573,7 @@ export default function MatchDetail() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-navy-400">
+                  <div className="text-center py-6 text-secondary">
                     <ArrowRightLeft className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p>No substitutions recorded yet</p>
                     {isManager && (
@@ -1606,7 +1606,7 @@ export default function MatchDetail() {
                     {matchEvents.map(evt => {
                       const evtType = taxonomy.matchEventTypes?.find(t => t.key === evt.event_type)
                       return (
-                        <div key={evt.id} className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 border border-navy-700">
+                        <div key={evt.id} className="flex items-center justify-between p-3 rounded-lg bg-subtle border border-border-strong">
                           <div className="flex items-center gap-3">
                             {evt.minute != null && (
                               <span className="w-8 h-8 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center shrink-0">
@@ -1620,21 +1620,21 @@ export default function MatchDetail() {
                                 </span>
                                 {evt.pupil_name && (
                                   <p className="text-sm font-medium text-white">
-                                    {evt.pupil_number && <span className="text-navy-400 mr-1">#{evt.pupil_number}</span>}
+                                    {evt.pupil_number && <span className="text-secondary mr-1">#{evt.pupil_number}</span>}
                                     {evt.pupil_name}
                                   </p>
                                 )}
                               </div>
                               {evt.secondary_pupil_name && (
-                                <p className="text-xs text-navy-400">
+                                <p className="text-xs text-secondary">
                                   {evtType?.secondaryLabel || 'Assist'}: {evt.secondary_pupil_number && `#${evt.secondary_pupil_number} `}{evt.secondary_pupil_name}
                                 </p>
                               )}
-                              {evt.notes && <p className="text-xs text-navy-500 mt-0.5">{evt.notes}</p>}
+                              {evt.notes && <p className="text-xs text-tertiary mt-0.5">{evt.notes}</p>}
                             </div>
                           </div>
                           {isManager && (
-                            <button onClick={() => handleDeleteEvent(evt.id)} className="p-1 text-navy-500 hover:text-alert-400 transition-colors" title="Remove event">
+                            <button onClick={() => handleDeleteEvent(evt.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove event">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           )}
@@ -1643,7 +1643,7 @@ export default function MatchDetail() {
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-navy-400">
+                  <div className="text-center py-6 text-secondary">
                     <Target className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p>No match events recorded yet</p>
                     {isManager && (
@@ -1694,10 +1694,10 @@ export default function MatchDetail() {
                       const statFields = taxonomy.pupilStatFields || []
                       const filledStats = statFields.filter(f => ps.stats?.[f.key] != null && ps.stats[f.key] !== '' && ps.stats[f.key] !== 0)
                       return (
-                        <div key={ps.id} className="p-3 rounded-lg bg-navy-800/50 border border-navy-700">
+                        <div key={ps.id} className="p-3 rounded-lg bg-subtle border border-border-strong">
                           <div className="flex items-center justify-between mb-1">
                             <p className="text-sm font-medium text-white">
-                              {ps.squad_number && <span className="text-navy-400 mr-1">#{ps.squad_number}</span>}
+                              {ps.squad_number && <span className="text-secondary mr-1">#{ps.squad_number}</span>}
                               {ps.pupil_name}
                             </p>
                             {ps.rating && (
@@ -1709,19 +1709,19 @@ export default function MatchDetail() {
                           {filledStats.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-1">
                               {filledStats.map(f => (
-                                <span key={f.key} className="text-xs text-navy-300 bg-navy-700/50 px-2 py-0.5 rounded">
+                                <span key={f.key} className="text-xs text-secondary bg-border-default/50 px-2 py-0.5 rounded">
                                   {f.label}: <strong className="text-white">{ps.stats[f.key]}</strong>
                                 </span>
                               ))}
                             </div>
                           )}
-                          {ps.notes && <p className="text-xs text-navy-500 mt-1">{ps.notes}</p>}
+                          {ps.notes && <p className="text-xs text-tertiary mt-1">{ps.notes}</p>}
                         </div>
                       )
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-navy-400">
+                  <div className="text-center py-6 text-secondary">
                     <Users className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p>No pupil stats recorded yet</p>
                   </div>
@@ -1764,7 +1764,7 @@ export default function MatchDetail() {
                           {match.player_of_match_name || pupils.find(p => p.id === match.player_of_match_id)?.name || 'Unknown Pupil'}
                         </p>
                         {match.player_of_match_reason && (
-                          <p className="text-sm text-navy-300 mt-1 italic">
+                          <p className="text-sm text-secondary mt-1 italic">
                             "{match.player_of_match_reason}"
                           </p>
                         )}
@@ -1773,7 +1773,7 @@ export default function MatchDetail() {
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-6 text-navy-400">
+                  <div className="text-center py-6 text-secondary">
                     <Award className="w-12 h-12 mx-auto mb-3 opacity-30" />
                     <p>No Pupil of the Match selected yet</p>
                     {isManager && (
@@ -1796,20 +1796,20 @@ export default function MatchDetail() {
                 <div className="flex items-center gap-2 mb-4">
                   <Heart className="w-5 h-5 text-energy-400" />
                   <h2 className="font-display font-semibold text-white">Parents' Pupil of the Match</h2>
-                  <span className="text-xs text-navy-400 ml-auto">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''}</span>
+                  <span className="text-xs text-secondary ml-auto">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''}</span>
                 </div>
                 <div className="space-y-2">
                   {parentVoteData.votes.map((v, idx) => (
                     <div key={v.pupil_id} className="flex items-center gap-3">
-                      <span className="text-sm text-navy-300 w-5 text-right">{idx + 1}.</span>
+                      <span className="text-sm text-secondary w-5 text-right">{idx + 1}.</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className={`text-sm font-medium ${idx === 0 ? 'text-energy-400' : 'text-white'}`}>
                             {v.player_name}{v.squad_number ? ` #${v.squad_number}` : ''}
                           </span>
-                          <span className="text-xs text-navy-400">{v.vote_count} vote{v.vote_count !== 1 ? 's' : ''}</span>
+                          <span className="text-xs text-secondary">{v.vote_count} vote{v.vote_count !== 1 ? 's' : ''}</span>
                         </div>
-                        <div className="h-1.5 rounded-full bg-navy-700">
+                        <div className="h-1.5 rounded-full bg-border-default">
                           <div
                             className={`h-full rounded-full ${idx === 0 ? 'bg-energy-400' : 'bg-energy-500/40'}`}
                             style={{ width: `${parentVoteData.total_votes ? (v.vote_count / parentVoteData.total_votes) * 100 : 0}%` }}
@@ -1826,7 +1826,7 @@ export default function MatchDetail() {
             {!resultDisplay && (
               <div className="card p-6">
                 <h2 className="font-display font-semibold text-white mb-2">Match Formations</h2>
-                <p className="text-navy-400 text-sm mb-4">
+                <p className="text-secondary text-sm mb-4">
                   Select primary and secondary formations. Click to add, click again to change priority, click again to remove.
                 </p>
 
@@ -1853,10 +1853,10 @@ export default function MatchDetail() {
                               ? 'bg-pitch-600 text-white'
                               : 'bg-pitch-600/60 text-white'
                             : isDisabled
-                              ? 'bg-navy-900 text-navy-600 cursor-not-allowed'
+                              ? 'bg-card text-tertiary cursor-not-allowed'
                               : isCustom
                                 ? 'bg-energy-600/20 text-energy-400 hover:text-white hover:bg-energy-600/40 border border-energy-500/30'
-                                : 'bg-navy-800 text-navy-400 hover:text-white hover:bg-navy-700'
+                                : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                           }
                         `}
                         title={isDisabled ? 'Maximum 2 formations' : isSelected ? `Click to change priority (${priorityLabel})` : isCustom ? `Custom: ${formation}` : formation}
@@ -1872,12 +1872,12 @@ export default function MatchDetail() {
 
                 {/* Selected summary */}
                 {getFormationsArray(matchFormations).length > 0 && (
-                  <div className="mb-4 text-sm text-navy-400">
+                  <div className="mb-4 text-sm text-secondary">
                     <span className="font-medium text-white">Selected:</span>{' '}
                     {getSortedFormations(matchFormations).map(({ formation, priority }, idx) => (
                       <span key={formation}>
                         {idx > 0 && ' → '}
-                        <span className={priority === 'primary' ? 'text-pitch-400' : 'text-navy-300'}>
+                        <span className={priority === 'primary' ? 'text-pitch-400' : 'text-secondary'}>
                           {formation} ({priority === 'primary' ? 'Primary' : 'Secondary'})
                         </span>
                       </span>
@@ -1937,7 +1937,7 @@ export default function MatchDetail() {
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="font-display font-semibold text-white">Selected Squad</h2>
-                    <p className="text-sm text-navy-400">
+                    <p className="text-sm text-secondary">
                       {squad.filter(s => s.is_starting).length} starting, {squad.filter(s => !s.is_starting).length} subs
                     </p>
                   </div>
@@ -1956,7 +1956,7 @@ export default function MatchDetail() {
                       {match.squad_announced ? 'Update & Re-notify' : 'Announce Squad'}
                     </button>
                   ) : (
-                    <span className="text-xs text-navy-500">Squad saves automatically</span>
+                    <span className="text-xs text-tertiary">Squad saves automatically</span>
                   )}
                 </div>
 
@@ -1979,7 +1979,7 @@ export default function MatchDetail() {
                               <select
                                 value={s.position || ''}
                                 onChange={(e) => handlePositionChange(s.pupil_id, e.target.value)}
-                                className="bg-navy-800 border border-navy-600 text-xs text-navy-300 rounded px-1.5 py-0.5 focus:border-pitch-500 focus:outline-none"
+                                className="bg-subtle border border-border-strong text-xs text-secondary rounded px-1.5 py-0.5 focus:border-pitch-500 focus:outline-none"
                                 title="Match-day position"
                               >
                                 <option value="">Pos</option>
@@ -1994,7 +1994,7 @@ export default function MatchDetail() {
                               </select>
                               <button
                                 onClick={() => handleToggleStarting(s.pupil_id, true)}
-                                className="text-xs text-navy-400 hover:text-energy-400 transition-colors whitespace-nowrap"
+                                className="text-xs text-secondary hover:text-energy-400 transition-colors whitespace-nowrap"
                                 title="Move to subs"
                               >
                                 Move to Subs
@@ -2004,7 +2004,7 @@ export default function MatchDetail() {
                         )
                       })}
                       {squad.filter(s => s.is_starting).length === 0 && (
-                        <p className="text-sm text-navy-500 italic">No starters selected - use the pupil list below to set starting lineup</p>
+                        <p className="text-sm text-tertiary italic">No starters selected - use the pupil list below to set starting lineup</p>
                       )}
                     </div>
                   </div>
@@ -2020,13 +2020,13 @@ export default function MatchDetail() {
                         const playerName = s.player_name || availability.find(a => a.pupil_id === s.pupil_id)?.player_name
                         const profilePositions = s.player_positions || availability.find(a => a.pupil_id === s.pupil_id)?.positions || []
                         return (
-                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-navy-300 p-2 bg-energy-500/10 rounded border border-energy-500/20 gap-2">
+                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-secondary p-2 bg-energy-500/10 rounded border border-energy-500/20 gap-2">
                             <span className="truncate">{playerName}</span>
                             <div className="flex items-center gap-2 shrink-0">
                               <select
                                 value={s.position || ''}
                                 onChange={(e) => handlePositionChange(s.pupil_id, e.target.value)}
-                                className="bg-navy-800 border border-navy-600 text-xs text-navy-300 rounded px-1.5 py-0.5 focus:border-energy-500 focus:outline-none"
+                                className="bg-subtle border border-border-strong text-xs text-secondary rounded px-1.5 py-0.5 focus:border-energy-500 focus:outline-none"
                                 title="Match-day position"
                               >
                                 <option value="">Pos</option>
@@ -2041,7 +2041,7 @@ export default function MatchDetail() {
                               </select>
                               <button
                                 onClick={() => handleToggleStarting(s.pupil_id, false)}
-                                className="text-xs text-navy-400 hover:text-pitch-400 transition-colors whitespace-nowrap"
+                                className="text-xs text-secondary hover:text-pitch-400 transition-colors whitespace-nowrap"
                                 title="Move to starting"
                               >
                                 Move to Starting
@@ -2051,7 +2051,7 @@ export default function MatchDetail() {
                         )
                       })}
                       {squad.filter(s => !s.is_starting).length === 0 && (
-                        <p className="text-sm text-navy-500 italic">No subs selected</p>
+                        <p className="text-sm text-tertiary italic">No subs selected</p>
                       )}
                     </div>
                   </div>
@@ -2105,11 +2105,11 @@ export default function MatchDetail() {
                   </p>
                   <p className="text-xs text-red-400/70">Unavailable</p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-navy-800 border border-navy-700">
-                  <p className="text-2xl font-bold text-navy-400">
+                <div className="text-center p-3 rounded-lg bg-subtle border border-border-strong">
+                  <p className="text-2xl font-bold text-secondary">
                     {availability.filter(a => a.status === 'pending').length}
                   </p>
-                  <p className="text-xs text-navy-500">Pending</p>
+                  <p className="text-xs text-tertiary">Pending</p>
                 </div>
               </div>
 
@@ -2129,17 +2129,17 @@ export default function MatchDetail() {
                       <div
                         key={pupil.pupil_id}
                         className={`flex items-center justify-between p-3 rounded-lg border transition ${
-                          inSquad ? 'bg-pitch-500/10 border-pitch-500/30' : 'bg-navy-800/50 border-navy-700'
+                          inSquad ? 'bg-pitch-500/10 border-pitch-500/30' : 'bg-subtle border-border-strong'
                         }`}
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-white">
+                          <div className="w-8 h-8 rounded-full bg-border-default flex items-center justify-center text-sm font-medium text-white">
                             {pupil.squad_number || pupil.player_name?.charAt(0)}
                           </div>
                           <div>
                             <p className="text-sm font-medium text-white">{pupil.player_name}</p>
                             {pupil.positions?.length > 0 && (
-                              <p className="text-xs text-navy-400">{pupil.positions.join(', ')}</p>
+                              <p className="text-xs text-secondary">{pupil.positions.join(', ')}</p>
                             )}
                           </div>
                         </div>
@@ -2157,7 +2157,7 @@ export default function MatchDetail() {
                                     className={`p-1.5 rounded transition ${
                                       pupil.status === status
                                         ? statusColors[status]
-                                        : 'text-navy-500 hover:text-navy-300 hover:bg-navy-700'
+                                        : 'text-tertiary hover:text-secondary hover:bg-border-default'
                                     }`}
                                     title={status}
                                   >
@@ -2176,13 +2176,13 @@ export default function MatchDetail() {
                           {/* Squad Toggle (Manager only) - show for available pupils, or any pupil already in squad */}
                           {isManager && (pupil.status === 'available' || inSquad || !upcoming) && (
                             <>
-                              <div className="w-px h-6 bg-navy-700 mx-1" />
+                              <div className="w-px h-6 bg-border-default mx-1" />
                               <button
                                 onClick={() => handleToggleSquad(pupil.pupil_id, inSquad)}
                                 className={`px-3 py-1.5 rounded text-xs font-bold transition ${
                                   inSquad
                                     ? 'bg-pitch-500 text-white'
-                                    : 'bg-navy-700 text-navy-300 hover:bg-navy-600 hover:text-white'
+                                    : 'bg-border-default text-secondary hover:bg-navy-600 hover:text-white'
                                 }`}
                               >
                                 {inSquad ? 'In Squad' : 'Add'}
@@ -2306,12 +2306,12 @@ export default function MatchDetail() {
                   <h3 className="font-medium text-white">Edit Match Prep</h3>
                   <button
                     onClick={() => setEditingPrepManually(false)}
-                    className="text-navy-400 hover:text-white"
+                    className="text-secondary hover:text-white"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
-                <p className="text-sm text-navy-400">
+                <p className="text-sm text-secondary">
                   Write or edit tactical notes, formation plans, and team instructions. This will be shown to pupils.
                 </p>
                 <textarea
@@ -2369,12 +2369,12 @@ Corners, free kicks, etc...`}
             {/* Generated Content Display */}
             {!editingPrepManually && prepContent?.generated ? (
               <div className="card p-6">
-                <div className="flex items-center justify-between mb-4 pb-4 border-b border-navy-800">
+                <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-default">
                   <div className="flex items-center gap-3">
                     <CheckCircle className="w-5 h-5 text-pitch-400" />
                     <div>
                       <p className="font-medium text-white">AI Match Prep Ready</p>
-                      <p className="text-xs text-navy-400">
+                      <p className="text-xs text-secondary">
                         Generated on {new Date(prepContent.generatedAt).toLocaleDateString('en-GB')}
                       </p>
                     </div>
@@ -2396,12 +2396,12 @@ Corners, free kicks, etc...`}
                 </div>
                 {/* Visual Formation Display */}
                 {getSortedFormations(matchFormations).length > 0 && (
-                  <div className="mb-6 p-4 bg-navy-800/50 rounded-xl">
-                    <h3 className="text-sm font-medium text-navy-300 mb-3">Match Formations</h3>
+                  <div className="mb-6 p-4 bg-subtle rounded-xl">
+                    <h3 className="text-sm font-medium text-secondary mb-3">Match Formations</h3>
                     <div className="flex gap-6 justify-center">
                       {getSortedFormations(matchFormations).map(({ formation, priority }) => (
                         <div key={formation} className="text-center">
-                          <p className="text-xs text-navy-400 mb-2">
+                          <p className="text-xs text-secondary mb-2">
                             {priority === 'primary' ? 'Primary' : 'Secondary'}
                           </p>
                           <FormationPitch
@@ -2424,21 +2424,21 @@ Corners, free kicks, etc...`}
             ) : !editingPrepManually && match.prep_notes ? (
               // Show saved prep_notes if no newly generated content
               <div className="card p-6">
-                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-navy-800">
+                <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border-default">
                   <FileText className="w-5 h-5 text-pitch-400" />
                   <div>
                     <p className="font-medium text-white">Current Match Prep</p>
-                    <p className="text-xs text-navy-400">Visible to pupils</p>
+                    <p className="text-xs text-secondary">Visible to pupils</p>
                   </div>
                 </div>
                 {/* Visual Formation Display */}
                 {getSortedFormations(matchFormations).length > 0 && (
-                  <div className="mb-6 p-4 bg-navy-800/50 rounded-xl">
-                    <h3 className="text-sm font-medium text-navy-300 mb-3">Match Formations</h3>
+                  <div className="mb-6 p-4 bg-subtle rounded-xl">
+                    <h3 className="text-sm font-medium text-secondary mb-3">Match Formations</h3>
                     <div className="flex gap-6 justify-center">
                       {getSortedFormations(matchFormations).map(({ formation, priority }) => (
                         <div key={formation} className="text-center">
-                          <p className="text-xs text-navy-400 mb-2">
+                          <p className="text-xs text-secondary mb-2">
                             {priority === 'primary' ? 'Primary' : 'Secondary'}
                           </p>
                           <FormationPitch
@@ -2460,11 +2460,11 @@ Corners, free kicks, etc...`}
               </div>
             ) : !editingPrepManually && (
               <div className="card p-8 text-center">
-                <Target className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+                <Target className="w-12 h-12 text-tertiary mx-auto mb-4" />
                 <h3 className="font-display text-lg font-semibold text-white mb-2">
                   No Match Prep Yet
                 </h3>
-                <p className="text-navy-400 mb-4 max-w-md mx-auto">
+                <p className="text-secondary mb-4 max-w-md mx-auto">
                   Generate an AI-powered match preparation briefing with tactical suggestions,
                   formation recommendations, and team talk themes - or write your own.
                 </p>
@@ -2529,7 +2529,7 @@ Corners, free kicks, etc...`}
 
               {editingTeamNotes ? (
                 <div className="card p-4 space-y-4">
-                  <p className="text-sm text-navy-400">
+                  <p className="text-sm text-secondary">
                     Add your notes on overall team performance. These notes help the AI provide more personalized feedback to pupils.
                   </p>
                   <textarea
@@ -2561,12 +2561,12 @@ Corners, free kicks, etc...`}
                 </div>
               ) : teamNotes ? (
                 <div className="card p-4">
-                  <p className="text-navy-300 whitespace-pre-wrap">{teamNotes}</p>
+                  <p className="text-secondary whitespace-pre-wrap">{teamNotes}</p>
                 </div>
               ) : (
-                <div className="card p-6 text-center border-dashed border-2 border-navy-700">
-                  <FileText className="w-8 h-8 text-navy-600 mx-auto mb-2" />
-                  <p className="text-navy-400 text-sm">
+                <div className="card p-6 text-center border-dashed border-2 border-border-strong">
+                  <FileText className="w-8 h-8 text-tertiary mx-auto mb-2" />
+                  <p className="text-secondary text-sm">
                     {isManager
                       ? 'Add notes about overall team performance to help personalize pupil feedback.'
                       : 'No team performance notes yet.'}
@@ -2604,16 +2604,16 @@ Corners, free kicks, etc...`}
 
               {match.report?.generated ? (
                 <div className="card p-6">
-                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-navy-800">
+                  <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-default">
                     <div className="flex items-center gap-3">
                       {match.report?.published ? (
                         <Eye className="w-5 h-5 text-pitch-400" />
                       ) : (
-                        <EyeOff className="w-5 h-5 text-navy-500" />
+                        <EyeOff className="w-5 h-5 text-tertiary" />
                       )}
                       <div>
                         <p className="font-medium text-white">AI Match Report Ready</p>
-                        <p className="text-xs text-navy-400">
+                        <p className="text-xs text-secondary">
                           {match.report?.published
                             ? 'Visible to parents in the Pupil Zone'
                             : 'Not yet shared with parents'}
@@ -2692,11 +2692,11 @@ Corners, free kicks, etc...`}
                 </div>
               ) : (
                 <div className="card p-8 text-center">
-                  <Trophy className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+                  <Trophy className="w-12 h-12 text-tertiary mx-auto mb-4" />
                   <h3 className="font-display text-lg font-semibold text-white mb-2">
                     No Match Report Yet
                   </h3>
-                  <p className="text-navy-400 mb-4 max-w-md mx-auto">
+                  <p className="text-secondary mb-4 max-w-md mx-auto">
                     {!resultDisplay
                       ? 'Enter the match result first to generate a parent-friendly report.'
                       : 'Generate an AI-powered match report to share with parents. It will summarize the game in an engaging, family-friendly way.'
@@ -2772,7 +2772,7 @@ Corners, free kicks, etc...`}
                     </button>
                   )}
                 </div>
-                <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
+                <div className="aspect-video bg-card rounded-lg overflow-hidden">
                   <mux-player
                     playback-id={matchVideo.mux_playback_id}
                     stream-type="on-demand"
@@ -2788,7 +2788,7 @@ Corners, free kicks, etc...`}
                 <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
                 <div>
                   <p className="text-white font-medium">Video processing</p>
-                  <p className="text-sm text-navy-400">Your video is being transcoded - check back shortly</p>
+                  <p className="text-sm text-secondary">Your video is being transcoded - check back shortly</p>
                 </div>
               </div>
             )}
@@ -2812,7 +2812,7 @@ Corners, free kicks, etc...`}
                     </button>
                   )}
                 </div>
-                <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
+                <div className="aspect-video bg-card rounded-lg overflow-hidden">
                   <video
                     src={match.video_url}
                     controls
@@ -2858,7 +2858,7 @@ Corners, free kicks, etc...`}
                     </a>
                   </div>
                 </div>
-                <p className="text-sm text-navy-400 break-all bg-navy-800/50 p-3 rounded-lg">
+                <p className="text-sm text-secondary break-all bg-subtle p-3 rounded-lg">
                   {match.veo_link}
                 </p>
               </div>
@@ -2873,11 +2873,11 @@ Corners, free kicks, etc...`}
                   {!matchVideo?.mux_playback_id && !match.video_url && (
                     <button
                       onClick={() => setShowVideoUploadModal(true)}
-                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-navy-600 rounded-xl hover:border-pitch-500 hover:bg-navy-800/50 transition-all"
+                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border-strong rounded-xl hover:border-pitch-500 hover:bg-subtle transition-all"
                     >
-                      <Upload className="w-8 h-8 text-navy-400 mb-2" />
+                      <Upload className="w-8 h-8 text-secondary mb-2" />
                       <span className="text-sm font-medium text-white">Upload Video File</span>
-                      <span className="text-xs text-navy-500 mt-1">MP4, MOV, AVI up to 3GB</span>
+                      <span className="text-xs text-tertiary mt-1">MP4, MOV, AVI up to 3GB</span>
                     </button>
                   )}
 
@@ -2891,11 +2891,11 @@ Corners, free kicks, etc...`}
                           document.getElementById('veo-link-input')?.focus()
                         }, 100)
                       }}
-                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-navy-600 rounded-xl hover:border-blue-500 hover:bg-navy-800/50 transition-all"
+                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border-strong rounded-xl hover:border-blue-500 hover:bg-subtle transition-all"
                     >
-                      <LinkIcon className="w-8 h-8 text-navy-400 mb-2" />
+                      <LinkIcon className="w-8 h-8 text-secondary mb-2" />
                       <span className="text-sm font-medium text-white">Add Video Link</span>
-                      <span className="text-xs text-navy-500 mt-1">Link to match recording</span>
+                      <span className="text-xs text-tertiary mt-1">Link to match recording</span>
                     </button>
                   )}
                 </div>
@@ -2905,11 +2905,11 @@ Corners, free kicks, etc...`}
             {/* Empty State */}
             {!matchVideo?.mux_playback_id && !match.video_url && !match.veo_link && !isManager && (
               <div className="card p-8 text-center">
-                <Video className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+                <Video className="w-12 h-12 text-tertiary mx-auto mb-4" />
                 <h3 className="font-display text-lg font-semibold text-white mb-2">
                   No Video Added
                 </h3>
-                <p className="text-navy-400">
+                <p className="text-secondary">
                   The coach hasn't added any match footage yet.
                 </p>
               </div>
@@ -2926,11 +2926,11 @@ Corners, free kicks, etc...`}
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-white">AI Video Analysis</p>
-                  <p className="text-sm text-navy-400">
+                  <p className="text-sm text-secondary">
                     Get tactical insights and pupil performance notes
                   </p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-navy-600" />
+                <ChevronRight className="w-5 h-5 text-tertiary" />
               </Link>
             )}
 
@@ -2969,7 +2969,7 @@ Corners, free kicks, etc...`}
               {clips.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {clips.map(clip => (
-                    <div key={clip.id} className="bg-navy-800/50 rounded-lg overflow-hidden group">
+                    <div key={clip.id} className="bg-subtle rounded-lg overflow-hidden group">
                       <div className="aspect-video relative">
                         {clip.mux_playback_id ? (
                           <mux-player
@@ -2991,7 +2991,7 @@ Corners, free kicks, etc...`}
                             {clip.status === 'processing' || clip.status === 'waiting_upload' ? (
                               <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
                             ) : (
-                              <Play className="w-8 h-8 text-navy-600" />
+                              <Play className="w-8 h-8 text-tertiary" />
                             )}
                           </div>
                         )}
@@ -3015,10 +3015,10 @@ Corners, free kicks, etc...`}
                         <p className="text-sm text-white truncate">{clip.title || clip.original_name}</p>
                         <div className="flex items-center gap-2">
                           {clip.duration_seconds && (
-                            <p className="text-xs text-navy-400">{Math.floor(clip.duration_seconds / 60)}:{String(Math.floor(clip.duration_seconds % 60)).padStart(2, '0')}</p>
+                            <p className="text-xs text-secondary">{Math.floor(clip.duration_seconds / 60)}:{String(Math.floor(clip.duration_seconds % 60)).padStart(2, '0')}</p>
                           )}
                           {clip.minute && (
-                            <p className="text-xs text-navy-400">{clip.minute}'</p>
+                            <p className="text-xs text-secondary">{clip.minute}'</p>
                           )}
                           {clip.mux_playback_id && (
                             <Link to={`/videos/${clip.id}/analysis`} className="text-xs text-pitch-400 hover:text-pitch-300 ml-auto">
@@ -3032,8 +3032,8 @@ Corners, free kicks, etc...`}
                 </div>
               ) : (
                 <div className="text-center py-6">
-                  <Play className="w-10 h-10 text-navy-600 mx-auto mb-2" />
-                  <p className="text-sm text-navy-500">
+                  <Play className="w-10 h-10 text-tertiary mx-auto mb-2" />
+                  <p className="text-sm text-tertiary">
                     No clips added yet. Add highlights, goals, and key moments.
                   </p>
                 </div>
@@ -3060,11 +3060,11 @@ Corners, free kicks, etc...`}
               className="modal-content max-w-lg"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Edit Match</h2>
                 <button
                   onClick={() => setEditing(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -3144,7 +3144,7 @@ Corners, free kicks, etc...`}
 
                 <div>
                   <label className="label">Match Formations</label>
-                  <p className="text-xs text-navy-400 mb-2">
+                  <p className="text-xs text-secondary mb-2">
                     Click to add, click again to change priority, click again to remove
                   </p>
                   <div className="flex flex-wrap gap-1.5 mb-2">
@@ -3169,10 +3169,10 @@ Corners, free kicks, etc...`}
                                 ? 'bg-pitch-600 text-white'
                                 : 'bg-pitch-600/60 text-white'
                               : isDisabled
-                                ? 'bg-navy-900 text-navy-600 cursor-not-allowed'
+                                ? 'bg-card text-tertiary cursor-not-allowed'
                                 : isCustom
                                   ? 'bg-energy-600/20 text-energy-400 hover:text-white hover:bg-energy-600/40 border border-energy-500/30'
-                                  : 'bg-navy-800 text-navy-400 hover:text-white hover:bg-navy-700'
+                                  : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                             }
                           `}
                         >
@@ -3185,12 +3185,12 @@ Corners, free kicks, etc...`}
                     })}
                   </div>
                   {getFormationsArray(editFormations).length > 0 && (
-                    <p className="text-xs text-navy-400">
+                    <p className="text-xs text-secondary">
                       <span className="font-medium text-white">Selected:</span>{' '}
                       {getSortedFormations(editFormations).map(({ formation, priority }, idx) => (
                         <span key={formation}>
                           {idx > 0 && ' → '}
-                          <span className={priority === 'primary' ? 'text-pitch-400' : 'text-navy-300'}>
+                          <span className={priority === 'primary' ? 'text-pitch-400' : 'text-secondary'}>
                             {formation} ({priority === 'primary' ? 'Primary' : 'Secondary'})
                           </span>
                         </span>
@@ -3223,7 +3223,7 @@ Corners, free kicks, etc...`}
                 </div>
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex justify-end gap-3">
+              <div className="p-6 border-t border-border-default flex justify-end gap-3">
                 <button onClick={() => setEditing(false)} className="btn-secondary">
                   Cancel
                 </button>
@@ -3254,11 +3254,11 @@ Corners, free kicks, etc...`}
               className="modal-content max-w-sm"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800">
+              <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white text-center">
                   Enter Result
                 </h2>
-                <p className="text-sm text-navy-400 text-center mt-1">
+                <p className="text-sm text-secondary text-center mt-1">
                   {match.is_home ? `${team?.name || 'Us'} vs ${match.opponent}` : `${match.opponent} vs ${team?.name || 'Us'}`}
                 </p>
               </div>
@@ -3266,7 +3266,7 @@ Corners, free kicks, etc...`}
               <div className="p-6">
                 <div className="flex items-center justify-center gap-4">
                   <div className="text-center">
-                    <label className="block text-sm text-navy-400 mb-2">
+                    <label className="block text-sm text-secondary mb-2">
                       {match.is_home ? team?.name || 'Us' : match.opponent}
                     </label>
                     <input
@@ -3284,9 +3284,9 @@ Corners, free kicks, etc...`}
                       className="input w-20 text-center text-2xl font-bold"
                     />
                   </div>
-                  <span className="text-2xl text-navy-500 font-bold">-</span>
+                  <span className="text-2xl text-tertiary font-bold">-</span>
                   <div className="text-center">
-                    <label className="block text-sm text-navy-400 mb-2">
+                    <label className="block text-sm text-secondary mb-2">
                       {match.is_home ? match.opponent : team?.name || 'Us'}
                     </label>
                     <input
@@ -3307,7 +3307,7 @@ Corners, free kicks, etc...`}
                 </div>
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex gap-3">
+              <div className="p-6 border-t border-border-default flex gap-3">
                 <button
                   onClick={() => setShowResultModal(false)}
                   className="btn-secondary flex-1"
@@ -3344,19 +3344,19 @@ Corners, free kicks, etc...`}
               className="modal-content max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800">
+              <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white text-center flex items-center justify-center gap-2">
                   <Award className="w-6 h-6 text-energy-400" />
                   Pupil of the Match
                 </h2>
-                <p className="text-sm text-navy-400 text-center mt-1">
+                <p className="text-sm text-secondary text-center mt-1">
                   vs {match.opponent}
                 </p>
               </div>
 
               <div className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Select Pupil
                   </label>
                   <select
@@ -3378,7 +3378,7 @@ Corners, free kicks, etc...`}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">
+                  <label className="block text-sm font-medium text-secondary mb-2">
                     Reason (optional)
                   </label>
                   <textarea
@@ -3388,13 +3388,13 @@ Corners, free kicks, etc...`}
                     rows={3}
                     className="input w-full resize-none"
                   />
-                  <p className="text-xs text-navy-500 mt-1">
+                  <p className="text-xs text-tertiary mt-1">
                     This will be shown to pupils and parents
                   </p>
                 </div>
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex gap-3">
+              <div className="p-6 border-t border-border-default flex gap-3">
                 <button
                   onClick={() => setShowPotmModal(false)}
                   className="btn-secondary flex-1"
@@ -3436,7 +3436,7 @@ Corners, free kicks, etc...`}
               className="modal-content max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800">
+              <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white text-center flex items-center justify-center gap-2">
                   <Goal className="w-6 h-6 text-pitch-400" />
                   Add Goal
@@ -3445,7 +3445,7 @@ Corners, free kicks, etc...`}
 
               <form onSubmit={handleAddGoal} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">Goalscorer *</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Goalscorer *</label>
                   <select
                     value={goalData.scorer_pupil_id}
                     onChange={(e) => setGoalData(prev => ({ ...prev, scorer_pupil_id: e.target.value }))}
@@ -3466,7 +3466,7 @@ Corners, free kicks, etc...`}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">Assist (optional)</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Assist (optional)</label>
                   <select
                     value={goalData.assist_pupil_id}
                     onChange={(e) => setGoalData(prev => ({ ...prev, assist_pupil_id: e.target.value }))}
@@ -3487,7 +3487,7 @@ Corners, free kicks, etc...`}
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-2">Minute</label>
+                    <label className="block text-sm font-medium text-secondary mb-2">Minute</label>
                     <input
                       type="number"
                       min="1"
@@ -3499,7 +3499,7 @@ Corners, free kicks, etc...`}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-2">Type</label>
+                    <label className="block text-sm font-medium text-secondary mb-2">Type</label>
                     <select
                       value={goalData.goal_type}
                       onChange={(e) => setGoalData(prev => ({ ...prev, goal_type: e.target.value }))}
@@ -3546,7 +3546,7 @@ Corners, free kicks, etc...`}
               className="modal-content max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800">
+              <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white text-center flex items-center justify-center gap-2">
                   <ArrowRightLeft className="w-6 h-6 text-energy-400" />
                   Add Substitution
@@ -3555,7 +3555,7 @@ Corners, free kicks, etc...`}
 
               <form onSubmit={handleAddSub} className="p-6 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">Pupil Off</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Pupil Off</label>
                   <select
                     value={subData.player_off_id}
                     onChange={(e) => setSubData(prev => ({ ...prev, player_off_id: e.target.value }))}
@@ -3575,7 +3575,7 @@ Corners, free kicks, etc...`}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">Pupil On</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Pupil On</label>
                   <select
                     value={subData.player_on_id}
                     onChange={(e) => setSubData(prev => ({ ...prev, player_on_id: e.target.value }))}
@@ -3595,7 +3595,7 @@ Corners, free kicks, etc...`}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-2">Minute</label>
+                  <label className="block text-sm font-medium text-secondary mb-2">Minute</label>
                   <input
                     type="number"
                     min="1"
@@ -3629,11 +3629,11 @@ Corners, free kicks, etc...`}
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="card max-w-md w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-6 pb-0">
                 <h3 className="text-lg font-semibold text-white">Add Match Event</h3>
-                <button onClick={() => setShowEventModal(false)} className="text-navy-500 hover:text-white"><X className="w-5 h-5" /></button>
+                <button onClick={() => setShowEventModal(false)} className="text-tertiary hover:text-white"><X className="w-5 h-5" /></button>
               </div>
               <form onSubmit={handleAddEvent} className="p-6 space-y-4">
                 <div>
-                  <label className="text-xs text-navy-400 mb-1 block">Event Type</label>
+                  <label className="text-xs text-secondary mb-1 block">Event Type</label>
                   <select value={eventData.event_type} onChange={e => setEventData(prev => ({ ...prev, event_type: e.target.value }))} className="input w-full">
                     <option value="">Select event type</option>
                     {(taxonomy.matchEventTypes || []).map(t => (
@@ -3642,7 +3642,7 @@ Corners, free kicks, etc...`}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-navy-400 mb-1 block">Pupil</label>
+                  <label className="text-xs text-secondary mb-1 block">Pupil</label>
                   <select value={eventData.pupil_id} onChange={e => setEventData(prev => ({ ...prev, pupil_id: e.target.value }))} className="input w-full">
                     <option value="">Select pupil</option>
                     {(pupils || []).map(p => (
@@ -3652,7 +3652,7 @@ Corners, free kicks, etc...`}
                 </div>
                 {taxonomy.matchEventTypes?.find(t => t.key === eventData.event_type)?.hasSecondary && (
                   <div>
-                    <label className="text-xs text-navy-400 mb-1 block">{taxonomy.matchEventTypes.find(t => t.key === eventData.event_type)?.secondaryLabel || 'Assist'}</label>
+                    <label className="text-xs text-secondary mb-1 block">{taxonomy.matchEventTypes.find(t => t.key === eventData.event_type)?.secondaryLabel || 'Assist'}</label>
                     <select value={eventData.secondary_pupil_id} onChange={e => setEventData(prev => ({ ...prev, secondary_pupil_id: e.target.value }))} className="input w-full">
                       <option value="">None</option>
                       {(pupils || []).filter(p => p.id !== eventData.pupil_id).map(p => (
@@ -3662,11 +3662,11 @@ Corners, free kicks, etc...`}
                   </div>
                 )}
                 <div>
-                  <label className="text-xs text-navy-400 mb-1 block">Minute</label>
+                  <label className="text-xs text-secondary mb-1 block">Minute</label>
                   <input type="number" min="1" max="120" value={eventData.minute} onChange={e => setEventData(prev => ({ ...prev, minute: e.target.value }))} className="input w-full" placeholder="e.g. 23" />
                 </div>
                 <div>
-                  <label className="text-xs text-navy-400 mb-1 block">Notes (optional)</label>
+                  <label className="text-xs text-secondary mb-1 block">Notes (optional)</label>
                   <input type="text" value={eventData.notes} onChange={e => setEventData(prev => ({ ...prev, notes: e.target.value }))} className="input w-full" placeholder="Any details" />
                 </div>
                 <div className="flex gap-3 pt-2">
@@ -3689,18 +3689,18 @@ Corners, free kicks, etc...`}
             <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} exit={{ scale: 0.95 }} className="card max-w-2xl w-full max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between p-6 pb-0">
                 <h3 className="text-lg font-semibold text-white">Pupil Match Stats</h3>
-                <button onClick={() => setShowStatsModal(false)} className="text-navy-500 hover:text-white"><X className="w-5 h-5" /></button>
+                <button onClick={() => setShowStatsModal(false)} className="text-tertiary hover:text-white"><X className="w-5 h-5" /></button>
               </div>
               <div className="p-6 space-y-4">
                 {Object.entries(editingStats).map(([pupilId, data]) => (
-                  <div key={pupilId} className="p-4 rounded-lg bg-navy-800/50 border border-navy-700 space-y-3">
+                  <div key={pupilId} className="p-4 rounded-lg bg-subtle border border-border-strong space-y-3">
                     <div className="flex items-center justify-between">
                       <p className="text-sm font-medium text-white">
-                        {data.squad_number && <span className="text-navy-400 mr-1">#{data.squad_number}</span>}
+                        {data.squad_number && <span className="text-secondary mr-1">#{data.squad_number}</span>}
                         {data.name}
                       </p>
                       <div className="flex items-center gap-2">
-                        <label className="text-xs text-navy-400">Rating</label>
+                        <label className="text-xs text-secondary">Rating</label>
                         <select
                           value={data.rating || ''}
                           onChange={e => setEditingStats(prev => ({ ...prev, [pupilId]: { ...prev[pupilId], rating: e.target.value ? parseInt(e.target.value) : null } }))}
@@ -3714,7 +3714,7 @@ Corners, free kicks, etc...`}
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                       {(taxonomy.pupilStatFields || []).map(field => (
                         <div key={field.key}>
-                          <label className="text-xs text-navy-500 block mb-0.5">{field.label}</label>
+                          <label className="text-xs text-tertiary block mb-0.5">{field.label}</label>
                           {field.type === 'select' ? (
                             <select
                               value={data.stats?.[field.key] || ''}
@@ -3777,7 +3777,7 @@ Corners, free kicks, etc...`}
                 <h2 className="font-display text-xl font-semibold text-white text-center mb-2">
                   Delete Match?
                 </h2>
-                <p className="text-navy-400 text-center mb-6">
+                <p className="text-secondary text-center mb-6">
                   Are you sure you want to delete the match vs <span className="text-white font-medium">{match.opponent}</span>?
                   This action cannot be undone.
                 </p>
@@ -3819,11 +3819,11 @@ Corners, free kicks, etc...`}
               className="modal-content max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800">
+              <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white">
                   {match.squad_announced ? 'Update & Re-notify Squad' : 'Announce Squad'}
                 </h2>
-                <p className="text-sm text-navy-400 mt-1">
+                <p className="text-sm text-secondary mt-1">
                   {match.squad_announced
                     ? `This will re-notify ${squad.length} pupils with the updated squad`
                     : `This will notify ${squad.length} pupils of their selection`}
@@ -3852,17 +3852,17 @@ Corners, free kicks, etc...`}
                   />
                 </div>
 
-                <div className="bg-navy-800/50 rounded-lg p-4">
-                  <p className="text-sm text-navy-300">
+                <div className="bg-subtle rounded-lg p-4">
+                  <p className="text-sm text-secondary">
                     <strong className="text-white">Squad Summary:</strong>
                   </p>
-                  <p className="text-sm text-navy-400 mt-1">
+                  <p className="text-sm text-secondary mt-1">
                     {squad.filter(s => s.is_starting).length} starting pupils, {squad.filter(s => !s.is_starting).length} substitutes
                   </p>
                 </div>
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex gap-3">
+              <div className="p-6 border-t border-border-default flex gap-3">
                 <button
                   onClick={() => setShowAnnounceModal(false)}
                   className="btn-secondary flex-1"
@@ -3904,11 +3904,11 @@ Corners, free kicks, etc...`}
               className="modal-content max-w-lg"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Upload Match Video</h2>
                 <button
                   onClick={() => setShowVideoUploadModal(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>

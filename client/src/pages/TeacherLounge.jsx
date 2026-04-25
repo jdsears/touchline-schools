@@ -277,7 +277,7 @@ export default function TeacherLounge() {
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">Coaches Lounge</h1>
-        <p className="text-navy-400">Team resources and collaboration</p>
+        <p className="text-secondary">Team resources and collaboration</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -285,7 +285,7 @@ export default function TeacherLounge() {
         <div className="card p-6">
           <Users className="w-8 h-8 text-brand-primary mb-4" />
           <h3 className="font-display font-semibold text-white mb-2">Coaching Staff</h3>
-          <p className="text-sm text-navy-400 mb-4">Manage your coaching team</p>
+          <p className="text-sm text-secondary mb-4">Manage your coaching team</p>
 
           {loading ? (
             <div className="py-4 text-center">
@@ -294,7 +294,7 @@ export default function TeacherLounge() {
           ) : (
             <div className="space-y-2 max-h-64 overflow-y-auto">
               {members.filter(m => ['manager', 'assistant', 'scout'].includes(m.role)).map(member => (
-                <div key={member.id} className="flex items-center gap-3 p-2 bg-navy-800/50 rounded-lg group">
+                <div key={member.id} className="flex items-center gap-3 p-2 bg-subtle rounded-lg group">
                   <div className="w-8 h-8 rounded-full bg-brand-primary/60 flex items-center justify-center text-sm font-medium text-white">
                     {member.name?.charAt(0) || member.email?.charAt(0)}
                   </div>
@@ -307,7 +307,7 @@ export default function TeacherLounge() {
                   {user?.role === 'manager' && member.id !== user.id && (
                     <button
                       onClick={() => handleRemoveMember(member.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-navy-400 hover:text-alert-400 transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-secondary hover:text-alert-400 transition-all"
                       title="Remove member"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -320,28 +320,28 @@ export default function TeacherLounge() {
 
           {/* Pending Invites */}
           {invites.length > 0 && (
-            <div className="mt-4 pt-4 border-t border-navy-700">
-              <p className="text-xs text-navy-400 mb-2 flex items-center gap-1">
+            <div className="mt-4 pt-4 border-t border-border-strong">
+              <p className="text-xs text-secondary mb-2 flex items-center gap-1">
                 <Clock className="w-3 h-3" /> Pending Invites
               </p>
               <div className="space-y-2">
                 {invites.map(invite => (
-                  <div key={invite.id} className="flex items-center gap-2 p-2 bg-navy-800/30 rounded-lg text-sm">
-                    <Mail className="w-4 h-4 text-navy-500" />
+                  <div key={invite.id} className="flex items-center gap-2 p-2 bg-subtle rounded-lg text-sm">
+                    <Mail className="w-4 h-4 text-tertiary" />
                     <div className="flex-1 min-w-0">
-                      <p className="text-navy-300 truncate">{invite.email}</p>
-                      <span className="text-xs text-navy-500 capitalize">{invite.role}</span>
+                      <p className="text-secondary truncate">{invite.email}</p>
+                      <span className="text-xs text-tertiary capitalize">{invite.role}</span>
                     </div>
                     <button
                       onClick={() => copyPendingInviteLink(invite)}
-                      className="p-1 text-navy-400 hover:text-pitch-400"
+                      className="p-1 text-secondary hover:text-pitch-400"
                       title="Copy invite link"
                     >
                       {copiedInviteId === invite.id ? <Check className="w-4 h-4 text-pitch-400" /> : <Copy className="w-4 h-4" />}
                     </button>
                     <button
                       onClick={() => handleCancelInvite(invite.id)}
-                      className="p-1 text-navy-400 hover:text-alert-400"
+                      className="p-1 text-secondary hover:text-alert-400"
                       title="Cancel invite"
                     >
                       <X className="w-4 h-4" />
@@ -365,7 +365,7 @@ export default function TeacherLounge() {
         <div className="card p-6">
           <FileText className="w-8 h-8 text-brand-accent mb-4" />
           <h3 className="font-display font-semibold text-white mb-2">Team Documents</h3>
-          <p className="text-sm text-navy-400 mb-4">Shared resources and files</p>
+          <p className="text-sm text-secondary mb-4">Shared resources and files</p>
 
           {loading ? (
             <div className="py-4 text-center">
@@ -373,22 +373,22 @@ export default function TeacherLounge() {
             </div>
           ) : documents.length === 0 ? (
             <div className="text-center py-4">
-              <p className="text-navy-500 text-sm">No documents yet</p>
+              <p className="text-tertiary text-sm">No documents yet</p>
             </div>
           ) : (
             <div className="space-y-2 max-h-48 overflow-y-auto">
               {documents.map(doc => {
                 const FileIcon = getFileIcon(doc.file_type)
                 return (
-                  <div key={doc.id} className="flex items-center gap-3 p-2 bg-navy-800/50 rounded-lg group">
-                    <div className="w-8 h-8 rounded bg-navy-700 flex items-center justify-center">
-                      <FileIcon className="w-4 h-4 text-navy-400" />
+                  <div key={doc.id} className="flex items-center gap-3 p-2 bg-subtle rounded-lg group">
+                    <div className="w-8 h-8 rounded bg-border-default flex items-center justify-center">
+                      <FileIcon className="w-4 h-4 text-secondary" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate" title={doc.original_name}>
                         {doc.original_name}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-navy-500">
+                      <div className="flex items-center gap-2 text-xs text-tertiary">
                         <span>{formatFileSize(doc.file_size)}</span>
                         {doc.visible_to_parents && (
                           <span className="flex items-center gap-1 text-pitch-400">
@@ -403,21 +403,21 @@ export default function TeacherLounge() {
                         href={doc.file_path}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1 text-navy-400 hover:text-pitch-400"
+                        className="p-1 text-secondary hover:text-pitch-400"
                         title="Download"
                       >
                         <Download className="w-4 h-4" />
                       </a>
                       <button
                         onClick={() => handleToggleVisibility(doc)}
-                        className={`p-1 ${doc.visible_to_parents ? 'text-pitch-400' : 'text-navy-400'} hover:text-pitch-400`}
+                        className={`p-1 ${doc.visible_to_parents ? 'text-pitch-400' : 'text-secondary'} hover:text-pitch-400`}
                         title={doc.visible_to_parents ? 'Hide from parents' : 'Show to parents'}
                       >
                         {doc.visible_to_parents ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
                       </button>
                       <button
                         onClick={() => handleDeleteDocument(doc.id)}
-                        className="p-1 text-navy-400 hover:text-alert-400"
+                        className="p-1 text-secondary hover:text-alert-400"
                         title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -442,7 +442,7 @@ export default function TeacherLounge() {
         <div className="card p-6">
           <Lightbulb className="w-8 h-8 text-blue-400 mb-4" />
           <h3 className="font-display font-semibold text-white mb-2">Team Suggestions</h3>
-          <p className="text-sm text-navy-400 mb-4">Ideas from pupils and parents</p>
+          <p className="text-sm text-secondary mb-4">Ideas from pupils and parents</p>
 
           {loading ? (
             <div className="py-4 text-center">
@@ -455,15 +455,15 @@ export default function TeacherLounge() {
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   <div className="bg-caution-500/10 rounded-lg p-2 text-center">
                     <p className="text-lg font-bold text-caution-400">{suggestionStats.pending || 0}</p>
-                    <p className="text-xs text-navy-500">Pending</p>
+                    <p className="text-xs text-tertiary">Pending</p>
                   </div>
                   <div className="bg-blue-500/10 rounded-lg p-2 text-center">
                     <p className="text-lg font-bold text-blue-400">{suggestionStats.in_review || 0}</p>
-                    <p className="text-xs text-navy-500">In Review</p>
+                    <p className="text-xs text-tertiary">In Review</p>
                   </div>
                   <div className="bg-pitch-500/10 rounded-lg p-2 text-center">
                     <p className="text-lg font-bold text-pitch-400">{suggestionStats.implemented || 0}</p>
-                    <p className="text-xs text-navy-500">Done</p>
+                    <p className="text-xs text-tertiary">Done</p>
                   </div>
                 </div>
               )}
@@ -474,7 +474,7 @@ export default function TeacherLounge() {
                   {suggestions.filter(s => s.status === 'pending').slice(0, 3).map(suggestion => (
                     <div
                       key={suggestion.id}
-                      className="flex items-center gap-2 p-2 bg-navy-800/50 rounded-lg cursor-pointer hover:bg-navy-800"
+                      className="flex items-center gap-2 p-2 bg-subtle rounded-lg cursor-pointer hover:bg-subtle"
                       onClick={() => {
                         setSelectedSuggestion(suggestion)
                         setShowSuggestionsModal(true)
@@ -485,15 +485,15 @@ export default function TeacherLounge() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-white truncate">{suggestion.title}</p>
-                        <p className="text-xs text-navy-500">{suggestion.submitted_by_name}</p>
+                        <p className="text-xs text-tertiary">{suggestion.submitted_by_name}</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-navy-500" />
+                      <ChevronRight className="w-4 h-4 text-tertiary" />
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="text-center py-2 mb-4">
-                  <p className="text-navy-500 text-sm">No pending suggestions</p>
+                  <p className="text-tertiary text-sm">No pending suggestions</p>
                 </div>
               )}
             </>
@@ -515,19 +515,19 @@ export default function TeacherLounge() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="card p-4 text-center">
             <p className="text-3xl font-display font-bold text-white">{pupils.length}</p>
-            <p className="text-sm text-navy-400">Players</p>
+            <p className="text-sm text-secondary">Players</p>
           </div>
           <div className="card p-4 text-center">
             <p className="text-3xl font-display font-bold text-white">{coachCount}</p>
-            <p className="text-sm text-navy-400">Coaches</p>
+            <p className="text-sm text-secondary">Coaches</p>
           </div>
           <div className="card p-4 text-center">
             <p className="text-3xl font-display font-bold text-brand-primary">{team?.formation || '4-3-3'}</p>
-            <p className="text-sm text-navy-400">Formation</p>
+            <p className="text-sm text-secondary">Formation</p>
           </div>
           <div className="card p-4 text-center">
             <p className="text-3xl font-display font-bold text-white">{team?.age_group}</p>
-            <p className="text-sm text-navy-400">Age Group</p>
+            <p className="text-sm text-secondary">Age Group</p>
           </div>
         </div>
       </div>
@@ -544,7 +544,7 @@ export default function TeacherLounge() {
                   setInviteError('')
                   setInviteSuccess(null)
                 }}
-                className="p-1 text-navy-400 hover:text-white"
+                className="p-1 text-secondary hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -559,7 +559,7 @@ export default function TeacherLounge() {
 
                 {inviteSuccess.inviteLink && (
                   <div>
-                    <p className="text-sm text-navy-400 mb-2">Share this link with the coach:</p>
+                    <p className="text-sm text-secondary mb-2">Share this link with the coach:</p>
                     <div className="flex items-center gap-2">
                       <input
                         type="text"
@@ -626,7 +626,7 @@ export default function TeacherLounge() {
                     <option value="assistant">Assistant Coach</option>
                     <option value="scout">Scout</option>
                   </select>
-                  <p className="text-xs text-navy-500 mt-1">
+                  <p className="text-xs text-tertiary mt-1">
                     {inviteForm.role === 'assistant'
                       ? 'Can view and edit team data, manage pupils and matches'
                       : 'Can view team data and add observations'
@@ -676,7 +676,7 @@ export default function TeacherLounge() {
                   setUploadDescription('')
                   setUploadVisibleToParents(false)
                 }}
-                className="p-1 text-navy-400 hover:text-white"
+                className="p-1 text-secondary hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -694,16 +694,16 @@ export default function TeacherLounge() {
                   accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.txt,.csv"
                 />
                 {uploadFile ? (
-                  <div className="flex items-center gap-3 p-3 bg-navy-800 rounded-lg">
-                    <File className="w-5 h-5 text-navy-400" />
+                  <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
+                    <File className="w-5 h-5 text-secondary" />
                     <div className="flex-1 min-w-0">
                       <p className="text-sm text-white truncate">{uploadFile.name}</p>
-                      <p className="text-xs text-navy-500">{formatFileSize(uploadFile.size)}</p>
+                      <p className="text-xs text-tertiary">{formatFileSize(uploadFile.size)}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => setUploadFile(null)}
-                      className="p-1 text-navy-400 hover:text-alert-400"
+                      className="p-1 text-secondary hover:text-alert-400"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -712,11 +712,11 @@ export default function TeacherLounge() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full p-6 border-2 border-dashed border-navy-700 rounded-lg hover:border-navy-500 transition-colors text-center"
+                    className="w-full p-6 border-2 border-dashed border-border-strong rounded-lg hover:border-navy-500 transition-colors text-center"
                   >
-                    <Upload className="w-8 h-8 text-navy-500 mx-auto mb-2" />
-                    <p className="text-sm text-navy-400">Click to select a file</p>
-                    <p className="text-xs text-navy-500 mt-1">Max 10MB · PDF, Word, Excel, Images</p>
+                    <Upload className="w-8 h-8 text-tertiary mx-auto mb-2" />
+                    <p className="text-sm text-secondary">Click to select a file</p>
+                    <p className="text-xs text-tertiary mt-1">Max 10MB · PDF, Word, Excel, Images</p>
                   </button>
                 )}
               </div>
@@ -734,16 +734,16 @@ export default function TeacherLounge() {
               </div>
 
               {/* Visibility toggle */}
-              <div className="flex items-center justify-between p-4 bg-navy-800/50 rounded-lg">
+              <div className="flex items-center justify-between p-4 bg-subtle rounded-lg">
                 <div className="flex items-center gap-3">
                   {uploadVisibleToParents ? (
                     <Eye className="w-5 h-5 text-pitch-400" />
                   ) : (
-                    <EyeOff className="w-5 h-5 text-navy-400" />
+                    <EyeOff className="w-5 h-5 text-secondary" />
                   )}
                   <div>
                     <p className="text-sm font-medium text-white">Visible to Parents</p>
-                    <p className="text-xs text-navy-500">
+                    <p className="text-xs text-tertiary">
                       {uploadVisibleToParents
                         ? 'Parents can see this in Players Lounge'
                         : 'Only visible to coaches'
@@ -815,7 +815,7 @@ export default function TeacherLounge() {
                   setSelectedSuggestion(null)
                   setResponseText('')
                 }}
-                className="p-1 text-navy-400 hover:text-white"
+                className="p-1 text-secondary hover:text-white"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -829,12 +829,12 @@ export default function TeacherLounge() {
                     setSelectedSuggestion(null)
                     setResponseText('')
                   }}
-                  className="text-sm text-navy-400 hover:text-white mb-4 flex items-center gap-1"
+                  className="text-sm text-secondary hover:text-white mb-4 flex items-center gap-1"
                 >
                   ← Back to list
                 </button>
 
-                <div className="bg-navy-800/50 rounded-lg p-4 mb-4">
+                <div className="bg-subtle rounded-lg p-4 mb-4">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div>
                       <h3 className="font-semibold text-white text-lg">{selectedSuggestion.title}</h3>
@@ -844,11 +844,11 @@ export default function TeacherLounge() {
                           selectedSuggestion.category === 'communication' ? 'bg-blue-500/20 text-blue-400' :
                           selectedSuggestion.category === 'equipment' ? 'bg-energy-500/20 text-energy-400' :
                           selectedSuggestion.category === 'schedule' ? 'bg-caution-500/20 text-caution-400' :
-                          'bg-navy-600 text-navy-400'
+                          'bg-navy-600 text-secondary'
                         }`}>
                           {selectedSuggestion.category}
                         </span>
-                        <span className="text-xs text-navy-500">
+                        <span className="text-xs text-tertiary">
                           {new Date(selectedSuggestion.created_at).toLocaleDateString('en-GB', {
                             day: 'numeric', month: 'short', year: 'numeric'
                           })}
@@ -867,9 +867,9 @@ export default function TeacherLounge() {
                     </span>
                   </div>
 
-                  <p className="text-navy-300 text-sm mb-3">{selectedSuggestion.content}</p>
+                  <p className="text-secondary text-sm mb-3">{selectedSuggestion.content}</p>
 
-                  <div className="text-xs text-navy-500">
+                  <div className="text-xs text-tertiary">
                     From: {selectedSuggestion.submitted_by_name}
                     {selectedSuggestion.player_name && ` (${selectedSuggestion.player_name})`}
                   </div>
@@ -879,8 +879,8 @@ export default function TeacherLounge() {
                 {selectedSuggestion.coach_response && (
                   <div className="bg-pitch-500/10 border border-pitch-500/30 rounded-lg p-4 mb-4">
                     <p className="text-xs text-pitch-400 mb-1">Previous Response:</p>
-                    <p className="text-navy-300 text-sm">{selectedSuggestion.coach_response}</p>
-                    <p className="text-xs text-navy-500 mt-2">
+                    <p className="text-secondary text-sm">{selectedSuggestion.coach_response}</p>
+                    <p className="text-xs text-tertiary mt-2">
                       - {selectedSuggestion.responded_by_name}
                     </p>
                   </div>
@@ -888,7 +888,7 @@ export default function TeacherLounge() {
 
                 {/* Status Buttons */}
                 <div className="mb-4">
-                  <p className="text-sm text-navy-400 mb-2">Update Status:</p>
+                  <p className="text-sm text-secondary mb-2">Update Status:</p>
                   <div className="flex flex-wrap gap-2">
                     {['pending', 'in_review', 'acknowledged', 'implemented', 'declined'].map(status => (
                       <button
@@ -898,7 +898,7 @@ export default function TeacherLounge() {
                         className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
                           selectedSuggestion.status === status
                             ? 'bg-white/10 text-white ring-1 ring-white/30'
-                            : 'bg-navy-800 text-navy-400 hover:bg-navy-700 hover:text-white'
+                            : 'bg-subtle text-secondary hover:bg-border-default hover:text-white'
                         }`}
                       >
                         {status === 'in_review' ? 'In Review' : status.charAt(0).toUpperCase() + status.slice(1)}
@@ -947,9 +947,9 @@ export default function TeacherLounge() {
               <div className="flex-1 overflow-y-auto">
                 {suggestions.length === 0 ? (
                   <div className="text-center py-12">
-                    <Lightbulb className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-                    <p className="text-navy-400">No suggestions yet</p>
-                    <p className="text-sm text-navy-500 mt-1">
+                    <Lightbulb className="w-12 h-12 text-tertiary mx-auto mb-3" />
+                    <p className="text-secondary">No suggestions yet</p>
+                    <p className="text-sm text-tertiary mt-1">
                       Players and parents can submit suggestions from their lounge
                     </p>
                   </div>
@@ -959,26 +959,26 @@ export default function TeacherLounge() {
                       <div
                         key={suggestion.id}
                         onClick={() => setSelectedSuggestion(suggestion)}
-                        className="flex items-center gap-3 p-3 bg-navy-800/50 rounded-lg cursor-pointer hover:bg-navy-800 transition-colors"
+                        className="flex items-center gap-3 p-3 bg-subtle rounded-lg cursor-pointer hover:bg-subtle transition-colors"
                       >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                           suggestion.status === 'pending' ? 'bg-caution-500/20' :
                           suggestion.status === 'in_review' ? 'bg-blue-500/20' :
                           suggestion.status === 'acknowledged' ? 'bg-pitch-500/20' :
                           suggestion.status === 'implemented' ? 'bg-energy-500/20' :
-                          'bg-navy-700'
+                          'bg-border-default'
                         }`}>
                           <Lightbulb className={`w-4 h-4 ${
                             suggestion.status === 'pending' ? 'text-caution-400' :
                             suggestion.status === 'in_review' ? 'text-blue-400' :
                             suggestion.status === 'acknowledged' ? 'text-pitch-400' :
                             suggestion.status === 'implemented' ? 'text-energy-400' :
-                            'text-navy-500'
+                            'text-tertiary'
                           }`} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-white truncate">{suggestion.title}</p>
-                          <div className="flex items-center gap-2 text-xs text-navy-500">
+                          <div className="flex items-center gap-2 text-xs text-tertiary">
                             <span>{suggestion.submitted_by_name}</span>
                             <span>·</span>
                             <span>{suggestion.category}</span>
@@ -996,7 +996,7 @@ export default function TeacherLounge() {
                           {suggestion.status === 'in_review' ? 'In Review' :
                            suggestion.status.charAt(0).toUpperCase() + suggestion.status.slice(1)}
                         </span>
-                        <ChevronRight className="w-4 h-4 text-navy-500 flex-shrink-0" />
+                        <ChevronRight className="w-4 h-4 text-tertiary flex-shrink-0" />
                       </div>
                     ))}
                   </div>

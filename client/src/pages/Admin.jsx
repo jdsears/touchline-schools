@@ -53,15 +53,15 @@ function StatCard({ title, value, subtitle, icon: Icon, color = 'pitch' }) {
   }
 
   return (
-    <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+    <div className="bg-card border border-border-default rounded-xl p-4">
       <div className="flex items-center gap-3 mb-3">
         <div className={`p-2 rounded-lg ${colors[color]}`}>
           <Icon className="w-5 h-5" />
         </div>
-        <span className="text-navy-400 text-sm">{title}</span>
+        <span className="text-secondary text-sm">{title}</span>
       </div>
       <div className="text-2xl font-bold text-white">{value}</div>
-      {subtitle && <div className="text-sm text-navy-400 mt-1">{subtitle}</div>}
+      {subtitle && <div className="text-sm text-secondary mt-1">{subtitle}</div>}
     </div>
   )
 }
@@ -128,20 +128,20 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-navy-900 border border-navy-700 rounded-xl w-full max-w-md"
+        className="bg-card border border-border-strong rounded-xl w-full max-w-md"
       >
-        <div className="flex items-center justify-between p-4 border-b border-navy-800">
+        <div className="flex items-center justify-between p-4 border-b border-border-default">
           <h3 className="text-lg font-semibold text-white">
             {editingCode ? 'Edit Promo Code' : 'Create Promo Code'}
           </h3>
-          <button onClick={onClose} className="text-navy-400 hover:text-white">
+          <button onClick={onClose} className="text-secondary hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-4 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-navy-300 mb-1">
+            <label className="block text-sm font-medium text-secondary mb-1">
               Code {!editingCode && '(leave blank to auto-generate)'}
             </label>
             <input
@@ -149,28 +149,28 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
               value={formData.code}
               onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
               placeholder="e.g. SUMMER20"
-              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
               disabled={!!editingCode}
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-navy-300 mb-1">Description</label>
+            <label className="block text-sm font-medium text-secondary mb-1">Description</label>
             <input
               type="text"
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="e.g. Summer promotion - 20% off"
-              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-navy-300 mb-1">Discount Type</label>
+            <label className="block text-sm font-medium text-secondary mb-1">Discount Type</label>
             <select
               value={formData.discount_type}
               onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })}
-              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-pitch-500 focus:outline-none"
             >
               <option value="percentage">Percentage Off</option>
               <option value="fixed">Fixed Amount Off (£)</option>
@@ -180,7 +180,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
 
           {formData.discount_type !== 'free' && (
             <div>
-              <label className="block text-sm font-medium text-navy-300 mb-1">
+              <label className="block text-sm font-medium text-secondary mb-1">
                 Discount Value {formData.discount_type === 'percentage' ? '(%)' : '(£)'}
               </label>
               <input
@@ -189,35 +189,35 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
                 onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
                 min="0"
                 max={formData.discount_type === 'percentage' ? 100 : 9999}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
               />
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-navy-300 mb-1">Max Total Uses</label>
+              <label className="block text-sm font-medium text-secondary mb-1">Max Total Uses</label>
               <input
                 type="number"
                 value={formData.max_uses}
                 onChange={(e) => setFormData({ ...formData, max_uses: e.target.value })}
                 placeholder="Unlimited"
                 min="1"
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
               />
-              <p className="text-xs text-navy-500 mt-1">
+              <p className="text-xs text-tertiary mt-1">
                 {formData.max_uses ? `Limited to ${formData.max_uses} total redemptions` : 'Leave blank for unlimited uses'}
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium text-navy-300 mb-1">Expires</label>
+              <label className="block text-sm font-medium text-secondary mb-1">Expires</label>
               <input
                 type="date"
                 value={formData.valid_until}
                 onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-pitch-500 focus:outline-none"
               />
-              <p className="text-xs text-navy-500 mt-1">
+              <p className="text-xs text-tertiary mt-1">
                 {formData.valid_until ? '' : 'Leave blank for no expiry'}
               </p>
             </div>
@@ -227,7 +227,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 bg-navy-800 text-white rounded-lg hover:bg-navy-700 transition-colors"
+              className="flex-1 px-4 py-2 bg-subtle text-white rounded-lg hover:bg-border-default transition-colors"
             >
               Cancel
             </button>
@@ -444,11 +444,11 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="bg-navy-900 border border-navy-700 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-card border border-border-strong rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
       >
-        <div className="flex items-center justify-between p-4 border-b border-navy-800 sticky top-0 bg-navy-900 z-10">
+        <div className="flex items-center justify-between p-4 border-b border-border-default sticky top-0 bg-card z-10">
           <h3 className="text-lg font-semibold text-white">Manage User</h3>
-          <button onClick={onClose} className="text-navy-400 hover:text-white">
+          <button onClick={onClose} className="text-secondary hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -460,28 +460,28 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
         ) : userDetail ? (
           <div className="p-4 space-y-5">
             {/* User Info */}
-            <div className="bg-navy-800/50 rounded-lg p-3">
+            <div className="bg-subtle rounded-lg p-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-pitch-500/20 flex items-center justify-center">
                   <Users className="w-5 h-5 text-pitch-400" />
                 </div>
                 <div>
                   <div className="text-white font-medium">{userDetail.name || 'No name'}</div>
-                  <div className="text-sm text-navy-400">{userDetail.email}</div>
+                  <div className="text-sm text-secondary">{userDetail.email}</div>
                 </div>
                 <div className="ml-auto text-right">
-                  <div className="text-sm text-navy-400 capitalize">{userDetail.role}</div>
-                  <div className="text-xs text-navy-500">
+                  <div className="text-sm text-secondary capitalize">{userDetail.role}</div>
+                  <div className="text-xs text-tertiary">
                     Joined {new Date(userDetail.created_at).toLocaleDateString()}
                   </div>
                 </div>
               </div>
               {userDetail.team_name && (
-                <div className="mt-2 pt-2 border-t border-navy-700 text-sm text-navy-400">
+                <div className="mt-2 pt-2 border-t border-border-strong text-sm text-secondary">
                   Team: <span className="text-white">{userDetail.team_name}</span>
                 </div>
               )}
-              <div className="mt-1 text-sm text-navy-400">
+              <div className="mt-1 text-sm text-secondary">
                 Pupil Profile:{' '}
                 {userDetail.pupil_id ? (
                   <span className="text-pitch-400">{userDetail.player_name || 'Linked'}</span>
@@ -490,7 +490,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                 )}
               </div>
               {userDetail.subscription && (
-                <div className="mt-1 text-sm text-navy-400">
+                <div className="mt-1 text-sm text-secondary">
                   Subscription:{' '}
                   <span className="text-white">{userDetail.subscription.plan_id}</span>
                   <span
@@ -507,7 +507,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                 </div>
               )}
               {userDetail.subscription_tier && !['free', 'free_trial', ''].includes(userDetail.subscription_tier) && (
-                <div className="mt-1 text-sm text-navy-400">
+                <div className="mt-1 text-sm text-secondary">
                   Plan:{' '}
                   <span className="text-pitch-400 capitalize">
                     {userDetail.subscription_tier.replace('team_', '').replace('_monthly', '').replace('_annual', '').replace(/_/g, ' ')}
@@ -517,20 +517,20 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
             </div>
 
             {/* Change Role */}
-            <div className="bg-navy-800/50 rounded-lg p-3">
+            <div className="bg-subtle rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Users className="w-4 h-4 text-blue-400" />
                   <div>
                     <div className="text-white text-sm font-medium">Role</div>
-                    <div className="text-xs text-navy-400">Current: <span className="capitalize text-white">{userDetail.role}</span></div>
+                    <div className="text-xs text-secondary">Current: <span className="capitalize text-white">{userDetail.role}</span></div>
                   </div>
                 </div>
                 <select
                   value={userDetail.role}
                   onChange={(e) => handleChangeRole(e.target.value)}
                   disabled={actionLoading === 'role'}
-                  className="px-3 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                  className="px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
                 >
                   <option value="manager">Manager</option>
                   <option value="assistant">Assistant</option>
@@ -541,13 +541,13 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
             </div>
 
             {/* Billing Exempt Toggle */}
-            <div className="bg-navy-800/50 rounded-lg p-3">
+            <div className="bg-subtle rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-amber-400" />
                   <div>
                     <div className="text-white text-sm font-medium">Billing Exempt</div>
-                    <div className="text-xs text-navy-400">
+                    <div className="text-xs text-secondary">
                       Full access without payment (equivalent to top-tier plan)
                     </div>
                   </div>
@@ -558,7 +558,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     userDetail.billing_exempt
                       ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
-                      : 'bg-navy-700 text-navy-300 hover:bg-navy-600'
+                      : 'bg-border-default text-secondary hover:bg-navy-600'
                   }`}
                 >
                   {actionLoading === 'billing' ? (
@@ -574,7 +574,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
 
             {/* Grant Temporary Access */}
             {userDetail.team_id && (
-              <div className="bg-navy-800/50 rounded-lg p-3">
+              <div className="bg-subtle rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-3">
                   <Calendar className="w-4 h-4 text-pitch-400" />
                   <div className="text-white text-sm font-medium">Grant Temporary Access</div>
@@ -587,9 +587,9 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                       onChange={(e) => setTrialDays(parseInt(e.target.value) || 0)}
                       min="1"
                       max="365"
-                      className="w-20 px-3 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                      className="w-20 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
                     />
-                    <span className="text-sm text-navy-400">days</span>
+                    <span className="text-sm text-secondary">days</span>
                   </div>
                   <button
                     onClick={handleExtendTrial}
@@ -604,7 +604,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                     Add
                   </button>
                 </div>
-                <p className="text-xs text-navy-500 mt-2">
+                <p className="text-xs text-tertiary mt-2">
                   Grants temporary paid-tier access for the specified number of days.
                 </p>
               </div>
@@ -612,7 +612,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
 
             {/* Grant Subscription */}
             {userDetail.team_id && (
-              <div className="bg-navy-800/50 rounded-lg p-3">
+              <div className="bg-subtle rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-3">
                   <CreditCard className="w-4 h-4 text-purple-400" />
                   <div className="text-white text-sm font-medium">Grant Subscription</div>
@@ -621,7 +621,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <select
                     value={selectedPlan}
                     onChange={(e) => setSelectedPlan(e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                    className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
                   >
                     {plans.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -642,20 +642,20 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                     Grant
                   </button>
                 </div>
-                <p className="text-xs text-navy-500 mt-2">
+                <p className="text-xs text-tertiary mt-2">
                   Creates a full subscription period. Cancels any existing subscription first.
                 </p>
               </div>
             )}
 
             {!userDetail.team_id && (
-              <div className="bg-navy-800/50 rounded-lg p-3 text-center text-navy-400 text-sm">
+              <div className="bg-subtle rounded-lg p-3 text-center text-secondary text-sm">
                 This user has no team. Trial extension and subscription grants require a team.
               </div>
             )}
 
             {/* Reassign Team */}
-            <div className="bg-navy-800/50 rounded-lg p-3">
+            <div className="bg-subtle rounded-lg p-3">
               <div className="flex items-center gap-2 mb-3">
                 <RefreshCw className="w-4 h-4 text-cyan-400" />
                 <div className="text-white text-sm font-medium">Reassign Team</div>
@@ -668,7 +668,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                     if (e.target.value) fetchTeamPlayers(e.target.value)
                     else setTeamPlayers([])
                   }}
-                  className="flex-1 px-3 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                  className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
                 >
                   <option value="">No team</option>
                   {allTeams.map((t) => (
@@ -690,14 +690,14 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   Move
                 </button>
               </div>
-              <p className="text-xs text-navy-500 mt-2">
+              <p className="text-xs text-tertiary mt-2">
                 Reassign this user to a different team. Their role stays the same.
               </p>
             </div>
 
             {/* Link Pupil Profile */}
             {userDetail.team_id && (
-              <div className="bg-navy-800/50 rounded-lg p-3">
+              <div className="bg-subtle rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-3">
                   <Users className="w-4 h-4 text-orange-400" />
                   <div className="text-white text-sm font-medium">Link Pupil Profile</div>
@@ -706,7 +706,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <select
                     value={selectedPlayerId}
                     onChange={(e) => setSelectedPlayerId(e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                    className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
                   >
                     <option value="">No pupil linked</option>
                     {teamPlayers.map((p) => (
@@ -728,7 +728,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                     Link
                   </button>
                 </div>
-                <p className="text-xs text-navy-500 mt-2">
+                <p className="text-xs text-tertiary mt-2">
                   Link this account to a pupil profile so they can access the Pupil Lounge.
                 </p>
               </div>
@@ -767,7 +767,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                     </button>
                     <button
                       onClick={() => setShowDeleteConfirm(false)}
-                      className="px-3 py-2 bg-navy-700 text-navy-300 rounded-lg text-sm hover:bg-navy-600 transition-colors"
+                      className="px-3 py-2 bg-border-default text-secondary rounded-lg text-sm hover:bg-navy-600 transition-colors"
                     >
                       Cancel
                     </button>
@@ -846,54 +846,54 @@ function DemoRequestsTab() {
     const r = selectedRequest
     return (
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-        <button onClick={() => setSelectedRequest(null)} className="text-navy-400 hover:text-white flex items-center gap-1 text-sm">
+        <button onClick={() => setSelectedRequest(null)} className="text-secondary hover:text-white flex items-center gap-1 text-sm">
           &larr; Back to requests
         </button>
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-6 space-y-4">
+        <div className="bg-card border border-border-default rounded-xl p-6 space-y-4">
           <div className="flex items-start justify-between">
             <div>
               <h3 className="text-xl font-semibold text-white">{r.name}</h3>
-              <p className="text-navy-400">{r.role_at_school}{r.role_at_school_other ? ` - ${r.role_at_school_other}` : ''}</p>
+              <p className="text-secondary">{r.role_at_school}{r.role_at_school_other ? ` - ${r.role_at_school_other}` : ''}</p>
             </div>
             <span className={`px-3 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[r.status] || ''}`}>
               {r.status?.replace('_', ' ')}
             </span>
           </div>
           <div className="grid md:grid-cols-2 gap-4 text-sm">
-            <div><span className="text-navy-400">School:</span> <span className="text-white ml-2">{r.school_name}</span></div>
-            <div><span className="text-navy-400">Type:</span> <span className="text-white ml-2">{r.school_type}</span></div>
-            <div><span className="text-navy-400">Email:</span> <a href={`mailto:${r.email}`} className="text-pitch-400 ml-2">{r.email}</a></div>
-            <div><span className="text-navy-400">Pupil roll:</span> <span className="text-white ml-2">{r.pupil_roll_band}</span></div>
-            <div><span className="text-navy-400">Referral:</span> <span className="text-white ml-2">{r.referral_source || 'Not provided'}</span></div>
-            <div><span className="text-navy-400">Submitted:</span> <span className="text-white ml-2">{new Date(r.created_at).toLocaleString('en-GB')}</span></div>
+            <div><span className="text-secondary">School:</span> <span className="text-white ml-2">{r.school_name}</span></div>
+            <div><span className="text-secondary">Type:</span> <span className="text-white ml-2">{r.school_type}</span></div>
+            <div><span className="text-secondary">Email:</span> <a href={`mailto:${r.email}`} className="text-pitch-400 ml-2">{r.email}</a></div>
+            <div><span className="text-secondary">Pupil roll:</span> <span className="text-white ml-2">{r.pupil_roll_band}</span></div>
+            <div><span className="text-secondary">Referral:</span> <span className="text-white ml-2">{r.referral_source || 'Not provided'}</span></div>
+            <div><span className="text-secondary">Submitted:</span> <span className="text-white ml-2">{new Date(r.created_at).toLocaleString('en-GB')}</span></div>
           </div>
           {r.hopes_to_help_with && (
-            <div className="bg-navy-800/50 rounded-lg p-4">
-              <p className="text-navy-400 text-xs font-medium mb-2">WHAT THEY WANT HELP WITH</p>
+            <div className="bg-subtle rounded-lg p-4">
+              <p className="text-secondary text-xs font-medium mb-2">WHAT THEY WANT HELP WITH</p>
               <p className="text-white text-sm">{r.hopes_to_help_with}</p>
             </div>
           )}
           <div>
-            <p className="text-navy-400 text-xs font-medium mb-2">INTERNAL NOTES</p>
+            <p className="text-secondary text-xs font-medium mb-2">INTERNAL NOTES</p>
             <textarea
               value={editNotes}
               onChange={e => setEditNotes(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none text-sm"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none text-sm"
               placeholder="Add notes about follow-up, conversation, next steps..."
             />
-            <button onClick={() => saveNotes(r.id)} disabled={saving} className="mt-2 px-4 py-2 bg-navy-700 text-white rounded-lg text-sm hover:bg-navy-600 disabled:opacity-50">
+            <button onClick={() => saveNotes(r.id)} disabled={saving} className="mt-2 px-4 py-2 bg-border-default text-white rounded-lg text-sm hover:bg-navy-600 disabled:opacity-50">
               {saving ? 'Saving...' : 'Save notes'}
             </button>
           </div>
-          <div className="flex flex-wrap gap-2 pt-2 border-t border-navy-800">
-            <p className="text-navy-400 text-xs font-medium w-full mb-1">UPDATE STATUS</p>
+          <div className="flex flex-wrap gap-2 pt-2 border-t border-border-default">
+            <p className="text-secondary text-xs font-medium w-full mb-1">UPDATE STATUS</p>
             {['contacted', 'demo_issued', 'declined', 'no_response'].map(s => (
               <button
                 key={s}
                 onClick={() => updateStatus(r.id, s)}
                 disabled={saving || r.status === s}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${r.status === s ? 'opacity-40 cursor-default' : 'hover:opacity-80'} ${STATUS_COLORS[s] || 'bg-navy-700 text-white'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${r.status === s ? 'opacity-40 cursor-default' : 'hover:opacity-80'} ${STATUS_COLORS[s] || 'bg-border-default text-white'}`}
               >
                 {s.replace('_', ' ')}
               </button>
@@ -912,7 +912,7 @@ function DemoRequestsTab() {
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none"
+            className="px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none"
           >
             <option value="">All statuses</option>
             <option value="new">New</option>
@@ -921,21 +921,21 @@ function DemoRequestsTab() {
             <option value="declined">Declined</option>
             <option value="no_response">No response</option>
           </select>
-          <button onClick={fetchRequests} className="p-2 text-navy-400 hover:text-white"><RefreshCw className="w-4 h-4" /></button>
+          <button onClick={fetchRequests} className="p-2 text-secondary hover:text-white"><RefreshCw className="w-4 h-4" /></button>
         </div>
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>
+        <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>
       ) : requests.length === 0 ? (
-        <div className="text-center py-12 text-navy-400">No demo requests yet.</div>
+        <div className="text-center py-12 text-secondary">No demo requests yet.</div>
       ) : (
         <div className="space-y-2">
           {requests.map(r => (
             <button
               key={r.id}
               onClick={() => { setSelectedRequest(r); setEditNotes(r.internal_notes || '') }}
-              className="w-full text-left bg-navy-900 border border-navy-800 rounded-xl p-4 hover:border-navy-600 transition-colors"
+              className="w-full text-left bg-card border border-border-default rounded-xl p-4 hover:border-border-strong transition-colors"
             >
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0">
@@ -945,9 +945,9 @@ function DemoRequestsTab() {
                       {r.status?.replace('_', ' ')}
                     </span>
                   </div>
-                  <p className="text-sm text-navy-400 mt-0.5">{r.school_name} ({r.school_type}) - {r.role_at_school}</p>
+                  <p className="text-sm text-secondary mt-0.5">{r.school_name} ({r.school_type}) - {r.role_at_school}</p>
                 </div>
-                <span className="text-xs text-navy-500 whitespace-nowrap">
+                <span className="text-xs text-tertiary whitespace-nowrap">
                   {new Date(r.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                 </span>
               </div>
@@ -1381,11 +1381,11 @@ export default function Admin() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-white">Admin Dashboard</h1>
-          <p className="text-navy-400">Manage users, promo codes, and view analytics</p>
+          <p className="text-secondary">Manage users, promo codes, and view analytics</p>
         </div>
         <button
           onClick={fetchData}
-          className="flex items-center gap-2 px-3 py-2 bg-navy-800 text-navy-300 rounded-lg hover:bg-navy-700 transition-colors"
+          className="flex items-center gap-2 px-3 py-2 bg-subtle text-secondary rounded-lg hover:bg-border-default transition-colors"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh
@@ -1393,7 +1393,7 @@ export default function Admin() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 border-b border-navy-800 pb-2">
+      <div className="flex gap-2 border-b border-border-default pb-2">
         {['overview', 'finance', 'promo-codes', 'users', 'demo-requests', 'screenshots'].map((tab) => (
           <button
             key={tab}
@@ -1401,7 +1401,7 @@ export default function Admin() {
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === tab
                 ? 'bg-pitch-500 text-navy-950'
-                : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                : 'text-secondary hover:text-white hover:bg-subtle'
             }`}
           >
             {tab === 'overview' && 'Overview'}
@@ -1465,79 +1465,79 @@ export default function Admin() {
 
           {/* Breakdowns */}
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+            <div className="bg-card border border-border-default rounded-xl p-4">
               <h3 className="font-semibold text-white mb-4">User Breakdown</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Coaches</span>
+                  <span className="text-secondary">Coaches</span>
                   <span className="text-white font-medium">{stats.users.coaches}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Players</span>
+                  <span className="text-secondary">Players</span>
                   <span className="text-white font-medium">{stats.users.pupils}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Parents</span>
+                  <span className="text-secondary">Parents</span>
                   <span className="text-white font-medium">{stats.users.parents}</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+            <div className="bg-card border border-border-default rounded-xl p-4">
               <h3 className="font-semibold text-white mb-4">Team Subscriptions</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Free</span>
+                  <span className="text-secondary">Free</span>
                   <span className="text-white font-medium">{stats.subscriptions?.free || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Core</span>
+                  <span className="text-secondary">Core</span>
                   <span className="text-white font-medium">{stats.subscriptions?.core || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Pro</span>
+                  <span className="text-secondary">Pro</span>
                   <span className="text-white font-medium">{stats.subscriptions?.pro || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Academy</span>
+                  <span className="text-secondary">Academy</span>
                   <span className="text-white font-medium">{stats.subscriptions?.academy || 0}</span>
                 </div>
                 {parseInt(stats.subscriptions?.legacy_trials || 0) > 0 && (
-                  <div className="flex justify-between items-center pt-2 border-t border-navy-800">
-                    <span className="text-navy-500 text-sm">Legacy trials</span>
-                    <span className="text-navy-500 font-medium text-sm">{stats.subscriptions.legacy_trials}</span>
+                  <div className="flex justify-between items-center pt-2 border-t border-border-default">
+                    <span className="text-tertiary text-sm">Legacy trials</span>
+                    <span className="text-tertiary font-medium text-sm">{stats.subscriptions.legacy_trials}</span>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+            <div className="bg-card border border-border-default rounded-xl p-4">
               <h3 className="font-semibold text-white mb-4">Team Formats</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">11-a-side</span>
+                  <span className="text-secondary">11-a-side</span>
                   <span className="text-white font-medium">{stats.teams.teams_11}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">9-a-side</span>
+                  <span className="text-secondary">9-a-side</span>
                   <span className="text-white font-medium">{stats.teams.teams_9}</span>
                 </div>
               </div>
             </div>
 
-            <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+            <div className="bg-card border border-border-default rounded-xl p-4">
               <h3 className="font-semibold text-white mb-4">School Tiers</h3>
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Starter (6 teams)</span>
+                  <span className="text-secondary">Starter (6 teams)</span>
                   <span className="text-white font-medium">{stats.schools?.starter || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Growth (15 teams)</span>
+                  <span className="text-secondary">Growth (15 teams)</span>
                   <span className="text-white font-medium">{stats.schools?.growth || 0}</span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-navy-400">Scale (40 teams)</span>
+                  <span className="text-secondary">Scale (40 teams)</span>
                   <span className="text-white font-medium">{stats.schools?.scale || 0}</span>
                 </div>
               </div>
@@ -1546,18 +1546,18 @@ export default function Admin() {
 
           {/* Recent Activity */}
           <div className="grid md:grid-cols-2 gap-6">
-            <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+            <div className="bg-card border border-border-default rounded-xl p-4">
               <h3 className="font-semibold text-white mb-4">Recent Signups</h3>
               <div className="space-y-2">
                 {stats.recentUsers.map((u) => (
-                  <div key={u.id} className="flex items-center justify-between py-2 border-b border-navy-800 last:border-0">
+                  <div key={u.id} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
                     <div>
                       <div className="text-white">{u.name || u.email}</div>
-                      <div className="text-sm text-navy-400">{u.email}</div>
+                      <div className="text-sm text-secondary">{u.email}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-sm text-navy-400 capitalize">{u.role}</div>
-                      <div className="text-xs text-navy-500">
+                      <div className="text-sm text-secondary capitalize">{u.role}</div>
+                      <div className="text-xs text-tertiary">
                         {new Date(u.created_at).toLocaleDateString()}
                       </div>
                     </div>
@@ -1566,23 +1566,23 @@ export default function Admin() {
               </div>
             </div>
 
-            <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+            <div className="bg-card border border-border-default rounded-xl p-4">
               <h3 className="font-semibold text-white mb-4">Recent Clubs</h3>
               {stats.recentClubs?.length > 0 ? (
                 <div className="space-y-2">
                   {stats.recentClubs.map((c) => (
-                    <div key={c.id} className="flex items-center justify-between py-2 border-b border-navy-800 last:border-0">
+                    <div key={c.id} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
                       <div>
                         <div className="text-white">{c.name}</div>
-                        <div className="text-sm text-navy-400">
+                        <div className="text-sm text-secondary">
                           {c.team_count} {c.team_count === 1 ? 'team' : 'teams'}
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm text-navy-400 capitalize">
+                        <div className="text-sm text-secondary capitalize">
                           {(c.subscription_tier || 'starter').replace('club_', '')}
                         </div>
-                        <div className="text-xs text-navy-500">
+                        <div className="text-xs text-tertiary">
                           {new Date(c.created_at).toLocaleDateString()}
                         </div>
                       </div>
@@ -1590,28 +1590,28 @@ export default function Admin() {
                   ))}
                 </div>
               ) : (
-                <div className="text-navy-500 text-sm text-center py-4">No schools registered yet</div>
+                <div className="text-tertiary text-sm text-center py-4">No schools registered yet</div>
               )}
             </div>
           </div>
 
           {/* Top Managers by Team Count */}
-          <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+          <div className="bg-card border border-border-default rounded-xl p-4">
             <h3 className="font-semibold text-white mb-4">Top Accounts by Teams</h3>
             {stats.topManagers?.length > 0 ? (
               <div className="space-y-2">
                 {stats.topManagers.map((m) => (
-                  <div key={m.id} className="flex items-center justify-between py-2 border-b border-navy-800 last:border-0">
+                  <div key={m.id} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
                     <div className="min-w-0 flex-1">
                       <div className="text-white">{m.name || m.email}</div>
-                      <div className="text-sm text-navy-400">{m.email}</div>
-                      <div className="text-xs text-navy-500 mt-1 truncate">
+                      <div className="text-sm text-secondary">{m.email}</div>
+                      <div className="text-xs text-tertiary mt-1 truncate">
                         {m.team_names?.join(', ')}
                       </div>
                     </div>
                     <div className="text-right ml-4 shrink-0">
                       <div className="text-white font-semibold">{m.team_count} {parseInt(m.team_count) === 1 ? 'team' : 'teams'}</div>
-                      <div className="text-xs text-navy-500 capitalize">
+                      <div className="text-xs text-tertiary capitalize">
                         {m.tiers?.map(t => {
                           const tier = t || 'free'
                           if (tier === 'free_trial' || tier === 'free') return 'Free'
@@ -1624,7 +1624,7 @@ export default function Admin() {
                 ))}
               </div>
             ) : (
-              <div className="text-navy-500 text-sm text-center py-4">No manager data available</div>
+              <div className="text-tertiary text-sm text-center py-4">No manager data available</div>
             )}
           </div>
         </motion.div>
@@ -1662,19 +1662,19 @@ export default function Admin() {
                       }
                       const monthlyRevenue = (tierPrices[tier.subscription_tier] || 0) * parseInt(tier.count)
                       return (
-                        <div key={tier.subscription_tier} className="flex items-center justify-between py-2 border-b border-navy-800 last:border-0">
+                        <div key={tier.subscription_tier} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
                           <div>
                             <span className="text-white font-medium">{tier.tier_group}</span>
-                            <span className="text-navy-500 text-xs ml-2">{tier.subscription_tier.includes('annual') ? '(annual)' : '(monthly)'}</span>
+                            <span className="text-tertiary text-xs ml-2">{tier.subscription_tier.includes('annual') ? '(annual)' : '(monthly)'}</span>
                           </div>
                           <div className="text-right">
                             <span className="text-pitch-400 font-semibold">£{(monthlyRevenue / 100).toFixed(2)}</span>
-                            <span className="text-navy-500 text-xs ml-1">/mo</span>
-                            <span className="text-navy-400 text-sm ml-3">{tier.count} {parseInt(tier.count) === 1 ? 'team' : 'teams'}</span>
+                            <span className="text-tertiary text-xs ml-1">/mo</span>
+                            <span className="text-secondary text-sm ml-3">{tier.count} {parseInt(tier.count) === 1 ? 'team' : 'teams'}</span>
                           </div>
                         </div>
                       )
-                    }) : <p className="text-navy-500 text-sm">No paid subscriptions yet</p>}
+                    }) : <p className="text-tertiary text-sm">No paid subscriptions yet</p>}
                   </div>
                 </div>
 
@@ -1682,24 +1682,24 @@ export default function Admin() {
                 <div className="card p-5">
                   <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><Sparkles className="w-4 h-4 text-energy-400" /> Credit Purchases</h3>
                   <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-subtle">
                       <div>
                         <p className="text-white font-medium">Video Analysis Credits</p>
-                        <p className="text-navy-400 text-xs">Team-level top-ups</p>
+                        <p className="text-secondary text-xs">Team-level top-ups</p>
                       </div>
                       <span className="text-pitch-400 font-semibold">{finance.videoCredits?.totalRemaining || 0} remaining</span>
                     </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-subtle">
                       <div>
                         <p className="text-white font-medium">Deep Video Credits</p>
-                        <p className="text-navy-400 text-xs">{finance.deepVideoCredits?.usersWithCredits || 0} users with credits</p>
+                        <p className="text-secondary text-xs">{finance.deepVideoCredits?.usersWithCredits || 0} users with credits</p>
                       </div>
                       <span className="text-energy-400 font-semibold">{finance.deepVideoCredits?.totalRemaining || 0} remaining</span>
                     </div>
-                    <div className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50">
+                    <div className="flex items-center justify-between p-3 rounded-lg bg-subtle">
                       <div>
                         <p className="text-white font-medium">Total Credit Purchases</p>
-                        <p className="text-navy-400 text-xs">All-time processed transactions</p>
+                        <p className="text-secondary text-xs">All-time processed transactions</p>
                       </div>
                       <span className="text-white font-semibold">{finance.creditRevenue?.total_purchases || 0}</span>
                     </div>
@@ -1714,7 +1714,7 @@ export default function Admin() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-navy-400 border-b border-navy-800">
+                        <tr className="text-secondary border-b border-border-default">
                           <th className="text-left py-2 font-medium">Month</th>
                           <th className="text-right py-2 font-medium">New Teams</th>
                           <th className="text-right py-2 font-medium">Paid Teams</th>
@@ -1729,16 +1729,16 @@ export default function Admin() {
                             ? Math.round((parseInt(month.paid_teams) / parseInt(month.new_teams)) * 100)
                             : 0
                           return (
-                            <tr key={month.month} className="border-b border-navy-800/50">
+                            <tr key={month.month} className="border-b border-border-subtle">
                               <td className="py-2 text-white font-medium">{new Date(month.month + '-01').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</td>
-                              <td className="py-2 text-right text-navy-300">{month.new_teams}</td>
+                              <td className="py-2 text-right text-secondary">{month.new_teams}</td>
                               <td className="py-2 text-right text-pitch-400">{month.paid_teams}</td>
-                              <td className="py-2 text-right text-navy-300">{subData?.new_subscriptions || 0}</td>
+                              <td className="py-2 text-right text-secondary">{subData?.new_subscriptions || 0}</td>
                               <td className="py-2 text-right">
                                 <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                                   conversion >= 30 ? 'bg-pitch-500/20 text-pitch-400' :
                                   conversion >= 10 ? 'bg-energy-500/20 text-energy-400' :
-                                  'bg-navy-700 text-navy-400'
+                                  'bg-border-default text-secondary'
                                 }`}>{conversion}%</span>
                               </td>
                             </tr>
@@ -1747,27 +1747,27 @@ export default function Admin() {
                       </tbody>
                     </table>
                   </div>
-                ) : <p className="text-navy-500 text-sm">No data yet</p>}
+                ) : <p className="text-tertiary text-sm">No data yet</p>}
               </div>
 
               {/* Forecast */}
               <div className="card p-5">
                 <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><Calendar className="w-4 h-4 text-blue-400" /> Revenue Forecast</h3>
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="p-4 rounded-lg bg-navy-800/50 text-center">
-                    <p className="text-navy-400 text-xs mb-1">Next Month</p>
+                  <div className="p-4 rounded-lg bg-subtle text-center">
+                    <p className="text-secondary text-xs mb-1">Next Month</p>
                     <p className="text-white text-xl font-bold">£{(finance.mrr / 100).toFixed(0)}</p>
-                    <p className="text-navy-500 text-xs">Based on current MRR</p>
+                    <p className="text-tertiary text-xs">Based on current MRR</p>
                   </div>
-                  <div className="p-4 rounded-lg bg-navy-800/50 text-center">
-                    <p className="text-navy-400 text-xs mb-1">Next Quarter</p>
+                  <div className="p-4 rounded-lg bg-subtle text-center">
+                    <p className="text-secondary text-xs mb-1">Next Quarter</p>
                     <p className="text-white text-xl font-bold">£{(finance.mrr * 3 / 100).toFixed(0)}</p>
-                    <p className="text-navy-500 text-xs">3 months projected</p>
+                    <p className="text-tertiary text-xs">3 months projected</p>
                   </div>
-                  <div className="p-4 rounded-lg bg-navy-800/50 text-center">
-                    <p className="text-navy-400 text-xs mb-1">Annual Run Rate</p>
+                  <div className="p-4 rounded-lg bg-subtle text-center">
+                    <p className="text-secondary text-xs mb-1">Annual Run Rate</p>
                     <p className="text-pitch-400 text-xl font-bold">£{(finance.arr / 100).toFixed(0)}</p>
-                    <p className="text-navy-500 text-xs">12 months projected</p>
+                    <p className="text-tertiary text-xs">12 months projected</p>
                   </div>
                 </div>
               </div>
@@ -1779,7 +1779,7 @@ export default function Admin() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="text-navy-400 border-b border-navy-800">
+                        <tr className="text-secondary border-b border-border-default">
                           <th className="text-left py-2 font-medium">Team</th>
                           <th className="text-left py-2 font-medium">Plan</th>
                           <th className="text-left py-2 font-medium">Status</th>
@@ -1789,9 +1789,9 @@ export default function Admin() {
                       </thead>
                       <tbody>
                         {finance.recentSubscriptions.map(sub => (
-                          <tr key={sub.id} className="border-b border-navy-800/50">
-                            <td className="py-2 text-white">{sub.team_name || '-'} <span className="text-navy-500 text-xs">{sub.age_group}</span></td>
-                            <td className="py-2 text-navy-300">{sub.plan_id?.replace(/_/g, ' ')}</td>
+                          <tr key={sub.id} className="border-b border-border-subtle">
+                            <td className="py-2 text-white">{sub.team_name || '-'} <span className="text-tertiary text-xs">{sub.age_group}</span></td>
+                            <td className="py-2 text-secondary">{sub.plan_id?.replace(/_/g, ' ')}</td>
                             <td className="py-2">
                               <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                                 sub.status === 'active' ? 'bg-pitch-500/20 text-pitch-400' :
@@ -1800,14 +1800,14 @@ export default function Admin() {
                                 'bg-alert-500/20 text-alert-400'
                               }`}>{sub.status}</span>
                             </td>
-                            <td className="py-2 text-navy-400">{sub.provider}</td>
-                            <td className="py-2 text-right text-navy-400">{new Date(sub.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</td>
+                            <td className="py-2 text-secondary">{sub.provider}</td>
+                            <td className="py-2 text-right text-secondary">{new Date(sub.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                ) : <p className="text-navy-500 text-sm">No subscription activity yet</p>}
+                ) : <p className="text-tertiary text-sm">No subscription activity yet</p>}
               </div>
             </>
           ) : null}
@@ -1831,22 +1831,22 @@ export default function Admin() {
             </button>
           </div>
 
-          <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+          <div className="bg-card border border-border-default rounded-xl overflow-hidden">
             <table className="w-full">
-              <thead className="bg-navy-800/50">
+              <thead className="bg-subtle">
                 <tr>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400">Code</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400">Discount</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400 hidden md:table-cell">Description</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400">Uses</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400">Status</th>
-                  <th className="text-right px-4 py-3 text-sm font-medium text-navy-400">Actions</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary">Code</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary">Discount</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary hidden md:table-cell">Description</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary">Uses</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary">Status</th>
+                  <th className="text-right px-4 py-3 text-sm font-medium text-secondary">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-navy-800">
                 {promoCodes.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-4 py-8 text-center text-navy-400">
+                    <td colSpan={6} className="px-4 py-8 text-center text-secondary">
                       No promo codes yet. Create your first one!
                     </td>
                   </tr>
@@ -1854,13 +1854,13 @@ export default function Admin() {
                   promoCodes.map((code) => {
                     const DiscountIcon = getDiscountIcon(code.discount_type)
                     return (
-                      <tr key={code.id} className="hover:bg-navy-800/30">
+                      <tr key={code.id} className="hover:bg-subtle">
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <span className="font-mono font-medium text-white">{code.code}</span>
                             <button
                               onClick={() => copyCode(code.code)}
-                              className="text-navy-400 hover:text-white"
+                              className="text-secondary hover:text-white"
                             >
                               {copiedCode === code.code ? (
                                 <Check className="w-4 h-4 text-pitch-500" />
@@ -1876,15 +1876,15 @@ export default function Admin() {
                             <span className="text-white">{getDiscountDisplay(code)}</span>
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-navy-400 hidden md:table-cell">
+                        <td className="px-4 py-3 text-secondary hidden md:table-cell">
                           {code.description || '-'}
                         </td>
-                        <td className="px-4 py-3 text-navy-400">
+                        <td className="px-4 py-3 text-secondary">
                           <span className="text-white">{code.current_uses}</span>
                           {code.max_uses ? (
                             <span> / {code.max_uses}</span>
                           ) : (
-                            <span className="text-navy-500 text-xs ml-1">/ &infin;</span>
+                            <span className="text-tertiary text-xs ml-1">/ &infin;</span>
                           )}
                         </td>
                         <td className="px-4 py-3">
@@ -1906,13 +1906,13 @@ export default function Admin() {
                                 setEditingCode(code)
                                 setShowModal(true)
                               }}
-                              className="p-1.5 text-navy-400 hover:text-white hover:bg-navy-700 rounded"
+                              className="p-1.5 text-secondary hover:text-white hover:bg-border-default rounded"
                             >
                               <Edit2 className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteCode(code.id)}
-                              className="p-1.5 text-navy-400 hover:text-red-400 hover:bg-navy-700 rounded"
+                              className="p-1.5 text-secondary hover:text-red-400 hover:bg-border-default rounded"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -1933,7 +1933,7 @@ export default function Admin() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <div className="flex gap-4 items-center">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
               <input
                 type="text"
                 value={searchQuery}
@@ -1942,28 +1942,28 @@ export default function Admin() {
                   setUserPage(1)
                 }}
                 placeholder="Search by name or email..."
-                className="w-full pl-10 pr-4 py-2 bg-navy-900 border border-navy-800 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 bg-card border border-border-default rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
               />
             </div>
-            <div className="text-sm text-navy-400">
+            <div className="text-sm text-secondary">
               {userTotal} total users
             </div>
           </div>
 
-          <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+          <div className="bg-card border border-border-default rounded-xl overflow-hidden">
             <table className="w-full">
-              <thead className="bg-navy-800/50">
+              <thead className="bg-subtle">
                 <tr>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400">User</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400">Role</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400 hidden md:table-cell">Team</th>
-                  <th className="text-left px-4 py-3 text-sm font-medium text-navy-400 hidden md:table-cell">Status</th>
-                  <th className="text-right px-4 py-3 text-sm font-medium text-navy-400">Actions</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary">User</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary">Role</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary hidden md:table-cell">Team</th>
+                  <th className="text-left px-4 py-3 text-sm font-medium text-secondary hidden md:table-cell">Status</th>
+                  <th className="text-right px-4 py-3 text-sm font-medium text-secondary">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-navy-800">
                 {users.map((u) => (
-                  <tr key={u.id} className="hover:bg-navy-800/30">
+                  <tr key={u.id} className="hover:bg-subtle">
                     <td className="px-4 py-3">
                       <div>
                         <div className="text-white flex items-center gap-2">
@@ -1979,11 +1979,11 @@ export default function Admin() {
                             </span>
                           )}
                         </div>
-                        <div className="text-sm text-navy-400">{u.email}</div>
+                        <div className="text-sm text-secondary">{u.email}</div>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-navy-400 capitalize">{u.role}</td>
-                    <td className="px-4 py-3 text-navy-400 hidden md:table-cell">
+                    <td className="px-4 py-3 text-secondary capitalize">{u.role}</td>
+                    <td className="px-4 py-3 text-secondary hidden md:table-cell">
                       {u.team_name || '-'}
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
@@ -1996,13 +1996,13 @@ export default function Admin() {
                           {u.subscription_tier.replace('team_', '').replace('_monthly', '').replace('_annual', '').replace(/_/g, ' ')}
                         </span>
                       ) : (
-                        <span className="text-xs text-navy-500">Free</span>
+                        <span className="text-xs text-tertiary">Free</span>
                       )}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <button
                         onClick={() => setManagingUserId(u.id)}
-                        className="p-1.5 text-navy-400 hover:text-white hover:bg-navy-700 rounded"
+                        className="p-1.5 text-secondary hover:text-white hover:bg-border-default rounded"
                         title="Manage user"
                       >
                         <Settings className="w-4 h-4" />
@@ -2020,17 +2020,17 @@ export default function Admin() {
               <button
                 onClick={() => setUserPage((p) => Math.max(1, p - 1))}
                 disabled={userPage === 1}
-                className="px-3 py-1 bg-navy-800 text-white rounded disabled:opacity-50"
+                className="px-3 py-1 bg-subtle text-white rounded disabled:opacity-50"
               >
                 Previous
               </button>
-              <span className="px-3 py-1 text-navy-400">
+              <span className="px-3 py-1 text-secondary">
                 Page {userPage} of {Math.ceil(userTotal / 20)}
               </span>
               <button
                 onClick={() => setUserPage((p) => p + 1)}
                 disabled={userPage >= Math.ceil(userTotal / 20)}
-                className="px-3 py-1 bg-navy-800 text-white rounded disabled:opacity-50"
+                className="px-3 py-1 bg-subtle text-white rounded disabled:opacity-50"
               >
                 Next
               </button>
@@ -2053,7 +2053,7 @@ export default function Admin() {
               <div className="flex items-center justify-between">
                 <button
                   onClick={() => setEditingPost(null)}
-                  className="text-navy-400 hover:text-white flex items-center gap-1"
+                  className="text-secondary hover:text-white flex items-center gap-1"
                 >
                   ← Back to posts
                 </button>
@@ -2069,35 +2069,35 @@ export default function Admin() {
                 </div>
               </div>
 
-              <div className="bg-navy-900 border border-navy-800 rounded-xl p-4 space-y-4">
+              <div className="bg-card border border-border-default rounded-xl p-4 space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">Title</label>
+                  <label className="block text-sm font-medium text-secondary mb-1">Title</label>
                   <input
                     type="text"
                     value={editingPost.title}
                     onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
                     placeholder="Post title"
-                    className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
                   />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1">Slug</label>
+                    <label className="block text-sm font-medium text-secondary mb-1">Slug</label>
                     <input
                       type="text"
                       value={editingPost.slug || ''}
                       onChange={(e) => setEditingPost({ ...editingPost, slug: e.target.value })}
                       placeholder="auto-generated-from-title"
-                      className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1">Status</label>
+                    <label className="block text-sm font-medium text-secondary mb-1">Status</label>
                     <select
                       value={editingPost.status}
                       onChange={(e) => setEditingPost({ ...editingPost, status: e.target.value })}
-                      className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-pitch-500 focus:outline-none"
                     >
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
@@ -2107,19 +2107,19 @@ export default function Admin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">
+                  <label className="block text-sm font-medium text-secondary mb-1">
                     Cover Image
-                    <span className="text-navy-500 font-normal ml-2">Recommended: 1200 x 630px (1.9:1 ratio)</span>
+                    <span className="text-tertiary font-normal ml-2">Recommended: 1200 x 630px (1.9:1 ratio)</span>
                   </label>
                   {editingPost.cover_image_url ? (
                     <div className="relative group">
                       <img
                         src={editingPost.cover_image_url.startsWith('http') ? editingPost.cover_image_url : `${SERVER_URL}${editingPost.cover_image_url}`}
                         alt=""
-                        className="w-full max-h-56 object-cover rounded-lg border border-navy-700"
+                        className="w-full max-h-56 object-cover rounded-lg border border-border-strong"
                         onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.querySelector('.cover-image-error').style.display = 'flex' }}
                       />
-                      <div className="cover-image-error hidden flex-col items-center justify-center gap-3 p-6 rounded-lg border border-navy-700 bg-navy-800/50 text-navy-400 text-sm">
+                      <div className="cover-image-error hidden flex-col items-center justify-center gap-3 p-6 rounded-lg border border-border-strong bg-subtle text-secondary text-sm">
                         <p>Image failed to load</p>
                         <div className="flex gap-3">
                           <label className="cursor-pointer px-3 py-1.5 bg-pitch-600 text-white rounded-lg text-sm hover:bg-pitch-500 flex items-center gap-1.5">
@@ -2142,7 +2142,7 @@ export default function Admin() {
                         </div>
                       </div>
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center gap-3">
-                        <label className="cursor-pointer px-3 py-1.5 bg-navy-800 text-white rounded-lg text-sm hover:bg-navy-700 flex items-center gap-1.5">
+                        <label className="cursor-pointer px-3 py-1.5 bg-subtle text-white rounded-lg text-sm hover:bg-border-default flex items-center gap-1.5">
                           <Upload className="w-4 h-4" />
                           Replace
                           <input
@@ -2167,22 +2167,22 @@ export default function Admin() {
                       onDragLeave={() => setDragOver(false)}
                       onDrop={handleDrop}
                       className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-                        dragOver ? 'border-pitch-500 bg-pitch-500/10' : 'border-navy-700 hover:border-navy-600'
+                        dragOver ? 'border-pitch-500 bg-pitch-500/10' : 'border-border-strong hover:border-border-strong'
                       }`}
                       onClick={() => document.getElementById('blog-cover-upload').click()}
                     >
                       {uploadingImage ? (
                         <div className="flex flex-col items-center gap-2">
                           <Loader2 className="w-8 h-8 animate-spin text-pitch-500" />
-                          <p className="text-navy-400 text-sm">Uploading...</p>
+                          <p className="text-secondary text-sm">Uploading...</p>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2">
-                          <Image className="w-8 h-8 text-navy-500" />
-                          <p className="text-navy-400 text-sm">
+                          <Image className="w-8 h-8 text-tertiary" />
+                          <p className="text-secondary text-sm">
                             Drag & drop an image here, or <span className="text-pitch-400">click to browse</span>
                           </p>
-                          <p className="text-navy-600 text-xs">PNG, JPG, WebP up to 5MB · Best at 1200 x 630px</p>
+                          <p className="text-tertiary text-xs">PNG, JPG, WebP up to 5MB · Best at 1200 x 630px</p>
                         </div>
                       )}
                       <input
@@ -2199,63 +2199,63 @@ export default function Admin() {
                     value={editingPost.cover_image_url || ''}
                     onChange={(e) => setEditingPost({ ...editingPost, cover_image_url: e.target.value })}
                     placeholder="Or paste an image URL..."
-                    className="w-full mt-2 px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                    className="w-full mt-2 px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">Excerpt</label>
+                  <label className="block text-sm font-medium text-secondary mb-1">Excerpt</label>
                   <textarea
                     value={editingPost.excerpt || ''}
                     onChange={(e) => setEditingPost({ ...editingPost, excerpt: e.target.value })}
                     placeholder="Short summary for previews..."
                     rows={2}
-                    className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-none"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-none"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">Content (Markdown)</label>
+                  <label className="block text-sm font-medium text-secondary mb-1">Content (Markdown)</label>
                   <textarea
                     value={editingPost.content}
                     onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
                     placeholder="Write your blog post in markdown..."
                     rows={16}
-                    className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-y font-mono text-sm"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-y font-mono text-sm"
                   />
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1">Meta Title</label>
+                    <label className="block text-sm font-medium text-secondary mb-1">Meta Title</label>
                     <input
                       type="text"
                       value={editingPost.meta_title || ''}
                       onChange={(e) => setEditingPost({ ...editingPost, meta_title: e.target.value })}
                       placeholder="SEO title (defaults to title)"
-                      className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1">Tags (comma-separated)</label>
+                    <label className="block text-sm font-medium text-secondary mb-1">Tags (comma-separated)</label>
                     <input
                       type="text"
                       value={(editingPost.tags || []).join(', ')}
                       onChange={(e) => setEditingPost({ ...editingPost, tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })}
                       placeholder="coaching, training, tactics"
-                      className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">Meta Description</label>
+                  <label className="block text-sm font-medium text-secondary mb-1">Meta Description</label>
                   <textarea
                     value={editingPost.meta_description || ''}
                     onChange={(e) => setEditingPost({ ...editingPost, meta_description: e.target.value })}
                     placeholder="SEO description (defaults to excerpt)"
                     rows={2}
-                    className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-none"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-none"
                   />
                 </div>
               </div>
@@ -2273,7 +2273,7 @@ export default function Admin() {
                       onChange={(e) => setGenerateTopic(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleGeneratePost()}
                       placeholder="Enter topic to AI generate..."
-                      className="w-full pl-10 pr-4 py-2 bg-navy-900 border border-navy-800 rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-2 bg-card border border-border-default rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
                     />
                   </div>
                   <button
@@ -2299,14 +2299,14 @@ export default function Admin() {
                   <Loader2 className="w-6 h-6 animate-spin text-pitch-500" />
                 </div>
               ) : blogPosts.length === 0 ? (
-                <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center text-navy-400">
+                <div className="bg-card border border-border-default rounded-xl p-8 text-center text-secondary">
                   <FileText className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p>No blog posts yet. Create one or use AI to generate content.</p>
                 </div>
               ) : (
                 <div className="space-y-3">
                   {blogPosts.map((post) => (
-                    <div key={post.id} className="bg-navy-900 border border-navy-800 rounded-xl p-4 flex items-center gap-4">
+                    <div key={post.id} className="bg-card border border-border-default rounded-xl p-4 flex items-center gap-4">
                       {post.cover_image_url && (
                         <img src={post.cover_image_url.startsWith('http') ? post.cover_image_url : `${SERVER_URL}${post.cover_image_url}`} alt="" className="w-16 h-16 rounded-lg object-cover hidden sm:block" />
                       )}
@@ -2315,14 +2315,14 @@ export default function Admin() {
                           <h4 className="text-white font-medium truncate">{post.title}</h4>
                           <span className={`px-2 py-0.5 rounded text-xs font-medium shrink-0 ${
                             post.status === 'published' ? 'bg-pitch-500/20 text-pitch-400' :
-                            post.status === 'archived' ? 'bg-navy-700 text-navy-400' :
+                            post.status === 'archived' ? 'bg-border-default text-secondary' :
                             'bg-amber-500/20 text-amber-400'
                           }`}>
                             {post.status}
                           </span>
                         </div>
-                        <p className="text-sm text-navy-400 truncate">{post.excerpt || 'No excerpt'}</p>
-                        <div className="text-xs text-navy-500 mt-1">
+                        <p className="text-sm text-secondary truncate">{post.excerpt || 'No excerpt'}</p>
+                        <div className="text-xs text-tertiary mt-1">
                           {post.published_at ? `Published ${new Date(post.published_at).toLocaleDateString()}` : `Updated ${new Date(post.updated_at).toLocaleDateString()}`}
                           {post.tags?.length > 0 && ` · ${post.tags.join(', ')}`}
                         </div>
@@ -2330,20 +2330,20 @@ export default function Admin() {
                       <div className="flex items-center gap-1 shrink-0">
                         <button
                           onClick={() => handlePublishToggle(post)}
-                          className="p-2 text-navy-400 hover:text-white hover:bg-navy-800 rounded-lg"
+                          className="p-2 text-secondary hover:text-white hover:bg-subtle rounded-lg"
                           title={post.status === 'published' ? 'Unpublish' : 'Publish'}
                         >
                           {post.status === 'published' ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                         </button>
                         <button
                           onClick={() => handleEditPost(post.id)}
-                          className="p-2 text-navy-400 hover:text-white hover:bg-navy-800 rounded-lg"
+                          className="p-2 text-secondary hover:text-white hover:bg-subtle rounded-lg"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeletePost(post.id)}
-                          className="p-2 text-navy-400 hover:text-red-400 hover:bg-navy-800 rounded-lg"
+                          className="p-2 text-secondary hover:text-red-400 hover:bg-subtle rounded-lg"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -2363,10 +2363,10 @@ export default function Admin() {
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
             <Monitor className="w-5 h-5 text-pitch-400" /> Feature Page Screenshots
           </h2>
-          <p className="text-navy-400 text-sm">Upload screenshots for each feature page. Each page has 4 slots: a hero image and 3 step images. Recommended size: 1280x720px (16:9).</p>
+          <p className="text-secondary text-sm">Upload screenshots for each feature page. Each page has 4 slots: a hero image and 3 step images. Recommended size: 1280x720px (16:9).</p>
 
           {FEATURE_PAGES.map(feature => (
-            <div key={feature.slug} className="bg-navy-900 border border-navy-800 rounded-xl p-5">
+            <div key={feature.slug} className="bg-card border border-border-default rounded-xl p-5">
               <h3 className="font-display font-semibold text-white mb-4">{feature.title}</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {SLOTS.map(slot => {
@@ -2375,11 +2375,11 @@ export default function Admin() {
                   const isDragOver = dragOverSlot === `${feature.slug}-${slot}`
                   return (
                     <div key={slot} className="space-y-2">
-                      <p className="text-xs text-navy-400 font-medium">{slotLabels[slot]}</p>
+                      <p className="text-xs text-secondary font-medium">{slotLabels[slot]}</p>
                       {existing ? (
                         <div
                           className={`relative group aspect-video rounded-lg overflow-hidden border transition-colors ${
-                            isDragOver ? 'border-pitch-500 ring-2 ring-pitch-500/30' : 'border-navy-700'
+                            isDragOver ? 'border-pitch-500 ring-2 ring-pitch-500/30' : 'border-border-strong'
                           }`}
                           onDragOver={(e) => { e.preventDefault(); setDragOverSlot(`${feature.slug}-${slot}`) }}
                           onDragLeave={() => setDragOverSlot(null)}
@@ -2418,7 +2418,7 @@ export default function Admin() {
                           className={`cursor-pointer flex flex-col items-center justify-center aspect-video rounded-lg border-2 border-dashed transition-all ${
                             isDragOver
                               ? 'border-pitch-500 bg-pitch-500/10 ring-2 ring-pitch-500/30'
-                              : 'border-navy-700 hover:border-pitch-500/50 bg-navy-800/30'
+                              : 'border-border-strong hover:border-pitch-500/50 bg-subtle'
                           }`}
                           onDragOver={(e) => { e.preventDefault(); setDragOverSlot(`${feature.slug}-${slot}`) }}
                           onDragLeave={() => setDragOverSlot(null)}
@@ -2433,8 +2433,8 @@ export default function Admin() {
                             </>
                           ) : (
                             <>
-                              <Camera className="w-6 h-6 text-navy-500 mb-1" />
-                              <span className="text-xs text-navy-500">Drop or click</span>
+                              <Camera className="w-6 h-6 text-tertiary mb-1" />
+                              <span className="text-xs text-tertiary">Drop or click</span>
                             </>
                           )}
                           <input type="file" accept="image/*" className="hidden" disabled={isUploading} onChange={e => e.target.files[0] && handleScreenshotUpload(feature.slug, slot, e.target.files[0])} />

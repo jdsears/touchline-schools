@@ -885,9 +885,9 @@ export default function PupilLounge() {
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen bg-navy-950 flex flex-col items-center justify-center gap-4">
+      <div className="min-h-screen bg-page flex flex-col items-center justify-center gap-4">
         <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
-        <p className="text-navy-400 text-sm">Loading your Pupil Zone...</p>
+        <p className="text-secondary text-sm">Loading your Pupil Zone...</p>
       </div>
     )
   }
@@ -895,7 +895,7 @@ export default function PupilLounge() {
   if (error) {
     const errorObj = typeof error === 'string' ? { message: error } : error
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="card p-8 text-center max-w-md">
           <AlertCircle className="w-12 h-12 text-alert-400 mx-auto mb-4" />
           <h2 className="font-display text-xl font-bold text-white mb-2">
@@ -903,7 +903,7 @@ export default function PupilLounge() {
           </h2>
           <p className="text-white mb-2">{errorObj.message}</p>
           {errorObj.details && (
-            <p className="text-navy-400 text-sm mb-2">{errorObj.details}</p>
+            <p className="text-secondary text-sm mb-2">{errorObj.details}</p>
           )}
           {errorObj.suggestion && (
             <p className="text-pitch-400 text-sm mb-4">{errorObj.suggestion}</p>
@@ -920,8 +920,8 @@ export default function PupilLounge() {
           {/* Debug info for troubleshooting */}
           {user && (
             <details className="mt-4 text-left">
-              <summary className="text-xs text-navy-500 cursor-pointer">Debug Info</summary>
-              <pre className="text-xs text-navy-600 mt-2 bg-navy-900 p-2 rounded overflow-auto">
+              <summary className="text-xs text-tertiary cursor-pointer">Debug Info</summary>
+              <pre className="text-xs text-tertiary mt-2 bg-card p-2 rounded overflow-auto">
 {JSON.stringify({
   id: user.id,
   email: user.email,
@@ -940,24 +940,24 @@ export default function PupilLounge() {
   const { pupil, team, upcomingMatches, upcomingTraining, recentMatches, observations, developmentPlan, videos, potmAwards, achievements } = zoneData || {}
 
   return (
-    <div className="min-h-screen bg-navy-950 pb-20">
+    <div className="min-h-screen bg-page pb-20">
       {/* Pull-to-refresh indicator (PWA) */}
       <div
         ref={pullIndicatorRef}
         className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center py-3 pointer-events-none"
         style={{ opacity: 0, transform: 'translateY(0px)', transition: pullRefreshing ? 'transform 0.3s ease, opacity 0.3s ease' : 'none' }}
       >
-        <div className="bg-navy-800 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg border border-navy-700">
+        <div className="bg-subtle rounded-full px-4 py-2 flex items-center gap-2 shadow-lg border border-border-strong">
           <Loader2 className={`w-4 h-4 text-pitch-400 ${pullRefreshing ? 'animate-spin' : ''}`} />
-          <span className="text-sm text-navy-300">{pullRefreshing ? 'Refreshing...' : 'Pull to refresh'}</span>
+          <span className="text-sm text-secondary">{pullRefreshing ? 'Refreshing...' : 'Pull to refresh'}</span>
         </div>
       </div>
 
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-navy-900/95 backdrop-blur-md border-b border-navy-800">
+      <header className="sticky top-0 z-30 bg-card/95 backdrop-blur-md border-b border-border-default">
         <div className="max-w-4xl mx-auto px-4 py-3">
           {/* Date & Time Row */}
-          <div className="flex items-center justify-between mb-3 pb-3 border-b border-navy-800/50">
+          <div className="flex items-center justify-between mb-3 pb-3 border-b border-border-subtle">
             <div className="flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-pitch-400" />
               <span className="text-sm text-white font-medium">
@@ -980,14 +980,14 @@ export default function PupilLounge() {
               </div>
               <div>
                 <h1 className="font-display font-bold text-white">{pupil?.name}</h1>
-                <p className="text-xs text-navy-400">{team?.name} • {team?.age_group}</p>
+                <p className="text-xs text-secondary">{team?.name} • {team?.age_group}</p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
-                className="p-2 text-navy-400 hover:text-white relative"
+                className="p-2 text-secondary hover:text-white relative"
               >
                 <Bell className="w-5 h-5" />
                 {(upcomingMatches?.length > 0 || announcements?.length > 0 || unreadNotificationCount > 0) && (
@@ -997,13 +997,13 @@ export default function PupilLounge() {
               {user?.role === 'parent' && (
                 <button
                   onClick={() => setShowSettings(true)}
-                  className="p-2 text-navy-400 hover:text-white"
+                  className="p-2 text-secondary hover:text-white"
                   title="Settings"
                 >
                   <Settings className="w-5 h-5" />
                 </button>
               )}
-              <button onClick={logout} className="p-2 text-navy-400 hover:text-white">
+              <button onClick={logout} className="p-2 text-secondary hover:text-white">
                 <LogOut className="w-5 h-5" />
               </button>
             </div>
@@ -1032,7 +1032,7 @@ export default function PupilLounge() {
                   <div className="min-w-0">
                     <p className="text-xs text-energy-400 font-medium">💪 Daily Motivation</p>
                     <p className="text-white text-sm font-medium italic">"{dailyQuote.quote}"</p>
-                    <p className="text-navy-400 text-xs">- {dailyQuote.author}</p>
+                    <p className="text-secondary text-xs">- {dailyQuote.author}</p>
                   </div>
                 </div>
               </div>
@@ -1051,15 +1051,15 @@ export default function PupilLounge() {
                         className={`p-3 rounded-lg ${
                           announcement.priority === 'high' ? 'bg-alert-500/10 border border-alert-500/30' :
                           announcement.priority === 'urgent' ? 'bg-alert-500/20 border border-alert-500/50' :
-                          'bg-navy-800/50'
+                          'bg-subtle'
                         }`}
                       >
                         <div className="flex items-start gap-2">
                           {announcement.is_pinned && <Pin className="w-3 h-3 text-pitch-400 shrink-0 mt-1" />}
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-white text-sm">{announcement.title}</p>
-                            <p className="text-navy-300 text-sm mt-1 line-clamp-2">{announcement.content}</p>
-                            <p className="text-xs text-navy-500 mt-1">
+                            <p className="text-secondary text-sm mt-1 line-clamp-2">{announcement.content}</p>
+                            <p className="text-xs text-tertiary mt-1">
                               {new Date(announcement.created_at).toLocaleDateString('en-GB', {
                                 day: 'numeric', month: 'short'
                               })}
@@ -1090,7 +1090,7 @@ export default function PupilLounge() {
                         <h3 className="font-display text-lg font-bold text-white">Ask the Gaffer</h3>
                         <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded-full font-medium">AI</span>
                       </div>
-                      <p className="text-sm text-navy-300 mt-1">Get tips, ask questions, and level up your game</p>
+                      <p className="text-sm text-secondary mt-1">Get tips, ask questions, and level up your game</p>
                       <div className="flex items-center gap-2 mt-2">
                         <span className="text-xs text-pitch-400 flex items-center gap-1">
                           <MessageSquare className="w-3 h-3" />
@@ -1107,21 +1107,21 @@ export default function PupilLounge() {
               <div className="grid grid-cols-4 gap-2">
                 <div className="card p-3 text-center">
                   <div className="text-xl font-bold text-pitch-400">{pupil?.squad_number || '-'}</div>
-                  <div className="text-xs text-navy-400">Squad #</div>
+                  <div className="text-xs text-secondary">Squad #</div>
                 </div>
                 <div className="card p-3 text-center">
                   <div className="text-xl font-bold text-white">{getPrimaryPosition(pupil?.positions) || '-'}</div>
-                  <div className="text-xs text-navy-400">Position</div>
+                  <div className="text-xs text-secondary">Position</div>
                 </div>
                 <div className="card p-3 text-center">
                   <div className="text-xl font-bold text-energy-400">{potmAwards?.length || 0}</div>
-                  <div className="text-xs text-navy-400 flex items-center justify-center gap-1">
+                  <div className="text-xs text-secondary flex items-center justify-center gap-1">
                     <Award className="w-3 h-3" /> POTM
                   </div>
                 </div>
                 <div className="card p-3 text-center">
                   <div className="text-xl font-bold text-blue-400">{observations?.length || 0}</div>
-                  <div className="text-xs text-navy-400">Notes</div>
+                  <div className="text-xs text-secondary">Notes</div>
                 </div>
               </div>
 
@@ -1136,7 +1136,7 @@ export default function PupilLounge() {
                       <p className="font-display font-bold text-white">
                         🏆 {potmAwards.length}x Pupil of the Match!
                       </p>
-                      <p className="text-sm text-navy-300">
+                      <p className="text-sm text-secondary">
                         Last: vs {potmAwards[0].opponent}
                         {potmAwards[0].reason && ` - "${potmAwards[0].reason}"`}
                       </p>
@@ -1151,7 +1151,7 @@ export default function PupilLounge() {
                   {/* Clickable Header */}
                   <button
                     onClick={() => setSelectedMatch(upcomingMatches[0])}
-                    className="w-full p-4 bg-gradient-to-r from-energy-900/30 to-navy-900 border-b border-navy-800 text-left hover:from-energy-900/40 transition-colors"
+                    className="w-full p-4 bg-gradient-to-r from-energy-900/30 to-navy-900 border-b border-border-default text-left hover:from-energy-900/40 transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="font-display font-semibold text-white flex items-center gap-2">
@@ -1160,7 +1160,7 @@ export default function PupilLounge() {
                       </h3>
                       <div className="flex items-center gap-2">
                         <MatchCountdown date={upcomingMatches[0].date} />
-                        <ChevronRight className="w-5 h-5 text-navy-500" />
+                        <ChevronRight className="w-5 h-5 text-tertiary" />
                       </div>
                     </div>
                   </button>
@@ -1173,7 +1173,7 @@ export default function PupilLounge() {
                         >
                           V {upcomingMatches[0].opponent}
                         </button>
-                        <div className="flex flex-wrap items-center gap-3 text-sm text-navy-400 mt-2">
+                        <div className="flex flex-wrap items-center gap-3 text-sm text-secondary mt-2">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             {formatDate(upcomingMatches[0].date)}
@@ -1221,7 +1221,7 @@ export default function PupilLounge() {
                     {upcomingMatches[0].prep_notes && typeof upcomingMatches[0].prep_notes === 'string' ? (
                       <button
                         onClick={() => setSelectedMatch(upcomingMatches[0])}
-                        className="w-full mt-4 pt-4 border-t border-navy-800 text-left"
+                        className="w-full mt-4 pt-4 border-t border-border-default text-left"
                       >
                         <div className="p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-xl hover:bg-pitch-500/15 transition-colors">
                           <div className="flex items-center justify-between mb-2">
@@ -1234,15 +1234,15 @@ export default function PupilLounge() {
                               <ChevronRight className="w-4 h-4" />
                             </span>
                           </div>
-                          <p className="text-sm text-navy-300 line-clamp-3">
+                          <p className="text-sm text-secondary line-clamp-3">
                             {String(upcomingMatches[0].prep_notes).replace(/[#*_`]/g, '').substring(0, 150)}...
                           </p>
                         </div>
                       </button>
                     ) : (
-                      <div className="mt-4 pt-4 border-t border-navy-800">
-                        <div className="p-3 bg-navy-800/50 rounded-lg text-center">
-                          <p className="text-sm text-navy-400">
+                      <div className="mt-4 pt-4 border-t border-border-default">
+                        <div className="p-3 bg-subtle rounded-lg text-center">
+                          <p className="text-sm text-secondary">
                             No match prep shared yet - check back closer to match day!
                           </p>
                         </div>
@@ -1250,7 +1250,7 @@ export default function PupilLounge() {
                     )}
 
                     {/* Pep Talk & Media Buttons */}
-                    <div className="mt-4 pt-4 border-t border-navy-800 flex flex-col gap-3">
+                    <div className="mt-4 pt-4 border-t border-border-default flex flex-col gap-3">
                       {/* Pep Talk Button - only on match day */}
                       {(() => {
                         const matchDate = new Date(upcomingMatches[0].date)
@@ -1295,7 +1295,7 @@ export default function PupilLounge() {
 
                     {/* Match Day POTM Voting */}
                     {nextMatchVoteData && nextMatchSquad.length > 0 && (
-                      <div className="mt-4 pt-4 border-t border-navy-800">
+                      <div className="mt-4 pt-4 border-t border-border-default">
                         <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-energy-500/20">
                           <div className="flex items-center gap-2 mb-3">
                             <Heart className="w-5 h-5 text-energy-400" />
@@ -1303,29 +1303,29 @@ export default function PupilLounge() {
                           </div>
                           {nextMatchVoteData.my_vote ? (
                             <div className="space-y-3">
-                              <p className="text-sm text-navy-300">
+                              <p className="text-sm text-secondary">
                                 You voted for <span className="text-energy-400 font-medium">
                                   {nextMatchSquad.find(p => p.id === nextMatchVoteData.my_vote)?.name || 'a pupil'}
                                 </span>
                               </p>
-                              <p className="text-xs text-navy-500">{nextMatchVoteData.total_votes} vote{nextMatchVoteData.total_votes !== 1 ? 's' : ''} cast so far</p>
+                              <p className="text-xs text-tertiary">{nextMatchVoteData.total_votes} vote{nextMatchVoteData.total_votes !== 1 ? 's' : ''} cast so far</p>
                               <button
                                 onClick={() => {
                                   setNextMatchVoteData(prev => prev ? { ...prev, my_vote: null } : null)
                                   setNextMatchVotingPlayerId(null)
                                 }}
-                                className="text-xs text-navy-400 hover:text-energy-400 transition-colors"
+                                className="text-xs text-secondary hover:text-energy-400 transition-colors"
                               >
                                 Change vote
                               </button>
                             </div>
                           ) : (
                             <div className="space-y-2">
-                              <p className="text-sm text-navy-300 mb-2">Who stood out today? Cast your vote!</p>
+                              <p className="text-sm text-secondary mb-2">Who stood out today? Cast your vote!</p>
                               <select
                                 value={nextMatchVotingPlayerId || ''}
                                 onChange={(e) => setNextMatchVotingPlayerId(e.target.value)}
-                                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
+                                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
                               >
                                 <option value="">Select a pupil...</option>
                                 {nextMatchSquad
@@ -1379,15 +1379,15 @@ export default function PupilLounge() {
                       <button
                         key={achievement.id}
                         onClick={() => setShowBadgesModal(true)}
-                        className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-3 text-center border border-navy-700 hover:border-energy-500/30 transition-all"
+                        className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-3 text-center border border-border-strong hover:border-energy-500/30 transition-all"
                       >
                         <div className="text-2xl mb-1">{achievement.icon}</div>
                         <p className="text-xs font-medium text-white truncate">{achievement.title}</p>
                         {achievement.match_opponent && (
-                          <p className="text-[10px] text-navy-400 truncate">vs {achievement.match_opponent}</p>
+                          <p className="text-[10px] text-secondary truncate">vs {achievement.match_opponent}</p>
                         )}
                         {achievement.training_date && (
-                          <p className="text-[10px] text-navy-400">{new Date(achievement.training_date).toLocaleDateString()}</p>
+                          <p className="text-[10px] text-secondary">{new Date(achievement.training_date).toLocaleDateString()}</p>
                         )}
                       </button>
                     ))}
@@ -1395,7 +1395,7 @@ export default function PupilLounge() {
                   {achievements.length > 4 && (
                     <button
                       onClick={() => setShowBadgesModal(true)}
-                      className="w-full mt-3 text-sm text-navy-400 hover:text-white text-center py-2 border border-navy-700 rounded-lg hover:border-navy-600 transition-colors"
+                      className="w-full mt-3 text-sm text-secondary hover:text-white text-center py-2 border border-border-strong rounded-lg hover:border-border-strong transition-colors"
                     >
                       +{achievements.length - 4} more badges
                     </button>
@@ -1417,9 +1417,9 @@ export default function PupilLounge() {
                   </div>
                   <div className="flex-1">
                     <h3 className="font-display font-semibold text-white">Make a Suggestion</h3>
-                    <p className="text-sm text-navy-400">Share ideas with your coaches</p>
+                    <p className="text-sm text-secondary">Share ideas with your coaches</p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-navy-500" />
+                  <ChevronRight className="w-5 h-5 text-tertiary" />
                 </div>
               </button>
 
@@ -1439,7 +1439,7 @@ export default function PupilLounge() {
                         <div
                           key={session.id}
                           onClick={() => setSelectedSession(session)}
-                          className="w-full flex items-center gap-3 p-3 bg-navy-800/50 rounded-lg hover:bg-navy-800/70 transition-colors text-left cursor-pointer"
+                          className="w-full flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle/70 transition-colors text-left cursor-pointer"
                         >
                           <div className={`w-10 h-10 rounded-lg ${isSC ? 'bg-energy-500/10' : 'bg-pitch-500/10'} flex items-center justify-center shrink-0`}>
                             <SessionIcon className={`w-5 h-5 ${isSC ? 'text-energy-400' : 'text-pitch-400'}`} />
@@ -1457,14 +1457,14 @@ export default function PupilLounge() {
                                 </span>
                               )}
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-navy-400 mt-0.5">
+                            <div className="flex items-center gap-2 text-xs text-secondary mt-0.5">
                               <span>{formatDate(session.date)}</span>
                               {session.meet_time && <span>• Meet {session.meet_time.slice(0, 5)}</span>}
                               {session.time && <span>• Start {session.time.slice(0, 5)}</span>}
                               {session.duration && <span>• {session.duration} mins</span>}
                             </div>
                             {session.location && (
-                              <div className="flex items-center gap-1 text-xs text-navy-500 mt-0.5">
+                              <div className="flex items-center gap-1 text-xs text-tertiary mt-0.5">
                                 <MapPin className="w-3 h-3" />
                                 {session.location}
                               </div>
@@ -1488,7 +1488,7 @@ export default function PupilLounge() {
               {recentMatches?.length > 0 && (
                 <div className="card p-4">
                   <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                    <Trophy className="w-5 h-5 text-navy-400" />
+                    <Trophy className="w-5 h-5 text-secondary" />
                     Recent Results
                   </h3>
                   <div className="space-y-2">
@@ -1496,17 +1496,17 @@ export default function PupilLounge() {
                       <button
                         key={match.id}
                         onClick={() => setSelectedMatch(match)}
-                        className="w-full flex items-center gap-3 p-2 bg-navy-800/30 rounded-lg hover:bg-navy-800/50 transition-colors text-left"
+                        className="w-full flex items-center gap-3 p-2 bg-subtle rounded-lg hover:bg-subtle transition-colors text-left"
                       >
                         <ResultBadge goalsFor={match.goals_for} goalsAgainst={match.goals_against} />
                         <div className="flex-1 text-sm">
                           <span className="text-white">V {match.opponent}</span>
-                          <span className="text-navy-500 ml-2">
+                          <span className="text-tertiary ml-2">
                             {match.goals_for}-{match.goals_against}
                           </span>
                         </div>
-                        <span className="text-xs text-navy-500">{formatDate(match.date)}</span>
-                        <ChevronRight className="w-4 h-4 text-navy-600" />
+                        <span className="text-xs text-tertiary">{formatDate(match.date)}</span>
+                        <ChevronRight className="w-4 h-4 text-tertiary" />
                       </button>
                     ))}
                   </div>
@@ -1556,7 +1556,7 @@ export default function PupilLounge() {
                 <>
                   {/* Matches */}
                   <div className="space-y-3">
-                    <h3 className="font-medium text-navy-300 flex items-center gap-2">
+                    <h3 className="font-medium text-secondary flex items-center gap-2">
                       <Trophy className="w-4 h-4" />
                       Matches
                     </h3>
@@ -1565,22 +1565,22 @@ export default function PupilLounge() {
                         <button
                           key={match.id}
                           onClick={() => setSelectedMatch(match)}
-                          className="card p-4 w-full text-left hover:bg-navy-800/80 transition-colors"
+                          className="card p-4 w-full text-left hover:bg-subtle/80 transition-colors"
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div>
                               <div className="font-bold text-white flex items-center gap-2">
                                 V {match.opponent}
-                                <ChevronRight className="w-4 h-4 text-navy-600" />
+                                <ChevronRight className="w-4 h-4 text-tertiary" />
                               </div>
-                              <div className="flex flex-wrap items-center gap-2 text-sm text-navy-400 mt-1">
+                              <div className="flex flex-wrap items-center gap-2 text-sm text-secondary mt-1">
                                 <span className="flex items-center gap-1">
                                   <Calendar className="w-4 h-4" />
                                   {formatDate(match.date)}
                                 </span>
                               </div>
                               {match.location && (
-                                <div className="flex items-center gap-1 text-sm text-navy-500 mt-1">
+                                <div className="flex items-center gap-1 text-sm text-tertiary mt-1">
                                   <MapPin className="w-3 h-3" />
                                   {match.location}
                                 </div>
@@ -1598,15 +1598,15 @@ export default function PupilLounge() {
                       ))
                     ) : (
                       <div className="card p-6 text-center">
-                        <Trophy className="w-10 h-10 text-navy-600 mx-auto mb-2" />
-                        <p className="text-navy-400">No upcoming matches scheduled</p>
+                        <Trophy className="w-10 h-10 text-tertiary mx-auto mb-2" />
+                        <p className="text-secondary">No upcoming matches scheduled</p>
                       </div>
                     )}
                   </div>
 
                   {/* Training Sessions */}
                   <div className="space-y-3">
-                    <h3 className="font-medium text-navy-300 flex items-center gap-2">
+                    <h3 className="font-medium text-secondary flex items-center gap-2">
                       <Target className="w-4 h-4" />
                       Training & S&C Sessions
                     </h3>
@@ -1643,7 +1643,7 @@ export default function PupilLounge() {
                                 />
                               </div>
                             </div>
-                            <div className="flex flex-wrap items-center gap-2 text-sm text-navy-400 mt-1">
+                            <div className="flex flex-wrap items-center gap-2 text-sm text-secondary mt-1">
                               <span className="flex items-center gap-1">
                                 <Calendar className="w-4 h-4" />
                                 {formatDate(session.date)}
@@ -1661,11 +1661,11 @@ export default function PupilLounge() {
                                 </span>
                               )}
                               {session.duration && (
-                                <span className="text-navy-500">• {session.duration} mins</span>
+                                <span className="text-tertiary">• {session.duration} mins</span>
                               )}
                             </div>
                             {session.location && (
-                              <div className="flex items-center gap-1 text-sm text-navy-500 mt-1">
+                              <div className="flex items-center gap-1 text-sm text-tertiary mt-1">
                                 <MapPin className="w-3 h-3" />
                                 {session.location}
                               </div>
@@ -1675,8 +1675,8 @@ export default function PupilLounge() {
                       })
                     ) : (
                       <div className="card p-6 text-center">
-                        <Target className="w-10 h-10 text-navy-600 mx-auto mb-2" />
-                        <p className="text-navy-400">No training sessions scheduled</p>
+                        <Target className="w-10 h-10 text-tertiary mx-auto mb-2" />
+                        <p className="text-secondary">No training sessions scheduled</p>
                       </div>
                     )}
                   </div>
@@ -1721,7 +1721,7 @@ export default function PupilLounge() {
                       <h2 className="font-display font-bold text-white">
                         {streamCredentials?.streamName || 'Live Stream'}
                       </h2>
-                      <p className="text-xs text-navy-400">
+                      <p className="text-xs text-secondary">
                         {streamCredentials?.status === 'active' ? (
                           <span className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
@@ -1744,7 +1744,7 @@ export default function PupilLounge() {
                     <button
                       onClick={loadStreamCredentials}
                       disabled={loadingStream}
-                      className="p-2 text-navy-400 hover:text-white transition-colors"
+                      className="p-2 text-secondary hover:text-white transition-colors"
                       title="Refresh"
                     >
                       <Loader2 className={`w-5 h-5 ${loadingStream ? 'animate-spin' : ''}`} />
@@ -1757,13 +1757,13 @@ export default function PupilLounge() {
               {loadingStream ? (
                 <div className="card p-12 text-center">
                   <Loader2 className="w-10 h-10 animate-spin text-pitch-400 mx-auto" />
-                  <p className="text-navy-400 mt-3">Checking stream status...</p>
+                  <p className="text-secondary mt-3">Checking stream status...</p>
                 </div>
               ) : !streamCredentials ? (
                 <div className="card p-8 text-center">
-                  <WifiOff className="w-16 h-16 text-navy-600 mx-auto mb-4" />
+                  <WifiOff className="w-16 h-16 text-tertiary mx-auto mb-4" />
                   <h3 className="font-display font-semibold text-white text-lg mb-2">Streaming Not Set Up</h3>
-                  <p className="text-navy-400 text-sm max-w-sm mx-auto">
+                  <p className="text-secondary text-sm max-w-sm mx-auto">
                     Your coach hasn't set up live streaming yet. Once configured, you'll be able to watch live training sessions and matches here.
                   </p>
                 </div>
@@ -1779,12 +1779,12 @@ export default function PupilLounge() {
                       style={{ width: '100%', height: '100%', '--controls': 'flex' }}
                     />
                   </div>
-                  <div className="p-3 bg-navy-800/50 border-t border-navy-700">
+                  <div className="p-3 bg-subtle border-t border-border-strong">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
                         <span className="text-sm text-alert-400 font-medium">Live</span>
-                        <span className="text-sm text-navy-400">• {streamCredentials.streamName}</span>
+                        <span className="text-sm text-secondary">• {streamCredentials.streamName}</span>
                       </div>
                       {streamCredentials.shareCode && (
                         <button
@@ -1800,14 +1800,14 @@ export default function PupilLounge() {
                 </div>
               ) : (
                 <div className="card p-8 text-center">
-                  <div className="w-20 h-20 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
-                    <Radio className="w-10 h-10 text-navy-500" />
+                  <div className="w-20 h-20 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
+                    <Radio className="w-10 h-10 text-tertiary" />
                   </div>
                   <h3 className="font-display font-semibold text-white text-lg mb-2">No Live Stream</h3>
-                  <p className="text-navy-400 text-sm max-w-sm mx-auto mb-4">
+                  <p className="text-secondary text-sm max-w-sm mx-auto mb-4">
                     There's no live stream right now. Check back when your team has a training session or match.
                   </p>
-                  <p className="text-xs text-navy-500">
+                  <p className="text-xs text-tertiary">
                     Stream will appear automatically when your coach goes live
                   </p>
                 </div>
@@ -1834,7 +1834,7 @@ export default function PupilLounge() {
                   <div className="space-y-2">
                     {recentMatches.filter(m => m.veo_link || m.video_url).map(match => (
                       <div key={match.id}>
-                        <p className="text-xs text-navy-400 mb-1">
+                        <p className="text-xs text-secondary mb-1">
                           vs {match.opponent} • {new Date(match.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                         </p>
                         {match.veo_link && (
@@ -1842,16 +1842,16 @@ export default function PupilLounge() {
                             href={match.veo_link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg hover:bg-navy-800/50 transition-colors mb-1"
+                            className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors mb-1"
                           >
                             <div className="w-10 h-10 bg-pitch-500/20 rounded-lg flex items-center justify-center">
                               <Play className="w-5 h-5 text-pitch-400" />
                             </div>
                             <div className="flex-1">
                               <p className="text-white font-medium text-sm">Match Video</p>
-                              <p className="text-xs text-navy-400">Watch the full match</p>
+                              <p className="text-xs text-secondary">Watch the full match</p>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-navy-600" />
+                            <ChevronRight className="w-4 h-4 text-tertiary" />
                           </a>
                         )}
                         {match.video_url && (
@@ -1859,16 +1859,16 @@ export default function PupilLounge() {
                             href={match.video_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg hover:bg-navy-800/50 transition-colors"
+                            className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                           >
                             <div className="w-10 h-10 bg-energy-500/20 rounded-lg flex items-center justify-center">
                               <Video className="w-5 h-5 text-energy-400" />
                             </div>
                             <div className="flex-1">
                               <p className="text-white font-medium text-sm">Match Video</p>
-                              <p className="text-xs text-navy-400">Coach uploaded video</p>
+                              <p className="text-xs text-secondary">Coach uploaded video</p>
                             </div>
-                            <ChevronRight className="w-4 h-4 text-navy-600" />
+                            <ChevronRight className="w-4 h-4 text-tertiary" />
                           </a>
                         )}
                       </div>
@@ -1895,19 +1895,19 @@ export default function PupilLounge() {
                       <h3 className="font-display font-semibold text-white">Share Stream</h3>
                       <button
                         onClick={() => setShowShareOptions(false)}
-                        className="p-1 text-navy-400 hover:text-white"
+                        className="p-1 text-secondary hover:text-white"
                       >
                         <X className="w-5 h-5" />
                       </button>
                     </div>
 
-                    <p className="text-navy-400 text-sm mb-4">
+                    <p className="text-secondary text-sm mb-4">
                       Share this with friends & family so they can watch the live stream.
                     </p>
 
                     {/* Share Link */}
                     <div className="mb-4">
-                      <label className="text-xs text-navy-400 mb-1 block">Link</label>
+                      <label className="text-xs text-secondary mb-1 block">Link</label>
                       <div className="flex items-center gap-2">
                         <input
                           type="text"
@@ -1927,8 +1927,8 @@ export default function PupilLounge() {
                     {/* PIN */}
                     {streamCredentials.guestPin && (
                       <div className="mb-4">
-                        <label className="text-xs text-navy-400 mb-1 block">PIN to share</label>
-                        <div className="flex items-center gap-3 p-3 bg-navy-800 rounded-lg">
+                        <label className="text-xs text-secondary mb-1 block">PIN to share</label>
+                        <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
                           <div className="text-2xl font-mono font-bold text-white tracking-widest">
                             {streamCredentials.guestPin}
                           </div>
@@ -1937,7 +1937,7 @@ export default function PupilLounge() {
                               navigator.clipboard.writeText(streamCredentials.guestPin)
                               toast.success('PIN copied!')
                             }}
-                            className="btn-ghost btn-sm text-navy-400"
+                            className="btn-ghost btn-sm text-secondary"
                           >
                             <Copy className="w-4 h-4" />
                           </button>
@@ -1985,7 +1985,7 @@ export default function PupilLounge() {
                       {leagueSettings?.league_name || 'League Table'}
                     </h2>
                     {leagueSettings?.season && (
-                      <p className="text-xs text-navy-400">Season {leagueSettings.season}</p>
+                      <p className="text-xs text-secondary">Season {leagueSettings.season}</p>
                     )}
                   </div>
                 </div>
@@ -1995,13 +1995,13 @@ export default function PupilLounge() {
               {loadingLeague ? (
                 <div className="card p-8 text-center">
                   <Loader2 className="w-8 h-8 animate-spin text-pitch-400 mx-auto" />
-                  <p className="text-navy-400 mt-2">Loading league table...</p>
+                  <p className="text-secondary mt-2">Loading league table...</p>
                 </div>
               ) : leagueTable.length === 0 ? (
                 <div className="card p-8 text-center">
-                  <Table2 className="w-12 h-12 text-navy-600 mx-auto mb-3" />
+                  <Table2 className="w-12 h-12 text-tertiary mx-auto mb-3" />
                   <h3 className="font-display font-semibold text-white mb-2">No League Data</h3>
-                  <p className="text-navy-400 text-sm">
+                  <p className="text-secondary text-sm">
                     Your coach hasn't set up the league table yet.
                   </p>
                 </div>
@@ -2011,7 +2011,7 @@ export default function PupilLounge() {
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
                       <thead>
-                        <tr className="bg-navy-800 text-navy-400 text-xs uppercase">
+                        <tr className="bg-subtle text-secondary text-xs uppercase">
                           <th className="px-3 py-3 text-left">#</th>
                           <th className="px-3 py-3 text-left">Team</th>
                           <th className="px-3 py-3 text-center">P</th>
@@ -2034,13 +2034,13 @@ export default function PupilLounge() {
                           .map((team, index) => (
                             <tr
                               key={team.id}
-                              className={`border-t border-navy-800 ${
+                              className={`border-t border-border-default ${
                                 team.is_own_team
                                   ? 'bg-pitch-500/10 font-medium'
-                                  : index % 2 === 0 ? 'bg-navy-900/30' : ''
+                                  : index % 2 === 0 ? 'bg-card/30' : ''
                               }`}
                             >
-                              <td className="px-3 py-3 text-navy-400">{index + 1}</td>
+                              <td className="px-3 py-3 text-secondary">{index + 1}</td>
                               <td className="px-3 py-3">
                                 <div className="flex items-center gap-2">
                                   {team.is_own_team && (
@@ -2051,16 +2051,16 @@ export default function PupilLounge() {
                                   </span>
                                 </div>
                               </td>
-                              <td className="px-3 py-3 text-center text-navy-300">{team.played}</td>
+                              <td className="px-3 py-3 text-center text-secondary">{team.played}</td>
                               <td className="px-3 py-3 text-center text-pitch-400">{team.won}</td>
-                              <td className="px-3 py-3 text-center text-navy-400">{team.drawn}</td>
+                              <td className="px-3 py-3 text-center text-secondary">{team.drawn}</td>
                               <td className="px-3 py-3 text-center text-alert-400">{team.lost}</td>
-                              <td className="px-3 py-3 text-center text-navy-300 hidden sm:table-cell">{team.goals_for}</td>
-                              <td className="px-3 py-3 text-center text-navy-300 hidden sm:table-cell">{team.goals_against}</td>
+                              <td className="px-3 py-3 text-center text-secondary hidden sm:table-cell">{team.goals_for}</td>
+                              <td className="px-3 py-3 text-center text-secondary hidden sm:table-cell">{team.goals_against}</td>
                               <td className="px-3 py-3 text-center">
                                 <span className={
                                   team.goal_difference > 0 ? 'text-pitch-400' :
-                                  team.goal_difference < 0 ? 'text-alert-400' : 'text-navy-400'
+                                  team.goal_difference < 0 ? 'text-alert-400' : 'text-secondary'
                                 }>
                                   {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
                                 </span>
@@ -2073,7 +2073,7 @@ export default function PupilLounge() {
                   </div>
 
                   {/* Legend */}
-                  <div className="px-4 py-3 bg-navy-800/50 border-t border-navy-800 text-xs text-navy-500">
+                  <div className="px-4 py-3 bg-subtle border-t border-border-default text-xs text-tertiary">
                     <span className="inline-flex items-center gap-1.5">
                       <div className="w-2 h-2 rounded-full bg-pitch-500" />
                       Your team
@@ -2114,7 +2114,7 @@ export default function PupilLounge() {
                           </h4>
                           <ul className="space-y-1">
                             {developmentPlan.strengths.map((s, i) => (
-                              <li key={i} className="text-sm text-navy-300 flex items-start gap-2">
+                              <li key={i} className="text-sm text-secondary flex items-start gap-2">
                                 <CheckCircle className="w-4 h-4 text-pitch-500 shrink-0 mt-0.5" />
                                 {s}
                               </li>
@@ -2129,7 +2129,7 @@ export default function PupilLounge() {
                           </h4>
                           <ul className="space-y-1">
                             {developmentPlan.areas_to_improve.map((a, i) => (
-                              <li key={i} className="text-sm text-navy-300 flex items-start gap-2">
+                              <li key={i} className="text-sm text-secondary flex items-start gap-2">
                                 <Target className="w-4 h-4 text-energy-500 shrink-0 mt-0.5" />
                                 {a}
                               </li>
@@ -2144,7 +2144,7 @@ export default function PupilLounge() {
                           </h4>
                           <ul className="space-y-1">
                             {developmentPlan.goals.map((g, i) => (
-                              <li key={i} className="text-sm text-navy-300 flex items-start gap-2">
+                              <li key={i} className="text-sm text-secondary flex items-start gap-2">
                                 <Circle className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
                                 {g}
                               </li>
@@ -2157,9 +2157,9 @@ export default function PupilLounge() {
                 </div>
               ) : (
                 <div className="card p-6 text-center">
-                  <Target className="w-10 h-10 text-navy-600 mx-auto mb-3" />
+                  <Target className="w-10 h-10 text-tertiary mx-auto mb-3" />
                   <h3 className="font-display font-semibold text-white mb-2">Development Plan Coming Soon</h3>
-                  <p className="text-navy-400 text-sm">
+                  <p className="text-secondary text-sm">
                     Your coach is working on your personalized development plan.
                   </p>
                 </div>
@@ -2168,7 +2168,7 @@ export default function PupilLounge() {
               {/* Coach Observations */}
               <div className="space-y-3">
                 <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-navy-400" />
+                  <FileText className="w-5 h-5 text-secondary" />
                   Coach Feedback ({observations?.length || 0})
                 </h3>
                 {observations?.length > 0 ? (
@@ -2185,11 +2185,11 @@ export default function PupilLounge() {
                             <div className="flex items-center gap-2 mb-1">
                               <span className={`badge-${config.color} text-xs`}>{config.label}</span>
                               {obs.match_opponent && (
-                                <span className="text-xs text-navy-500">vs {obs.match_opponent}</span>
+                                <span className="text-xs text-tertiary">vs {obs.match_opponent}</span>
                               )}
                             </div>
-                            <p className="text-sm text-navy-300">{obs.content}</p>
-                            <p className="text-xs text-navy-500 mt-2">
+                            <p className="text-sm text-secondary">{obs.content}</p>
+                            <p className="text-xs text-tertiary mt-2">
                               {new Date(obs.created_at).toLocaleDateString('en-GB', {
                                 day: 'numeric',
                                 month: 'short',
@@ -2203,8 +2203,8 @@ export default function PupilLounge() {
                   })
                 ) : (
                   <div className="card p-6 text-center">
-                    <FileText className="w-10 h-10 text-navy-600 mx-auto mb-2" />
-                    <p className="text-navy-400">No feedback yet. Keep working hard!</p>
+                    <FileText className="w-10 h-10 text-tertiary mx-auto mb-2" />
+                    <p className="text-secondary">No feedback yet. Keep working hard!</p>
                   </div>
                 )}
               </div>
@@ -2214,7 +2214,7 @@ export default function PupilLounge() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-navy-900/95 backdrop-blur-md border-t border-navy-800 z-40">
+      <nav className="fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-md border-t border-border-default z-40">
         <div className="max-w-4xl mx-auto px-4">
           <div className="flex justify-around py-2">
             {tabs.map(tab => {
@@ -2225,7 +2225,7 @@ export default function PupilLounge() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex flex-col items-center gap-1 py-2 px-4 rounded-lg transition-colors ${
-                    isActive ? 'text-pitch-400' : 'text-navy-500 hover:text-navy-300'
+                    isActive ? 'text-pitch-400' : 'text-tertiary hover:text-secondary'
                   }`}
                 >
                   <Icon className={`w-5 h-5 ${isActive ? 'text-pitch-400' : ''}`} />
@@ -2291,7 +2291,7 @@ export default function PupilLounge() {
                 <Flame className="w-6 h-6 text-energy-400" />
                 Pre-Match Pep Talk
               </h3>
-              <button onClick={() => setShowPepTalk(false)} className="text-navy-400 hover:text-white">
+              <button onClick={() => setShowPepTalk(false)} className="text-secondary hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -2327,9 +2327,9 @@ export default function PupilLounge() {
               initial={{ opacity: 0, y: -10, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
-              className="fixed top-16 right-4 z-50 w-96 max-h-[80vh] overflow-y-auto card bg-navy-900 border border-navy-700 shadow-xl"
+              className="fixed top-16 right-4 z-50 w-96 max-h-[80vh] overflow-y-auto card bg-card border border-border-strong shadow-xl"
             >
-              <div className="p-4 border-b border-navy-800">
+              <div className="p-4 border-b border-border-default">
                 <h3 className="font-display font-semibold text-white flex items-center gap-2">
                   <Bell className="w-4 h-4 text-pitch-400" />
                   Notifications
@@ -2354,7 +2354,7 @@ export default function PupilLounge() {
                         <p className="text-white font-semibold">
                           V {upcomingMatches[0].opponent}
                         </p>
-                        <div className="flex items-center gap-3 text-xs text-navy-300 mt-1">
+                        <div className="flex items-center gap-3 text-xs text-secondary mt-1">
                           <span className="flex items-center gap-1">
                             <Calendar className="w-3 h-3" />
                             {formatDate(upcomingMatches[0].date)}
@@ -2375,22 +2375,22 @@ export default function PupilLounge() {
                       </button>
                       {/* Match Prep Notes */}
                       {upcomingMatches[0].prep_notes && (
-                        <div className="mt-3 pt-3 border-t border-navy-700/50">
+                        <div className="mt-3 pt-3 border-t border-border-strong/50">
                           <p className="text-xs font-medium text-pitch-400 mb-1 flex items-center gap-1">
                             <FileText className="w-3 h-3" />
                             Match Prep
                           </p>
-                          <p className="text-xs text-navy-300 line-clamp-3">{String(upcomingMatches[0].prep_notes).replace(/[#*_`]/g, '').substring(0, 200)}</p>
+                          <p className="text-xs text-secondary line-clamp-3">{String(upcomingMatches[0].prep_notes).replace(/[#*_`]/g, '').substring(0, 200)}</p>
                         </div>
                       )}
                       {/* Team Notes */}
                       {upcomingMatches[0].team_notes && (
-                        <div className="mt-2 pt-2 border-t border-navy-700/50">
+                        <div className="mt-2 pt-2 border-t border-border-strong/50">
                           <p className="text-xs font-medium text-energy-400 mb-1 flex items-center gap-1">
                             <MessageSquare className="w-3 h-3" />
                             Team Notes
                           </p>
-                          <p className="text-xs text-navy-300 line-clamp-2">{upcomingMatches[0].team_notes}</p>
+                          <p className="text-xs text-secondary line-clamp-2">{upcomingMatches[0].team_notes}</p>
                         </div>
                       )}
                     </div>
@@ -2413,7 +2413,7 @@ export default function PupilLounge() {
                           onClick={() => markNotificationAsRead(notification.id)}
                           className={`p-3 rounded-lg mb-2 cursor-pointer transition-colors ${
                             notification.is_read
-                              ? 'bg-navy-800/30 hover:bg-navy-800/50'
+                              ? 'bg-subtle hover:bg-subtle'
                               : 'bg-energy-500/10 border border-energy-500/20 hover:bg-energy-500/20'
                           }`}
                         >
@@ -2434,8 +2434,8 @@ export default function PupilLounge() {
                                   <span className="w-2 h-2 rounded-full bg-energy-400 flex-shrink-0" />
                                 )}
                               </div>
-                              <p className="text-xs text-navy-300 mt-0.5">{notification.message}</p>
-                              <p className="text-xs text-navy-500 mt-1">
+                              <p className="text-xs text-secondary mt-0.5">{notification.message}</p>
+                              <p className="text-xs text-tertiary mt-1">
                                 {new Date(notification.created_at).toLocaleDateString()}
                               </p>
                             </div>
@@ -2462,7 +2462,7 @@ export default function PupilLounge() {
                           onClick={() => markNotificationAsRead(notification.id)}
                           className={`p-3 rounded-lg mb-2 cursor-pointer transition-colors ${
                             notification.is_read
-                              ? 'bg-navy-800/30 hover:bg-navy-800/50'
+                              ? 'bg-subtle hover:bg-subtle'
                               : 'bg-pitch-500/10 border border-pitch-500/20 hover:bg-pitch-500/20'
                           }`}
                         >
@@ -2479,7 +2479,7 @@ export default function PupilLounge() {
                                   <span className="w-2 h-2 rounded-full bg-pitch-400 flex-shrink-0" />
                                 )}
                               </div>
-                              <p className="text-xs text-navy-300 mt-0.5">{notification.message}</p>
+                              <p className="text-xs text-secondary mt-0.5">{notification.message}</p>
                               {data.meetup_time && (
                                 <p className="text-xs text-energy-400 mt-1 flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
@@ -2487,7 +2487,7 @@ export default function PupilLounge() {
                                   {data.meetup_location && ` at ${data.meetup_location}`}
                                 </p>
                               )}
-                              <p className="text-xs text-navy-500 mt-1">
+                              <p className="text-xs text-tertiary mt-1">
                                 {new Date(notification.created_at).toLocaleDateString()}
                               </p>
                             </div>
@@ -2516,8 +2516,8 @@ export default function PupilLounge() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-white font-medium">{announcement.title}</p>
-                            <p className="text-xs text-navy-300 line-clamp-2 mt-0.5">{announcement.content}</p>
-                            <p className="text-xs text-navy-500 mt-1">
+                            <p className="text-xs text-secondary line-clamp-2 mt-0.5">{announcement.content}</p>
+                            <p className="text-xs text-tertiary mt-1">
                               {new Date(announcement.created_at).toLocaleDateString()}
                             </p>
                           </div>
@@ -2530,7 +2530,7 @@ export default function PupilLounge() {
                 {/* Upcoming Training Sessions */}
                 {upcomingTraining?.length > 0 && (
                   <div className="mb-3">
-                    <p className="text-xs text-navy-500 px-2 py-1 font-medium flex items-center gap-1">
+                    <p className="text-xs text-tertiary px-2 py-1 font-medium flex items-center gap-1">
                       <Target className="w-3 h-3" />
                       UPCOMING SESSIONS
                     </p>
@@ -2545,7 +2545,7 @@ export default function PupilLounge() {
                             setSelectedSession(session)
                             setShowNotifications(false)
                           }}
-                          className="w-full p-3 rounded-lg hover:bg-navy-800/50 text-left transition-colors"
+                          className="w-full p-3 rounded-lg hover:bg-subtle text-left transition-colors"
                         >
                           <div className="flex items-center gap-3">
                             <div className={`w-8 h-8 rounded-lg ${isSC ? 'bg-energy-500/20' : 'bg-pitch-500/20'} flex items-center justify-center`}>
@@ -2562,19 +2562,19 @@ export default function PupilLounge() {
                                   </span>
                                 )}
                               </div>
-                              <div className="flex items-center gap-2 text-xs text-navy-400 mt-0.5">
+                              <div className="flex items-center gap-2 text-xs text-secondary mt-0.5">
                                 <span>{formatDate(session.date)}</span>
                                 {session.meet_time && <span>• Meet {session.meet_time.slice(0, 5)}</span>}
                                 {session.time && <span>• Start {session.time.slice(0, 5)}</span>}
                               </div>
                               {session.location && (
-                                <p className="text-xs text-navy-500 flex items-center gap-1 mt-0.5">
+                                <p className="text-xs text-tertiary flex items-center gap-1 mt-0.5">
                                   <MapPin className="w-3 h-3" />
                                   {session.location}
                                 </p>
                               )}
                             </div>
-                            <ChevronRight className="w-4 h-4 text-navy-600" />
+                            <ChevronRight className="w-4 h-4 text-tertiary" />
                           </div>
                         </button>
                       )
@@ -2585,7 +2585,7 @@ export default function PupilLounge() {
                 {/* Upcoming Matches */}
                 {upcomingMatches?.length > 1 && (
                   <div className="mb-3">
-                    <p className="text-xs text-navy-500 px-2 py-1 font-medium flex items-center gap-1">
+                    <p className="text-xs text-tertiary px-2 py-1 font-medium flex items-center gap-1">
                       <Trophy className="w-3 h-3" />
                       MORE FIXTURES
                     </p>
@@ -2596,7 +2596,7 @@ export default function PupilLounge() {
                           setSelectedMatch(match)
                           setShowNotifications(false)
                         }}
-                        className="w-full p-3 rounded-lg hover:bg-navy-800/50 text-left transition-colors"
+                        className="w-full p-3 rounded-lg hover:bg-subtle text-left transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-lg bg-energy-500/20 flex items-center justify-center">
@@ -2606,9 +2606,9 @@ export default function PupilLounge() {
                             <p className="text-sm text-white font-medium truncate">
                               V {match.opponent}
                             </p>
-                            <p className="text-xs text-navy-400">{formatDate(match.date)}</p>
+                            <p className="text-xs text-secondary">{formatDate(match.date)}</p>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-navy-600" />
+                          <ChevronRight className="w-4 h-4 text-tertiary" />
                         </div>
                       </button>
                     ))}
@@ -2618,14 +2618,14 @@ export default function PupilLounge() {
                 {/* Regular Announcements */}
                 {announcements?.filter(a => a.priority !== 'urgent' && a.priority !== 'high').length > 0 && (
                   <div className="mb-2">
-                    <p className="text-xs text-navy-500 px-2 py-1 font-medium flex items-center gap-1">
+                    <p className="text-xs text-tertiary px-2 py-1 font-medium flex items-center gap-1">
                       <Megaphone className="w-3 h-3" />
                       ANNOUNCEMENTS
                     </p>
                     {announcements.filter(a => a.priority !== 'urgent' && a.priority !== 'high').slice(0, 3).map(announcement => (
                       <div
                         key={announcement.id}
-                        className="p-3 rounded-lg hover:bg-navy-800/50 transition-colors"
+                        className="p-3 rounded-lg hover:bg-subtle transition-colors"
                       >
                         <div className="flex items-start gap-3">
                           <div className="w-8 h-8 rounded-lg bg-pitch-500/20 flex items-center justify-center flex-shrink-0">
@@ -2633,8 +2633,8 @@ export default function PupilLounge() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-white font-medium">{announcement.title}</p>
-                            <p className="text-xs text-navy-400 line-clamp-2 mt-0.5">{announcement.content}</p>
-                            <p className="text-xs text-navy-500 mt-1">
+                            <p className="text-xs text-secondary line-clamp-2 mt-0.5">{announcement.content}</p>
+                            <p className="text-xs text-tertiary mt-1">
                               {new Date(announcement.created_at).toLocaleDateString()}
                             </p>
                           </div>
@@ -2650,9 +2650,9 @@ export default function PupilLounge() {
                  (!announcements || announcements.length === 0) &&
                  (!squadNotifications || squadNotifications.length === 0) && (
                   <div className="p-6 text-center">
-                    <Bell className="w-8 h-8 text-navy-600 mx-auto mb-2" />
-                    <p className="text-sm text-navy-400">No new notifications</p>
-                    <p className="text-xs text-navy-500 mt-1">You're all caught up!</p>
+                    <Bell className="w-8 h-8 text-tertiary mx-auto mb-2" />
+                    <p className="text-sm text-secondary">No new notifications</p>
+                    <p className="text-xs text-tertiary mt-1">You're all caught up!</p>
                   </div>
                 )}
               </div>
@@ -2673,7 +2673,7 @@ export default function PupilLounge() {
               <h3 className="font-display font-bold text-xl text-white">
                 {selectedMatch.goals_for !== null && selectedMatch.goals_for !== undefined ? 'Match Recap' : 'Match Details'}
               </h3>
-              <button onClick={() => setSelectedMatch(null)} className="text-navy-400 hover:text-white">
+              <button onClick={() => setSelectedMatch(null)} className="text-secondary hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -2689,7 +2689,7 @@ export default function PupilLounge() {
                     selectedMatch.goals_for < selectedMatch.goals_against ? 'bg-alert-500/20 border border-alert-500/30' :
                     'bg-caution-500/20 border border-caution-500/30'
                   }`}>
-                    <p className="text-sm text-navy-400 mb-1">
+                    <p className="text-sm text-secondary mb-1">
                       {selectedMatch.is_home ? 'HOME' : 'AWAY'} • {formatDate(selectedMatch.date)}
                     </p>
                     <h4 className="font-display text-xl font-bold text-white mb-2">
@@ -2699,7 +2699,7 @@ export default function PupilLounge() {
                       <span className="text-4xl font-display font-bold text-white">
                         {selectedMatch.goals_for}
                       </span>
-                      <span className="text-2xl text-navy-500">-</span>
+                      <span className="text-2xl text-tertiary">-</span>
                       <span className="text-4xl font-display font-bold text-white">
                         {selectedMatch.goals_against}
                       </span>
@@ -2716,7 +2716,7 @@ export default function PupilLounge() {
                   {/* Match Videos */}
                   {(selectedMatch.veo_link || selectedMatch.video_url) && (
                     <div className="space-y-2">
-                      <p className="text-sm text-navy-400 font-medium flex items-center gap-2">
+                      <p className="text-sm text-secondary font-medium flex items-center gap-2">
                         <Video className="w-4 h-4" />
                         Match Video
                       </p>
@@ -2725,16 +2725,16 @@ export default function PupilLounge() {
                           href={selectedMatch.veo_link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg hover:bg-navy-800/50 transition-colors"
+                          className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                         >
                           <div className="w-10 h-10 bg-pitch-500/20 rounded-lg flex items-center justify-center">
                             <Play className="w-5 h-5 text-pitch-400" />
                           </div>
                           <div className="flex-1">
                             <p className="text-white font-medium">Match Video</p>
-                            <p className="text-xs text-navy-400">Watch the full match</p>
+                            <p className="text-xs text-secondary">Watch the full match</p>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-navy-600" />
+                          <ChevronRight className="w-4 h-4 text-tertiary" />
                         </a>
                       )}
                       {selectedMatch.video_url && (
@@ -2742,16 +2742,16 @@ export default function PupilLounge() {
                           href={selectedMatch.video_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg hover:bg-navy-800/50 transition-colors"
+                          className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                         >
                           <div className="w-10 h-10 bg-energy-500/20 rounded-lg flex items-center justify-center">
                             <Video className="w-5 h-5 text-energy-400" />
                           </div>
                           <div className="flex-1">
                             <p className="text-white font-medium">Match Video</p>
-                            <p className="text-xs text-navy-400">Coach uploaded video</p>
+                            <p className="text-xs text-secondary">Coach uploaded video</p>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-navy-600" />
+                          <ChevronRight className="w-4 h-4 text-tertiary" />
                         </a>
                       )}
                     </div>
@@ -2760,12 +2760,12 @@ export default function PupilLounge() {
                   {/* Match Photos */}
                   {loadingMatchMedia ? (
                     <div className="flex items-center justify-center py-4">
-                      <Loader2 className="w-5 h-5 animate-spin text-navy-400" />
+                      <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : selectedMatchMedia.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm text-navy-400 font-medium flex items-center gap-2">
+                        <p className="text-sm text-secondary font-medium flex items-center gap-2">
                           <Camera className="w-4 h-4" />
                           Photos & Media ({selectedMatchMedia.length})
                         </p>
@@ -2782,10 +2782,10 @@ export default function PupilLounge() {
                           const mediaUrl = (() => { const u = media.file_path || media.file_url || media.url; return u?.startsWith('http') ? u : `${SERVER_URL}${u}`; })()
                           const isOwn = media.uploaded_by === user?.id
                           return (
-                            <div key={media.id || idx} className="relative aspect-square rounded-lg overflow-hidden bg-navy-800 group">
+                            <div key={media.id || idx} className="relative aspect-square rounded-lg overflow-hidden bg-subtle group">
                               <button onClick={() => setLightboxUrl(mediaUrl)} className="block w-full h-full hover:opacity-80 transition-opacity text-left">
                                 {media.media_type === 'video' ? (
-                                  <div className="relative w-full h-full bg-navy-800">
+                                  <div className="relative w-full h-full bg-subtle">
                                     <video src={`${mediaUrl}#t=0.5`} preload="metadata" muted className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <div className="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center">
@@ -2810,7 +2810,7 @@ export default function PupilLounge() {
                         })}
                       </div>
                       {selectedMatchMedia.length > 6 && (
-                        <p className="text-xs text-navy-500 text-center mt-2">
+                        <p className="text-xs text-tertiary text-center mt-2">
                           +{selectedMatchMedia.length - 6} more
                         </p>
                       )}
@@ -2819,8 +2819,8 @@ export default function PupilLounge() {
 
                   {/* Coach Notes */}
                   {selectedMatch.notes && (
-                    <div className="p-3 bg-navy-800/30 rounded-lg">
-                      <p className="text-sm text-navy-400 mb-1 flex items-center gap-2">
+                    <div className="p-3 bg-subtle rounded-lg">
+                      <p className="text-sm text-secondary mb-1 flex items-center gap-2">
                         <FileText className="w-4 h-4" />
                         Coach's Notes
                       </p>
@@ -2831,7 +2831,7 @@ export default function PupilLounge() {
                   {/* Match Squad */}
                   {loadingMatchSquad ? (
                     <div className="flex items-center justify-center py-4">
-                      <Loader2 className="w-5 h-5 animate-spin text-navy-400" />
+                      <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : matchSquad.length > 0 && (
                     <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-pitch-500/20">
@@ -2846,7 +2846,7 @@ export default function PupilLounge() {
                           <p className="text-xs font-semibold text-pitch-400 uppercase tracking-wider mb-2">Starting XI</p>
                           <div className="space-y-1">
                             {matchSquad.filter(p => p.is_starting).map(p => (
-                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-navy-800/40 rounded-lg">
+                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-subtle/40 rounded-lg">
                                 {p.squad_number && (
                                   <span className="w-6 h-6 flex items-center justify-center bg-pitch-500/20 text-pitch-400 text-xs font-bold rounded-full">
                                     {p.squad_number}
@@ -2854,7 +2854,7 @@ export default function PupilLounge() {
                                 )}
                                 <span className="text-white text-sm font-medium flex-1">{p.player_name}</span>
                                 {p.position && (
-                                  <span className="text-xs text-navy-400 bg-navy-800/60 px-2 py-0.5 rounded">{p.position}</span>
+                                  <span className="text-xs text-secondary bg-subtle/60 px-2 py-0.5 rounded">{p.position}</span>
                                 )}
                               </div>
                             ))}
@@ -2865,18 +2865,18 @@ export default function PupilLounge() {
                       {/* Substitutes */}
                       {matchSquad.filter(p => !p.is_starting).length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold text-navy-400 uppercase tracking-wider mb-2">Substitutes</p>
+                          <p className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2">Substitutes</p>
                           <div className="space-y-1">
                             {matchSquad.filter(p => !p.is_starting).map(p => (
-                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-navy-800/20 rounded-lg">
+                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-subtle/20 rounded-lg">
                                 {p.squad_number && (
-                                  <span className="w-6 h-6 flex items-center justify-center bg-navy-700/50 text-navy-300 text-xs font-bold rounded-full">
+                                  <span className="w-6 h-6 flex items-center justify-center bg-border-default/50 text-secondary text-xs font-bold rounded-full">
                                     {p.squad_number}
                                   </span>
                                 )}
-                                <span className="text-navy-300 text-sm font-medium flex-1">{p.player_name}</span>
+                                <span className="text-secondary text-sm font-medium flex-1">{p.player_name}</span>
                                 {p.position && (
-                                  <span className="text-xs text-navy-500 bg-navy-800/60 px-2 py-0.5 rounded">{p.position}</span>
+                                  <span className="text-xs text-tertiary bg-subtle/60 px-2 py-0.5 rounded">{p.position}</span>
                                 )}
                               </div>
                             ))}
@@ -2888,7 +2888,7 @@ export default function PupilLounge() {
 
                   {/* Match Report (only show if published by coach) */}
                   {selectedMatch.report?.generated && selectedMatch.report?.published && (
-                    <div className="p-5 bg-navy-800/30 rounded-xl">
+                    <div className="p-5 bg-subtle rounded-xl">
                       <div className="flex items-center gap-2 mb-4">
                         <FileText className="w-6 h-6 text-pitch-400" />
                         <p className="font-display font-bold text-lg text-white">Match Report</p>
@@ -2906,29 +2906,29 @@ export default function PupilLounge() {
                       </div>
                       {parentVoteData?.my_vote ? (
                         <div className="space-y-3">
-                          <p className="text-sm text-navy-300">
+                          <p className="text-sm text-secondary">
                             You voted for <span className="text-energy-400 font-medium">
                               {teamSquad.find(p => p.id === parentVoteData.my_vote)?.name || 'a pupil'}
                             </span>
                           </p>
-                          <p className="text-xs text-navy-500">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''} cast so far</p>
+                          <p className="text-xs text-tertiary">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''} cast so far</p>
                           <button
                             onClick={() => {
                               setParentVoteData(prev => prev ? { ...prev, my_vote: null } : null)
                               setVotingPlayerId(null)
                             }}
-                            className="text-xs text-navy-400 hover:text-energy-400 transition-colors"
+                            className="text-xs text-secondary hover:text-energy-400 transition-colors"
                           >
                             Change vote
                           </button>
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <p className="text-sm text-navy-300 mb-2">Who stood out today? Cast your vote!</p>
+                          <p className="text-sm text-secondary mb-2">Who stood out today? Cast your vote!</p>
                           <select
                             value={votingPlayerId || ''}
                             onChange={(e) => setVotingPlayerId(e.target.value)}
-                            className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
+                            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
                           >
                             <option value="">Select a pupil...</option>
                             {teamSquad
@@ -2973,8 +2973,8 @@ export default function PupilLounge() {
                 /* UPCOMING MATCH VIEW */
                 <>
                   {/* Opponent */}
-                  <div className="text-center p-4 bg-navy-800/50 rounded-xl">
-                    <p className="text-sm text-navy-400 mb-1">
+                  <div className="text-center p-4 bg-subtle rounded-xl">
+                    <p className="text-sm text-secondary mb-1">
                       {selectedMatch.is_home ? 'HOME' : 'AWAY'} MATCH
                     </p>
                     <h4 className="font-display text-2xl font-bold text-white">
@@ -2983,12 +2983,12 @@ export default function PupilLounge() {
                   </div>
 
                   {/* Date & Time */}
-                  <div className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg">
+                  <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
                     <Calendar className="w-5 h-5 text-pitch-400" />
                     <div>
                       <p className="text-white font-medium">{formatDate(selectedMatch.date)}</p>
                       {selectedMatch.date && new Date(selectedMatch.date).getHours() !== 0 && (
-                        <p className="text-sm text-navy-400">
+                        <p className="text-sm text-secondary">
                           Kick-off: {new Date(selectedMatch.date).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}
                         </p>
                       )}
@@ -3001,20 +3001,20 @@ export default function PupilLounge() {
                       href={`https://maps.google.com/?q=${encodeURIComponent(selectedMatch.location)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg hover:bg-navy-800/50 transition-colors"
+                      className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                     >
                       <MapPin className="w-5 h-5 text-pitch-400" />
                       <div className="flex-1">
                         <p className="text-white font-medium">{selectedMatch.location}</p>
                         <p className="text-xs text-pitch-400">Tap for directions</p>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-navy-600" />
+                      <ChevronRight className="w-4 h-4 text-tertiary" />
                     </a>
                   )}
 
                   {/* Kit Color */}
                   {(selectedMatch.kit_type || selectedMatch.is_home !== undefined) && (
-                    <div className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg">
+                    <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
                       <Shield className="w-5 h-5 text-pitch-400" />
                       <div>
                         <p className="text-white font-medium">
@@ -3022,7 +3022,7 @@ export default function PupilLounge() {
                             ? (selectedMatch.kit_type === 'third' ? '3rd Kit' : selectedMatch.kit_type.charAt(0).toUpperCase() + selectedMatch.kit_type.slice(1) + ' Kit')
                             : (selectedMatch.is_home ? 'Home Kit' : 'Away Kit')}
                         </p>
-                        <p className="text-sm text-navy-400">
+                        <p className="text-sm text-secondary">
                           Wear your {selectedMatch.kit_type
                             ? (selectedMatch.kit_type === 'third' ? '3rd' : selectedMatch.kit_type)
                             : (selectedMatch.is_home ? 'home' : 'away')} colours
@@ -3038,7 +3038,7 @@ export default function PupilLounge() {
                       <div>
                         <p className="text-white font-medium">Meet at {new Date(selectedMatch.meetup_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
                         {selectedMatch.meetup_location && (
-                          <p className="text-sm text-navy-400">{selectedMatch.meetup_location}</p>
+                          <p className="text-sm text-secondary">{selectedMatch.meetup_location}</p>
                         )}
                       </div>
                     </div>
@@ -3046,8 +3046,8 @@ export default function PupilLounge() {
 
                   {/* Notes */}
                   {selectedMatch.notes && (
-                    <div className="p-3 bg-navy-800/30 rounded-lg">
-                      <p className="text-sm text-navy-400 mb-1">Notes from coach:</p>
+                    <div className="p-3 bg-subtle rounded-lg">
+                      <p className="text-sm text-secondary mb-1">Notes from coach:</p>
                       <p className="text-white">{selectedMatch.notes}</p>
                     </div>
                   )}
@@ -3066,7 +3066,7 @@ export default function PupilLounge() {
                   {/* Match Squad */}
                   {loadingMatchSquad ? (
                     <div className="flex items-center justify-center py-4">
-                      <Loader2 className="w-5 h-5 animate-spin text-navy-400" />
+                      <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : matchSquad.length > 0 && (
                     <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-pitch-500/20">
@@ -3081,7 +3081,7 @@ export default function PupilLounge() {
                           <p className="text-xs font-semibold text-pitch-400 uppercase tracking-wider mb-2">Starting XI</p>
                           <div className="space-y-1">
                             {matchSquad.filter(p => p.is_starting).map(p => (
-                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-navy-800/40 rounded-lg">
+                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-subtle/40 rounded-lg">
                                 {p.squad_number && (
                                   <span className="w-6 h-6 flex items-center justify-center bg-pitch-500/20 text-pitch-400 text-xs font-bold rounded-full">
                                     {p.squad_number}
@@ -3089,7 +3089,7 @@ export default function PupilLounge() {
                                 )}
                                 <span className="text-white text-sm font-medium flex-1">{p.player_name}</span>
                                 {p.position && (
-                                  <span className="text-xs text-navy-400 bg-navy-800/60 px-2 py-0.5 rounded">{p.position}</span>
+                                  <span className="text-xs text-secondary bg-subtle/60 px-2 py-0.5 rounded">{p.position}</span>
                                 )}
                               </div>
                             ))}
@@ -3100,18 +3100,18 @@ export default function PupilLounge() {
                       {/* Substitutes */}
                       {matchSquad.filter(p => !p.is_starting).length > 0 && (
                         <div>
-                          <p className="text-xs font-semibold text-navy-400 uppercase tracking-wider mb-2">Substitutes</p>
+                          <p className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2">Substitutes</p>
                           <div className="space-y-1">
                             {matchSquad.filter(p => !p.is_starting).map(p => (
-                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-navy-800/20 rounded-lg">
+                              <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-subtle/20 rounded-lg">
                                 {p.squad_number && (
-                                  <span className="w-6 h-6 flex items-center justify-center bg-navy-700/50 text-navy-300 text-xs font-bold rounded-full">
+                                  <span className="w-6 h-6 flex items-center justify-center bg-border-default/50 text-secondary text-xs font-bold rounded-full">
                                     {p.squad_number}
                                   </span>
                                 )}
-                                <span className="text-navy-300 text-sm font-medium flex-1">{p.player_name}</span>
+                                <span className="text-secondary text-sm font-medium flex-1">{p.player_name}</span>
                                 {p.position && (
-                                  <span className="text-xs text-navy-500 bg-navy-800/60 px-2 py-0.5 rounded">{p.position}</span>
+                                  <span className="text-xs text-tertiary bg-subtle/60 px-2 py-0.5 rounded">{p.position}</span>
                                 )}
                               </div>
                             ))}
@@ -3122,8 +3122,8 @@ export default function PupilLounge() {
                   )}
 
                   {/* Availability */}
-                  <div className="p-4 bg-navy-800/30 rounded-lg">
-                    <p className="text-sm text-navy-400 mb-3">Your availability:</p>
+                  <div className="p-4 bg-subtle rounded-lg">
+                    <p className="text-sm text-secondary mb-3">Your availability:</p>
                     <AvailabilityButtons
                       match={selectedMatch}
                       onUpdate={(matchId, availability) => {
@@ -3137,12 +3137,12 @@ export default function PupilLounge() {
                   {/* Match Photos */}
                   {loadingMatchMedia ? (
                     <div className="flex items-center justify-center py-4">
-                      <Loader2 className="w-5 h-5 animate-spin text-navy-400" />
+                      <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : selectedMatchMedia.length > 0 && (
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <p className="text-sm text-navy-400 font-medium flex items-center gap-2">
+                        <p className="text-sm text-secondary font-medium flex items-center gap-2">
                           <Camera className="w-4 h-4" />
                           Photos & Media ({selectedMatchMedia.length})
                         </p>
@@ -3159,10 +3159,10 @@ export default function PupilLounge() {
                           const mediaUrl = (() => { const u = media.file_path || media.file_url || media.url; return u?.startsWith('http') ? u : `${SERVER_URL}${u}`; })()
                           const isOwn = media.uploaded_by === user?.id
                           return (
-                            <div key={media.id || idx} className="relative aspect-square rounded-lg overflow-hidden bg-navy-800 group">
+                            <div key={media.id || idx} className="relative aspect-square rounded-lg overflow-hidden bg-subtle group">
                               <button onClick={() => setLightboxUrl(mediaUrl)} className="block w-full h-full hover:opacity-80 transition-opacity text-left">
                                 {media.media_type === 'video' ? (
-                                  <div className="relative w-full h-full bg-navy-800">
+                                  <div className="relative w-full h-full bg-subtle">
                                     <video src={`${mediaUrl}#t=0.5`} preload="metadata" muted className="w-full h-full object-cover" />
                                     <div className="absolute inset-0 flex items-center justify-center">
                                       <div className="w-10 h-10 rounded-full bg-black/50 flex items-center justify-center">
@@ -3187,7 +3187,7 @@ export default function PupilLounge() {
                         })}
                       </div>
                       {selectedMatchMedia.length > 6 && (
-                        <p className="text-xs text-navy-500 text-center mt-2">
+                        <p className="text-xs text-tertiary text-center mt-2">
                           +{selectedMatchMedia.length - 6} more
                         </p>
                       )}
@@ -3215,29 +3215,29 @@ export default function PupilLounge() {
                       </div>
                       {parentVoteData.my_vote ? (
                         <div className="space-y-3">
-                          <p className="text-sm text-navy-300">
+                          <p className="text-sm text-secondary">
                             You voted for <span className="text-energy-400 font-medium">
                               {teamSquad.find(p => p.id === parentVoteData.my_vote)?.name || 'a pupil'}
                             </span>
                           </p>
-                          <p className="text-xs text-navy-500">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''} cast so far</p>
+                          <p className="text-xs text-tertiary">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''} cast so far</p>
                           <button
                             onClick={() => {
                               setParentVoteData(prev => prev ? { ...prev, my_vote: null } : null)
                               setVotingPlayerId(null)
                             }}
-                            className="text-xs text-navy-400 hover:text-energy-400 transition-colors"
+                            className="text-xs text-secondary hover:text-energy-400 transition-colors"
                           >
                             Change vote
                           </button>
                         </div>
                       ) : (
                         <div className="space-y-2">
-                          <p className="text-sm text-navy-300 mb-2">Who stood out today? Cast your vote!</p>
+                          <p className="text-sm text-secondary mb-2">Who stood out today? Cast your vote!</p>
                           <select
                             value={votingPlayerId || ''}
                             onChange={(e) => setVotingPlayerId(e.target.value)}
-                            className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
+                            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
                           >
                             <option value="">Select a pupil...</option>
                             {teamSquad
@@ -3299,7 +3299,7 @@ export default function PupilLounge() {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-xl text-white">Session Details</h3>
-              <button onClick={() => setSelectedSession(null)} className="text-navy-400 hover:text-white">
+              <button onClick={() => setSelectedSession(null)} className="text-secondary hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -3334,27 +3334,27 @@ export default function PupilLounge() {
 
               {/* Date & Time */}
               <div className="space-y-2">
-                <div className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg">
-                  <div className="w-10 h-10 bg-navy-700/50 rounded-lg flex items-center justify-center">
-                    <Calendar className="w-5 h-5 text-navy-300" />
+                <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
+                  <div className="w-10 h-10 bg-border-default/50 rounded-lg flex items-center justify-center">
+                    <Calendar className="w-5 h-5 text-secondary" />
                   </div>
                   <div>
                     <p className="text-white font-medium">{formatDate(selectedSession.date)}</p>
-                    <p className="text-xs text-navy-400">
+                    <p className="text-xs text-secondary">
                       {new Date(selectedSession.date).toLocaleDateString('en-GB', { weekday: 'long' })}
                     </p>
                   </div>
                 </div>
 
                 {selectedSession.time && (
-                  <div className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg">
-                    <div className="w-10 h-10 bg-navy-700/50 rounded-lg flex items-center justify-center">
-                      <Clock className="w-5 h-5 text-navy-300" />
+                  <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
+                    <div className="w-10 h-10 bg-border-default/50 rounded-lg flex items-center justify-center">
+                      <Clock className="w-5 h-5 text-secondary" />
                     </div>
                     <div>
                       <p className="text-white font-medium">{formatTime(selectedSession.time)}</p>
                       {selectedSession.duration && (
-                        <p className="text-xs text-navy-400">{selectedSession.duration} minutes</p>
+                        <p className="text-xs text-secondary">{selectedSession.duration} minutes</p>
                       )}
                     </div>
                   </div>
@@ -3365,16 +3365,16 @@ export default function PupilLounge() {
                     href={`https://maps.google.com/?q=${encodeURIComponent(selectedSession.location)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-3 p-3 bg-navy-800/30 rounded-lg hover:bg-navy-800/50 transition-colors"
+                    className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                   >
-                    <div className="w-10 h-10 bg-navy-700/50 rounded-lg flex items-center justify-center">
-                      <MapPin className="w-5 h-5 text-navy-300" />
+                    <div className="w-10 h-10 bg-border-default/50 rounded-lg flex items-center justify-center">
+                      <MapPin className="w-5 h-5 text-secondary" />
                     </div>
                     <div className="flex-1">
                       <p className="text-white font-medium">{selectedSession.location}</p>
-                      <p className="text-xs text-navy-400">Tap for directions</p>
+                      <p className="text-xs text-secondary">Tap for directions</p>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-navy-600" />
+                    <ChevronRight className="w-4 h-4 text-tertiary" />
                   </a>
                 )}
               </div>
@@ -3382,7 +3382,7 @@ export default function PupilLounge() {
               {/* Focus Areas (for training sessions) */}
               {selectedSession.session_type !== 's&c' && selectedSession.focus_areas?.length > 0 && (
                 <div className="space-y-2">
-                  <p className="text-sm text-navy-400 font-medium">Focus Areas</p>
+                  <p className="text-sm text-secondary font-medium">Focus Areas</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedSession.focus_areas.map((area, i) => (
                       <span key={i} className="px-3 py-1 bg-pitch-500/20 text-pitch-300 rounded-full text-sm">
@@ -3395,7 +3395,7 @@ export default function PupilLounge() {
 
               {/* Availability */}
               <div className="space-y-2">
-                <p className="text-sm text-navy-400 font-medium flex items-center gap-2">
+                <p className="text-sm text-secondary font-medium flex items-center gap-2">
                   <UserCheck className="w-4 h-4" />
                   Your Availability
                 </p>
@@ -3405,7 +3405,7 @@ export default function PupilLounge() {
                     onUpdate={(id, status) => handleTrainingAvailabilityUpdate(id, status)}
                     updating={updatingTrainingAvailability === selectedSession.id}
                   />
-                  <span className="text-sm text-navy-400 self-center ml-2">
+                  <span className="text-sm text-secondary self-center ml-2">
                     {selectedSession.my_availability
                       ? selectedSession.my_availability === 'available' ? 'Confirmed'
                         : selectedSession.my_availability === 'unavailable' ? 'Not available'
@@ -3418,11 +3418,11 @@ export default function PupilLounge() {
               {/* Notes */}
               {selectedSession.notes && (
                 <div className="space-y-2">
-                  <p className="text-sm text-navy-400 font-medium flex items-center gap-2">
+                  <p className="text-sm text-secondary font-medium flex items-center gap-2">
                     <FileText className="w-4 h-4" />
                     Session Notes
                   </p>
-                  <div className="p-3 bg-navy-800/30 rounded-lg">
+                  <div className="p-3 bg-subtle rounded-lg">
                     <p className="text-white text-sm">{selectedSession.notes}</p>
                   </div>
                 </div>
@@ -3431,7 +3431,7 @@ export default function PupilLounge() {
               {/* Training Plan (when shared by coach) */}
               {selectedSession.plan && Object.keys(selectedSession.plan).length > 0 && (
                 <div className="space-y-3">
-                  <p className="text-sm text-navy-400 font-medium flex items-center gap-2">
+                  <p className="text-sm text-secondary font-medium flex items-center gap-2">
                     <Target className="w-4 h-4" />
                     Training Plan
                   </p>
@@ -3441,11 +3441,11 @@ export default function PupilLounge() {
                     ) : (
                       <>
                         {selectedSession.plan.warmUp && (
-                          <div className="p-3 bg-navy-800/30 rounded-lg">
+                          <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-pitch-400 font-medium text-sm">Warm-up</span>
                               {selectedSession.plan.warmUp.duration && (
-                                <span className="text-xs text-navy-500">{selectedSession.plan.warmUp.duration} mins</span>
+                                <span className="text-xs text-tertiary">{selectedSession.plan.warmUp.duration} mins</span>
                               )}
                             </div>
                             <p className="text-white text-sm">{selectedSession.plan.warmUp.activity || selectedSession.plan.warmUp.description}</p>
@@ -3453,16 +3453,16 @@ export default function PupilLounge() {
                               <div className="mt-3"><DrillDiagram diagram={selectedSession.plan.warmUp.diagram} /></div>
                             )}
                             {selectedSession.plan.warmUp.coachingPoints && (
-                              <p className="text-xs text-navy-400 mt-2 italic">Tips: {selectedSession.plan.warmUp.coachingPoints}</p>
+                              <p className="text-xs text-secondary mt-2 italic">Tips: {selectedSession.plan.warmUp.coachingPoints}</p>
                             )}
                           </div>
                         )}
                         {selectedSession.plan.technical && (
-                          <div className="p-3 bg-navy-800/30 rounded-lg">
+                          <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-pitch-400 font-medium text-sm">Technical Drill</span>
                               {selectedSession.plan.technical.duration && (
-                                <span className="text-xs text-navy-500">{selectedSession.plan.technical.duration} mins</span>
+                                <span className="text-xs text-tertiary">{selectedSession.plan.technical.duration} mins</span>
                               )}
                             </div>
                             <p className="text-white text-sm">{selectedSession.plan.technical.activity || selectedSession.plan.technical.description}</p>
@@ -3470,16 +3470,16 @@ export default function PupilLounge() {
                               <div className="mt-3"><DrillDiagram diagram={selectedSession.plan.technical.diagram} /></div>
                             )}
                             {selectedSession.plan.technical.coachingPoints && (
-                              <p className="text-xs text-navy-400 mt-2 italic">Tips: {selectedSession.plan.technical.coachingPoints}</p>
+                              <p className="text-xs text-secondary mt-2 italic">Tips: {selectedSession.plan.technical.coachingPoints}</p>
                             )}
                           </div>
                         )}
                         {selectedSession.plan.tactical && (
-                          <div className="p-3 bg-navy-800/30 rounded-lg">
+                          <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-pitch-400 font-medium text-sm">Tactical Exercise</span>
                               {selectedSession.plan.tactical.duration && (
-                                <span className="text-xs text-navy-500">{selectedSession.plan.tactical.duration} mins</span>
+                                <span className="text-xs text-tertiary">{selectedSession.plan.tactical.duration} mins</span>
                               )}
                             </div>
                             <p className="text-white text-sm">{selectedSession.plan.tactical.activity || selectedSession.plan.tactical.description}</p>
@@ -3487,30 +3487,30 @@ export default function PupilLounge() {
                               <div className="mt-3"><DrillDiagram diagram={selectedSession.plan.tactical.diagram} /></div>
                             )}
                             {selectedSession.plan.tactical.coachingPoints && (
-                              <p className="text-xs text-navy-400 mt-2 italic">Tips: {selectedSession.plan.tactical.coachingPoints}</p>
+                              <p className="text-xs text-secondary mt-2 italic">Tips: {selectedSession.plan.tactical.coachingPoints}</p>
                             )}
                           </div>
                         )}
                         {selectedSession.plan.game && (
-                          <div className="p-3 bg-navy-800/30 rounded-lg">
+                          <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-pitch-400 font-medium text-sm">Match Practice</span>
                               {selectedSession.plan.game.duration && (
-                                <span className="text-xs text-navy-500">{selectedSession.plan.game.duration} mins</span>
+                                <span className="text-xs text-tertiary">{selectedSession.plan.game.duration} mins</span>
                               )}
                             </div>
                             <p className="text-white text-sm">{selectedSession.plan.game.activity || selectedSession.plan.game.description}</p>
                             {selectedSession.plan.game.coachingPoints && (
-                              <p className="text-xs text-navy-400 mt-2 italic">Tips: {selectedSession.plan.game.coachingPoints}</p>
+                              <p className="text-xs text-secondary mt-2 italic">Tips: {selectedSession.plan.game.coachingPoints}</p>
                             )}
                           </div>
                         )}
                         {selectedSession.plan.coolDown && (
-                          <div className="p-3 bg-navy-800/30 rounded-lg">
+                          <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
                               <span className="text-pitch-400 font-medium text-sm">Cool-down</span>
                               {selectedSession.plan.coolDown.duration && (
-                                <span className="text-xs text-navy-500">{selectedSession.plan.coolDown.duration} mins</span>
+                                <span className="text-xs text-tertiary">{selectedSession.plan.coolDown.duration} mins</span>
                               )}
                             </div>
                             <p className="text-white text-sm">{selectedSession.plan.coolDown.activity || selectedSession.plan.coolDown.description}</p>
@@ -3523,8 +3523,8 @@ export default function PupilLounge() {
               )}
 
               {/* What to Bring Reminder */}
-              <div className="p-4 bg-navy-800/30 rounded-lg border border-navy-700">
-                <p className="text-sm text-navy-400 font-medium mb-2">Remember to bring:</p>
+              <div className="p-4 bg-subtle rounded-lg border border-border-strong">
+                <p className="text-sm text-secondary font-medium mb-2">Remember to bring:</p>
                 <ul className="text-sm text-white space-y-1">
                   {selectedSession.session_type === 's&c' ? (
                     <>
@@ -3567,7 +3567,7 @@ export default function PupilLounge() {
                 <Star className="w-6 h-6 text-energy-400" />
                 My Badges & Achievements
               </h3>
-              <button onClick={() => setShowBadgesModal(false)} className="text-navy-400 hover:text-white">
+              <button onClick={() => setShowBadgesModal(false)} className="text-secondary hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -3578,11 +3578,11 @@ export default function PupilLounge() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-gradient-to-br from-energy-900/40 to-navy-900 rounded-xl p-4 text-center border border-energy-500/20">
                   <div className="text-3xl font-bold text-energy-400">{(achievements?.length || 0) + (potmAwards?.length || 0)}</div>
-                  <div className="text-xs text-navy-400 mt-1">Total Awards</div>
+                  <div className="text-xs text-secondary mt-1">Total Awards</div>
                 </div>
                 <div className="bg-gradient-to-br from-caution-900/40 to-navy-900 rounded-xl p-4 text-center border border-caution-500/20">
                   <div className="text-3xl font-bold text-caution-400">{potmAwards?.length || 0}</div>
-                  <div className="text-xs text-navy-400 mt-1 flex items-center justify-center gap-1">
+                  <div className="text-xs text-secondary mt-1 flex items-center justify-center gap-1">
                     <Award className="w-3 h-3" /> POTM
                   </div>
                 </div>
@@ -3591,7 +3591,7 @@ export default function PupilLounge() {
               {/* POTM Awards */}
               {potmAwards?.length > 0 && (
                 <div>
-                  <p className="text-sm text-navy-400 font-medium mb-3 flex items-center gap-2">
+                  <p className="text-sm text-secondary font-medium mb-3 flex items-center gap-2">
                     <Award className="w-4 h-4 text-energy-400" />
                     Pupil of the Match ({potmAwards.length})
                   </p>
@@ -3607,7 +3607,7 @@ export default function PupilLounge() {
                           </div>
                           <div className="flex-1">
                             <p className="text-white font-medium">vs {award.opponent}</p>
-                            <p className="text-xs text-navy-400">{new Date(award.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
+                            <p className="text-xs text-secondary">{new Date(award.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                             {award.reason && (
                               <p className="text-xs text-energy-300 mt-1 italic">"{award.reason}"</p>
                             )}
@@ -3622,7 +3622,7 @@ export default function PupilLounge() {
               {/* Other Achievements */}
               {achievements?.length > 0 && (
                 <div>
-                  <p className="text-sm text-navy-400 font-medium mb-3 flex items-center gap-2">
+                  <p className="text-sm text-secondary font-medium mb-3 flex items-center gap-2">
                     <Star className="w-4 h-4 text-pitch-400" />
                     Badges & Awards ({achievements.length})
                   </p>
@@ -3630,14 +3630,14 @@ export default function PupilLounge() {
                     {achievements.map(achievement => (
                       <div
                         key={achievement.id}
-                        className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-4 text-center border border-navy-700"
+                        className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-4 text-center border border-border-strong"
                       >
                         <div className="text-3xl mb-2">{achievement.icon}</div>
                         <p className="text-sm font-medium text-white">{achievement.title}</p>
                         {achievement.description && (
-                          <p className="text-xs text-navy-400 mt-1">{achievement.description}</p>
+                          <p className="text-xs text-secondary mt-1">{achievement.description}</p>
                         )}
-                        <p className="text-xs text-navy-500 mt-2">
+                        <p className="text-xs text-tertiary mt-2">
                           {new Date(achievement.earned_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                         {achievement.match_opponent && (
@@ -3655,9 +3655,9 @@ export default function PupilLounge() {
               {/* Empty State */}
               {(!achievements || achievements.length === 0) && (!potmAwards || potmAwards.length === 0) && (
                 <div className="text-center py-8">
-                  <Award className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-                  <p className="text-navy-400">No badges yet</p>
-                  <p className="text-xs text-navy-500 mt-1">Keep working hard - your first badge is coming!</p>
+                  <Award className="w-12 h-12 text-tertiary mx-auto mb-3" />
+                  <p className="text-secondary">No badges yet</p>
+                  <p className="text-xs text-tertiary mt-1">Keep working hard - your first badge is coming!</p>
                 </div>
               )}
             </div>
@@ -3683,7 +3683,7 @@ export default function PupilLounge() {
               onClick={e => e.stopPropagation()}
             >
               {/* Chat Header */}
-              <div className="p-4 border-b border-navy-800 bg-gradient-to-r from-pitch-900/50 via-energy-900/30 to-navy-900 rounded-t-xl">
+              <div className="p-4 border-b border-border-default bg-gradient-to-r from-pitch-900/50 via-energy-900/30 to-navy-900 rounded-t-xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pitch-500 to-energy-500 flex items-center justify-center shadow-lg shadow-pitch-500/20">
@@ -3694,12 +3694,12 @@ export default function PupilLounge() {
                         <h2 className="font-display font-bold text-white">The Gaffer</h2>
                         <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded-full font-medium">AI</span>
                       </div>
-                      <p className="text-xs text-navy-400">Your personal football coach</p>
+                      <p className="text-xs text-secondary">Your personal football coach</p>
                     </div>
                   </div>
                   <button
                     onClick={() => setShowChatModal(false)}
-                    className="p-2 text-navy-400 hover:text-white transition-colors"
+                    className="p-2 text-secondary hover:text-white transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -3718,7 +3718,7 @@ export default function PupilLounge() {
                       <Sparkles className="w-8 h-8 text-pitch-400" />
                     </div>
                     <h3 className="font-display font-semibold text-white mb-2">Ask the Gaffer!</h3>
-                    <p className="text-navy-400 text-sm mb-4">
+                    <p className="text-secondary text-sm mb-4">
                       I know everything about your training, matches, and development. Ask me anything!
                     </p>
                     <div className="flex flex-wrap gap-2 justify-center">
@@ -3730,7 +3730,7 @@ export default function PupilLounge() {
                         <button
                           key={suggestion}
                           onClick={() => setChatInput(suggestion)}
-                          className="text-xs bg-navy-800 text-navy-300 px-3 py-1.5 rounded-full hover:bg-navy-700 transition-colors"
+                          className="text-xs bg-subtle text-secondary px-3 py-1.5 rounded-full hover:bg-border-default transition-colors"
                         >
                           {suggestion}
                         </button>
@@ -3747,7 +3747,7 @@ export default function PupilLounge() {
                         className={`max-w-[85%] p-3 rounded-2xl ${
                           msg.role === 'user'
                             ? 'bg-pitch-600 text-white rounded-br-md'
-                            : 'bg-navy-800 text-navy-100 rounded-bl-md'
+                            : 'bg-subtle text-primary rounded-bl-md'
                         }`}
                       >
                         {msg.role === 'assistant' ? (
@@ -3761,7 +3761,7 @@ export default function PupilLounge() {
                 )}
                 {sendingMessage && (
                   <div className="flex justify-start">
-                    <div className="bg-navy-800 p-3 rounded-2xl rounded-bl-md">
+                    <div className="bg-subtle p-3 rounded-2xl rounded-bl-md">
                       <Loader2 className="w-5 h-5 animate-spin text-pitch-400" />
                     </div>
                   </div>
@@ -3770,7 +3770,7 @@ export default function PupilLounge() {
               </div>
 
               {/* Chat Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-navy-800">
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-border-default">
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -3818,7 +3818,7 @@ export default function PupilLounge() {
                 </h2>
                 <button
                   onClick={() => setShowSettings(false)}
-                  className="p-2 text-navy-400 hover:text-white rounded-lg hover:bg-navy-800"
+                  className="p-2 text-secondary hover:text-white rounded-lg hover:bg-subtle"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -3826,14 +3826,14 @@ export default function PupilLounge() {
 
               <div className="space-y-4">
                 {/* Gaffer Toggle */}
-                <div className="bg-navy-800/50 rounded-xl p-4">
+                <div className="bg-subtle rounded-xl p-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <Sparkles className="w-4 h-4 text-pitch-400" />
                         <span className="font-medium text-white">The Gaffer AI Assistant</span>
                       </div>
-                      <p className="text-sm text-navy-400">
+                      <p className="text-sm text-secondary">
                         {gafferDisabled
                           ? "The Gaffer is currently disabled. Your child cannot access the AI coaching assistant."
                           : "The Gaffer provides age-appropriate coaching guidance and motivation to help your child develop."}
@@ -3847,9 +3847,9 @@ export default function PupilLounge() {
                       }`}
                     >
                       {togglingGaffer ? (
-                        <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+                        <Loader2 className="w-6 h-6 animate-spin text-secondary" />
                       ) : gafferDisabled ? (
-                        <ToggleLeft className="w-8 h-8 text-navy-500" />
+                        <ToggleLeft className="w-8 h-8 text-tertiary" />
                       ) : (
                         <ToggleRight className="w-8 h-8 text-pitch-400" />
                       )}
@@ -3865,16 +3865,16 @@ export default function PupilLounge() {
                 </div>
 
                 {/* Info note */}
-                <div className="bg-navy-800/30 rounded-lg p-3 flex gap-3">
-                  <Shield className="w-5 h-5 text-navy-500 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-navy-400">
+                <div className="bg-subtle rounded-lg p-3 flex gap-3">
+                  <Shield className="w-5 h-5 text-tertiary flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-secondary">
                     As a parent, you can control your child's access to The Gaffer AI assistant.
                     All AI interactions are logged and can be reviewed in your parent dashboard.
                   </p>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t border-navy-800">
+              <div className="mt-6 pt-4 border-t border-border-default">
                 <button
                   onClick={() => setShowSettings(false)}
                   className="btn-secondary w-full"
@@ -3911,7 +3911,7 @@ export default function PupilLounge() {
                 </h2>
                 <button
                   onClick={() => setShowSuggestionModal(false)}
-                  className="p-2 text-navy-400 hover:text-white rounded-lg hover:bg-navy-800"
+                  className="p-2 text-secondary hover:text-white rounded-lg hover:bg-subtle"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -3919,11 +3919,11 @@ export default function PupilLounge() {
 
               <form onSubmit={handleSubmitSuggestion} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">Category</label>
+                  <label className="block text-sm font-medium text-secondary mb-1">Category</label>
                   <select
                     value={suggestionForm.category}
                     onChange={e => setSuggestionForm(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
                   >
                     <option value="general">General</option>
                     <option value="training">Training</option>
@@ -3935,36 +3935,36 @@ export default function PupilLounge() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">Title</label>
+                  <label className="block text-sm font-medium text-secondary mb-1">Title</label>
                   <input
                     type="text"
                     value={suggestionForm.title}
                     onChange={e => setSuggestionForm(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Brief summary of your suggestion"
-                    className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-blue-500"
                     maxLength={255}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1">Your Suggestion</label>
+                  <label className="block text-sm font-medium text-secondary mb-1">Your Suggestion</label>
                   <textarea
                     value={suggestionForm.content}
                     onChange={e => setSuggestionForm(prev => ({ ...prev, content: e.target.value }))}
                     placeholder="Share your idea or feedback in detail..."
                     rows={4}
-                    className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-blue-500 resize-none"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-blue-500 resize-none"
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-navy-800/50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-subtle rounded-lg">
                   <div className="flex items-center gap-2">
                     {suggestionForm.is_anonymous ? (
-                      <EyeOff className="w-4 h-4 text-navy-400" />
+                      <EyeOff className="w-4 h-4 text-secondary" />
                     ) : (
                       <Eye className="w-4 h-4 text-blue-400" />
                     )}
-                    <span className="text-sm text-navy-300">Submit anonymously</span>
+                    <span className="text-sm text-secondary">Submit anonymously</span>
                   </div>
                   <button
                     type="button"
@@ -3985,7 +3985,7 @@ export default function PupilLounge() {
                   <button
                     type="button"
                     onClick={() => setShowSuggestionModal(false)}
-                    className="flex-1 px-4 py-2 bg-navy-800 text-navy-300 rounded-lg hover:bg-navy-700 transition-colors"
+                    className="flex-1 px-4 py-2 bg-subtle text-secondary rounded-lg hover:bg-border-default transition-colors"
                   >
                     Cancel
                   </button>
@@ -4008,16 +4008,16 @@ export default function PupilLounge() {
 
               {/* My Previous Suggestions */}
               {mySuggestions.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-navy-800">
+                <div className="mt-6 pt-6 border-t border-border-default">
                   <h3 className="font-medium text-white mb-3 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-navy-400" />
+                    <FileText className="w-4 h-4 text-secondary" />
                     Your Previous Suggestions
                   </h3>
                   <div className="space-y-2 max-h-48 overflow-y-auto">
                     {mySuggestions.map(suggestion => (
                       <div
                         key={suggestion.id}
-                        className="p-3 bg-navy-800/50 rounded-lg"
+                        className="p-3 bg-subtle rounded-lg"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
@@ -4028,21 +4028,21 @@ export default function PupilLounge() {
                                 suggestion.status === 'in_review' ? 'bg-blue-500/20 text-blue-400' :
                                 suggestion.status === 'acknowledged' ? 'bg-pitch-500/20 text-pitch-400' :
                                 suggestion.status === 'implemented' ? 'bg-energy-500/20 text-energy-400' :
-                                'bg-navy-600 text-navy-400'
+                                'bg-navy-600 text-secondary'
                               }`}>
                                 {suggestion.status === 'in_review' ? 'In Review' :
                                  suggestion.status.charAt(0).toUpperCase() + suggestion.status.slice(1)}
                               </span>
-                              <span className="text-xs text-navy-500">
+                              <span className="text-xs text-tertiary">
                                 {new Date(suggestion.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}
                               </span>
                             </div>
                           </div>
                         </div>
                         {suggestion.coach_response && (
-                          <div className="mt-2 p-2 bg-navy-900/50 rounded text-xs">
-                            <p className="text-navy-400 mb-1">Coach response:</p>
-                            <p className="text-navy-300">{suggestion.coach_response}</p>
+                          <div className="mt-2 p-2 bg-card/50 rounded text-xs">
+                            <p className="text-secondary mb-1">Coach response:</p>
+                            <p className="text-secondary">{suggestion.coach_response}</p>
                           </div>
                         )}
                       </div>
@@ -4053,7 +4053,7 @@ export default function PupilLounge() {
 
               {loadingSuggestions && (
                 <div className="mt-4 text-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-navy-400 mx-auto" />
+                  <Loader2 className="w-5 h-5 animate-spin text-secondary mx-auto" />
                 </div>
               )}
             </motion.div>
@@ -4088,7 +4088,7 @@ function AvailabilityButtons({ match, onUpdate, updating }) {
             className={`p-2 rounded-lg transition-colors ${
               isSelected
                 ? `bg-${opt.color}-500/20 text-${opt.color}-400 border border-${opt.color}-500/50`
-                : 'bg-navy-800 text-navy-500 hover:text-navy-300 border border-transparent'
+                : 'bg-subtle text-tertiary hover:text-secondary border border-transparent'
             }`}
             title={opt.label}
           >
@@ -4109,7 +4109,7 @@ function ResultBadge({ goalsFor, goalsAgainst }) {
   const config = {
     W: { bg: 'bg-pitch-500/20', text: 'text-pitch-400', label: 'W' },
     L: { bg: 'bg-alert-500/20', text: 'text-alert-400', label: 'L' },
-    D: { bg: 'bg-navy-600/50', text: 'text-navy-300', label: 'D' },
+    D: { bg: 'bg-navy-600/50', text: 'text-secondary', label: 'D' },
   }
   const resultKey = goalsFor > goalsAgainst ? 'W' : goalsFor < goalsAgainst ? 'L' : 'D'
   const cfg = config[resultKey]
@@ -4245,7 +4245,7 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => onMonthChange(subMonths(currentMonth, 1))}
-          className="p-2 text-navy-400 hover:text-white rounded-lg hover:bg-navy-800 transition-colors"
+          className="p-2 text-secondary hover:text-white rounded-lg hover:bg-subtle transition-colors"
         >
           <ChevronLeft className="w-5 h-5" />
         </button>
@@ -4254,7 +4254,7 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
         </h3>
         <button
           onClick={() => onMonthChange(addMonths(currentMonth, 1))}
-          className="p-2 text-navy-400 hover:text-white rounded-lg hover:bg-navy-800 transition-colors"
+          className="p-2 text-secondary hover:text-white rounded-lg hover:bg-subtle transition-colors"
         >
           <ChevronRight className="w-5 h-5" />
         </button>
@@ -4263,7 +4263,7 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
       {/* Week Day Headers */}
       <div className="grid grid-cols-7 gap-1 mb-2">
         {weekDays.map(day => (
-          <div key={day} className="text-center text-xs font-medium text-navy-500 py-1">
+          <div key={day} className="text-center text-xs font-medium text-tertiary py-1">
             {day}
           </div>
         ))}
@@ -4296,10 +4296,10 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
                 min-h-[70px] rounded-lg p-1 flex flex-col items-stretch transition-colors relative
                 ${isCurrentDay ? 'bg-pitch-500/20 ring-2 ring-pitch-500' : ''}
                 ${!isCurrentMonth ? 'opacity-30' : ''}
-                ${events.length > 0 ? 'hover:bg-navy-800 cursor-pointer' : 'cursor-default'}
+                ${events.length > 0 ? 'hover:bg-subtle cursor-pointer' : 'cursor-default'}
               `}
             >
-              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-pitch-400' : 'text-navy-300'}`}>
+              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-pitch-400' : 'text-secondary'}`}>
                 {format(day, 'd')}
               </span>
 
@@ -4314,7 +4314,7 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
                         className={`text-[9px] leading-tight px-1 py-0.5 rounded truncate ${
                           event.type === 'match'
                             ? event.isPast
-                              ? 'bg-navy-600 text-navy-300'
+                              ? 'bg-navy-600 text-secondary'
                               : 'bg-energy-500/30 text-energy-300'
                             : event.type === 'sc'
                               ? 'bg-caution-500/30 text-caution-300'
@@ -4348,7 +4348,7 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
                     )
                   })}
                   {events.length > 3 && (
-                    <span className="text-[8px] text-navy-400 text-center">+{events.length - 3} more</span>
+                    <span className="text-[8px] text-secondary text-center">+{events.length - 3} more</span>
                   )}
                 </div>
               )}
@@ -4358,23 +4358,23 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
       </div>
 
       {/* Legend */}
-      <div className="mt-4 pt-4 border-t border-navy-800">
+      <div className="mt-4 pt-4 border-t border-border-default">
         <div className="flex items-center justify-center gap-4 flex-wrap mb-3">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-energy-400" />
-            <span className="text-xs text-navy-400">Match</span>
+            <span className="text-xs text-secondary">Match</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-pitch-400" />
-            <span className="text-xs text-navy-400">Training</span>
+            <span className="text-xs text-secondary">Training</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-caution-400" />
-            <span className="text-xs text-navy-400">S&C</span>
+            <span className="text-xs text-secondary">S&C</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-navy-500" />
-            <span className="text-xs text-navy-400">Past</span>
+            <span className="text-xs text-secondary">Past</span>
           </div>
         </div>
 
@@ -4434,20 +4434,20 @@ function MediaUploadModal({ matchId, onClose, onUpload, uploading }) {
             <Camera className="w-5 h-5 text-pitch-400" />
             Upload Match Media
           </h3>
-          <button onClick={onClose} className="text-navy-400 hover:text-white">
+          <button onClick={onClose} className="text-secondary hover:text-white">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <p className="text-navy-300 text-sm mb-4">
+        <p className="text-secondary text-sm mb-4">
           Share your photos and videos from the match with the team!
         </p>
 
         {/* File input */}
-        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-navy-700 rounded-xl cursor-pointer hover:border-pitch-500/50 transition-colors">
-          <Upload className="w-8 h-8 text-navy-500 mb-2" />
-          <span className="text-sm text-navy-400">Click to select photos or videos</span>
-          <span className="text-xs text-navy-500 mt-1">Max 10 files, 100MB each</span>
+        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border-strong rounded-xl cursor-pointer hover:border-pitch-500/50 transition-colors">
+          <Upload className="w-8 h-8 text-tertiary mb-2" />
+          <span className="text-sm text-secondary">Click to select photos or videos</span>
+          <span className="text-xs text-tertiary mt-1">Max 10 files, 100MB each</span>
           <input
             type="file"
             className="hidden"
@@ -4460,15 +4460,15 @@ function MediaUploadModal({ matchId, onClose, onUpload, uploading }) {
         {/* Preview selected files */}
         {previews.length > 0 && (
           <div className="mt-4">
-            <p className="text-sm text-navy-400 mb-2">{previews.length} file(s) selected:</p>
+            <p className="text-sm text-secondary mb-2">{previews.length} file(s) selected:</p>
             <div className="grid grid-cols-3 gap-2">
               {previews.map((preview, i) => (
-                <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-navy-800">
+                <div key={i} className="relative aspect-square rounded-lg overflow-hidden bg-subtle">
                   {preview.type === 'photo' ? (
                     <img src={preview.url} alt={preview.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <Video className="w-8 h-8 text-navy-500" />
+                      <Video className="w-8 h-8 text-tertiary" />
                     </div>
                   )}
                 </div>
@@ -4547,9 +4547,9 @@ function PlayerFilmRoom({ userId }) {
   if (videos.length === 0) {
     return (
       <div className="text-center py-12">
-        <MonitorPlay className="w-10 h-10 text-navy-600 mx-auto mb-3" />
-        <p className="text-navy-400">No videos available yet.</p>
-        <p className="text-sm text-navy-500 mt-1">Your coach will add videos here for you to watch.</p>
+        <MonitorPlay className="w-10 h-10 text-tertiary mx-auto mb-3" />
+        <p className="text-secondary">No videos available yet.</p>
+        <p className="text-sm text-tertiary mt-1">Your coach will add videos here for you to watch.</p>
       </div>
     )
   }
@@ -4568,7 +4568,7 @@ function PlayerFilmRoom({ userId }) {
         <button
           onClick={() => setActiveSection('all')}
           className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
-            activeSection === 'all' ? 'bg-pitch-500 text-white' : 'bg-navy-800 text-navy-300'
+            activeSection === 'all' ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary'
           }`}
         >
           All
@@ -4578,7 +4578,7 @@ function PlayerFilmRoom({ userId }) {
             key={s.id}
             onClick={() => setActiveSection(s.id)}
             className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
-              activeSection === s.id ? 'bg-pitch-500 text-white' : 'bg-navy-800 text-navy-300'
+              activeSection === s.id ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary'
             }`}
           >
             {s.name}
@@ -4610,10 +4610,10 @@ function PlayerFilmRoom({ userId }) {
       {/* Video Pupil Modal */}
       {playingVideo && (
         <div className="fixed inset-0 bg-black/80 z-50 flex items-start justify-center p-4 pt-[5vh] overflow-y-auto" onClick={() => setPlayingVideo(null)}>
-          <div className="bg-navy-800 rounded-xl w-full max-w-2xl" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-3 border-b border-navy-700">
+          <div className="bg-subtle rounded-xl w-full max-w-2xl" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-3 border-b border-border-strong">
               <h3 className="text-white font-medium truncate">{playingVideo.title}</h3>
-              <button onClick={() => setPlayingVideo(null)} className="p-1 text-navy-400 hover:text-white">
+              <button onClick={() => setPlayingVideo(null)} className="p-1 text-secondary hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -4634,14 +4634,14 @@ function PlayerFilmRoom({ userId }) {
                   autoplay
                 />
               ) : (
-                <div className="flex items-center justify-center h-full text-navy-400">
+                <div className="flex items-center justify-center h-full text-secondary">
                   Video is still processing...
                 </div>
               )}
             </div>
             {playingVideo.notes && (
-              <div className="p-4 border-t border-navy-700">
-                <p className="text-sm text-navy-300">{playingVideo.notes}</p>
+              <div className="p-4 border-t border-border-strong">
+                <p className="text-sm text-secondary">{playingVideo.notes}</p>
               </div>
             )}
           </div>
@@ -4661,14 +4661,14 @@ function PlayerVideoCard({ video, onPlay, compact }) {
   return (
     <button
       onClick={onPlay}
-      className={`text-left bg-navy-800 rounded-lg overflow-hidden border border-navy-700 hover:border-pitch-500/50 transition-colors ${compact ? 'w-48 flex-shrink-0' : ''}`}
+      className={`text-left bg-subtle rounded-lg overflow-hidden border border-border-strong hover:border-pitch-500/50 transition-colors ${compact ? 'w-48 flex-shrink-0' : ''}`}
     >
-      <div className="relative aspect-video bg-navy-900">
+      <div className="relative aspect-video bg-card">
         {thumbnail ? (
           <img src={thumbnail} alt={video.title} className="w-full h-full object-cover" />
         ) : (
           <div className="flex items-center justify-center h-full">
-            <MonitorPlay className="w-6 h-6 text-navy-600" />
+            <MonitorPlay className="w-6 h-6 text-tertiary" />
           </div>
         )}
         <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
@@ -4682,7 +4682,7 @@ function PlayerVideoCard({ video, onPlay, compact }) {
       </div>
       <div className="p-2">
         <p className="text-sm text-white font-medium truncate">{video.title}</p>
-        {video.notes && !compact && <p className="text-xs text-navy-500 mt-0.5 line-clamp-1">{video.notes}</p>}
+        {video.notes && !compact && <p className="text-xs text-tertiary mt-0.5 line-clamp-1">{video.notes}</p>}
       </div>
     </button>
   )

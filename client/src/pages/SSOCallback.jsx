@@ -55,20 +55,20 @@ export default function SSOCallback() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-navy-900 rounded-2xl border border-alert-600/30 p-8 text-center">
+      <div className="min-h-screen bg-page flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-card rounded-2xl border border-alert-600/30 p-8 text-center">
           <div className="w-14 h-14 rounded-full bg-alert-600/10 flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="w-7 h-7 text-alert-400" />
           </div>
           <h1 className="text-xl font-bold text-white mb-2">Sign-in failed</h1>
-          <p className="text-navy-400 text-sm mb-6">{error}</p>
+          <p className="text-secondary text-sm mb-6">{error}</p>
           <a
             href="/login"
             className="inline-flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-xl font-medium text-sm transition-colors"
           >
             Back to sign in
           </a>
-          <p className="text-xs text-navy-600 mt-6">
+          <p className="text-xs text-tertiary mt-6">
             If you continue to have problems, ask your school IT admin to check the SSO configuration
             or invite you directly via email.
           </p>
@@ -78,13 +78,13 @@ export default function SSOCallback() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center">
+    <div className="min-h-screen bg-page flex items-center justify-center">
       <div className="text-center">
         <div className="w-14 h-14 rounded-full bg-pitch-600/10 flex items-center justify-center mx-auto mb-4">
           <Shield className="w-7 h-7 text-pitch-400" />
         </div>
         <Loader2 className="w-6 h-6 text-pitch-400 animate-spin mx-auto mb-3" />
-        <p className="text-navy-400 text-sm">Completing sign-in…</p>
+        <p className="text-secondary text-sm">Completing sign-in…</p>
       </div>
     </div>
   )
