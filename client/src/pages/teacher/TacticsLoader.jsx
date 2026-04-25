@@ -65,11 +65,27 @@ export default function TacticsLoader() {
         setTeam(teamRes.data)
         setPupils(playersRes.data || [])
         setMyTeams(teamsRes.data || [])
+        setLoading(false)
       })
       .catch(err => {
-        setError(err.response?.status === 404 ? 'Team not found.' : 'Failed to load team.')
+        if (err.response?.status === 404) {
+          localStorage.removeItem(LAST_TEAM_KEY)
+          teacherService.getMyTeams()
+            .then(res => {
+              const teams = res.data || []
+              if (teams.length > 0) {
+                navigate(`/teacher/teams/${teams[0].id}/tactics`, { replace: true })
+              } else {
+                setError('No teams available.')
+                setLoading(false)
+              }
+            })
+            .catch(() => { setError('Failed to load teams.'); setLoading(false) })
+        } else {
+          setError('Failed to load team.')
+          setLoading(false)
+        }
       })
-      .finally(() => setLoading(false))
   }, [teamId])
 
   const updateTeam = useCallback(async (data) => {

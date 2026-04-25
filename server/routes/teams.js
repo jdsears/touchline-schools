@@ -76,6 +76,23 @@ router.get('/mine', authenticateToken, async (req, res, next) => {
   try {
     const userId = req.user.id
 
+    if (req.user.is_admin) {
+      const fallback = await pool.query('SELECT id FROM schools ORDER BY created_at ASC LIMIT 1')
+      const schoolId = fallback.rows[0]?.id
+      if (schoolId) {
+        const result = await pool.query(
+          `SELECT t.*,
+            (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count,
+            (SELECT COUNT(*) FROM matches m WHERE m.team_id = t.id) AS match_count
+           FROM teams t
+           WHERE t.school_id = $1
+           ORDER BY t.sport ASC, t.name ASC`,
+          [schoolId]
+        )
+        return res.json(result.rows)
+      }
+    }
+
     // Teams where user is owner OR has a team_membership with a coaching role
     const result = await pool.query(
       `SELECT DISTINCT t.*,
