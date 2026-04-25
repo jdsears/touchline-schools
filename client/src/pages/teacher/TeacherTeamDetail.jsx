@@ -152,6 +152,10 @@ export default function TeacherTeamDetail() {
               <Trophy className="w-5 h-5 text-amber-400" />
               Fixtures ({matches.length})
             </h2>
+            <Link to={`/teacher/teams/${teamId}/fixtures/block`}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg">
+              <Plus className="w-3.5 h-3.5" /> Add in bulk
+            </Link>
           </div>
           {matches.length > 0 ? (
             <div className="space-y-4 max-h-[400px] overflow-y-auto">

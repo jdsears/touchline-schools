@@ -97,6 +97,8 @@ export const teamService = {
   // Matches
   getMatches: (teamId) => api.get(`/teams/${teamId}/matches`),
   addMatch: (teamId, data) => api.post(`/teams/${teamId}/matches`, data),
+  bulkAddMatches: (teamId, matches) => api.post(`/teams/${teamId}/matches/bulk`, { matches }),
+  validateMatches: (teamId, matches) => api.post(`/teams/${teamId}/matches/validate`, { matches }),
   getMatch: (matchId) => api.get(`/matches/${matchId}`),
   updateMatch: (matchId, data) => api.put(`/matches/${matchId}`, data),
   deleteMatch: (matchId) => api.delete(`/matches/${matchId}`),

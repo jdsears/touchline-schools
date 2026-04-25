@@ -775,19 +775,23 @@ router.post('/:id/matches/bulk', authenticateToken, requireTeamAccess, async (re
       const matchDate = match.date + (match.time ? `T${match.time}:00` : 'T00:00:00')
       const homeAway = match.isHome !== false ? 'home' : 'away'
       const result = await pool.query(
-        `INSERT INTO matches (team_id, opponent, match_date, date, location, home_away, score_for, score_against, team_notes)
-         VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8)
+        `INSERT INTO matches (team_id, opponent, match_date, date, match_time, location, home_away,
+          score_for, score_against, team_notes, kit_type, meet_time)
+         VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          ON CONFLICT DO NOTHING
          RETURNING *`,
         [
           id,
           match.opponent,
           matchDate,
+          match.time || null,
           match.location || null,
           homeAway,
           goalsFor,
           goalsAgainst,
-          match.competition ? `Competition: ${match.competition}` : null
+          match.competition ? `Competition: ${match.competition}` : null,
+          match.kitType || homeAway,
+          match.meetTime || null
         ]
       )
       if (result.rows.length > 0) {
@@ -799,6 +803,51 @@ router.post('/:id/matches/bulk', authenticateToken, requireTeamAccess, async (re
       message: `${inserted.length} matches imported`,
       matches: inserted,
     })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// Validate fixtures for clashes before bulk creation
+router.post('/:id/matches/validate', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { matches: proposed } = req.body
+    if (!proposed?.length) return res.json({ warnings: [] })
+
+    const team = await pool.query('SELECT school_id FROM teams WHERE id = $1', [id])
+    const schoolId = team.rows[0]?.school_id
+    const warnings = []
+
+    for (let i = 0; i < proposed.length; i++) {
+      const m = proposed[i]
+      if (!m.date) continue
+      const d = m.date
+
+      // Venue clash: another fixture at the same school on the same date at the same home venue
+      if (m.isHome !== false && schoolId) {
+        const venueClash = await pool.query(
+          `SELECT t.name AS team_name, m2.opponent
+           FROM matches m2 JOIN teams t ON t.id = m2.team_id
+           WHERE t.school_id = $1 AND m2.team_id != $2
+             AND m2.match_date::date = $3::date AND m2.home_away = 'home'
+           LIMIT 1`,
+          [schoolId, id, d]
+        )
+        if (venueClash.rows.length > 0) {
+          const c = venueClash.rows[0]
+          warnings.push({ row: i, type: 'venue', message: `Home venue clash: ${c.team_name} vs ${c.opponent} on the same date` })
+        }
+      }
+
+      // Date warning: Sunday fixture
+      const dow = new Date(d).getDay()
+      if (dow === 0) {
+        warnings.push({ row: i, type: 'date', message: 'Sunday fixture - verify this is intentional' })
+      }
+    }
+
+    res.json({ warnings })
   } catch (error) {
     next(error)
   }
