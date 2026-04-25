@@ -1,3 +1,6 @@
+// Canonical column names: see server/routes/teams.js header comment.
+// SELECT queries include legacy aliases (is_home, goals_for, etc.) for compat.
+
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
@@ -50,7 +53,15 @@ const videoUpload = multer({
 router.get('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const result = await pool.query('SELECT * FROM matches WHERE id = $1', [id])
+    const result = await pool.query(
+      `SELECT m.*,
+        (m.home_away = 'home') AS is_home,
+        m.score_for AS goals_for,
+        m.score_against AS goals_against,
+        m.team_notes AS notes,
+        CASE WHEN m.score_for IS NOT NULL AND m.score_against IS NOT NULL
+          THEN m.score_for || ' - ' || m.score_against ELSE NULL END AS result
+       FROM matches m WHERE m.id = $1`, [id])
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Match not found' })
     }
@@ -64,29 +75,35 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
 router.put('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
-    const { opponent, date, location, isHome, result: matchResult,
-            formationUsed, formations, notes, veoLink, videoUrl,
-            goalsFor, goalsAgainst, kitType, meetTime } = req.body
+    const { opponent, date, location, isHome, formations, notes,
+            veoLink, videoUrl, goalsFor, goalsAgainst, kitType, meetTime } = req.body
 
+    const homeAway = isHome === undefined ? undefined : (isHome ? 'home' : 'away')
     const dbResult = await pool.query(
       `UPDATE matches SET
         opponent = COALESCE($1, opponent),
+        match_date = COALESCE($2, match_date),
         date = COALESCE($2, date),
         location = COALESCE($3, location),
-        is_home = COALESCE($4, is_home),
-        result = COALESCE($5, result),
-        formation_used = COALESCE($6, formation_used),
-        notes = COALESCE($7, notes),
-        veo_link = COALESCE($8, veo_link),
-        video_url = COALESCE($9, video_url),
-        formations = COALESCE($10::jsonb, formations),
-        goals_for = COALESCE($11, goals_for),
-        goals_against = COALESCE($12, goals_against),
-        kit_type = COALESCE($13, kit_type),
-        meet_time = $14,
+        home_away = COALESCE($4, home_away),
+        team_notes = COALESCE($5, team_notes),
+        veo_link = COALESCE($6, veo_link),
+        video_url = COALESCE($7, video_url),
+        formations = COALESCE($8::jsonb, formations),
+        score_for = COALESCE($9, score_for),
+        score_against = COALESCE($10, score_against),
+        kit_type = COALESCE($11, kit_type),
+        meet_time = $12,
         updated_at = NOW()
-       WHERE id = $15 RETURNING *`,
-      [opponent, date, location, isHome, matchResult, formationUsed, notes, veoLink, videoUrl,
+       WHERE id = $13
+       RETURNING *,
+        (home_away = 'home') AS is_home,
+        score_for AS goals_for,
+        score_against AS goals_against,
+        team_notes AS notes,
+        CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
+          THEN score_for || ' - ' || score_against ELSE NULL END AS result`,
+      [opponent, date, location, homeAway, notes, veoLink, videoUrl,
        formations ? JSON.stringify(formations) : null, goalsFor, goalsAgainst, kitType || null, meetTime || null, id]
     )
 
@@ -451,10 +468,11 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
     const [recentResultsRes, leagueTableRes, squadObsRes, matchSquadRes] = await Promise.all([
       // Last 10 completed matches with scores
       pool.query(
-        `SELECT opponent, date, is_home, goals_for, goals_against, competition
+        `SELECT opponent, COALESCE(date, match_date) AS date, (home_away = 'home') AS is_home,
+                score_for AS goals_for, score_against AS goals_against, competition
          FROM matches
-         WHERE team_id = $1 AND goals_for IS NOT NULL AND goals_against IS NOT NULL AND id != $2
-         ORDER BY date DESC LIMIT 10`,
+         WHERE team_id = $1 AND score_for IS NOT NULL AND score_against IS NOT NULL AND id != $2
+         ORDER BY COALESCE(date, match_date) DESC LIMIT 10`,
         [match.team_id, id]
       ),
       // League table (if exists)
@@ -1254,7 +1272,7 @@ router.post('/:id/pupil-of-match', authenticateToken, async (req, res, next) => 
       } catch {}
     }
 
-    const matchInfo = `${match.is_home ? 'vs' : '@'} ${match.opponent}`
+    const matchInfo = `${match.home_away === 'home' ? 'vs' : '@'} ${match.opponent}`
 
     // Batch lookup all parent users in one query instead of N+1
     if (parentContacts.length > 0) {
@@ -1593,7 +1611,7 @@ router.post('/:id/squad/announce', authenticateToken, async (req, res, next) => 
     )
 
     // Send emails BEFORE committing DB changes so a failure can be rolled back
-    const matchInfo = `${match.is_home ? 'vs' : '@'} ${match.opponent}`
+    const matchInfo = `${match.home_away === 'home' ? 'vs' : '@'} ${match.opponent}`
     const matchDate = new Date(match.date).toLocaleDateString('en-GB', {
       weekday: 'long',
       day: 'numeric',
@@ -1768,7 +1786,7 @@ router.post('/:id/availability/request', authenticateToken, async (req, res, nex
     }
 
     // Build email context
-    const matchInfo = `${match.is_home ? 'vs' : '@'} ${match.opponent}`
+    const matchInfo = `${match.home_away === 'home' ? 'vs' : '@'} ${match.opponent}`
     const matchDate = new Date(match.date).toLocaleDateString('en-GB', {
       weekday: 'long',
       day: 'numeric',

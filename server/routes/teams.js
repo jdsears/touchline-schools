@@ -1,3 +1,11 @@
+// Canonical matches table columns:
+//   match_date (DATE), date (DATE, kept in sync), match_time (TIME),
+//   home_away ('home'|'away'), score_for (INT), score_against (INT),
+//   team_notes (TEXT), formations (JSONB), kit_type, meet_time, veo_link,
+//   video_url, video_id, opponent, location, prep_notes, prep_draft, report.
+// Legacy aliases (is_home, goals_for, goals_against, result, notes) are
+// computed in SELECT for backward-compat with older frontend pages.
+
 import { Router } from 'express'
 import { v4 as uuidv4 } from 'uuid'
 import multer from 'multer'
@@ -640,6 +648,12 @@ router.get('/:id/matches', authenticateToken, requireTeamAccess, async (req, res
     
     const result = await pool.query(
       `SELECT m.*,
+        (m.home_away = 'home') AS is_home,
+        m.score_for AS goals_for,
+        m.score_against AS goals_against,
+        m.team_notes AS notes,
+        CASE WHEN m.score_for IS NOT NULL AND m.score_against IS NOT NULL
+          THEN m.score_for || ' - ' || m.score_against ELSE NULL END AS result,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'available') as available_count,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'unavailable') as unavailable_count,
         (SELECT COUNT(*) FROM match_availability ma WHERE ma.match_id = m.id AND ma.status = 'maybe') as maybe_count
@@ -663,10 +677,12 @@ router.post('/:id/matches', authenticateToken, requireTeamAccess, async (req, re
       return res.status(400).json({ message: 'Opponent and date are required' })
     }
 
+    const homeAway = isHome !== false ? 'home' : 'away'
     const dbResult = await pool.query(
-      `INSERT INTO matches (team_id, opponent, date, location, is_home, veo_link, result, kit_type, meet_time)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *`,
-      [id, opponent, date, location || null, isHome !== false, veoLink || null, matchResult || null, kitType || (isHome !== false ? 'home' : 'away'), meetTime || null]
+      `INSERT INTO matches (team_id, opponent, match_date, date, location, home_away, veo_link, kit_type, meet_time)
+       VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8) RETURNING *,
+         (home_away = 'home') AS is_home, score_for AS goals_for, score_against AS goals_against`,
+      [id, opponent, date, location || null, homeAway, veoLink || null, kitType || homeAway, meetTime || null]
     )
 
     res.status(201).json(dbResult.rows[0])
@@ -756,18 +772,19 @@ router.post('/:id/matches/bulk', authenticateToken, requireTeamAccess, async (re
         resultStr = `${goalsFor}-${goalsAgainst}`
       }
 
+      const matchDate = match.date + (match.time ? `T${match.time}:00` : 'T00:00:00')
+      const homeAway = match.isHome !== false ? 'home' : 'away'
       const result = await pool.query(
-        `INSERT INTO matches (team_id, opponent, date, location, is_home, result, goals_for, goals_against, notes)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `INSERT INTO matches (team_id, opponent, match_date, date, location, home_away, score_for, score_against, team_notes)
+         VALUES ($1, $2, $3, $3, $4, $5, $6, $7, $8)
          ON CONFLICT DO NOTHING
          RETURNING *`,
         [
           id,
           match.opponent,
-          match.date + (match.time ? `T${match.time}:00` : 'T00:00:00'),
+          matchDate,
           match.location || null,
-          match.isHome !== false,
-          resultStr,
+          homeAway,
           goalsFor,
           goalsAgainst,
           match.competition ? `Competition: ${match.competition}` : null
@@ -797,9 +814,9 @@ router.delete('/:id/matches/all', authenticateToken, requireTeamAccess, async (r
     const params = [id]
 
     if (type === 'upcoming') {
-      query += ' AND date > NOW() AND result IS NULL'
+      query += ' AND COALESCE(date, match_date) > NOW() AND score_for IS NULL'
     } else if (type === 'results') {
-      query += ' AND (date < NOW() OR result IS NOT NULL)'
+      query += ' AND (COALESCE(date, match_date) < NOW() OR score_for IS NOT NULL)'
     }
     query += ' RETURNING id'
 

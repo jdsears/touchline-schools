@@ -1055,22 +1055,28 @@ router.get('/:id/zone', authenticateToken, async (req, res, next) => {
 
     // Get upcoming matches (include prep_notes for pupil match prep view)
     const upcomingMatchesResult = await pool.query(
-      `SELECT id, opponent, date, is_home, location, notes, meetup_time, meetup_location, prep_notes,
+      `SELECT id, opponent, COALESCE(date, match_date) AS date,
+              (home_away = 'home') AS is_home, location, team_notes AS notes,
+              meetup_time, meetup_location, prep_notes,
               kit_type, squad_announced,
               (SELECT status FROM match_availability WHERE match_id = matches.id AND pupil_id = $2) as my_availability
        FROM matches
-       WHERE team_id = $1 AND date >= CURRENT_DATE
-       ORDER BY date`,
+       WHERE team_id = $1 AND COALESCE(date, match_date) >= CURRENT_DATE
+       ORDER BY COALESCE(date, match_date)`,
       [pupil.team_id, id]
     )
 
     // Get recent matches (include report, videos, notes for pupil view)
     const recentMatchesResult = await pool.query(
-      `SELECT id, opponent, date, is_home, location, result, goals_for, goals_against,
-              report, notes, veo_link, video_url, player_of_match_id, squad_announced
+      `SELECT id, opponent, COALESCE(date, match_date) AS date,
+              (home_away = 'home') AS is_home, location,
+              CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
+                THEN score_for || ' - ' || score_against ELSE NULL END AS result,
+              score_for AS goals_for, score_against AS goals_against,
+              report, team_notes AS notes, veo_link, video_url, player_of_match_id, squad_announced
        FROM matches
-       WHERE team_id = $1 AND date < CURRENT_DATE AND result IS NOT NULL
-       ORDER BY date DESC
+       WHERE team_id = $1 AND COALESCE(date, match_date) < CURRENT_DATE AND score_for IS NOT NULL
+       ORDER BY COALESCE(date, match_date) DESC
        LIMIT 5`,
       [pupil.team_id]
     )

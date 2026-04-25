@@ -605,14 +605,14 @@ router.post('/video/:id/analyse', authenticateToken, async (req, res, next) => {
         context = {
           opponent: match.opponent,
           ageGroup: match.age_group,
-          matchDate: match.date,
-          goalsFor: match.goals_for,
-          goalsAgainst: match.goals_against,
-          result: match.result,
+          matchDate: match.date || match.match_date,
+          goalsFor: match.score_for,
+          goalsAgainst: match.score_against,
+          result: match.score_for != null && match.score_against != null
+            ? `${match.score_for} - ${match.score_against}` : null,
           competition: match.competition,
-          isHome: match.is_home,
-          // Starting formation: prefer match-specific formation, then team default
-          startingFormation: match.formation_used || match.team_formation || null,
+          isHome: match.home_away === 'home',
+          startingFormation: match.team_formation || null,
           matchFormations: match.formations || null,
           teamFormations: match.team_formations || null,
         }

@@ -206,17 +206,21 @@ router.post('/:teamId/message', authenticateToken, async (req, res, next) => {
     // Get upcoming match, past match results, and recent video analyses in parallel
     const [matchResult, pastMatchesResult, videoAnalysisResult] = await Promise.all([
       pool.query(
-        `SELECT opponent, date FROM matches
-         WHERE team_id = $1 AND date > NOW() AND result IS NULL
-         ORDER BY date LIMIT 1`,
+        `SELECT opponent, COALESCE(date, match_date) AS date FROM matches
+         WHERE team_id = $1 AND COALESCE(date, match_date) > NOW() AND score_for IS NULL
+         ORDER BY COALESCE(date, match_date) LIMIT 1`,
         [teamId]
       ),
       pool.query(
-        `SELECT opponent, date, is_home, result, goals_for, goals_against,
-                formation_used, team_notes, report
+        `SELECT opponent, COALESCE(date, match_date) AS date,
+                (home_away = 'home') AS is_home,
+                CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
+                  THEN score_for || ' - ' || score_against ELSE NULL END AS result,
+                score_for AS goals_for, score_against AS goals_against,
+                formations AS formation_used, team_notes, report
          FROM matches
-         WHERE team_id = $1 AND result IS NOT NULL
-         ORDER BY date DESC LIMIT 10`,
+         WHERE team_id = $1 AND score_for IS NOT NULL
+         ORDER BY COALESCE(date, match_date) DESC LIMIT 10`,
         [teamId]
       ),
       pool.query(
@@ -436,18 +440,21 @@ router.post('/pupil/:pupilId/message', authenticateToken, async (req, res, next)
         [pupilId]
       ),
       safeQuery('upcoming_matches',
-        `SELECT opponent, date, is_home
+        `SELECT opponent, COALESCE(date, match_date) AS date, (home_away = 'home') AS is_home
          FROM matches
-         WHERE team_id = $1 AND date > NOW()
-         ORDER BY date
+         WHERE team_id = $1 AND COALESCE(date, match_date) > NOW()
+         ORDER BY COALESCE(date, match_date)
          LIMIT 5`,
         [pupil.team_id]
       ),
       safeQuery('recent_matches',
-        `SELECT opponent, date, result, team_notes
+        `SELECT opponent, COALESCE(date, match_date) AS date,
+                CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
+                  THEN score_for || ' - ' || score_against ELSE NULL END AS result,
+                team_notes
          FROM matches
-         WHERE team_id = $1 AND date < NOW() AND (result IS NOT NULL OR team_notes IS NOT NULL)
-         ORDER BY date DESC
+         WHERE team_id = $1 AND COALESCE(date, match_date) < NOW() AND (score_for IS NOT NULL OR team_notes IS NOT NULL)
+         ORDER BY COALESCE(date, match_date) DESC
          LIMIT 5`,
         [pupil.team_id]
       ),

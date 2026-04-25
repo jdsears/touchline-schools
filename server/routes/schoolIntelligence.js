@@ -122,7 +122,6 @@ router.post(
 
       const match = matchResult.rows[0]
 
-      // Determine result text
       let resultText = 'Match not yet played'
       if (match.score_for !== null && match.score_against !== null) {
         const gf = parseInt(match.score_for)
@@ -130,16 +129,10 @@ router.post(
         if (gf > ga) resultText = 'Win'
         else if (gf < ga) resultText = 'Loss'
         else resultText = 'Draw'
-      } else if (match.goals_for !== null && match.goals_against !== null) {
-        const gf = parseInt(match.goals_for)
-        const ga = parseInt(match.goals_against)
-        if (gf > ga) resultText = 'Win'
-        else if (gf < ga) resultText = 'Loss'
-        else resultText = 'Draw'
       }
 
-      const scoreFor = match.score_for ?? match.goals_for ?? 0
-      const scoreAgainst = match.score_against ?? match.goals_against ?? 0
+      const scoreFor = match.score_for ?? 0
+      const scoreAgainst = match.score_against ?? 0
 
       // Generate report
       const aiResult = await generateParentMatchReport({
@@ -499,13 +492,13 @@ router.post(
       const matchResult = await pool.query(
         `SELECT
            COUNT(*) as total_matches,
-           COUNT(*) FILTER (WHERE m.score_for > m.score_against OR m.goals_for > m.goals_against) as wins,
-           COUNT(*) FILTER (WHERE m.score_for = m.score_against OR m.goals_for = m.goals_against) as draws,
-           COUNT(*) FILTER (WHERE m.score_for < m.score_against OR m.goals_for < m.goals_against) as losses
+           COUNT(*) FILTER (WHERE m.score_for > m.score_against) as wins,
+           COUNT(*) FILTER (WHERE m.score_for = m.score_against) as draws,
+           COUNT(*) FILTER (WHERE m.score_for < m.score_against) as losses
          FROM matches m
          JOIN teams t ON t.id = m.team_id
          WHERE t.school_id = $1
-           AND (m.match_date >= NOW() - INTERVAL '12 months' OR m.date >= NOW() - INTERVAL '12 months')`,
+           AND COALESCE(m.match_date, m.date) >= NOW() - INTERVAL '12 months'`,
         [schoolId]
       )
 
