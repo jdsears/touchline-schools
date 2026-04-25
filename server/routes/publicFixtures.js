@@ -113,4 +113,48 @@ router.get('/:slug/fixture/:matchId', async (req, res, next) => {
   } catch (error) { next(error) }
 })
 
+// RSS feed of recent results
+router.get('/:slug/rss', async (req, res, next) => {
+  try {
+    const school = await pool.query(
+      'SELECT id, name, slug, public_fixtures_enabled, public_name_format FROM schools WHERE slug = $1',
+      [req.params.slug]
+    )
+    if (!school.rows.length || !school.rows[0].public_fixtures_enabled) {
+      return res.status(404).send('Not found')
+    }
+    const s = school.rows[0]
+    const baseUrl = `${req.protocol}://${req.get('host')}`
+
+    const results = await pool.query(
+      `SELECT m.id, m.opponent, COALESCE(m.date, m.match_date) AS date,
+              m.score_for, m.score_against, m.home_away, m.match_report_text, m.match_report_status,
+              t.name AS team_name, t.sport
+       FROM matches m JOIN teams t ON t.id = m.team_id
+       WHERE t.school_id = $1 AND t.is_public = true AND m.score_for IS NOT NULL
+       ORDER BY COALESCE(m.date, m.match_date) DESC LIMIT 20`,
+      [s.id]
+    )
+
+    const items = results.rows.map(r => {
+      const title = `${r.team_name} ${r.score_for}-${r.score_against} ${r.opponent}`
+      const desc = r.match_report_status === 'published' && r.match_report_text
+        ? r.match_report_text.slice(0, 300) : `${r.home_away === 'home' ? 'Home' : 'Away'} match.`
+      const link = `${baseUrl}/sport/${s.slug}?fixture=${r.id}`
+      const pubDate = new Date(r.date).toUTCString()
+      return `<item><title>${esc(title)}</title><link>${link}</link><description>${esc(desc)}</description><pubDate>${pubDate}</pubDate><guid>${r.id}</guid></item>`
+    }).join('\n')
+
+    res.type('application/rss+xml').send(`<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"><channel>
+<title>${esc(s.name)} - Sport Results</title>
+<link>${baseUrl}/sport/${s.slug}</link>
+<description>Latest sport fixtures and results from ${esc(s.name)}</description>
+${items}
+</channel></rss>`)
+  } catch (error) { next(error) }
+})
+
+function esc(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
 export default router

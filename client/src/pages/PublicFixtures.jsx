@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
-import { Trophy, Calendar, MapPin, Clock, Filter, ChevronRight, Loader2 } from 'lucide-react'
+import { Trophy, Calendar, MapPin, Clock, Filter, ChevronRight, Loader2, Rss, CalendarPlus } from 'lucide-react'
 import api from '../services/api'
 
 const SPORT_ICONS = { football: '⚽', rugby: '🏉', cricket: '🏏', hockey: '🏑', netball: '🤾' }
@@ -33,6 +33,10 @@ export default function PublicFixtures() {
 
   useEffect(() => { loadSite() }, [slug])
   useEffect(() => { if (school) loadFixtures() }, [school, teamFilter, typeFilter])
+  useEffect(() => {
+    if (school) document.title = `${school.name} - Sport Fixtures & Results`
+    return () => { document.title = 'MoonBoots Sports' }
+  }, [school])
 
   async function loadSite() {
     try {
@@ -64,6 +68,29 @@ export default function PublicFixtures() {
   if (loading) return <div className="min-h-screen bg-white flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-gray-400" /></div>
   if (error) return <div className="min-h-screen bg-white flex items-center justify-center"><p className="text-gray-500">{error}</p></div>
 
+  useEffect(() => {
+    if (!fixtures.length) return
+    const jsonLd = {
+      '@context': 'https://schema.org',
+      '@type': 'ItemList',
+      itemListElement: fixtures.slice(0, 20).map((f, i) => ({
+        '@type': 'SportsEvent',
+        position: i + 1,
+        name: `${f.team_name} vs ${f.opponent}`,
+        startDate: f.date,
+        location: { '@type': 'Place', name: f.location || (f.home_away === 'home' ? school?.name : f.opponent) },
+        homeTeam: { '@type': 'SportsTeam', name: f.home_away === 'home' ? f.team_name : f.opponent },
+        awayTeam: { '@type': 'SportsTeam', name: f.home_away === 'home' ? f.opponent : f.team_name },
+      }))
+    }
+    const script = document.createElement('script')
+    script.type = 'application/ld+json'
+    script.text = JSON.stringify(jsonLd)
+    script.id = 'fixture-jsonld'
+    document.head.appendChild(script)
+    return () => { document.getElementById('fixture-jsonld')?.remove() }
+  }, [fixtures])
+
   const sports = [...new Set(teams.map(t => t.sport))].sort()
   const displayTeams = sportFilter ? teams.filter(t => t.sport === sportFilter) : teams
   const displayFixtures = sportFilter ? fixtures.filter(f => f.sport === sportFilter) : fixtures
@@ -77,6 +104,16 @@ export default function PublicFixtures() {
           <div>
             <h1 className="text-xl font-bold text-gray-900">{school.name}</h1>
             <p className="text-sm text-gray-500">Sport Fixtures & Results</p>
+          </div>
+          <div className="ml-auto flex gap-2">
+            <a href={`/api/public/sport/${slug}/rss`} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 border rounded-lg hover:bg-gray-100" title="Subscribe via RSS">
+              <Rss className="w-3.5 h-3.5" /> RSS
+            </a>
+            <a href={`/api/calendar/school/${slug}.ics`} download
+              className="flex items-center gap-1 px-2.5 py-1.5 text-xs text-gray-500 border rounded-lg hover:bg-gray-100" title="Subscribe via Calendar">
+              <CalendarPlus className="w-3.5 h-3.5" /> Calendar
+            </a>
           </div>
         </div>
       </header>
