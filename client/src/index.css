@@ -477,6 +477,97 @@
     color: var(--color-info);
   }
 
+  /* Table system */
+  .data-table {
+    @apply w-full;
+    border-collapse: separate;
+    border-spacing: 0;
+  }
+  .data-table thead th {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-text-secondary);
+    font-size: var(--text-xs);
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 12px 16px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-bottom: 1px solid var(--color-border-default);
+  }
+  .data-table tbody tr {
+    transition: background-color var(--transition-fast);
+  }
+  .data-table tbody tr:nth-child(even) {
+    background-color: var(--color-bg-subtle);
+  }
+  .data-table tbody tr:hover {
+    background-color: var(--color-warning-bg);
+  }
+  .data-table tbody td {
+    padding: 12px 16px;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border-subtle);
+    vertical-align: middle;
+  }
+  .data-table-compact tbody td,
+  .data-table-compact thead th {
+    padding: 8px 16px;
+  }
+  .data-table td.numeric {
+    text-align: right;
+    font-feature-settings: "tnum" 1;
+  }
+  .data-table td.center {
+    text-align: center;
+  }
+
+  /* List component */
+  .list-item {
+    @apply flex items-center gap-4;
+    padding: 16px;
+    border-bottom: 1px solid var(--color-border-subtle);
+    transition: background-color var(--transition-fast);
+  }
+  .list-item:last-child {
+    border-bottom: none;
+  }
+  .list-item:hover {
+    background-color: var(--color-bg-subtle);
+  }
+  .list-item-leading {
+    @apply shrink-0;
+  }
+  .list-item-content {
+    @apply flex-1 min-w-0;
+  }
+  .list-item-title {
+    font-size: var(--text-base);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+  .list-item-description {
+    font-size: var(--text-sm);
+    color: var(--color-text-secondary);
+    margin-top: 2px;
+  }
+  .list-item-trailing {
+    @apply shrink-0;
+    color: var(--color-text-tertiary);
+    font-size: var(--text-sm);
+  }
+
+  /* Status badge variants for tables */
+  .status-open { @apply badge; background-color: var(--color-info-bg); color: var(--color-info); }
+  .status-in-progress { @apply badge; background-color: var(--color-warning-bg); color: var(--color-warning); }
+  .status-closed { @apply badge; background-color: var(--color-bg-subtle); color: var(--color-text-tertiary); }
+  .status-published { @apply badge; background-color: var(--color-success-bg); color: var(--color-success); }
+  .status-draft { @apply badge; background-color: var(--color-warning-bg); color: var(--color-warning); }
+  .status-cancelled { @apply badge; background-color: var(--color-error-bg); color: var(--color-error); }
+
   /* Pitch visualization - always green regardless of brand colors */
   .pitch {
     @apply relative rounded-xl overflow-hidden;
