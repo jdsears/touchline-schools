@@ -20,19 +20,19 @@ function FixtureCard({ match, compact }) {
   const result = resultBadge(match)
   const d = match.date || match.match_date
   return (
-    <Link to={`/matches/${match.id}`} className={`block bg-navy-900 rounded-xl border border-navy-800 ${compact ? 'p-3' : 'p-4'} hover:border-navy-600 transition-colors`}>
+    <Link to={`/matches/${match.id}`} className={`block bg-card rounded-xl border border-border-default ${compact ? 'p-3' : 'p-4'} hover:border-border-strong transition-colors`}>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-9 h-9 rounded-lg bg-navy-800 flex items-center justify-center text-base shrink-0">
-            {SPORT_ICONS[match.sport] || <Trophy className="w-4 h-4 text-navy-400" />}
+          <div className="w-9 h-9 rounded-lg bg-subtle flex items-center justify-center text-base shrink-0">
+            {SPORT_ICONS[match.sport] || <Trophy className="w-4 h-4 text-secondary" />}
           </div>
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span className="text-sm font-medium text-white truncate">{match.team_name}</span>
-              <span className="text-navy-600 text-xs">vs</span>
-              <span className="text-sm font-medium text-white truncate">{match.opponent || 'TBC'}</span>
+              <span className="text-sm font-medium text-primary truncate">{match.team_name}</span>
+              <span className="text-tertiary text-xs">vs</span>
+              <span className="text-sm font-medium text-primary truncate">{match.opponent || 'TBC'}</span>
             </div>
-            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-navy-400 flex-wrap">
+            <div className="flex items-center gap-2 mt-0.5 text-[11px] text-secondary flex-wrap">
               {!compact && d && <span>{format(new Date(d), 'EEE d MMM')}</span>}
               {match.match_time && <span className="flex items-center gap-0.5"><Clock className="w-2.5 h-2.5" />{match.match_time.slice(0, 5)}</span>}
               <span className="flex items-center gap-0.5"><MapPin className="w-2.5 h-2.5" />{match.home_away === 'home' ? 'Home' : 'Away'}</span>
@@ -43,15 +43,15 @@ function FixtureCard({ match, compact }) {
         <div className="flex items-center gap-2 shrink-0">
           {result ? (
             <>
-              <span className="text-base font-bold text-white">{result.score}</span>
+              <span className="text-base font-bold text-primary">{result.score}</span>
               <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${result.color}`}>{result.label}</span>
             </>
           ) : (
             <>
-              <a href={`/api/calendar/event/fixture/${match.id}.ics`} onClick={e => e.stopPropagation()} download title="Add to calendar" className="p-1 text-navy-500 hover:text-pitch-400 transition-colors">
+              <a href={`/api/calendar/event/fixture/${match.id}.ics`} onClick={e => e.stopPropagation()} download title="Add to calendar" className="p-1 text-tertiary hover:text-pitch-400 transition-colors">
                 <CalendarPlus className="w-3.5 h-3.5" />
               </a>
-              <span className="px-2 py-0.5 bg-navy-800 rounded text-[10px] text-navy-400">Upcoming</span>
+              <span className="px-2 py-0.5 bg-subtle rounded text-[10px] text-secondary">Upcoming</span>
             </>
           )}
         </div>
@@ -74,11 +74,11 @@ function CalendarView({ fixtures, month, setMonth, selectedDate, onSelectDate })
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <button onClick={() => setMonth(m => subMonths(m, 1))} className="p-1.5 text-navy-400 hover:text-white"><ChevronLeft size={18} /></button>
-        <h2 className="text-sm font-bold text-white">{format(month, 'MMMM yyyy')}</h2>
-        <button onClick={() => setMonth(m => addMonths(m, 1))} className="p-1.5 text-navy-400 hover:text-white"><ChevronRight size={18} /></button>
+        <button onClick={() => setMonth(m => subMonths(m, 1))} className="p-1.5 text-secondary hover:text-link"><ChevronLeft size={18} /></button>
+        <h2 className="text-sm font-bold text-primary">{format(month, 'MMMM yyyy')}</h2>
+        <button onClick={() => setMonth(m => addMonths(m, 1))} className="p-1.5 text-secondary hover:text-link"><ChevronRight size={18} /></button>
       </div>
-      <div className="grid grid-cols-7 gap-px text-center text-[10px] text-navy-500 mb-1">
+      <div className="grid grid-cols-7 gap-px text-center text-[10px] text-tertiary mb-1">
         {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => <div key={d} className="py-1">{d}</div>)}
       </div>
       <div className="grid grid-cols-7 gap-px">
@@ -94,7 +94,7 @@ function CalendarView({ fixtures, month, setMonth, selectedDate, onSelectDate })
               key={key}
               onClick={() => onSelectDate(df.length > 0 ? day : null)}
               className={`relative p-1.5 min-h-[44px] rounded-lg text-center text-xs transition-colors ${
-                !inMonth ? 'text-navy-700' : isWe ? 'bg-navy-800/30 text-navy-400' : 'text-navy-300 hover:bg-navy-800/50'
+                !inMonth ? 'text-navy-700' : isWe ? 'bg-subtle text-secondary' : 'text-secondary hover:bg-subtle'
               } ${isSel ? 'ring-1 ring-pitch-500' : ''}`}
             >
               <span className={isT ? 'w-6 h-6 inline-flex items-center justify-center rounded-full ring-2 ring-amber-400/60 text-amber-400 font-bold' : ''}>
@@ -105,7 +105,7 @@ function CalendarView({ fixtures, month, setMonth, selectedDate, onSelectDate })
                   {df.slice(0, 3).map((f, i) => (
                     <div key={i} className={`w-1.5 h-1.5 rounded-full ${SPORT_DOT[f.sport] || 'bg-pitch-500'}`} title={`${f.team_name} vs ${f.opponent}`} />
                   ))}
-                  {df.length > 3 && <span className="text-[8px] text-navy-500">+{df.length - 3}</span>}
+                  {df.length > 3 && <span className="text-[8px] text-tertiary">+{df.length - 3}</span>}
                 </div>
               )}
             </button>
@@ -122,13 +122,13 @@ function DayPanel({ date, fixtures, onClose }) {
     return d === format(date, 'yyyy-MM-dd')
   })
   return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 p-4 mt-4">
+    <div className="bg-card rounded-xl border border-border-default p-4 mt-4">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-sm font-bold text-white">{format(date, 'EEEE d MMMM yyyy')}</h3>
-        <button onClick={onClose} className="p-1 text-navy-400 hover:text-white"><X size={16} /></button>
+        <h3 className="text-sm font-bold text-primary">{format(date, 'EEEE d MMMM yyyy')}</h3>
+        <button onClick={onClose} className="p-1 text-secondary hover:text-link"><X size={16} /></button>
       </div>
       {dayFixtures.length === 0 ? (
-        <p className="text-navy-500 text-sm py-2">No fixtures on this day</p>
+        <p className="text-tertiary text-sm py-2">No fixtures on this day</p>
       ) : (
         <div className="space-y-2">
           {dayFixtures.map(f => <FixtureCard key={f.id} match={f} compact />)}
@@ -178,33 +178,33 @@ export default function TeacherFixtures() {
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white">Fixtures & Results</h1>
-          <p className="text-navy-400 text-sm mt-0.5">{fixtures.length} matches across {teams.length} team{teams.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-xl md:text-2xl font-bold text-primary">Fixtures & Results</h1>
+          <p className="text-secondary text-sm mt-0.5">{fixtures.length} matches across {teams.length} team{teams.length !== 1 ? 's' : ''}</p>
         </div>
-        <div className="flex items-center gap-1 bg-navy-800 rounded-lg p-0.5">
-          <button onClick={() => setView('list')} className={`p-1.5 rounded ${view === 'list' ? 'bg-navy-700 text-white' : 'text-navy-400'}`}><List size={16} /></button>
-          <button onClick={() => setView('calendar')} className={`p-1.5 rounded ${view === 'calendar' ? 'bg-navy-700 text-white' : 'text-navy-400'}`}><CalIcon size={16} /></button>
+        <div className="flex items-center gap-1 bg-subtle rounded-lg p-0.5">
+          <button onClick={() => setView('list')} className={`p-1.5 rounded ${view === 'list' ? 'bg-border-default text-primary' : 'text-secondary'}`}><List size={16} /></button>
+          <button onClick={() => setView('calendar')} className={`p-1.5 rounded ${view === 'calendar' ? 'bg-border-default text-primary' : 'text-secondary'}`}><CalIcon size={16} /></button>
         </div>
       </div>
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-5">
         {['all', 'upcoming', 'results'].map(f => (
-          <button key={f} onClick={() => setTimeFilter(f)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${timeFilter === f ? 'bg-pitch-600/20 text-pitch-400' : 'bg-navy-800 text-navy-400 hover:text-white'}`}>
+          <button key={f} onClick={() => setTimeFilter(f)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${timeFilter === f ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'}`}>
             {f === 'all' ? 'All' : f}
           </button>
         ))}
-        <div className="w-px h-5 bg-navy-700" />
+        <div className="w-px h-5 bg-border-default" />
         {['all', 'home', 'away'].map(v => (
-          <button key={v} onClick={() => setVenueFilter(v)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${venueFilter === v ? 'bg-amber-500/20 text-amber-400' : 'bg-navy-800 text-navy-400 hover:text-white'}`}>
+          <button key={v} onClick={() => setVenueFilter(v)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${venueFilter === v ? 'bg-amber-500/20 text-amber-400' : 'bg-subtle text-secondary hover:text-link'}`}>
             {v === 'all' ? 'H/A' : v}
           </button>
         ))}
         {sports.length > 1 && (
           <>
-            <div className="w-px h-5 bg-navy-700" />
+            <div className="w-px h-5 bg-border-default" />
             {sports.map(s => (
-              <button key={s} onClick={() => setSportFilter(sportFilter === s ? 'all' : s)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${sportFilter === s ? 'bg-pitch-600/20 text-pitch-400' : 'bg-navy-800 text-navy-400 hover:text-white'}`}>
+              <button key={s} onClick={() => setSportFilter(sportFilter === s ? 'all' : s)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${sportFilter === s ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'}`}>
                 {SPORT_ICONS[s] || ''} {s}
               </button>
             ))}
@@ -214,7 +214,7 @@ export default function TeacherFixtures() {
 
       {view === 'calendar' ? (
         <>
-          <div className="bg-navy-900 rounded-xl border border-navy-800 p-4">
+          <div className="bg-card rounded-xl border border-border-default p-4">
             <CalendarView fixtures={filtered} month={calMonth} setMonth={setCalMonth} selectedDate={selectedDate} onSelectDate={setSelectedDate} />
           </div>
           {selectedDate && <DayPanel date={selectedDate} fixtures={filtered} onClose={() => setSelectedDate(null)} />}
@@ -224,10 +224,10 @@ export default function TeacherFixtures() {
           {filtered.map(m => <FixtureCard key={m.id} match={m} />)}
         </div>
       ) : (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <Trophy className="w-8 h-8 text-navy-500 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-white mb-1">{teams.length === 0 ? 'No teams assigned' : 'No fixtures match your filters'}</h3>
-          <p className="text-navy-400 text-sm">{teams.length === 0 ? 'Once you have teams, fixtures appear here.' : 'Try changing the filters above.'}</p>
+        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
+          <Trophy className="w-8 h-8 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-semibold text-primary mb-1">{teams.length === 0 ? 'No teams assigned' : 'No fixtures match your filters'}</h3>
+          <p className="text-secondary text-sm">{teams.length === 0 ? 'Once you have teams, fixtures appear here.' : 'Try changing the filters above.'}</p>
         </div>
       )}
     </div>
