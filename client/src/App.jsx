@@ -122,6 +122,7 @@ const GDPRDashboard = lazy(() => import('./pages/teacher/GDPRDashboard'))
 const HoDSSOSettings = lazy(() => import('./pages/teacher/HoDSSOSettings'))
 const HoDTestPersonas = lazy(() => import('./pages/teacher/HoDTestPersonas'))
 const HoDAssessmentOverview = lazy(() => import('./pages/teacher/HoDAssessmentOverview'))
+const HoDConsent = lazy(() => import('./pages/teacher/HoDConsent'))
 const TeacherSettings = lazy(() => import('./pages/teacher/TeacherSettings'))
 
 // Pupil Portal pages (legacy sidebar layout)
@@ -341,6 +342,7 @@ export default function App() {
           <Route path="hod/pupils/:id" element={<HoDPupilProfile />} />
           <Route path="hod/reporting" element={<HoDReporting />} />
           <Route path="hod/assessment-overview" element={<HoDAssessmentOverview />} />
+          <Route path="hod/consent" element={<HoDConsent />} />
           <Route path="hod/reporting/windows/:windowId" element={<WindowReportsList />} />
           <Route path="hod/reporting/windows/:windowId/reports/:reportId" element={<ReportDetail />} />
           <Route path="voice-review/:audioSourceId" element={<VoiceObservationReview />} />
