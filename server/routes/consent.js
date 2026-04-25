@@ -152,4 +152,60 @@ router.post('/grant', authenticateToken, async (req, res, next) => {
   } catch (error) { next(error) }
 })
 
+router.get('/expiring', authenticateToken, async (req, res, next) => {
+  try {
+    const schoolId = await getSchoolId(req.user)
+    if (!schoolId) return res.status(403).json({ error: 'No school access' })
+    const { days = 30 } = req.query
+    const result = await pool.query(
+      `SELECT pc.*, ct.name AS consent_type_name, p.name AS pupil_name, p.year_group
+       FROM pupil_consents pc
+       JOIN consent_types ct ON ct.id = pc.consent_type_id
+       JOIN pupils p ON p.id = pc.pupil_id
+       JOIN school_members sm ON sm.user_id = p.user_id AND sm.school_id = $1
+       WHERE ct.school_id = $1 AND pc.status = 'granted'
+         AND pc.expires_at IS NOT NULL AND pc.expires_at <= NOW() + ($2 || ' days')::INTERVAL
+       ORDER BY pc.expires_at ASC`,
+      [schoolId, days]
+    )
+    res.json(result.rows)
+  } catch (error) { next(error) }
+})
+
+router.post('/expire-overdue', authenticateToken, async (req, res, next) => {
+  try {
+    const schoolId = await getSchoolId(req.user)
+    if (!schoolId) return res.status(403).json({ error: 'No school access' })
+    const result = await pool.query(
+      `UPDATE pupil_consents SET status = 'expired', updated_at = NOW()
+       WHERE consent_type_id IN (SELECT id FROM consent_types WHERE school_id = $1)
+         AND status = 'granted' AND expires_at IS NOT NULL AND expires_at <= NOW()
+       RETURNING id`,
+      [schoolId]
+    )
+    res.json({ expired: result.rowCount })
+  } catch (error) { next(error) }
+})
+
+router.post('/bulk-reset', authenticateToken, async (req, res, next) => {
+  try {
+    const schoolId = await getSchoolId(req.user)
+    if (!schoolId) return res.status(403).json({ error: 'No school access' })
+    const result = await pool.query(
+      `UPDATE pupil_consents SET status = 'expired', updated_at = NOW()
+       WHERE consent_type_id IN (
+         SELECT id FROM consent_types WHERE school_id = $1 AND is_per_term = false
+       ) AND status = 'granted'
+       RETURNING id`,
+      [schoolId]
+    )
+    await pool.query(
+      `INSERT INTO audit_log (school_id, user_id, action, entity_type, details, created_at)
+       VALUES ($1, $2, 'consent_bulk_reset', 'consent', $3, NOW())`,
+      [schoolId, req.user.id, JSON.stringify({ expired_count: result.rowCount })]
+    )
+    res.json({ expired: result.rowCount, message: `${result.rowCount} annual consents expired. Parents will need to re-consent.` })
+  } catch (error) { next(error) }
+})
+
 export default router

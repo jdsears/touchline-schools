@@ -660,6 +660,9 @@ export const consentService = {
   getOverview: () => api.get('/consent/overview'),
   getPupilConsents: (pupilId) => api.get(`/consent/pupil/${pupilId}`),
   grant: (data) => api.post('/consent/grant', data),
+  getExpiring: (days = 30) => api.get('/consent/expiring', { params: { days } }),
+  expireOverdue: () => api.post('/consent/expire-overdue'),
+  bulkReset: () => api.post('/consent/bulk-reset'),
 }
 
 export const travelService = {

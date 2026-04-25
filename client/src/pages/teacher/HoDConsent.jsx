@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { consentService } from '../../services/api'
-import { ShieldCheck, Users, AlertTriangle, Clock, CheckCircle, XCircle, Loader2, Plus, Sparkles } from 'lucide-react'
+import { ShieldCheck, Users, AlertTriangle, Clock, CheckCircle, XCircle, Loader2, Plus, Sparkles, RefreshCw } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 export default function HoDConsent() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [seeding, setSeeding] = useState(false)
+  const [resetting, setResetting] = useState(false)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   useEffect(() => { load() }, [])
 
@@ -26,6 +28,17 @@ export default function HoDConsent() {
       load()
     } catch { toast.error('Failed to seed defaults') }
     finally { setSeeding(false) }
+  }
+
+  async function bulkReset() {
+    setResetting(true)
+    try {
+      const res = await consentService.bulkReset()
+      toast.success(res.data.message)
+      setShowResetConfirm(false)
+      load()
+    } catch { toast.error('Failed to reset consents') }
+    finally { setResetting(false) }
   }
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>
@@ -118,6 +131,40 @@ export default function HoDConsent() {
           <ShieldCheck className="w-12 h-12 text-navy-700 mx-auto mb-3" />
           <p className="text-navy-400">No consent types configured yet.</p>
           <p className="text-sm text-navy-500 mt-1">Click "Set up default consent types" to get started with standard UK school sport consents.</p>
+        </div>
+      )}
+
+      {/* Academic year reset */}
+      {types && types.length > 0 && (
+        <div className="bg-navy-900 border border-navy-800 rounded-xl p-4 flex items-center justify-between">
+          <div>
+            <h3 className="text-sm font-semibold text-white">New Academic Year Reset</h3>
+            <p className="text-xs text-navy-400 mt-0.5">Expire all annual consents and require fresh parent confirmation for the new year.</p>
+          </div>
+          <button onClick={() => setShowResetConfirm(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm shrink-0">
+            <RefreshCw className="w-3.5 h-3.5" /> Start of Year Reset
+          </button>
+        </div>
+      )}
+
+      {/* Reset confirmation modal */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowResetConfirm(false)}>
+          <div className="bg-navy-900 border border-navy-800 rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-white mb-2">Confirm Academic Year Reset</h3>
+            <p className="text-sm text-navy-300 mb-4">
+              This will expire all annual consents for {totalPupils} pupils. Parents will need to re-consent.
+              Per-term consents are not affected.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 text-sm text-navy-400 hover:text-white">Cancel</button>
+              <button onClick={bulkReset} disabled={resetting}
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-sm">
+                {resetting ? 'Resetting...' : 'Confirm Reset'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
