@@ -9,11 +9,11 @@ import api from '../services/api'
 const inputStyle = {
   width: '100%',
   padding: '12px 14px 12px 42px',
-  background: 'rgba(255,255,255,0.06)',
-  border: '1px solid rgba(201, 169, 97, 0.25)',
-  borderRadius: 4,
-  color: 'var(--mb-warm-white, #FAFAF7)',
-  fontFamily: 'var(--font-sans, Poppins, sans-serif)',
+  background: 'var(--color-bg-input)',
+  border: '1px solid var(--color-border-default)',
+  borderRadius: 'var(--radius-md)',
+  color: 'var(--color-text-primary)',
+  fontFamily: 'var(--font-sans)',
   fontSize: 15,
   outline: 'none',
   boxSizing: 'border-box',
@@ -21,10 +21,10 @@ const inputStyle = {
 
 const labelStyle = {
   display: 'block',
-  fontFamily: 'var(--font-sans, Poppins, sans-serif)',
+  fontFamily: 'var(--font-sans)',
   fontSize: 13,
   fontWeight: 500,
-  color: 'rgba(250, 250, 247, 0.8)',
+  color: 'var(--color-text-primary)',
   marginBottom: 6,
 }
 
@@ -91,11 +91,11 @@ export default function Login() {
   const goldBtnStyle = {
     width: '100%',
     padding: '14px 24px',
-    background: loading ? 'rgba(201, 169, 97, 0.5)' : 'var(--mb-gold, #C9A961)',
-    color: 'var(--mb-navy, #0F1E3D)',
+    background: loading ? 'rgba(15, 30, 61, 0.5)' : 'var(--color-brand-navy)',
+    color: 'var(--color-text-on-dark)',
     border: 'none',
-    borderRadius: 4,
-    fontFamily: 'var(--font-sans, Poppins, sans-serif)',
+    borderRadius: 'var(--radius-md)',
+    fontFamily: 'var(--font-sans)',
     fontWeight: 600,
     fontSize: 15,
     cursor: loading ? 'not-allowed' : 'pointer',
@@ -109,19 +109,19 @@ export default function Login() {
   const tabStyle = (active) => ({
     flex: 1,
     padding: '10px 16px',
-    borderRadius: 4,
-    fontFamily: 'var(--font-sans, Poppins, sans-serif)',
+    borderRadius: 'var(--radius-md)',
+    fontFamily: 'var(--font-sans)',
     fontSize: 14,
     fontWeight: 500,
     border: 'none',
     cursor: 'pointer',
     transition: 'all 0.15s ease',
-    background: active ? 'rgba(201, 169, 97, 0.15)' : 'transparent',
-    color: active ? 'var(--mb-gold, #C9A961)' : 'rgba(250, 250, 247, 0.5)',
+    background: active ? 'var(--color-brand-navy)' : 'transparent',
+    color: active ? 'var(--color-text-on-dark)' : 'var(--color-text-secondary)',
   })
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--mb-navy, #0F1E3D)' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--color-bg-page)' }}>
       <SEO
         title="Login"
         path="/login"
@@ -140,15 +140,15 @@ export default function Login() {
             <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 28 }} />
           </Link>
 
-          <h1 style={{ fontFamily: 'var(--font-serif, "Crimson Pro", Georgia, serif)', fontSize: 32, fontWeight: 700, color: 'white', marginBottom: 8 }}>
+          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 32, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 8 }}>
             Welcome back
           </h1>
-          <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 15, color: 'rgba(250, 250, 247, 0.6)', marginBottom: 32 }}>
+          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--color-text-secondary)', marginBottom: 32 }}>
             Sign in to your account to continue
           </p>
 
           {/* Tabs */}
-          <div style={{ display: 'flex', gap: 4, padding: 4, background: 'rgba(255,255,255,0.04)', borderRadius: 6, marginBottom: 24 }}>
+          <div style={{ display: 'flex', gap: 4, padding: 4, background: 'var(--color-bg-subtle)', borderRadius: 6, marginBottom: 24 }}>
             <button onClick={() => setMode('password')} style={tabStyle(mode === 'password')}>Password</button>
             <button onClick={() => setMode('magic')} style={tabStyle(mode === 'magic')}>Magic Link</button>
           </div>
@@ -158,7 +158,7 @@ export default function Login() {
               <div>
                 <label style={labelStyle}>Email</label>
                 <div style={{ position: 'relative' }}>
-                  <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(201, 169, 97, 0.5)' }} />
+                  <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
                   <input
                     type="email"
                     value={email}
@@ -173,12 +173,12 @@ export default function Login() {
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <label style={labelStyle}>Password</label>
-                  <Link to="/forgot-password" style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--mb-gold, #C9A961)', textDecoration: 'none' }}>
+                  <Link to="/forgot-password" style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-text-link)', textDecoration: 'none' }}>
                     Forgot password?
                   </Link>
                 </div>
                 <div style={{ position: 'relative' }}>
-                  <Lock size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(201, 169, 97, 0.5)' }} />
+                  <Lock size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
@@ -190,7 +190,7 @@ export default function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'rgba(250, 250, 247, 0.4)' }}
+                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--color-text-tertiary)' }}
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -208,17 +208,17 @@ export default function Login() {
             <form onSubmit={handleMagicLink} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
               {magicLinkSent ? (
                 <div style={{ textAlign: 'center', padding: '32px 0' }}>
-                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'rgba(201, 169, 97, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                    <Mail size={24} style={{ color: 'var(--mb-gold)' }} />
+                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--color-bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                    <Mail size={24} style={{ color: 'var(--color-brand-navy)' }} />
                   </div>
                   <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 8 }}>Check your email</h3>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.6)', marginBottom: 16 }}>
+                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 16 }}>
                     We have sent a magic link to <span style={{ color: 'white' }}>{email}</span>
                   </p>
                   <button
                     type="button"
                     onClick={() => setMagicLinkSent(false)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--mb-gold)' }}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-brand-navy)' }}
                   >
                     Try a different email
                   </button>
@@ -228,7 +228,7 @@ export default function Login() {
                   <div>
                     <label style={labelStyle}>Email</label>
                     <div style={{ position: 'relative' }}>
-                      <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'rgba(201, 169, 97, 0.5)' }} />
+                      <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
                       <input
                         type="email"
                         value={email}
@@ -261,9 +261,9 @@ export default function Login() {
           {ssoProviders.length > 0 && (
             <div style={{ marginTop: 24 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <div style={{ flex: 1, height: 1, background: 'rgba(201, 169, 97, 0.15)' }} />
-                <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'rgba(250, 250, 247, 0.4)' }}>or sign in with</span>
-                <div style={{ flex: 1, height: 1, background: 'rgba(201, 169, 97, 0.15)' }} />
+                <div style={{ flex: 1, height: 1, background: 'var(--color-border-subtle)' }} />
+                <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-text-tertiary)' }}>or sign in with</span>
+                <div style={{ flex: 1, height: 1, background: 'var(--color-border-subtle)' }} />
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {ssoProviders.map(p => (
@@ -272,7 +272,7 @@ export default function Login() {
                     onClick={() => handleSsoLogin(p.id)}
                     style={{
                       width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                      padding: '12px 16px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(201, 169, 97, 0.15)',
+                      padding: '12px 16px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border-default)',
                       borderRadius: 4, cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 500,
                       color: 'white', transition: 'background 0.15s ease',
                     }}
@@ -300,15 +300,15 @@ export default function Login() {
             </div>
           )}
 
-          <p style={{ textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'rgba(250, 250, 247, 0.5)', marginTop: 24 }}>
+          <p style={{ textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-text-secondary)', marginTop: 24 }}>
             Don't have an account?{' '}
-            <Link to="/register" style={{ color: 'var(--mb-gold, #C9A961)', textDecoration: 'none' }}>Sign up</Link>
+            <Link to="/register" style={{ color: 'var(--color-text-link)', textDecoration: 'none' }}>Sign up</Link>
           </p>
         </motion.div>
       </div>
 
       {/* Right: Brand panel (desktop only) */}
-      <div className="hidden lg:flex" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid rgba(201, 169, 97, 0.1)', position: 'relative', overflow: 'hidden', background: 'var(--mb-navy-deep, #0A1530)' }}>
+      <div className="hidden lg:flex" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid var(--color-border-subtle)', position: 'relative', overflow: 'hidden', background: 'var(--color-brand-navy)' }}>
         <div style={{ position: 'absolute', top: '20%', right: '20%', width: 384, height: 384, borderRadius: '50%', filter: 'blur(120px)', background: 'rgba(201, 169, 97, 0.06)' }} />
         <div style={{ position: 'absolute', bottom: '25%', left: '25%', width: 256, height: 256, borderRadius: '50%', filter: 'blur(120px)', background: 'rgba(201, 169, 97, 0.04)' }} />
 
@@ -318,11 +318,11 @@ export default function Login() {
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ marginBottom: 32 }}>
-            <div style={{ width: 48, height: 2, background: 'var(--mb-gold, #C9A961)', marginBottom: 20 }} />
+            <div style={{ width: 48, height: 2, background: 'var(--color-brand-gold)', marginBottom: 20 }} />
             <h2 style={{ fontFamily: 'var(--font-serif, "Crimson Pro", Georgia, serif)', fontSize: 32, fontWeight: 700, lineHeight: 1.2, color: 'white' }}>
               The PE department platform for UK schools.
             </h2>
-            <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 15, color: 'rgba(250, 250, 247, 0.7)', lineHeight: 1.6, marginTop: 16 }}>
+            <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.6, marginTop: 16 }}>
               Curriculum PE and extra-curricular sport, in one bespoke platform per school.
             </p>
           </motion.div>
@@ -341,8 +341,8 @@ export default function Login() {
                 style={{
                   display: 'flex', alignItems: 'flex-start', gap: 14,
                   padding: '16px 18px', borderRadius: 6,
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(201, 169, 97, 0.15)',
+                  background: 'var(--color-bg-subtle)',
+                  border: '1px solid var(--color-border-default)',
                 }}
               >
                 <div style={{
@@ -350,11 +350,11 @@ export default function Login() {
                   background: 'rgba(201, 169, 97, 0.12)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                 }}>
-                  <Icon size={18} style={{ color: 'var(--mb-gold, #C9A961)' }} />
+                  <Icon size={18} style={{ color: 'var(--color-text-link)' }} />
                 </div>
                 <div>
                   <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 14, fontWeight: 600, color: 'white' }}>{label}</p>
-                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 13, color: 'rgba(250, 250, 247, 0.6)', marginTop: 2 }}>{desc}</p>
+                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>{desc}</p>
                 </div>
               </motion.div>
             ))}
@@ -364,7 +364,7 @@ export default function Login() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 12, color: 'rgba(250, 250, 247, 0.4)', marginTop: 32 }}
+            style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 32 }}
           >
             Bespoke deployments for primary, prep, secondary, all-through, and multi-academy trusts.
           </motion.p>
