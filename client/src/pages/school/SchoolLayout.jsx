@@ -75,6 +75,7 @@ export default function ClubLayout() {
         // Try public endpoint
         const pubRes = await clubService.getClubBySlug(slug)
         setClub(pubRes.data)
+        if (user?.is_admin) setMyRole('owner')
       }
     } catch (err) {
       console.error('Failed to load school:', err)
