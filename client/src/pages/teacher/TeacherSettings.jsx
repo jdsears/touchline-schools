@@ -28,6 +28,7 @@ const NotificationsTab     = lazy(() => import('./settings/NotificationsTab'))
 const AccessibilityTab     = lazy(() => import('./settings/AccessibilityTab'))
 const SecurityTab          = lazy(() => import('./settings/SecurityTab'))
 const CalendarExportTab    = lazy(() => import('./settings/CalendarExportTab'))
+const VenuesTab            = lazy(() => import('./settings/VenuesTab'))
 
 const SCHOOL_TABS = [
   { id: 'school-profile',    label: 'School Profile',       icon: School },
@@ -43,6 +44,7 @@ const DEPARTMENT_TABS = [
   { id: 'teams',             label: 'Teams',                icon: Shield },
   { id: 'knowledge-base',    label: 'Knowledge Base',       icon: BookOpen },
   { id: 'fixture-defaults',  label: 'Fixture Defaults',     icon: MapPin },
+  { id: 'venues',            label: 'Venues',               icon: MapPin },
 ]
 
 const PERSONAL_TABS = [
@@ -65,6 +67,7 @@ const TAB_COMPONENTS = {
   'teams':             TeamsTab,
   'knowledge-base':    KnowledgeBaseTab,
   'fixture-defaults':  FixtureDefaultsTab,
+  'venues':            VenuesTab,
   'profile':           PersonalProfileTab,
   'qualifications':    QualificationsTab,
   'notifications':     NotificationsTab,

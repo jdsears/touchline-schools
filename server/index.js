@@ -60,6 +60,7 @@ import gdprRoutes from './routes/gdpr.js'
 import ssoRoutes from './routes/sso.js'
 import demoRequestRoutes from './routes/demoRequests.js'
 import schoolSettingsRoutes from './routes/schoolSettings.js'
+import venueRoutes from './routes/venues.js'
 
 // Demo seed
 import { seedSchool } from './db/demo-seed/school.js'
@@ -252,6 +253,7 @@ app.use('/api/gdpr', gdprRoutes)
 app.use('/api/sso', ssoRoutes)
 app.use('/api/demo-requests', demoRequestRoutes)
 app.use('/api/settings', schoolSettingsRoutes)
+app.use('/api/venues', venueRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -738,8 +740,11 @@ async function ensureDemoPrerequisites() {
     `CREATE TABLE IF NOT EXISTS fixture_defaults (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, sport_key TEXT, age_group TEXT, match_duration_minutes INTEGER, default_home_ground_address TEXT, default_travel_arrangement TEXT, default_kit_config JSONB DEFAULT '{}', created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW(), UNIQUE(school_id, sport_key, age_group))`,
     `CREATE TABLE IF NOT EXISTS notification_preferences (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL UNIQUE, fixture_reminders BOOLEAN DEFAULT true, assessment_deadlines BOOLEAN DEFAULT true, report_due_dates BOOLEAN DEFAULT true, pupil_observations BOOLEAN DEFAULT true, safeguarding_concerns BOOLEAN DEFAULT true, weekly_digest BOOLEAN DEFAULT false, monthly_summary BOOLEAN DEFAULT false, product_updates BOOLEAN DEFAULT false, email_enabled BOOLEAN DEFAULT true, push_enabled BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
     `CREATE TABLE IF NOT EXISTS user_accessibility (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), user_id UUID NOT NULL UNIQUE, font_size TEXT DEFAULT 'medium', reduced_motion BOOLEAN DEFAULT false, high_contrast BOOLEAN DEFAULT false, screen_reader_optimised BOOLEAN DEFAULT false, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
+    `CREATE TABLE IF NOT EXISTS venues (id UUID PRIMARY KEY DEFAULT gen_random_uuid(), school_id UUID NOT NULL, name TEXT NOT NULL, address TEXT, postcode TEXT, latitude DOUBLE PRECISION, longitude DOUBLE PRECISION, parking_notes TEXT, changing_room_notes TEXT, pitch_layout_notes TEXT, contact_name TEXT, contact_phone TEXT, accessibility_notes TEXT, is_school_venue BOOLEAN DEFAULT false, last_visited_date DATE, archived_at TIMESTAMPTZ, created_at TIMESTAMPTZ DEFAULT NOW(), updated_at TIMESTAMPTZ DEFAULT NOW())`,
   ]
   for (const sql of createTables) stmts.push(sql)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS venue_id UUID REFERENCES venues(id) ON DELETE SET NULL`)
+  stmts.push(`CREATE INDEX IF NOT EXISTS idx_venues_school ON venues(school_id)`)
 
   for (const sql of stmts) {
     try { await pool.query(sql) } catch (e) { console.warn('[DemoPrereq]', e.message.slice(0, 80)) }
