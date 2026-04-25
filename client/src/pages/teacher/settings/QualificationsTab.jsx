@@ -73,7 +73,7 @@ export default function QualificationsTab() {
 
   if (loading) return (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 
@@ -81,12 +81,12 @@ export default function QualificationsTab() {
     <div className="max-w-2xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white">Qualifications</h2>
-          <p className="text-sm text-navy-400 mt-1">Your coaching badges, teaching qualifications, and compliance training.</p>
+          <h2 className="text-xl font-semibold text-primary">Qualifications</h2>
+          <p className="text-sm text-secondary mt-1">Your coaching badges, teaching qualifications, and compliance training.</p>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add
@@ -94,54 +94,54 @@ export default function QualificationsTab() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleAdd} className="bg-navy-900 rounded-xl border border-navy-800 p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-white">New Qualification</h3>
+        <form onSubmit={handleAdd} className="bg-card rounded-xl border border-border-default p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-primary">New Qualification</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Type</label>
+              <label className="block text-xs text-secondary mb-1">Type</label>
               <select
                 value={form.qualification_type}
                 onChange={e => setForm(f => ({ ...f, qualification_type: e.target.value }))}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
               >
                 {QUAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Name / Course</label>
+              <label className="block text-xs text-secondary mb-1">Name / Course</label>
               <input
                 value={form.qualification_name}
                 onChange={e => setForm(f => ({ ...f, qualification_name: e.target.value }))}
                 placeholder="e.g. FA UEFA C Licence"
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Issue Date</label>
+              <label className="block text-xs text-secondary mb-1">Issue Date</label>
               <input type="date" value={form.issue_date}
                 onChange={e => setForm(f => ({ ...f, issue_date: e.target.value }))}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500" />
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500" />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Expiry Date (if applicable)</label>
+              <label className="block text-xs text-secondary mb-1">Expiry Date (if applicable)</label>
               <input type="date" value={form.expiry_date}
                 onChange={e => setForm(f => ({ ...f, expiry_date: e.target.value }))}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500" />
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500" />
             </div>
           </div>
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Reference Number (optional)</label>
+            <label className="block text-xs text-secondary mb-1">Reference Number (optional)</label>
             <input value={form.reference_number}
               onChange={e => setForm(f => ({ ...f, reference_number: e.target.value }))}
-              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500" />
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500" />
           </div>
           <div className="flex gap-3">
             <button type="button" onClick={() => setShowForm(false)}
-              className="px-4 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm transition-colors">
+              className="px-4 py-2 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">
               Cancel
             </button>
             <button type="submit" disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm transition-colors disabled:opacity-50">
+              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors disabled:opacity-50">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Save
             </button>
@@ -151,7 +151,7 @@ export default function QualificationsTab() {
 
       <div className="space-y-2">
         {quals.length === 0 && !showForm && (
-          <div className="bg-navy-900 rounded-xl border border-navy-800 p-6 text-center text-navy-500 text-sm">
+          <div className="bg-card rounded-xl border border-border-default p-6 text-center text-tertiary text-sm">
             No qualifications recorded yet.
           </div>
         )}
@@ -160,10 +160,10 @@ export default function QualificationsTab() {
           const expired = days !== null && days < 0
           const expiring = days !== null && days >= 0 && days < 60
           return (
-            <div key={q.id} className="flex items-start justify-between bg-navy-900 rounded-xl border border-navy-800 p-4 group">
+            <div key={q.id} className="flex items-start justify-between bg-card rounded-xl border border-border-default p-4 group">
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-white">{q.qualification_name}</span>
+                  <span className="text-sm font-medium text-primary">{q.qualification_name}</span>
                   {(expired || expiring) && (
                     <span className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${expired ? 'bg-red-500/20 text-red-400' : 'bg-amber-400/20 text-amber-400'}`}>
                       <AlertTriangle className="w-2.5 h-2.5" />
@@ -171,7 +171,7 @@ export default function QualificationsTab() {
                     </span>
                   )}
                 </div>
-                <div className="text-xs text-navy-500 mt-0.5">
+                <div className="text-xs text-tertiary mt-0.5">
                   {QUAL_TYPES.find(t => t.value === q.qualification_type)?.label || q.qualification_type}
                   {q.issue_date && ` · Issued ${new Date(q.issue_date).toLocaleDateString('en-GB')}`}
                   {q.expiry_date && ` · Expires ${new Date(q.expiry_date).toLocaleDateString('en-GB')}`}
@@ -180,7 +180,7 @@ export default function QualificationsTab() {
               <button
                 onClick={() => handleDelete(q.id)}
                 disabled={deleting === q.id}
-                className="opacity-0 group-hover:opacity-100 p-1.5 text-navy-600 hover:text-red-400 transition-all ml-3 flex-shrink-0"
+                className="opacity-0 group-hover:opacity-100 p-1.5 text-tertiary hover:text-red-400 transition-all ml-3 flex-shrink-0"
               >
                 {deleting === q.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
               </button>

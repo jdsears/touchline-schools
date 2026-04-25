@@ -139,23 +139,23 @@ export default function HoDSSOSettings() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
           <Link2 className="w-7 h-7 text-pitch-400" />
           Single Sign-On (SSO)
         </h1>
-        <p className="text-navy-400 mt-1">
+        <p className="text-secondary mt-1">
           Allow staff to sign in with their school Microsoft 365 or Google Workspace account
         </p>
       </div>
 
       {/* Info banner */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-4 mb-6">
+      <div className="bg-card rounded-xl border border-border-default p-4 mb-6">
         <div className="flex items-start gap-3">
           <Shield className="w-5 h-5 text-pitch-400 shrink-0 mt-0.5" />
-          <div className="text-sm text-navy-300 space-y-1">
-            <p className="font-medium text-white">How SSO works</p>
+          <div className="text-sm text-secondary space-y-1">
+            <p className="font-medium text-primary">How SSO works</p>
             <p>Once configured, staff can click "Sign in with Microsoft" or "Sign in with Google" on the login page. Their school email is matched to their MoonBoots Sports account automatically - no separate password needed.</p>
-            <p>If <strong className="text-white">domain auto-provisioning</strong> is enabled (via the allowlist below), new staff with that email domain are automatically added as Teachers when they first sign in via SSO.</p>
+            <p>If <strong className="text-primary">domain auto-provisioning</strong> is enabled (via the allowlist below), new staff with that email domain are automatically added as Teachers when they first sign in via SSO.</p>
           </div>
         </div>
       </div>
@@ -173,8 +173,8 @@ export default function HoDSSOSettings() {
       )}
 
       {/* Provider selector */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-6 mb-6">
-        <h3 className="text-base font-semibold text-white mb-4">Identity Provider</h3>
+      <div className="bg-card rounded-xl border border-border-default p-6 mb-6">
+        <h3 className="text-base font-semibold text-primary mb-4">Identity Provider</h3>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[{ value: null, label: 'Disabled', icon: null }, ...Object.entries(PROVIDER_INFO).map(([k, v]) => ({ value: k, ...v }))].map(p => (
             <button
@@ -183,11 +183,11 @@ export default function HoDSSOSettings() {
               disabled={p.value && !platformProviders[p.value]}
               className={`flex items-center gap-3 px-4 py-3 rounded-xl border text-left transition-colors ${
                 provider === p.value
-                  ? 'border-pitch-500 bg-pitch-600/10 text-white'
-                  : 'border-navy-700 hover:border-navy-600 text-navy-300'
+                  ? 'border-pitch-500 bg-pitch-600/10 text-primary'
+                  : 'border-border-strong hover:border-border-strong text-secondary'
               } disabled:opacity-40 disabled:cursor-not-allowed`}
             >
-              {p.icon ? p.icon : <div className="w-5 h-5 rounded bg-navy-700" />}
+              {p.icon ? p.icon : <div className="w-5 h-5 rounded bg-border-default" />}
               <span className="text-sm font-medium">{p.label}</span>
               {provider === p.value && <Check className="w-3.5 h-3.5 text-pitch-400 ml-auto" />}
             </button>
@@ -197,9 +197,9 @@ export default function HoDSSOSettings() {
 
       {/* Provider-specific config */}
       {providerInfo && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-6 mb-6 space-y-4">
+        <div className="bg-card rounded-xl border border-border-default p-6 mb-6 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-base font-semibold text-white flex items-center gap-2">
+            <h3 className="text-base font-semibold text-primary flex items-center gap-2">
               {providerInfo.icon}
               {providerInfo.label} Configuration
             </h3>
@@ -216,8 +216,8 @@ export default function HoDSSOSettings() {
           {/* Setup instructions */}
           <ol className="space-y-1">
             {providerInfo.setupInstructions.map((step, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs text-navy-400">
-                <span className="shrink-0 w-4 h-4 rounded-full bg-navy-700 flex items-center justify-center text-[10px] text-navy-300 mt-0.5">{i + 1}</span>
+              <li key={i} className="flex items-start gap-2 text-xs text-secondary">
+                <span className="shrink-0 w-4 h-4 rounded-full bg-border-default flex items-center justify-center text-[10px] text-secondary mt-0.5">{i + 1}</span>
                 {step}
               </li>
             ))}
@@ -225,51 +225,51 @@ export default function HoDSSOSettings() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Client ID</label>
+              <label className="block text-xs text-secondary mb-1">Client ID</label>
               <input
                 type="text"
                 value={clientId}
                 onChange={e => setClientId(e.target.value)}
                 placeholder={config?.sso_config?.has_client_id ? '••••• (saved)' : 'Paste client ID'}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-600 focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Client Secret</label>
+              <label className="block text-xs text-secondary mb-1">Client Secret</label>
               <input
                 type="password"
                 value={clientSecret}
                 onChange={e => setClientSecret(e.target.value)}
                 placeholder={config?.sso_config?.has_client_secret ? '••••• (saved)' : 'Paste client secret'}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-600 focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
               />
             </div>
 
             {provider === 'microsoft' && (
               <div className="sm:col-span-2">
-                <label className="block text-xs text-navy-400 mb-1">Tenant ID</label>
+                <label className="block text-xs text-secondary mb-1">Tenant ID</label>
                 <input
                   type="text"
                   value={tenantId}
                   onChange={e => setTenantId(e.target.value)}
                   placeholder="common (or your tenant ID)"
-                  className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-600 focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                 />
-                <p className="text-xs text-navy-600 mt-1">{providerInfo.tenantHelp}</p>
+                <p className="text-xs text-tertiary mt-1">{providerInfo.tenantHelp}</p>
               </div>
             )}
 
             {provider === 'google' && (
               <div className="sm:col-span-2">
-                <label className="block text-xs text-navy-400 mb-1">Hosted Domain (hd)</label>
+                <label className="block text-xs text-secondary mb-1">Hosted Domain (hd)</label>
                 <input
                   type="text"
                   value={hd}
                   onChange={e => setHd(e.target.value)}
                   placeholder="e.g. langleyprep.co.uk"
-                  className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-600 focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                 />
-                <p className="text-xs text-navy-600 mt-1">{providerInfo.hdHelp}</p>
+                <p className="text-xs text-tertiary mt-1">{providerInfo.hdHelp}</p>
               </div>
             )}
           </div>
@@ -277,9 +277,9 @@ export default function HoDSSOSettings() {
       )}
 
       {/* Domain auto-provisioning allowlist */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-6 mb-6">
-        <h3 className="text-base font-semibold text-white mb-1">Domain Auto-Provisioning</h3>
-        <p className="text-sm text-navy-400 mb-4">
+      <div className="bg-card rounded-xl border border-border-default p-6 mb-6">
+        <h3 className="text-base font-semibold text-primary mb-1">Domain Auto-Provisioning</h3>
+        <p className="text-sm text-secondary mb-4">
           Email domains on this list are automatically provisioned as Teachers when signing in via SSO for the first time.
           Only add domains that belong exclusively to your school (e.g. your MIS or Google Workspace domain).
         </p>
@@ -291,12 +291,12 @@ export default function HoDSSOSettings() {
             onChange={e => setNewDomain(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAddDomain()}
             placeholder="e.g. langleyprep.co.uk"
-            className="flex-1 px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-600 focus:outline-none focus:border-pitch-500"
+            className="flex-1 px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
           />
           <button
             onClick={handleAddDomain}
             disabled={!newDomain.trim() || domainLoading}
-            className="flex items-center gap-1.5 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm disabled:opacity-50"
           >
             {domainLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             Add
@@ -306,12 +306,12 @@ export default function HoDSSOSettings() {
         {domains.length > 0 ? (
           <div className="flex flex-wrap gap-2">
             {domains.map(d => (
-              <div key={d} className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 rounded-lg text-sm text-white">
+              <div key={d} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle rounded-lg text-sm text-primary">
                 <Check className="w-3.5 h-3.5 text-pitch-400" />
                 {d}
                 <button
                   onClick={() => handleRemoveDomain(d)}
-                  className="ml-1 text-navy-500 hover:text-alert-400"
+                  className="ml-1 text-tertiary hover:text-alert-400"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -319,7 +319,7 @@ export default function HoDSSOSettings() {
             ))}
           </div>
         ) : (
-          <p className="text-xs text-navy-600">No domains configured. Auto-provisioning is disabled.</p>
+          <p className="text-xs text-tertiary">No domains configured. Auto-provisioning is disabled.</p>
         )}
       </div>
 
@@ -328,7 +328,7 @@ export default function HoDSSOSettings() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg font-medium transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save SSO Settings

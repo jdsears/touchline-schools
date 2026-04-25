@@ -20,7 +20,7 @@ function Toggle({ checked, onChange, disabled }) {
       type="button"
       onClick={() => !disabled && onChange(!checked)}
       className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${
-        checked ? 'bg-pitch-600' : 'bg-navy-700'
+        checked ? 'bg-pitch-600' : 'bg-border-default'
       } ${disabled ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
     >
       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
@@ -60,23 +60,23 @@ export default function NotificationsTab() {
 
   if (loading) return (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 
   return (
     <div className="max-w-xl space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white">Notifications</h2>
-        <p className="text-sm text-navy-400 mt-1">Choose which events send you email notifications.</p>
+        <h2 className="text-xl font-semibold text-primary">Notifications</h2>
+        <p className="text-sm text-secondary mt-1">Choose which events send you email notifications.</p>
       </div>
 
-      <div className="bg-navy-900 rounded-xl border border-navy-800 divide-y divide-navy-800">
+      <div className="bg-card rounded-xl border border-border-default divide-y divide-navy-800">
         {NOTIFICATION_ITEMS.map(item => (
           <div key={item.key} className="flex items-center justify-between px-5 py-4">
             <div className="flex-1 min-w-0 pr-4">
-              <div className="text-sm text-white">{item.label}</div>
-              <div className="text-xs text-navy-500 mt-0.5">{item.desc}</div>
+              <div className="text-sm text-primary">{item.label}</div>
+              <div className="text-xs text-tertiary mt-0.5">{item.desc}</div>
             </div>
             <Toggle
               checked={!!prefs[item.key]}
@@ -89,7 +89,7 @@ export default function NotificationsTab() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
       >
         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
         Save Preferences

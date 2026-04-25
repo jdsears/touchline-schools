@@ -18,7 +18,7 @@ const SPORTS_EMOJI = {
 }
 
 const STATUS_STYLES = {
-  draft: 'bg-navy-800 text-navy-400',
+  draft: 'bg-subtle text-secondary',
   planned: 'bg-blue-900/40 text-blue-400',
   delivered: 'bg-pitch-900/40 text-pitch-400',
 }
@@ -211,7 +211,7 @@ export default function TeacherLessons() {
   if (loading) {
     return (
       <div className="p-6 flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-navy-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-tertiary" />
       </div>
     )
   }
@@ -220,12 +220,12 @@ export default function TeacherLessons() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Lesson Planning</h1>
-          <p className="text-navy-400 mt-1">Plan and organise your curriculum PE lessons</p>
+          <h1 className="text-2xl font-bold text-primary">Lesson Planning</h1>
+          <p className="text-secondary mt-1">Plan and organise your curriculum PE lessons</p>
         </div>
         <button
           onClick={openModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg transition-colors text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors text-sm font-medium"
         >
           <Plus className="w-4 h-4" />
           New Lesson
@@ -233,17 +233,17 @@ export default function TeacherLessons() {
       </div>
 
       {lessons.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="w-8 h-8 text-navy-500" />
+        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
+            <BookOpen className="w-8 h-8 text-tertiary" />
           </div>
-          <h3 className="text-lg font-semibold text-white mb-2">No lessons planned yet</h3>
-          <p className="text-navy-400 text-sm max-w-md mx-auto mb-6">
+          <h3 className="text-lg font-semibold text-primary mb-2">No lessons planned yet</h3>
+          <p className="text-secondary text-sm max-w-md mx-auto mb-6">
             Create lesson plans linked to your teaching groups and sport units.
           </p>
           <button
             onClick={openModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Create your first lesson
@@ -253,7 +253,7 @@ export default function TeacherLessons() {
         <div className="space-y-8">
           {upcoming.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-navy-400 uppercase tracking-wider mb-3">Upcoming</h2>
+              <h2 className="text-sm font-semibold text-secondary uppercase tracking-wider mb-3">Upcoming</h2>
               <div className="space-y-3">
                 {upcoming.map(lesson => (
                   <LessonCard key={lesson.id} lesson={lesson} onDelete={handleDelete} onEdit={openEditModal} deletingId={deletingId} />
@@ -263,7 +263,7 @@ export default function TeacherLessons() {
           )}
           {past.length > 0 && (
             <div>
-              <h2 className="text-sm font-semibold text-navy-400 uppercase tracking-wider mb-3">Past</h2>
+              <h2 className="text-sm font-semibold text-secondary uppercase tracking-wider mb-3">Past</h2>
               <div className="space-y-3 opacity-70">
                 {past.slice(0, 20).map(lesson => (
                   <LessonCard key={lesson.id} lesson={lesson} onDelete={handleDelete} onEdit={openEditModal} deletingId={deletingId} />
@@ -277,16 +277,16 @@ export default function TeacherLessons() {
       {/* New Lesson Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-navy-900 rounded-2xl border border-navy-700 w-full max-w-xl max-h-[90vh] flex flex-col">
+          <div className="bg-card rounded-2xl border border-border-strong w-full max-w-xl max-h-[90vh] flex flex-col">
             {/* Modal header */}
-            <div className="flex items-center justify-between p-6 border-b border-navy-800 flex-shrink-0">
+            <div className="flex items-center justify-between p-6 border-b border-border-default flex-shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg bg-pitch-600/20 flex items-center justify-center">
                   <BookOpen className="w-5 h-5 text-pitch-400" />
                 </div>
-                <h2 className="text-lg font-semibold text-white">{editingId ? 'Edit Lesson Plan' : 'New Lesson Plan'}</h2>
+                <h2 className="text-lg font-semibold text-primary">{editingId ? 'Edit Lesson Plan' : 'New Lesson Plan'}</h2>
               </div>
-              <button onClick={() => { setShowModal(false); setEditingId(null) }} className="text-navy-400 hover:text-white transition-colors">
+              <button onClick={() => { setShowModal(false); setEditingId(null) }} className="text-secondary hover:text-link transition-colors">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -296,7 +296,7 @@ export default function TeacherLessons() {
               <div className="p-6 space-y-5">
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1.5">Lesson title *</label>
+                  <label className="block text-sm font-medium text-secondary mb-1.5">Lesson title *</label>
                   <input
                     type="text"
                     value={form.title}
@@ -310,7 +310,7 @@ export default function TeacherLessons() {
                 {/* Class & Unit */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                    <label className="block text-sm font-medium text-secondary mb-1.5">
                       <GraduationCap className="w-3.5 h-3.5 inline mr-1" />
                       Teaching group
                     </label>
@@ -329,7 +329,7 @@ export default function TeacherLessons() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                    <label className="block text-sm font-medium text-secondary mb-1.5">
                       <Tag className="w-3.5 h-3.5 inline mr-1" />
                       Sport unit
                     </label>
@@ -350,7 +350,7 @@ export default function TeacherLessons() {
                 {/* Date & Duration */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                    <label className="block text-sm font-medium text-secondary mb-1.5">
                       <Calendar className="w-3.5 h-3.5 inline mr-1" />
                       Date
                     </label>
@@ -363,7 +363,7 @@ export default function TeacherLessons() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                    <label className="block text-sm font-medium text-secondary mb-1.5">
                       <Clock className="w-3.5 h-3.5 inline mr-1" />
                       Duration
                     </label>
@@ -384,7 +384,7 @@ export default function TeacherLessons() {
                   type="button"
                   onClick={handleGenerate}
                   disabled={generating}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-purple-800 disabled:to-blue-800 text-white rounded-xl text-sm font-medium transition-all"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 disabled:from-purple-800 disabled:to-blue-800 text-primary rounded-xl text-sm font-medium transition-all"
                 >
                   {generating ? (
                     <>
@@ -399,14 +399,14 @@ export default function TeacherLessons() {
                   )}
                 </button>
                 {generating && (
-                  <p className="text-xs text-navy-500 text-center -mt-3">
+                  <p className="text-xs text-tertiary text-center -mt-3">
                     The AI will fill in objectives, activities, equipment, differentiation, and homework based on your selections above.
                   </p>
                 )}
 
                 {/* Learning objectives */}
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1.5">Learning objectives</label>
+                  <label className="block text-sm font-medium text-secondary mb-1.5">Learning objectives</label>
                   <textarea
                     value={form.learning_objectives}
                     onChange={e => setForm(f => ({ ...f, learning_objectives: e.target.value }))}
@@ -418,7 +418,7 @@ export default function TeacherLessons() {
 
                 {/* Activities */}
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1.5">Activities / lesson structure</label>
+                  <label className="block text-sm font-medium text-secondary mb-1.5">Activities / lesson structure</label>
                   <textarea
                     value={form.activities}
                     onChange={e => setForm(f => ({ ...f, activities: e.target.value }))}
@@ -430,7 +430,7 @@ export default function TeacherLessons() {
 
                 {/* Equipment */}
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1.5">Equipment needed</label>
+                  <label className="block text-sm font-medium text-secondary mb-1.5">Equipment needed</label>
                   <input
                     type="text"
                     value={form.equipment}
@@ -442,7 +442,7 @@ export default function TeacherLessons() {
 
                 {/* Differentiation */}
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                  <label className="block text-sm font-medium text-secondary mb-1.5">
                     <Users className="w-3.5 h-3.5 inline mr-1" />
                     Differentiation
                   </label>
@@ -457,7 +457,7 @@ export default function TeacherLessons() {
 
                 {/* Homework */}
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1.5">
+                  <label className="block text-sm font-medium text-secondary mb-1.5">
                     <ClipboardList className="w-3.5 h-3.5 inline mr-1" />
                     Homework / follow-up
                   </label>
@@ -472,7 +472,7 @@ export default function TeacherLessons() {
 
                 {/* Status */}
                 <div>
-                  <label className="block text-sm font-medium text-navy-300 mb-1.5">Status</label>
+                  <label className="block text-sm font-medium text-secondary mb-1.5">Status</label>
                   <div className="flex gap-2">
                     {['draft', 'planned', 'delivered'].map(s => (
                       <button
@@ -481,8 +481,8 @@ export default function TeacherLessons() {
                         onClick={() => setForm(f => ({ ...f, status: s }))}
                         className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors border ${
                           form.status === s
-                            ? 'bg-pitch-600 text-white border-pitch-600'
-                            : 'bg-navy-800 text-navy-400 border-navy-700 hover:text-white'
+                            ? 'bg-pitch-600 text-primary border-pitch-600'
+                            : 'bg-subtle text-secondary border-border-strong hover:text-link'
                         }`}
                       >
                         {s}
@@ -493,18 +493,18 @@ export default function TeacherLessons() {
               </div>
 
               {/* Modal footer */}
-              <div className="p-6 border-t border-navy-800 flex items-center justify-end gap-3 flex-shrink-0">
+              <div className="p-6 border-t border-border-default flex items-center justify-end gap-3 flex-shrink-0">
                 <button
                   type="button"
                   onClick={() => { setShowModal(false); setEditingId(null) }}
-                  className="px-4 py-2.5 text-sm text-navy-400 hover:text-white transition-colors"
+                  className="px-4 py-2.5 text-sm text-secondary hover:text-link transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={saving || !form.title.trim()}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                   {saving ? (editingId ? 'Saving…' : 'Creating…') : (editingId ? 'Save Changes' : 'Create Lesson')}
@@ -523,54 +523,54 @@ function LessonCard({ lesson, onDelete, onEdit, deletingId }) {
   const statusStyle = STATUS_STYLES[lesson.status] || STATUS_STYLES.draft
 
   return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 hover:border-navy-700 transition-colors flex items-center justify-between gap-4 group">
+    <div className="bg-card rounded-xl border border-border-default hover:border-border-strong transition-colors flex items-center justify-between gap-4 group">
       <button
         type="button"
         onClick={() => onEdit(lesson)}
-        className="flex items-center gap-4 min-w-0 flex-1 text-left p-5 rounded-xl hover:bg-navy-800/30 transition-colors"
+        className="flex items-center gap-4 min-w-0 flex-1 text-left p-5 rounded-xl hover:bg-subtle transition-colors"
       >
-        <div className="w-10 h-10 rounded-lg bg-navy-800 flex items-center justify-center text-lg flex-shrink-0">
+        <div className="w-10 h-10 rounded-lg bg-subtle flex items-center justify-center text-lg flex-shrink-0">
           {emoji}
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-medium text-white truncate">{lesson.title}</span>
+            <span className="text-sm font-medium text-primary truncate">{lesson.title}</span>
             <span className={`px-1.5 py-0.5 rounded text-xs capitalize flex-shrink-0 ${statusStyle}`}>
               {lesson.status}
             </span>
           </div>
           <div className="flex items-center gap-3 mt-1 flex-wrap">
             {lesson.lesson_date && (
-              <span className="text-xs text-navy-400 flex items-center gap-1">
+              <span className="text-xs text-secondary flex items-center gap-1">
                 <Calendar className="w-3 h-3" />
                 {formatDate(lesson.lesson_date)}
               </span>
             )}
             {lesson.duration && (
-              <span className="text-xs text-navy-400 flex items-center gap-1">
+              <span className="text-xs text-secondary flex items-center gap-1">
                 <Clock className="w-3 h-3" />
                 {lesson.duration} min
               </span>
             )}
             {lesson.teaching_group_name && (
-              <span className="text-xs text-navy-400 flex items-center gap-1">
+              <span className="text-xs text-secondary flex items-center gap-1">
                 <GraduationCap className="w-3 h-3" />
                 {lesson.teaching_group_name}
                 {lesson.year_group ? ` (Y${lesson.year_group})` : ''}
               </span>
             )}
             {lesson.unit_name && (
-              <span className="text-xs text-navy-500">· {lesson.unit_name}</span>
+              <span className="text-xs text-tertiary">· {lesson.unit_name}</span>
             )}
           </div>
         </div>
-        <ChevronRight className="w-4 h-4 text-navy-600 group-hover:text-navy-400 flex-shrink-0 transition-colors" />
+        <ChevronRight className="w-4 h-4 text-tertiary group-hover:text-secondary flex-shrink-0 transition-colors" />
       </button>
 
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(lesson) }}
         disabled={deletingId === lesson.id}
-        className="p-2 mr-3 text-navy-500 hover:text-red-400 transition-colors flex-shrink-0"
+        className="p-2 mr-3 text-tertiary hover:text-red-400 transition-colors flex-shrink-0"
         title="Delete lesson"
       >
         {deletingId === lesson.id

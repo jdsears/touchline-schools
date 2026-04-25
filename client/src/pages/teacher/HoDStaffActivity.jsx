@@ -65,28 +65,28 @@ export default function HoDStaffActivity() {
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
-      <Link to="/teacher/hod" className="inline-flex items-center gap-1.5 text-sm text-navy-400 hover:text-white transition-colors">
+      <Link to="/teacher/hod" className="inline-flex items-center gap-1.5 text-sm text-secondary hover:text-link transition-colors">
         <ArrowLeft className="w-4 h-4" />Back to School Overview
       </Link>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-white flex items-center gap-3">
+          <h1 className="text-xl md:text-2xl font-bold text-primary flex items-center gap-3">
             <UserCog className="w-6 h-6 text-amber-400" />
             Staff Activity Report
           </h1>
           {data && (
-            <p className="text-navy-400 text-sm mt-0.5">{formatDate(data.start)} – {formatDate(data.end)}</p>
+            <p className="text-secondary text-sm mt-0.5">{formatDate(data.start)} – {formatDate(data.end)}</p>
           )}
         </div>
         <div className="flex items-center gap-2">
-          <div className="flex rounded-lg overflow-hidden border border-navy-700">
+          <div className="flex rounded-lg overflow-hidden border border-border-strong">
             {PERIODS.map(p => (
               <button
                 key={p.value}
                 onClick={() => setPeriod(p.value)}
                 className={`px-3 py-1.5 text-xs transition-colors ${
-                  period === p.value ? 'bg-pitch-600 text-white' : 'bg-navy-800 hover:bg-navy-700 text-navy-300'
+                  period === p.value ? 'bg-pitch-600 text-primary' : 'bg-subtle hover:bg-border-default text-secondary'
                 }`}
               >
                 {p.label}
@@ -96,7 +96,7 @@ export default function HoDStaffActivity() {
           <button
             onClick={downloadCSV}
             disabled={!data}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-navy-700 text-navy-200 text-xs rounded-lg border border-navy-700 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-primary text-xs rounded-lg border border-border-strong transition-colors disabled:opacity-50"
           >
             <Download className="w-3.5 h-3.5" />Export CSV
           </button>
@@ -112,7 +112,7 @@ export default function HoDStaffActivity() {
       {error && !loading && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <AlertTriangle className="w-8 h-8 text-amber-400 mb-3" />
-          <p className="text-navy-300 text-sm">{error}</p>
+          <p className="text-secondary text-sm">{error}</p>
         </div>
       )}
 
@@ -125,10 +125,10 @@ export default function HoDStaffActivity() {
             <Stat label="Reports updated" value={data.totals.reports_updated} />
           </div>
 
-          <div className="bg-navy-900 rounded-xl border border-navy-800 overflow-hidden">
+          <div className="bg-card rounded-xl border border-border-default overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-navy-800/50 text-navy-400 text-xs uppercase tracking-wide">
+                <thead className="bg-subtle text-secondary text-xs uppercase tracking-wide">
                   <tr>
                     <Th label="Name" col="name" sort={sort} setSort={setSort} />
                     <th className="px-4 py-3 text-left">Role</th>
@@ -140,15 +140,15 @@ export default function HoDStaffActivity() {
                 </thead>
                 <tbody>
                   {sortedStaff.length === 0 ? (
-                    <tr><td colSpan={6} className="px-4 py-12 text-center text-navy-500">No staff to display</td></tr>
+                    <tr><td colSpan={6} className="px-4 py-12 text-center text-tertiary">No staff to display</td></tr>
                   ) : sortedStaff.map(s => (
-                    <tr key={s.id} className="border-t border-navy-800 hover:bg-navy-800/30 transition-colors">
-                      <td className="px-4 py-3 text-white">{s.name}<div className="text-xs text-navy-500">{s.email}</div></td>
-                      <td className="px-4 py-3 text-navy-300 text-xs">{ROLE_LABELS[s.role] || s.role}</td>
-                      <td className={`px-4 py-3 text-right font-mono ${s.observations_logged > 0 ? 'text-pitch-400' : 'text-navy-600'}`}>{s.observations_logged}</td>
-                      <td className={`px-4 py-3 text-right font-mono ${s.reports_updated > 0 ? 'text-pitch-400' : 'text-navy-600'}`}>{s.reports_updated}</td>
-                      <td className="px-4 py-3 text-right font-mono text-navy-300">{s.classes_taught}</td>
-                      <td className="px-4 py-3 text-xs text-navy-400 capitalize">{(s.sports || []).join(', ') || '—'}</td>
+                    <tr key={s.id} className="border-t border-border-default hover:bg-subtle transition-colors">
+                      <td className="px-4 py-3 text-primary">{s.name}<div className="text-xs text-tertiary">{s.email}</div></td>
+                      <td className="px-4 py-3 text-secondary text-xs">{ROLE_LABELS[s.role] || s.role}</td>
+                      <td className={`px-4 py-3 text-right font-mono ${s.observations_logged > 0 ? 'text-pitch-400' : 'text-tertiary'}`}>{s.observations_logged}</td>
+                      <td className={`px-4 py-3 text-right font-mono ${s.reports_updated > 0 ? 'text-pitch-400' : 'text-tertiary'}`}>{s.reports_updated}</td>
+                      <td className="px-4 py-3 text-right font-mono text-secondary">{s.classes_taught}</td>
+                      <td className="px-4 py-3 text-xs text-secondary capitalize">{(s.sports || []).join(', ') || '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -163,9 +163,9 @@ export default function HoDStaffActivity() {
 
 function Stat({ label, value }) {
   return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 p-4">
-      <div className="text-2xl font-bold text-white">{value}</div>
-      <div className="text-xs text-navy-400 mt-1">{label}</div>
+    <div className="bg-card rounded-xl border border-border-default p-4">
+      <div className="text-2xl font-bold text-primary">{value}</div>
+      <div className="text-xs text-secondary mt-1">{label}</div>
     </div>
   )
 }
@@ -174,7 +174,7 @@ function Th({ label, col, sort, setSort, align = 'left' }) {
   const active = sort === col
   return (
     <th className={`px-4 py-3 text-${align}`}>
-      <button onClick={() => setSort(col)} className={`hover:text-white transition-colors ${active ? 'text-white' : ''}`}>
+      <button onClick={() => setSort(col)} className={`hover:text-link transition-colors ${active ? 'text-primary' : ''}`}>
         {label}{active ? ' ↓' : ''}
       </button>
     </th>

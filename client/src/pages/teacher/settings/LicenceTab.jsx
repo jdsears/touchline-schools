@@ -4,13 +4,13 @@ import { Loader2, Mail, Calendar, Users, Dumbbell } from 'lucide-react'
 
 function Row({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-navy-800 last:border-0">
-      <div className="w-8 h-8 rounded-lg bg-navy-800 flex items-center justify-center flex-shrink-0">
-        <Icon className="w-4 h-4 text-navy-400" />
+    <div className="flex items-center gap-3 py-3 border-b border-border-default last:border-0">
+      <div className="w-8 h-8 rounded-lg bg-subtle flex items-center justify-center flex-shrink-0">
+        <Icon className="w-4 h-4 text-secondary" />
       </div>
       <div className="flex-1 min-w-0">
-        <div className="text-xs text-navy-500">{label}</div>
-        <div className="text-sm text-white">{value || <span className="text-navy-500">Not set</span>}</div>
+        <div className="text-xs text-tertiary">{label}</div>
+        <div className="text-sm text-primary">{value || <span className="text-tertiary">Not set</span>}</div>
       </div>
     </div>
   )
@@ -34,7 +34,7 @@ export default function LicenceTab() {
 
   if (loading) return (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 
@@ -46,8 +46,8 @@ export default function LicenceTab() {
   return (
     <div className="max-w-xl space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white">Licence</h2>
-        <p className="text-sm text-navy-400 mt-1">
+        <h2 className="text-xl font-semibold text-primary">Licence</h2>
+        <p className="text-sm text-secondary mt-1">
           Your school's MoonBoots licence details. Read-only — contact MoonBoots to update.
         </p>
       </div>
@@ -58,7 +58,7 @@ export default function LicenceTab() {
         </div>
       )}
 
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
+      <div className="bg-card rounded-xl border border-border-default p-5">
         <Row icon={Calendar} label="Licence Start"   value={formatDate(licence?.term_start)} />
         <Row icon={Calendar} label="Renewal Date"    value={renewalDate} />
         <Row icon={Users}    label="Seat Count"      value={licence?.seat_count ? `${licence.seat_count} staff seats` : null} />
@@ -67,20 +67,20 @@ export default function LicenceTab() {
       </div>
 
       {licence?.notes && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-          <h3 className="text-sm font-semibold text-white mb-2">Notes</h3>
-          <p className="text-sm text-navy-300">{licence.notes}</p>
+        <div className="bg-card rounded-xl border border-border-default p-5">
+          <h3 className="text-sm font-semibold text-primary mb-2">Notes</h3>
+          <p className="text-sm text-secondary">{licence.notes}</p>
         </div>
       )}
 
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-        <h3 className="text-sm font-semibold text-white mb-2">Licence Review</h3>
-        <p className="text-sm text-navy-400 mb-3">
+      <div className="bg-card rounded-xl border border-border-default p-5">
+        <h3 className="text-sm font-semibold text-primary mb-2">Licence Review</h3>
+        <p className="text-sm text-secondary mb-3">
           To discuss your licence, add sports, or adjust your seat count, contact the MoonBoots team.
         </p>
         <a
           href={`mailto:accounts@moonbootssports.com?subject=Licence review request&body=School: ${encodeURIComponent(window.location.hostname)}`}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors"
         >
           <Mail className="w-4 h-4" />
           Request licence review

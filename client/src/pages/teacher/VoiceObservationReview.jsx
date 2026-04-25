@@ -14,7 +14,7 @@ const OBS_TYPE_LABELS = {
   tactical: { label: 'Tactical', color: 'bg-purple-500/20 text-purple-400' },
   behaviour: { label: 'Behaviour', color: 'bg-amber-400/20 text-amber-400' },
   training_implication: { label: 'Training', color: 'bg-cyan-500/20 text-cyan-400' },
-  team_level: { label: 'Team', color: 'bg-navy-600/40 text-navy-300' },
+  team_level: { label: 'Team', color: 'bg-navy-600/40 text-secondary' },
 }
 
 const CONTEXT_LABELS = {
@@ -120,7 +120,7 @@ export default function VoiceObservationReview() {
   if (!data) {
     return (
       <div className="p-6 text-center">
-        <p className="text-navy-400">Voice observation not found or still processing.</p>
+        <p className="text-secondary">Voice observation not found or still processing.</p>
         <button onClick={() => navigate('/teacher')} className="text-pitch-400 hover:underline text-sm mt-2">
           Back to Teacher Hub
         </button>
@@ -143,8 +143,8 @@ export default function VoiceObservationReview() {
             <Mic className="w-5 h-5 text-pitch-400" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">Review Voice Observation</h1>
-            <p className="text-xs text-navy-400">
+            <h1 className="text-xl font-bold text-primary">Review Voice Observation</h1>
+            <p className="text-xs text-secondary">
               {CONTEXT_LABELS[audio_source.context_type] || 'Observation'}
               {audio_source.duration_seconds && ` - ${Math.round(audio_source.duration_seconds)}s`}
             </p>
@@ -154,17 +154,17 @@ export default function VoiceObservationReview() {
 
       {/* Transcript (collapsible) */}
       {audio_source.transcript && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 mb-6">
+        <div className="bg-card rounded-xl border border-border-default mb-6">
           <button
             onClick={() => setShowTranscript(!showTranscript)}
-            className="w-full flex items-center justify-between px-5 py-3 text-sm text-navy-300 hover:text-white transition-colors"
+            className="w-full flex items-center justify-between px-5 py-3 text-sm text-secondary hover:text-link transition-colors"
           >
             <span>Transcript</span>
             {showTranscript ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
           {showTranscript && (
             <div className="px-5 pb-4">
-              <p className="text-sm text-navy-300 leading-relaxed whitespace-pre-wrap">
+              <p className="text-sm text-secondary leading-relaxed whitespace-pre-wrap">
                 {audio_source.transcript}
               </p>
             </div>
@@ -180,7 +180,7 @@ export default function VoiceObservationReview() {
               <AlertTriangle className="w-5 h-5 text-alert-400 shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-sm font-semibold text-alert-400">Safeguarding content detected</h3>
-                <p className="text-xs text-navy-300 mt-1">
+                <p className="text-xs text-secondary mt-1">
                   The following observations have been flagged as potentially safeguarding-relevant.
                   If confirmed, they will be routed to the Designated Safeguarding Lead rather than
                   filed as routine observations.
@@ -223,25 +223,25 @@ export default function VoiceObservationReview() {
           ))}
         </div>
       ) : pendingObs.length === 0 && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-8 text-center mb-6">
-          <p className="text-navy-400 text-sm">No observations were extracted from this recording.</p>
-          <p className="text-navy-500 text-xs mt-1">The transcript may not have contained actionable coaching content.</p>
+        <div className="bg-card rounded-xl border border-border-default p-8 text-center mb-6">
+          <p className="text-secondary text-sm">No observations were extracted from this recording.</p>
+          <p className="text-tertiary text-xs mt-1">The transcript may not have contained actionable coaching content.</p>
         </div>
       )}
 
       {/* Rejected (collapsed) */}
       {rejectedObs.length > 0 && (
-        <div className="text-xs text-navy-500 mb-6">
+        <div className="text-xs text-tertiary mb-6">
           {rejectedObs.length} observation{rejectedObs.length > 1 ? 's' : ''} removed
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex items-center justify-between pt-4 border-t border-navy-800">
+      <div className="flex items-center justify-between pt-4 border-t border-border-default">
         <button
           onClick={handleDiscard}
           disabled={discarding}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-navy-400 hover:text-alert-400 text-sm transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2.5 text-secondary hover:text-alert-400 text-sm transition-colors"
         >
           <Trash2 className="w-4 h-4" />
           Discard everything
@@ -250,7 +250,7 @@ export default function VoiceObservationReview() {
           <button
             onClick={handleConfirmAll}
             disabled={confirming}
-            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             {confirming ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCheck className="w-4 h-4" />}
             Confirm all ({pendingObs.length})
@@ -267,24 +267,24 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
   const [showFragment, setShowFragment] = useState(false)
 
   return (
-    <div className={`bg-navy-900 rounded-xl border ${isSafeguarding ? 'border-alert-600/30' : 'border-navy-800'} p-4`}>
+    <div className={`bg-card rounded-xl border ${isSafeguarding ? 'border-alert-600/30' : 'border-border-default'} p-4`}>
       {/* Pupil and type */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           {obs.pupil_id ? (
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-full bg-navy-700 flex items-center justify-center">
-                <span className="text-xs font-medium text-white">
+              <div className="w-7 h-7 rounded-full bg-border-default flex items-center justify-center">
+                <span className="text-xs font-medium text-primary">
                   {obs.first_name?.charAt(0)}{obs.last_name?.charAt(0)}
                 </span>
               </div>
-              <span className="text-sm font-medium text-white">{obs.first_name} {obs.last_name}</span>
-              {obs.year_group && <span className="text-xs text-navy-500">Y{obs.year_group}</span>}
+              <span className="text-sm font-medium text-primary">{obs.first_name} {obs.last_name}</span>
+              {obs.year_group && <span className="text-xs text-tertiary">Y{obs.year_group}</span>}
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              <Users className="w-4 h-4 text-navy-400" />
-              <span className="text-sm text-navy-300">Team-level note</span>
+              <Users className="w-4 h-4 text-secondary" />
+              <span className="text-sm text-secondary">Team-level note</span>
             </div>
           )}
           <span className={`px-2 py-0.5 rounded text-xs font-medium ${typeConfig.color}`}>
@@ -297,7 +297,7 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
           )}
         </div>
         {obs.confidence != null && (
-          <span className="text-xs text-navy-500">{Math.round(obs.confidence * 100)}%</span>
+          <span className="text-xs text-tertiary">{Math.round(obs.confidence * 100)}%</span>
         )}
       </div>
 
@@ -308,44 +308,44 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
             value={editContent}
             onChange={e => onEditContentChange(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500 resize-none"
+            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500 resize-none"
           />
           <div className="flex gap-2 mt-2">
-            <button onClick={onCancelEdit} className="px-3 py-1 bg-navy-800 text-navy-400 rounded text-xs">Cancel</button>
-            <button onClick={() => onSaveEdit(obs.id)} className="px-3 py-1 bg-pitch-600 text-white rounded text-xs">Save</button>
+            <button onClick={onCancelEdit} className="px-3 py-1 bg-subtle text-secondary rounded text-xs">Cancel</button>
+            <button onClick={() => onSaveEdit(obs.id)} className="px-3 py-1 bg-pitch-600 text-primary rounded text-xs">Save</button>
           </div>
         </div>
       ) : (
-        <p className="text-sm text-navy-200 mb-2">{obs.content}</p>
+        <p className="text-sm text-primary mb-2">{obs.content}</p>
       )}
 
       {/* Transcript fragment */}
       {obs.transcript_fragment && (
         <button
           onClick={() => setShowFragment(!showFragment)}
-          className="text-xs text-navy-500 hover:text-navy-400 transition-colors"
+          className="text-xs text-tertiary hover:text-secondary transition-colors"
         >
           {showFragment ? 'Hide source' : 'Show source'}
         </button>
       )}
       {showFragment && obs.transcript_fragment && (
-        <div className="mt-1 px-3 py-2 bg-navy-800/50 rounded text-xs text-navy-400 italic">
+        <div className="mt-1 px-3 py-2 bg-subtle rounded text-xs text-secondary italic">
           "{obs.transcript_fragment}"
         </div>
       )}
 
       {/* Actions */}
       {!isEditing && obs.review_state !== 'rejected' && (
-        <div className="flex gap-2 mt-3 pt-2 border-t border-navy-800/50">
+        <div className="flex gap-2 mt-3 pt-2 border-t border-border-subtle">
           <button
             onClick={() => onStartEdit(obs.id, obs.content)}
-            className="flex items-center gap-1 px-2.5 py-1 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded text-xs transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 bg-subtle hover:bg-border-default text-secondary rounded text-xs transition-colors"
           >
             <Edit3 className="w-3 h-3" /> Edit
           </button>
           <button
             onClick={() => onReject(obs.id)}
-            className="flex items-center gap-1 px-2.5 py-1 bg-navy-800 hover:bg-navy-700 text-navy-400 hover:text-alert-400 rounded text-xs transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 bg-subtle hover:bg-border-default text-secondary hover:text-alert-400 rounded text-xs transition-colors"
           >
             <X className="w-3 h-3" /> Remove
           </button>

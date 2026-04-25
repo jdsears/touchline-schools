@@ -41,7 +41,7 @@ export default function HoDConsent() {
     finally { setResetting(false) }
   }
 
-  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>
+  if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>
 
   const { types, summary, totalPupils } = data || {}
   const totalGranted = summary?.reduce((s, t) => s + parseInt(t.granted || 0), 0) || 0
@@ -53,14 +53,14 @@ export default function HoDConsent() {
     <div className="p-4 sm:p-6 max-w-6xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-xl font-bold text-primary flex items-center gap-2">
             <ShieldCheck className="w-6 h-6 text-amber-400" /> Parental Consent
           </h1>
-          <p className="text-sm text-navy-400 mt-0.5">{totalPupils} pupils across the school</p>
+          <p className="text-sm text-secondary mt-0.5">{totalPupils} pupils across the school</p>
         </div>
         {(!types || types.length === 0) && (
           <button onClick={seedDefaults} disabled={seeding}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-lg text-sm">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm">
             {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             Set up default consent types
           </button>
@@ -77,10 +77,10 @@ export default function HoDConsent() {
 
       {/* Per-type breakdown */}
       {summary && summary.length > 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+        <div className="bg-card border border-border-default rounded-xl overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-navy-800 text-navy-400 text-xs uppercase tracking-wider">
+              <tr className="border-b border-border-default text-secondary text-xs uppercase tracking-wider">
                 <th className="px-4 py-3 text-left">Consent Type</th>
                 <th className="px-4 py-3 text-center w-20">Granted</th>
                 <th className="px-4 py-3 text-center w-20">Pending</th>
@@ -95,24 +95,24 @@ export default function HoDConsent() {
                 const granted = parseInt(row.granted || 0)
                 const coverage = totalPupils > 0 ? Math.round((granted / totalPupils) * 100) : 0
                 return (
-                  <tr key={row.consent_type_id} className="border-b border-navy-800/50 hover:bg-navy-800/30">
-                    <td className="px-4 py-3 text-white font-medium">{row.name}</td>
+                  <tr key={row.consent_type_id} className="border-b border-border-subtle hover:bg-subtle">
+                    <td className="px-4 py-3 text-primary font-medium">{row.name}</td>
                     <td className="px-4 py-3 text-center text-green-400">{row.granted || 0}</td>
                     <td className="px-4 py-3 text-center text-amber-400">{row.pending || 0}</td>
                     <td className="px-4 py-3 text-center text-red-400">{row.refused || 0}</td>
                     <td className="px-4 py-3 text-center">
                       {parseInt(row.expiring_soon || 0) > 0
                         ? <span className="text-orange-400">{row.expiring_soon}</span>
-                        : <span className="text-navy-500">0</span>}
+                        : <span className="text-tertiary">0</span>}
                     </td>
                     <td className="px-4 py-3 text-center">
                       {parseInt(row.expired || 0) > 0
                         ? <span className="text-red-400">{row.expired}</span>
-                        : <span className="text-navy-500">0</span>}
+                        : <span className="text-tertiary">0</span>}
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <div className="w-16 h-1.5 bg-navy-700 rounded-full overflow-hidden">
+                        <div className="w-16 h-1.5 bg-border-default rounded-full overflow-hidden">
                           <div className="h-full bg-pitch-500 rounded-full" style={{ width: `${coverage}%` }} />
                         </div>
                         <span className={`text-xs ${coverage >= 80 ? 'text-green-400' : coverage >= 50 ? 'text-amber-400' : 'text-red-400'}`}>
@@ -127,22 +127,22 @@ export default function HoDConsent() {
           </table>
         </div>
       ) : (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-12 text-center">
+        <div className="bg-card border border-border-default rounded-xl p-12 text-center">
           <ShieldCheck className="w-12 h-12 text-navy-700 mx-auto mb-3" />
-          <p className="text-navy-400">No consent types configured yet.</p>
-          <p className="text-sm text-navy-500 mt-1">Click "Set up default consent types" to get started with standard UK school sport consents.</p>
+          <p className="text-secondary">No consent types configured yet.</p>
+          <p className="text-sm text-tertiary mt-1">Click "Set up default consent types" to get started with standard UK school sport consents.</p>
         </div>
       )}
 
       {/* Academic year reset */}
       {types && types.length > 0 && (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-4 flex items-center justify-between">
+        <div className="bg-card border border-border-default rounded-xl p-4 flex items-center justify-between">
           <div>
-            <h3 className="text-sm font-semibold text-white">New Academic Year Reset</h3>
-            <p className="text-xs text-navy-400 mt-0.5">Expire all annual consents and require fresh parent confirmation for the new year.</p>
+            <h3 className="text-sm font-semibold text-primary">New Academic Year Reset</h3>
+            <p className="text-xs text-secondary mt-0.5">Expire all annual consents and require fresh parent confirmation for the new year.</p>
           </div>
           <button onClick={() => setShowResetConfirm(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-sm shrink-0">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-primary rounded-lg text-sm shrink-0">
             <RefreshCw className="w-3.5 h-3.5" /> Start of Year Reset
           </button>
         </div>
@@ -151,16 +151,16 @@ export default function HoDConsent() {
       {/* Reset confirmation modal */}
       {showResetConfirm && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={() => setShowResetConfirm(false)}>
-          <div className="bg-navy-900 border border-navy-800 rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
-            <h3 className="text-lg font-semibold text-white mb-2">Confirm Academic Year Reset</h3>
-            <p className="text-sm text-navy-300 mb-4">
+          <div className="bg-card border border-border-default rounded-xl p-6 w-full max-w-md" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-semibold text-primary mb-2">Confirm Academic Year Reset</h3>
+            <p className="text-sm text-secondary mb-4">
               This will expire all annual consents for {totalPupils} pupils. Parents will need to re-consent.
               Per-term consents are not affected.
             </p>
             <div className="flex justify-end gap-2">
-              <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 text-sm text-navy-400 hover:text-white">Cancel</button>
+              <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 text-sm text-secondary hover:text-link">Cancel</button>
               <button onClick={bulkReset} disabled={resetting}
-                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-white rounded-lg text-sm">
+                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-primary rounded-lg text-sm">
                 {resetting ? 'Resetting...' : 'Confirm Reset'}
               </button>
             </div>
@@ -173,12 +173,12 @@ export default function HoDConsent() {
 
 function SummaryCard({ label, value, icon: Icon, color }) {
   return (
-    <div className="bg-navy-900 border border-navy-800 rounded-xl p-4">
+    <div className="bg-card border border-border-default rounded-xl p-4">
       <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-2 ${color}`}>
         <Icon className="w-5 h-5" />
       </div>
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="text-xs text-navy-400 mt-0.5">{label}</p>
+      <p className="text-2xl font-bold text-primary">{value}</p>
+      <p className="text-xs text-secondary mt-0.5">{label}</p>
     </div>
   )
 }

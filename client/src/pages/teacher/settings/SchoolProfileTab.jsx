@@ -15,8 +15,8 @@ const SCHOOL_TYPES = [
 function Field({ label, children, hint }) {
   return (
     <div>
-      <label className="block text-sm text-navy-300 mb-1">{label}</label>
-      {hint && <p className="text-xs text-navy-500 mb-1">{hint}</p>}
+      <label className="block text-sm text-secondary mb-1">{label}</label>
+      {hint && <p className="text-xs text-tertiary mb-1">{hint}</p>}
       {children}
     </div>
   )
@@ -30,10 +30,10 @@ function Input({ value, onChange, placeholder, type = 'text', readOnly }) {
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
       readOnly={readOnly}
-      className={`w-full px-3 py-2 rounded-lg border text-sm text-white placeholder:text-navy-500 focus:outline-none focus:border-pitch-500 ${
+      className={`w-full px-3 py-2 rounded-lg border text-sm text-primary placeholder:text-tertiary focus:outline-none focus:border-pitch-500 ${
         readOnly
-          ? 'bg-navy-800/40 border-navy-800 text-navy-400 cursor-default'
-          : 'bg-navy-800 border-navy-700'
+          ? 'bg-subtle/40 border-border-default text-secondary cursor-default'
+          : 'bg-subtle border-border-strong'
       }`}
     />
   )
@@ -72,15 +72,15 @@ export default function SchoolProfileTab({ access }) {
 
   if (loading) return (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 
   return (
     <div className="max-w-2xl space-y-8">
       <div>
-        <h2 className="text-xl font-semibold text-white">School Profile</h2>
-        <p className="text-sm text-navy-400 mt-1">
+        <h2 className="text-xl font-semibold text-primary">School Profile</h2>
+        <p className="text-sm text-secondary mt-1">
           Core school details used across the platform.
           {!canEdit && <span className="ml-2 text-amber-400">View only — contact your School Administrator to edit.</span>}
         </p>
@@ -88,8 +88,8 @@ export default function SchoolProfileTab({ access }) {
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Basic details */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Basic Details</h3>
+        <div className="bg-card rounded-xl border border-border-default p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-primary">Basic Details</h3>
           <div className="grid grid-cols-2 gap-4">
             <Field label="School Name" hint="To request a name change, contact MoonBoots.">
               <Input value={form.name} onChange={() => {}} readOnly />
@@ -99,7 +99,7 @@ export default function SchoolProfileTab({ access }) {
                 <select
                   value={form.school_type || 'secondary'}
                   onChange={e => set('school_type')(e.target.value)}
-                  className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
                 >
                   {SCHOOL_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
@@ -114,8 +114,8 @@ export default function SchoolProfileTab({ access }) {
         </div>
 
         {/* Contact */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Contact Details</h3>
+        <div className="bg-card rounded-xl border border-border-default p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-primary">Contact Details</h3>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Contact Email">
               <Input value={form.contact_email} onChange={set('contact_email')} placeholder="office@school.ac.uk" readOnly={!canEdit} />
@@ -144,8 +144,8 @@ export default function SchoolProfileTab({ access }) {
         </div>
 
         {/* Key contacts */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Key Contacts</h3>
+        <div className="bg-card rounded-xl border border-border-default p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-primary">Key Contacts</h3>
           <div className="grid grid-cols-2 gap-4">
             <Field label="Head Teacher Name">
               <Input value={form.head_teacher_name} onChange={set('head_teacher_name')} readOnly={!canEdit} />
@@ -172,7 +172,7 @@ export default function SchoolProfileTab({ access }) {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save School Profile

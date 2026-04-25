@@ -149,7 +149,7 @@ export default function HoDPupilProfile() {
   if (!data) {
     return (
       <div className="p-6 text-center">
-        <p className="text-navy-400">Pupil not found.</p>
+        <p className="text-secondary">Pupil not found.</p>
         <Link to="/teacher/hod/pupils" className="text-pitch-400 hover:underline text-sm mt-2 inline-block">Back to pupils</Link>
       </div>
     )
@@ -167,15 +167,15 @@ export default function HoDPupilProfile() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <Link to="/teacher/hod/pupils" className="inline-flex items-center gap-1 text-navy-400 hover:text-white text-sm mb-6 transition-colors">
+      <Link to="/teacher/hod/pupils" className="inline-flex items-center gap-1 text-secondary hover:text-link text-sm mb-6 transition-colors">
         <ChevronLeft className="w-4 h-4" /> Back to pupils
       </Link>
 
       {/* Header */}
       <div className="flex items-start justify-between mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-navy-700 flex items-center justify-center">
-            <span className="text-2xl font-bold text-white">
+          <div className="w-16 h-16 rounded-full bg-border-default flex items-center justify-center">
+            <span className="text-2xl font-bold text-primary">
               {pupil.first_name?.charAt(0)}{pupil.last_name?.charAt(0)}
             </span>
           </div>
@@ -183,27 +183,27 @@ export default function HoDPupilProfile() {
             {editing ? (
               <div className="flex items-center gap-2">
                 <input value={editForm.first_name} onChange={e => setEditForm({ ...editForm, first_name: e.target.value })}
-                  className="px-2 py-1 bg-navy-800 border border-navy-700 rounded text-white text-lg font-bold w-32 focus:outline-none focus:border-pitch-500" />
+                  className="px-2 py-1 bg-subtle border border-border-strong rounded text-primary text-lg font-bold w-32 focus:outline-none focus:border-pitch-500" />
                 <input value={editForm.last_name} onChange={e => setEditForm({ ...editForm, last_name: e.target.value })}
-                  className="px-2 py-1 bg-navy-800 border border-navy-700 rounded text-white text-lg font-bold w-32 focus:outline-none focus:border-pitch-500" />
+                  className="px-2 py-1 bg-subtle border border-border-strong rounded text-primary text-lg font-bold w-32 focus:outline-none focus:border-pitch-500" />
               </div>
             ) : (
-              <h1 className="text-2xl font-bold text-white">{pupil.first_name} {pupil.last_name}</h1>
+              <h1 className="text-2xl font-bold text-primary">{pupil.first_name} {pupil.last_name}</h1>
             )}
             <div className="flex items-center gap-3 mt-1">
               {editing ? (
                 <>
                   <select value={editForm.year_group} onChange={e => setEditForm({ ...editForm, year_group: e.target.value })}
-                    className="px-2 py-1 bg-navy-800 border border-navy-700 rounded text-sm text-white focus:outline-none focus:border-pitch-500">
+                    className="px-2 py-1 bg-subtle border border-border-strong rounded text-sm text-primary focus:outline-none focus:border-pitch-500">
                     <option value="">--</option>
                     {[2,3,4,5,6,7,8,9,10,11,12,13].map(y => <option key={y} value={y}>Year {y}</option>)}
                   </select>
                   <input value={editForm.house} onChange={e => setEditForm({ ...editForm, house: e.target.value })}
-                    placeholder="House" className="px-2 py-1 bg-navy-800 border border-navy-700 rounded text-sm text-white w-24 focus:outline-none focus:border-pitch-500" />
+                    placeholder="House" className="px-2 py-1 bg-subtle border border-border-strong rounded text-sm text-primary w-24 focus:outline-none focus:border-pitch-500" />
                 </>
               ) : (
                 <>
-                  {pupil.year_group && <span className="text-sm text-navy-400">Year {pupil.year_group}</span>}
+                  {pupil.year_group && <span className="text-sm text-secondary">Year {pupil.year_group}</span>}
                   {pupil.house && <span className="px-2 py-0.5 bg-amber-400/20 text-amber-400 rounded text-xs">{pupil.house}</span>}
                 </>
               )}
@@ -213,13 +213,13 @@ export default function HoDPupilProfile() {
         <div className="flex gap-2">
           {editing ? (
             <>
-              <button onClick={() => setEditing(false)} className="p-2 text-navy-400 hover:text-white"><X className="w-5 h-5" /></button>
-              <button onClick={handleSave} className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm">
+              <button onClick={() => setEditing(false)} className="p-2 text-secondary hover:text-link"><X className="w-5 h-5" /></button>
+              <button onClick={handleSave} className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm">
                 <Save className="w-4 h-4" /> Save
               </button>
             </>
           ) : (
-            <button onClick={() => setEditing(true)} className="flex items-center gap-1.5 px-3 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm">
+            <button onClick={() => setEditing(true)} className="flex items-center gap-1.5 px-3 py-2 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm">
               <Edit3 className="w-4 h-4" /> Edit
             </button>
           )}
@@ -238,7 +238,7 @@ export default function HoDPupilProfile() {
       )}
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-navy-800 mb-6 -mx-1 overflow-x-auto">
+      <div className="flex gap-1 border-b border-border-default mb-6 -mx-1 overflow-x-auto">
         {buildTabs(core?.viewer_role).map(t => {
           const Icon = t.icon
           const active = activeTab === t.id
@@ -247,7 +247,7 @@ export default function HoDPupilProfile() {
               key={t.id}
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-4 py-2 text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                active ? 'border-pitch-500 text-white' : 'border-transparent text-navy-400 hover:text-white'
+                active ? 'border-pitch-500 text-primary' : 'border-transparent text-secondary hover:text-link'
               }`}
             >
               <Icon className="w-4 h-4" />{t.label}
@@ -257,19 +257,19 @@ export default function HoDPupilProfile() {
       </div>
 
       {activeTab === 'development' && (
-        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>}>
+        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>}>
           <DevelopmentTab pupilId={id} />
         </Suspense>
       )}
 
       {activeTab === 'medical' && (
-        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>}>
+        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>}>
           <MedicalSendTab pupilId={id} />
         </Suspense>
       )}
 
       {activeTab === 'safeguarding' && (
-        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>}>
+        <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>}>
           <SafeguardingTab pupilId={id} />
         </Suspense>
       )}
@@ -279,20 +279,20 @@ export default function HoDPupilProfile() {
         {/* Left column: classes, teams, observations */}
         <div className="space-y-6">
           {/* Teaching groups */}
-          <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-            <h2 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl border border-border-default p-5">
+            <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
               <GraduationCap className="w-4 h-4 text-pitch-400" /> Classes
             </h2>
             {classes.length > 0 ? (
               <div className="space-y-2">
                 {classes.map(cls => (
-                  <div key={cls.id} className="p-3 rounded-lg bg-navy-800/50">
-                    <div className="text-sm font-medium text-white">{cls.name}</div>
-                    <div className="text-xs text-navy-400">{cls.teacher_name} - {cls.key_stage}</div>
+                  <div key={cls.id} className="p-3 rounded-lg bg-subtle">
+                    <div className="text-sm font-medium text-primary">{cls.name}</div>
+                    <div className="text-xs text-secondary">{cls.teacher_name} - {cls.key_stage}</div>
                     {cls.units?.filter(Boolean).length > 0 && (
                       <div className="flex gap-1 mt-1">
                         {cls.units.filter(Boolean).map(u => (
-                          <span key={u.id} className="px-1.5 py-0.5 bg-navy-700 rounded text-xs text-navy-300 capitalize">{u.sport}</span>
+                          <span key={u.id} className="px-1.5 py-0.5 bg-border-default rounded text-xs text-secondary capitalize">{u.sport}</span>
                         ))}
                       </div>
                     )}
@@ -300,50 +300,50 @@ export default function HoDPupilProfile() {
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-navy-500">Not assigned to any classes yet.</p>
+              <p className="text-xs text-tertiary">Not assigned to any classes yet.</p>
             )}
           </div>
 
           {/* Extra-curricular teams */}
-          <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-            <h2 className="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+          <div className="bg-card rounded-xl border border-border-default p-5">
+            <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
               <Shield className="w-4 h-4 text-amber-400" /> Teams
             </h2>
             {teams.length > 0 ? (
               <div className="space-y-2">
                 {teams.map(team => (
-                  <div key={team.id} className="flex items-center gap-2 p-3 rounded-lg bg-navy-800/50">
+                  <div key={team.id} className="flex items-center gap-2 p-3 rounded-lg bg-subtle">
                     <span className="text-lg">{SPORT_ICONS[team.sport] || ''}</span>
                     <div>
-                      <div className="text-sm font-medium text-white">{team.name}</div>
-                      <div className="text-xs text-navy-400 capitalize">{team.sport} - {team.age_group}</div>
+                      <div className="text-sm font-medium text-primary">{team.name}</div>
+                      <div className="text-xs text-secondary capitalize">{team.sport} - {team.age_group}</div>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-xs text-navy-500">Not in any extra-curricular teams.</p>
+              <p className="text-xs text-tertiary">Not in any extra-curricular teams.</p>
             )}
           </div>
           {/* Observations */}
-          <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
+          <div className="bg-card rounded-xl border border-border-default p-5">
             <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-semibold text-white flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-primary flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 text-blue-400" /> Observations ({observations.length})
               </h2>
               <button
                 onClick={() => setShowAddObs(!showAddObs)}
-                className="flex items-center gap-1 px-2 py-1 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-xs transition-colors"
+                className="flex items-center gap-1 px-2 py-1 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs transition-colors"
               >
                 <Plus className="w-3 h-3" /> Add
               </button>
             </div>
 
             {showAddObs && (
-              <form onSubmit={handleAddObservation} className="mb-4 p-3 bg-navy-800/50 rounded-lg space-y-3">
+              <form onSubmit={handleAddObservation} className="mb-4 p-3 bg-subtle rounded-lg space-y-3">
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="block text-xs text-navy-400 mb-1">Category</label>
+                    <label className="block text-xs text-secondary mb-1">Category</label>
                     <select
                       value={obsForm.type}
                       onChange={e => setObsForm(f => ({ ...f, type: e.target.value }))}
@@ -373,7 +373,7 @@ export default function HoDPupilProfile() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs text-navy-400 mb-1">Context</label>
+                    <label className="block text-xs text-secondary mb-1">Context</label>
                     <select
                       value={obsForm.contextType}
                       onChange={e => setObsForm(f => ({ ...f, contextType: e.target.value }))}
@@ -388,7 +388,7 @@ export default function HoDPupilProfile() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-navy-400 mb-1">Sport (optional)</label>
+                  <label className="block text-xs text-secondary mb-1">Sport (optional)</label>
                   <select
                     value={obsForm.sport}
                     onChange={e => setObsForm(f => ({ ...f, sport: e.target.value }))}
@@ -421,9 +421,9 @@ export default function HoDPupilProfile() {
                 />
                 <div className="flex gap-2 justify-end">
                   <button type="button" onClick={() => setShowAddObs(false)}
-                    className="px-3 py-1.5 text-xs text-navy-400 hover:text-white">Cancel</button>
+                    className="px-3 py-1.5 text-xs text-secondary hover:text-link">Cancel</button>
                   <button type="submit" disabled={savingObs}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-xs disabled:opacity-50">
+                    className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs disabled:opacity-50">
                     {savingObs ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                     Save
                   </button>
@@ -460,37 +460,37 @@ export default function HoDPupilProfile() {
                     safeguarding: 'Safeguarding',
                   }
                   return (
-                    <div key={obs.id} className="p-3 rounded-lg bg-navy-800/50 group">
+                    <div key={obs.id} className="p-3 rounded-lg bg-subtle group">
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className={`px-1.5 py-0.5 rounded text-xs font-medium capitalize flex-shrink-0 ${
-                            typeColors[obs.type] || 'bg-navy-700 text-navy-300'
+                            typeColors[obs.type] || 'bg-border-default text-secondary'
                           }`}>{typeLabels[obs.type] || obs.type}</span>
                           {obs.sport && (
-                            <span className="px-1.5 py-0.5 rounded text-xs bg-navy-700 text-navy-300 capitalize">{obs.sport}</span>
+                            <span className="px-1.5 py-0.5 rounded text-xs bg-border-default text-secondary capitalize">{obs.sport}</span>
                           )}
                           <span
                             title={obs.visible_to_pupil ? 'Visible to pupil in Sports Lounge' : 'Teacher-only — not shown to pupil'}
                             className={`px-1.5 py-0.5 rounded text-xs font-medium flex-shrink-0 flex items-center gap-1 ${
-                              obs.visible_to_pupil ? 'bg-sky-500/20 text-sky-400' : 'bg-navy-700 text-navy-400'
+                              obs.visible_to_pupil ? 'bg-sky-500/20 text-sky-400' : 'bg-border-default text-secondary'
                             }`}
                           >
                             <Eye className="w-3 h-3" />{obs.visible_to_pupil ? 'Pupil-visible' : 'Teacher-only'}
                           </span>
                           {obs.context_type && obs.context_type !== 'general' && (
-                            <span className="text-xs text-navy-500 capitalize">{obs.context_type}</span>
+                            <span className="text-xs text-tertiary capitalize">{obs.context_type}</span>
                           )}
                         </div>
                         <button
                           onClick={() => handleDeleteObs(obs.id)}
                           disabled={deletingObsId === obs.id}
-                          className="opacity-0 group-hover:opacity-100 p-1 text-navy-600 hover:text-red-400 transition-all"
+                          className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-red-400 transition-all"
                         >
                           {deletingObsId === obs.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                         </button>
                       </div>
-                      <p className="text-sm text-navy-200 mt-1.5 leading-relaxed">{obs.content}</p>
-                      <div className="text-xs text-navy-500 mt-2">
+                      <p className="text-sm text-primary mt-1.5 leading-relaxed">{obs.content}</p>
+                      <div className="text-xs text-tertiary mt-2">
                         {obs.observer_name} · {new Date(obs.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                         {obs.match_opponent && ` · vs ${obs.match_opponent}`}
                         {obs.teaching_group_name && ` · ${obs.teaching_group_name}`}
@@ -500,36 +500,36 @@ export default function HoDPupilProfile() {
                 })}
               </div>
             ) : (
-              <p className="text-xs text-navy-500 text-center py-4">No observations recorded yet. Click + Add to get started.</p>
+              <p className="text-xs text-tertiary text-center py-4">No observations recorded yet. Click + Add to get started.</p>
             )}
           </div>
         </div>
 
         {/* Right column: assessments (2/3 width) */}
         <div className="lg:col-span-2">
-          <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-            <h2 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+          <div className="bg-card rounded-xl border border-border-default p-5">
+            <h2 className="text-sm font-semibold text-primary mb-4 flex items-center gap-2">
               <ClipboardCheck className="w-4 h-4 text-pitch-400" /> Assessment History
             </h2>
             {assessments.length > 0 ? (
               <div className="space-y-6">
                 {Object.entries(assessmentsBySport).map(([sport, sportAssessments]) => (
                   <div key={sport}>
-                    <h3 className="text-xs font-semibold text-navy-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                    <h3 className="text-xs font-semibold text-secondary uppercase tracking-wider mb-2 flex items-center gap-2">
                       <span>{SPORT_ICONS[sport] || ''}</span> {sport}
                     </h3>
                     <div className="space-y-2">
                       {sportAssessments.slice(0, 10).map(a => (
-                        <div key={a.id} className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50">
+                        <div key={a.id} className="flex items-center justify-between p-3 rounded-lg bg-subtle">
                           <div>
-                            <div className="text-sm text-white">{a.unit_name}</div>
-                            <div className="text-xs text-navy-400">
+                            <div className="text-sm text-primary">{a.unit_name}</div>
+                            <div className="text-xs text-secondary">
                               {a.curriculum_area?.replace('_', ' ')} -
                               {new Date(a.assessed_at).toLocaleDateString('en-GB')}
                             </div>
                           </div>
                           {a.grade && (
-                            <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${GRADE_COLORS[a.grade] || 'bg-navy-700 text-navy-300'}`}>
+                            <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${GRADE_COLORS[a.grade] || 'bg-border-default text-secondary'}`}>
                               {a.grade}
                             </span>
                           )}
@@ -540,7 +540,7 @@ export default function HoDPupilProfile() {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-navy-500 text-center py-6">No assessments recorded yet.</p>
+              <p className="text-sm text-tertiary text-center py-6">No assessments recorded yet.</p>
             )}
           </div>
         </div>

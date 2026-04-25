@@ -30,7 +30,7 @@ export function TacticsRedirect() {
 
   return (
     <div className="flex items-center justify-center min-h-[50vh]">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 }
@@ -106,14 +106,14 @@ export default function TacticsLoader() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-secondary" />
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="p-6 text-center text-navy-400">{error}</div>
+      <div className="p-6 text-center text-secondary">{error}</div>
     )
   }
 
@@ -121,20 +121,20 @@ export default function TacticsLoader() {
     <div>
       {/* Team selector bar */}
       {myTeams.length > 1 && (
-        <div className="border-b border-navy-800 bg-navy-900 px-4 py-2 flex items-center gap-3 relative">
-          <span className="text-xs text-navy-500 font-medium uppercase tracking-wider">Team:</span>
+        <div className="border-b border-border-default bg-card px-4 py-2 flex items-center gap-3 relative">
+          <span className="text-xs text-tertiary font-medium uppercase tracking-wider">Team:</span>
           <button
             onClick={() => setSelectorOpen(o => !o)}
-            className="flex items-center gap-1.5 text-sm font-medium text-white hover:text-pitch-400 transition-colors"
+            className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-pitch-400 transition-colors"
           >
             {team?.name || 'Select team'}
-            <ChevronDown className={`w-4 h-4 text-navy-400 transition-transform ${selectorOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 text-secondary transition-transform ${selectorOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {selectorOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setSelectorOpen(false)} />
-              <div className="absolute top-full left-0 z-20 mt-1 w-56 bg-navy-800 border border-navy-700 rounded-lg shadow-xl overflow-hidden">
+              <div className="absolute top-full left-0 z-20 mt-1 w-56 bg-subtle border border-border-strong rounded-lg shadow-xl overflow-hidden">
                 {myTeams.map(t => (
                   <button
                     key={t.id}
@@ -142,11 +142,11 @@ export default function TacticsLoader() {
                     className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                       t.id === parseInt(teamId)
                         ? 'bg-pitch-600/20 text-pitch-400'
-                        : 'text-navy-300 hover:bg-navy-700 hover:text-white'
+                        : 'text-secondary hover:bg-border-default hover:text-link'
                     }`}
                   >
                     <div className="font-medium">{t.name}</div>
-                    {t.sport && <div className="text-[11px] text-navy-500 capitalize">{t.sport}</div>}
+                    {t.sport && <div className="text-[11px] text-tertiary capitalize">{t.sport}</div>}
                   </button>
                 ))}
               </div>

@@ -135,14 +135,14 @@ export default function TeacherAssessment() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-white">Assessment & Marking</h1>
-          <p className="text-navy-400 mt-1">Assess pupils against curriculum strands</p>
+          <h1 className="text-2xl font-bold text-primary">Assessment & Marking</h1>
+          <p className="text-secondary mt-1">Assess pupils against curriculum strands</p>
         </div>
         {unitData && Object.keys(grades).length > 0 && (
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span className="text-sm font-medium">{saving ? 'Saving...' : 'Save Assessments'}</span>
@@ -151,13 +151,13 @@ export default function TeacherAssessment() {
       </div>
 
       {/* Unit selector */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5 mb-6">
-        <label className="block text-sm text-navy-300 mb-2">Select a sport unit to assess</label>
+      <div className="bg-card rounded-xl border border-border-default p-5 mb-6">
+        <label className="block text-sm text-secondary mb-2">Select a sport unit to assess</label>
         {allUnits.length > 0 ? (
           <select
             value={selectedUnitId}
             onChange={e => setSelectedUnitId(e.target.value)}
-            className="w-full max-w-lg px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+            className="w-full max-w-lg px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
           >
             <option value="">Choose a unit...</option>
             {allUnits.map(u => (
@@ -167,7 +167,7 @@ export default function TeacherAssessment() {
             ))}
           </select>
         ) : (
-          <p className="text-navy-400 text-sm">
+          <p className="text-secondary text-sm">
             No sport units available.{' '}
             <Link to="/teacher/classes" className="text-pitch-400 hover:underline">
               Create a class and add sport units first.
@@ -184,11 +184,11 @@ export default function TeacherAssessment() {
       )}
 
       {unitData && !loading && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 overflow-hidden">
+        <div className="bg-card rounded-xl border border-border-default overflow-hidden">
           {/* Unit header */}
-          <div className="px-5 py-4 border-b border-navy-800">
-            <h2 className="text-base font-semibold text-white">{unitData.unit.unit_name}</h2>
-            <p className="text-xs text-navy-400 mt-0.5">
+          <div className="px-5 py-4 border-b border-border-default">
+            <h2 className="text-base font-semibold text-primary">{unitData.unit.unit_name}</h2>
+            <p className="text-xs text-secondary mt-0.5">
               {unitData.unit.key_stage} - {unitData.unit.curriculum_area?.replace('_', ' ')} - {unitData.pupils.length} pupils
             </p>
           </div>
@@ -197,17 +197,17 @@ export default function TeacherAssessment() {
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-navy-800">
-                    <th className="text-left text-xs font-medium text-navy-400 px-5 py-3 sticky left-0 bg-navy-900 min-w-[200px]">
+                  <tr className="border-b border-border-default">
+                    <th className="text-left text-xs font-medium text-secondary px-5 py-3 sticky left-0 bg-card min-w-[200px]">
                       Pupil
                     </th>
                     {unitData.strands.map(strand => (
-                      <th key={strand.id} className="text-left text-xs font-medium text-navy-400 px-4 py-3 min-w-[140px]">
+                      <th key={strand.id} className="text-left text-xs font-medium text-secondary px-4 py-3 min-w-[140px]">
                         {strand.strand_name}
                       </th>
                     ))}
                     {unitData.strands.length === 0 && (
-                      <th className="text-left text-xs font-medium text-navy-400 px-4 py-3 min-w-[140px]">
+                      <th className="text-left text-xs font-medium text-secondary px-4 py-3 min-w-[140px]">
                         Overall
                       </th>
                     )}
@@ -215,9 +215,9 @@ export default function TeacherAssessment() {
                 </thead>
                 <tbody>
                   {unitData.pupils.map((pupil, i) => (
-                    <tr key={pupil.id} className={i % 2 === 0 ? '' : 'bg-navy-800/20'}>
-                      <td className="px-5 py-3 sticky left-0 bg-navy-900 border-r border-navy-800">
-                        <span className="text-sm text-white font-medium">
+                    <tr key={pupil.id} className={i % 2 === 0 ? '' : 'bg-subtle/20'}>
+                      <td className="px-5 py-3 sticky left-0 bg-card border-r border-border-default">
+                        <span className="text-sm text-primary font-medium">
                           {pupil.last_name}, {pupil.first_name}
                         </span>
                       </td>
@@ -235,7 +235,7 @@ export default function TeacherAssessment() {
                                     px-2 py-1 rounded text-xs font-medium border transition-all capitalize
                                     ${currentGrade === g
                                       ? GRADE_COLORS[g]
-                                      : 'bg-navy-800 text-navy-500 border-navy-700 hover:border-navy-500'
+                                      : 'bg-subtle text-tertiary border-border-strong hover:border-navy-500'
                                     }
                                   `}
                                   title={g}
@@ -254,13 +254,13 @@ export default function TeacherAssessment() {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <p className="text-navy-400 text-sm">No pupils in this teaching group yet.</p>
+              <p className="text-secondary text-sm">No pupils in this teaching group yet.</p>
             </div>
           )}
 
           {/* Grade key */}
-          <div className="px-5 py-3 border-t border-navy-800 flex items-center gap-4">
-            <span className="text-xs text-navy-500">Key:</span>
+          <div className="px-5 py-3 border-t border-border-default flex items-center gap-4">
+            <span className="text-xs text-tertiary">Key:</span>
             {GRADES.map(g => (
               <span key={g} className={`px-2 py-0.5 rounded text-xs font-medium border capitalize ${GRADE_COLORS[g]}`}>
                 {g}

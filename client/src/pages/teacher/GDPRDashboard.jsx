@@ -20,7 +20,7 @@ const STATUS_STYLES = {
   pending: 'bg-amber-500/10 text-amber-400',
   processing: 'bg-blue-500/10 text-blue-400',
   ready: 'bg-pitch-500/10 text-pitch-400',
-  downloaded: 'bg-navy-700 text-navy-400',
+  downloaded: 'bg-border-default text-secondary',
   completed: 'bg-pitch-500/10 text-pitch-400',
   failed: 'bg-alert-500/10 text-alert-400',
 }
@@ -58,25 +58,25 @@ export default function GDPRDashboard() {
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
           <Shield className="w-7 h-7 text-pitch-400" />
           Data & Privacy (GDPR)
         </h1>
-        <p className="text-navy-400 mt-1">
+        <p className="text-secondary mt-1">
           Manage pupil data rights, consent records, and data subject requests under UK GDPR
         </p>
       </div>
 
       {/* Legal notice */}
-      <div className="bg-navy-900 rounded-xl border border-amber-400/20 p-5 mb-6">
+      <div className="bg-card rounded-xl border border-amber-400/20 p-5 mb-6">
         <div className="flex gap-3">
           <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-          <div className="text-sm text-navy-300 space-y-1">
+          <div className="text-sm text-secondary space-y-1">
             <p className="font-medium text-amber-400">UK GDPR Obligations</p>
             <p>
               Under UK GDPR, data subjects have the right to access their personal data (Article 15),
               rectify inaccurate data (Article 16), and request erasure (Article 17). Schools as data
-              controllers must respond to Subject Access Requests within <strong className="text-white">one calendar month</strong>.
+              controllers must respond to Subject Access Requests within <strong className="text-primary">one calendar month</strong>.
             </p>
             <p>
               All export downloads and deletion actions are permanently logged for your audit trail.
@@ -87,7 +87,7 @@ export default function GDPRDashboard() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 bg-navy-900 rounded-xl p-1 border border-navy-800">
+      <div className="flex gap-1 mb-6 bg-card rounded-xl p-1 border border-border-default">
         {[
           { id: 'overview', label: 'Overview' },
           { id: 'pupils', label: 'Pupil Data' },
@@ -99,8 +99,8 @@ export default function GDPRDashboard() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab.id
-                ? 'bg-pitch-600 text-white'
-                : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                ? 'bg-pitch-600 text-primary'
+                : 'text-secondary hover:text-link hover:bg-subtle'
             }`}
           >
             {tab.label}
@@ -149,14 +149,14 @@ function OverviewTab({ overview, onRefresh }) {
 
       {/* Recent requests */}
       {overview.recent_requests?.length > 0 && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-          <h3 className="text-base font-semibold text-white mb-4">Recent Requests</h3>
+        <div className="bg-card rounded-xl border border-border-default p-5">
+          <h3 className="text-base font-semibold text-primary mb-4">Recent Requests</h3>
           <div className="space-y-2">
             {overview.recent_requests.map(r => (
-              <div key={r.id} className="flex items-center justify-between py-2 border-b border-navy-800 last:border-0">
+              <div key={r.id} className="flex items-center justify-between py-2 border-b border-border-default last:border-0">
                 <div>
-                  <span className="text-sm text-white capitalize">{r.request_type}</span>
-                  <span className="text-xs text-navy-500 ml-2">
+                  <span className="text-sm text-primary capitalize">{r.request_type}</span>
+                  <span className="text-xs text-tertiary ml-2">
                     {new Date(r.created_at).toLocaleDateString('en-GB')}
                   </span>
                 </div>
@@ -171,8 +171,8 @@ function OverviewTab({ overview, onRefresh }) {
 
       {/* Consent summary */}
       {overview.consent_summary?.length > 0 && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-          <h3 className="text-base font-semibold text-white mb-4">Consent Summary</h3>
+        <div className="bg-card rounded-xl border border-border-default p-5">
+          <h3 className="text-base font-semibold text-primary mb-4">Consent Summary</h3>
           <div className="space-y-3">
             {overview.consent_summary.map(c => {
               const total = parseInt(c.granted) + parseInt(c.not_granted)
@@ -180,10 +180,10 @@ function OverviewTab({ overview, onRefresh }) {
               return (
                 <div key={c.consent_type}>
                   <div className="flex justify-between text-sm mb-1">
-                    <span className="text-navy-300">{CONSENT_LABELS[c.consent_type] || c.consent_type}</span>
-                    <span className="text-navy-400">{c.granted} granted ({pct}%)</span>
+                    <span className="text-secondary">{CONSENT_LABELS[c.consent_type] || c.consent_type}</span>
+                    <span className="text-secondary">{c.granted} granted ({pct}%)</span>
                   </div>
-                  <div className="h-1.5 bg-navy-800 rounded-full overflow-hidden">
+                  <div className="h-1.5 bg-subtle rounded-full overflow-hidden">
                     <div
                       className="h-full bg-pitch-600 rounded-full"
                       style={{ width: `${pct}%` }}
@@ -201,12 +201,12 @@ function OverviewTab({ overview, onRefresh }) {
 
 function StatCard({ icon: Icon, label, value, color, warn }) {
   return (
-    <div className={`bg-navy-900 rounded-xl border p-5 ${warn ? 'border-amber-400/30' : 'border-navy-800'}`}>
+    <div className={`bg-card rounded-xl border p-5 ${warn ? 'border-amber-400/30' : 'border-border-default'}`}>
       <div className="flex items-center gap-3">
         <Icon className={`w-6 h-6 ${color}`} />
         <div>
-          <div className="text-2xl font-bold text-white">{value}</div>
-          <div className="text-xs text-navy-400">{label}</div>
+          <div className="text-2xl font-bold text-primary">{value}</div>
+          <div className="text-xs text-secondary">{label}</div>
         </div>
       </div>
     </div>
@@ -284,13 +284,13 @@ function PupilsTab() {
     <div>
       {/* Search */}
       <div className="relative mb-4">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-500" />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tertiary" />
         <input
           type="text"
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search pupils..."
-          className="w-full pl-10 pr-4 py-2.5 bg-navy-900 border border-navy-800 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-default rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
         />
       </div>
 
@@ -310,7 +310,7 @@ function PupilsTab() {
             />
           ))}
           {pupils.length === 0 && (
-            <div className="text-center py-12 text-navy-500">No pupils found</div>
+            <div className="text-center py-12 text-tertiary">No pupils found</div>
           )}
         </div>
       )}
@@ -318,21 +318,21 @@ function PupilsTab() {
       {/* Delete confirmation modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-navy-900 rounded-2xl border border-alert-600/40 p-6 w-full max-w-md">
+          <div className="bg-card rounded-2xl border border-alert-600/40 p-6 w-full max-w-md">
             <div className="flex items-start gap-3 mb-4">
               <Trash2 className="w-6 h-6 text-alert-400 shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-lg font-bold text-white">Permanently Delete All Data</h3>
-                <p className="text-sm text-navy-400 mt-1">
+                <h3 className="text-lg font-bold text-primary">Permanently Delete All Data</h3>
+                <p className="text-sm text-secondary mt-1">
                   This will irreversibly delete all personal data held for{' '}
-                  <strong className="text-white">{deleteConfirm.pupil.name}</strong> across all tables,
+                  <strong className="text-primary">{deleteConfirm.pupil.name}</strong> across all tables,
                   including assessments, observations, match records, medical information, and any stored files.
                 </p>
               </div>
             </div>
 
             <div className="mb-4">
-              <label className="block text-sm text-navy-300 mb-1">
+              <label className="block text-sm text-secondary mb-1">
                 Reason for deletion <span className="text-alert-400">*</span>
               </label>
               <textarea
@@ -340,22 +340,22 @@ function PupilsTab() {
                 onChange={e => setDeleteReason(e.target.value)}
                 placeholder="e.g. Pupil has left the school and parent has submitted Right to Erasure request"
                 rows={3}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-alert-500 resize-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-alert-500 resize-none"
               />
-              <p className="text-xs text-navy-500 mt-1">Required for audit log purposes.</p>
+              <p className="text-xs text-tertiary mt-1">Required for audit log purposes.</p>
             </div>
 
             <div className="flex gap-3">
               <button
                 onClick={() => setDeleteConfirm(null)}
-                className="flex-1 py-2.5 border border-navy-700 text-navy-300 rounded-lg text-sm hover:bg-navy-800 transition-colors"
+                className="flex-1 py-2.5 border border-border-strong text-secondary rounded-lg text-sm hover:bg-subtle transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDelete}
                 disabled={!deleteReason.trim() || deleteLoading}
-                className="flex-1 py-2.5 bg-alert-600 hover:bg-alert-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-alert-600 hover:bg-alert-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {deleteLoading ? <div className="spinner w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
                 Delete All Data
@@ -394,37 +394,37 @@ function PupilGDPRRow({ pupil, expanded, onToggle, onExport, exportLoading, onDe
   const grantedCount = consentStatus.filter(c => c.granted && !c.withdrawn_at).length
 
   return (
-    <div className="bg-navy-900 rounded-xl border border-navy-800 overflow-hidden">
+    <div className="bg-card rounded-xl border border-border-default overflow-hidden">
       <div
-        className="flex items-center justify-between p-4 cursor-pointer hover:bg-navy-800/50 transition-colors"
+        className="flex items-center justify-between p-4 cursor-pointer hover:bg-subtle transition-colors"
         onClick={handleToggle}
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center">
-            <span className="text-xs font-medium text-white">{pupil.name?.charAt(0)}</span>
+          <div className="w-8 h-8 rounded-full bg-border-default flex items-center justify-center">
+            <span className="text-xs font-medium text-primary">{pupil.name?.charAt(0)}</span>
           </div>
           <div>
-            <div className="text-sm font-medium text-white">{pupil.name}</div>
-            <div className="text-xs text-navy-500">Year {pupil.year_group || '?'}</div>
+            <div className="text-sm font-medium text-primary">{pupil.name}</div>
+            <div className="text-xs text-tertiary">Year {pupil.year_group || '?'}</div>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
-          <span className="text-xs text-navy-500">
+          <span className="text-xs text-tertiary">
             {grantedCount}/{Object.keys(CONSENT_LABELS).length} consents
           </span>
-          {expanded ? <ChevronUp className="w-4 h-4 text-navy-500" /> : <ChevronDown className="w-4 h-4 text-navy-500" />}
+          {expanded ? <ChevronUp className="w-4 h-4 text-tertiary" /> : <ChevronDown className="w-4 h-4 text-tertiary" />}
         </div>
       </div>
 
       {expanded && (
-        <div className="px-4 pb-4 border-t border-navy-800 pt-4">
+        <div className="px-4 pb-4 border-t border-border-default pt-4">
           {/* Actions */}
           <div className="flex gap-2 mb-4">
             <button
               onClick={onExport}
               disabled={exportLoading}
-              className="flex items-center gap-1.5 px-3 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-xs transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-2 bg-subtle hover:bg-border-default text-secondary rounded-lg text-xs transition-colors disabled:opacity-50"
             >
               {exportLoading
                 ? <div className="spinner w-3.5 h-3.5" />
@@ -443,7 +443,7 @@ function PupilGDPRRow({ pupil, expanded, onToggle, onExport, exportLoading, onDe
 
           {/* Consent records */}
           <div>
-            <p className="text-xs text-navy-500 font-medium uppercase tracking-wider mb-2">Consent Records</p>
+            <p className="text-xs text-tertiary font-medium uppercase tracking-wider mb-2">Consent Records</p>
             {consentLoading ? (
               <div className="spinner w-4 h-4" />
             ) : (
@@ -457,10 +457,10 @@ function PupilGDPRRow({ pupil, expanded, onToggle, onExport, exportLoading, onDe
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${
                         granted
                           ? 'bg-pitch-600/10 text-pitch-400'
-                          : 'bg-navy-800 text-navy-500'
+                          : 'bg-subtle text-tertiary'
                       }`}
                     >
-                      <CheckCircle className={`w-3 h-3 ${granted ? 'text-pitch-400' : 'text-navy-600'}`} />
+                      <CheckCircle className={`w-3 h-3 ${granted ? 'text-pitch-400' : 'text-tertiary'}`} />
                       {label}
                     </div>
                   )
@@ -508,14 +508,14 @@ function RequestsTab() {
   return (
     <div>
       {requests.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <FileText className="w-8 h-8 text-navy-600 mx-auto mb-3" />
-          <p className="text-navy-400">No data requests yet</p>
+        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
+          <FileText className="w-8 h-8 text-tertiary mx-auto mb-3" />
+          <p className="text-secondary">No data requests yet</p>
         </div>
       ) : (
         <div className="space-y-3">
           {requests.map(r => (
-            <div key={r.id} className="bg-navy-900 rounded-xl border border-navy-800 p-4">
+            <div key={r.id} className="bg-card rounded-xl border border-border-default p-4">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -523,24 +523,24 @@ function RequestsTab() {
                       ? <Download className="w-4 h-4 text-pitch-400" />
                       : <Trash2 className="w-4 h-4 text-alert-400" />
                     }
-                    <span className="text-sm font-medium text-white capitalize">{r.request_type}</span>
+                    <span className="text-sm font-medium text-primary capitalize">{r.request_type}</span>
                     <span className={`px-2 py-0.5 rounded text-xs ${STATUS_STYLES[r.status] || ''}`}>
                       {r.status}
                     </span>
                   </div>
-                  <p className="text-sm text-navy-300">{r.pupil_name}</p>
-                  <p className="text-xs text-navy-500">
+                  <p className="text-sm text-secondary">{r.pupil_name}</p>
+                  <p className="text-xs text-tertiary">
                     Requested by {r.requested_by_name} · {new Date(r.created_at).toLocaleDateString('en-GB', {
                       day: 'numeric', month: 'short', year: 'numeric',
                     })}
                   </p>
-                  {r.reason && <p className="text-xs text-navy-500 mt-1">Reason: {r.reason}</p>}
+                  {r.reason && <p className="text-xs text-tertiary mt-1">Reason: {r.reason}</p>}
                 </div>
 
                 {r.request_type === 'export' && r.status === 'ready' && (
                   <button
                     onClick={() => handleDownload(r)}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-xs"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-xs"
                   >
                     <Download className="w-3.5 h-3.5" />
                     Download
@@ -549,7 +549,7 @@ function RequestsTab() {
                 {r.request_type === 'export' && r.status === 'downloaded' && (
                   <button
                     onClick={() => handleDownload(r)}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-navy-700 hover:bg-navy-600 text-navy-300 rounded-lg text-xs"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-border-default hover:bg-navy-600 text-secondary rounded-lg text-xs"
                     title="Download again"
                   >
                     <RefreshCw className="w-3.5 h-3.5" />
@@ -583,40 +583,40 @@ function DeletionLogTab() {
 
   return (
     <div>
-      <p className="text-xs text-navy-500 mb-4">
+      <p className="text-xs text-tertiary mb-4">
         Permanent audit log of all data erasure operations. This record is retained indefinitely
         as evidence of GDPR compliance even though the personal data itself has been deleted.
       </p>
 
       {log.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <CheckCircle className="w-8 h-8 text-navy-600 mx-auto mb-3" />
-          <p className="text-navy-400">No deletions recorded</p>
+        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
+          <CheckCircle className="w-8 h-8 text-tertiary mx-auto mb-3" />
+          <p className="text-secondary">No deletions recorded</p>
         </div>
       ) : (
         <div className="space-y-3">
           {log.map(entry => (
-            <div key={entry.id} className="bg-navy-900 rounded-xl border border-navy-800 p-4">
+            <div key={entry.id} className="bg-card rounded-xl border border-border-default p-4">
               <div className="flex items-start gap-3">
                 <Trash2 className="w-4 h-4 text-alert-400 mt-0.5 shrink-0" />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-white">{entry.pupil_reference}</p>
-                  <p className="text-xs text-navy-400 mt-0.5">
+                  <p className="text-sm font-medium text-primary">{entry.pupil_reference}</p>
+                  <p className="text-xs text-secondary mt-0.5">
                     Deleted by {entry.deleted_by_name} · {new Date(entry.created_at).toLocaleDateString('en-GB', {
                       day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
                     })}
                   </p>
                   {entry.reason && (
-                    <p className="text-xs text-navy-500 mt-1">Reason: {entry.reason}</p>
+                    <p className="text-xs text-tertiary mt-1">Reason: {entry.reason}</p>
                   )}
                   {entry.tables_purged?.length > 0 && (
                     <details className="mt-2">
-                      <summary className="text-xs text-navy-500 cursor-pointer hover:text-navy-400">
+                      <summary className="text-xs text-tertiary cursor-pointer hover:text-secondary">
                         {entry.tables_purged.length} table(s) purged
                       </summary>
                       <div className="mt-1 flex flex-wrap gap-1">
                         {entry.tables_purged.map((t, i) => (
-                          <span key={i} className="px-2 py-0.5 bg-navy-800 rounded text-xs text-navy-400">{t}</span>
+                          <span key={i} className="px-2 py-0.5 bg-subtle rounded text-xs text-secondary">{t}</span>
                         ))}
                       </div>
                     </details>

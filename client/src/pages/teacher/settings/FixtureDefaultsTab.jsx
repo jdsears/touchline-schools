@@ -41,60 +41,60 @@ export default function FixtureDefaultsTab({ access }) {
 
   if (loading) return (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white">Fixture Defaults</h2>
-        <p className="text-sm text-navy-400 mt-1">
+        <h2 className="text-xl font-semibold text-primary">Fixture Defaults</h2>
+        <p className="text-sm text-secondary mt-1">
           Default settings applied when creating new fixtures.
           {!canEdit && <span className="ml-2 text-amber-400">View only.</span>}
         </p>
       </div>
 
       {canEdit && (
-        <form onSubmit={handleSave} className="bg-navy-900 rounded-xl border border-navy-800 p-5 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Add / Update Default</h3>
+        <form onSubmit={handleSave} className="bg-card rounded-xl border border-border-default p-5 space-y-4">
+          <h3 className="text-sm font-semibold text-primary">Add / Update Default</h3>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Sport</label>
+              <label className="block text-xs text-secondary mb-1">Sport</label>
               <select
                 value={form.sport_key}
                 onChange={e => setForm(f => ({ ...f, sport_key: e.target.value }))}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500 capitalize"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500 capitalize"
               >
                 {SPORTS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Match Duration (mins)</label>
+              <label className="block text-xs text-secondary mb-1">Match Duration (mins)</label>
               <input
                 type="number"
                 value={form.match_duration_minutes}
                 onChange={e => setForm(f => ({ ...f, match_duration_minutes: parseInt(e.target.value) || 90 }))}
-                className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
               />
             </div>
           </div>
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Home Ground Address</label>
+            <label className="block text-xs text-secondary mb-1">Home Ground Address</label>
             <input
               type="text"
               value={form.default_home_ground_address}
               onChange={e => setForm(f => ({ ...f, default_home_ground_address: e.target.value }))}
               placeholder="e.g. School playing fields, High Street, Town"
-              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
             />
           </div>
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Default Travel</label>
+            <label className="block text-xs text-secondary mb-1">Default Travel</label>
             <select
               value={form.default_travel_arrangement}
               onChange={e => setForm(f => ({ ...f, default_travel_arrangement: e.target.value }))}
-              className="w-full px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
             >
               {TRAVEL.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -102,7 +102,7 @@ export default function FixtureDefaultsTab({ access }) {
           <button
             type="submit"
             disabled={!!saving}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Default
@@ -111,21 +111,21 @@ export default function FixtureDefaultsTab({ access }) {
       )}
 
       {defaults.length > 0 && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 overflow-hidden">
+        <div className="bg-card rounded-xl border border-border-default overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-navy-800">
-                <th className="text-left px-4 py-3 text-xs font-semibold text-navy-400 uppercase">Sport</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-navy-400 uppercase">Duration</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-navy-400 uppercase">Travel</th>
+              <tr className="border-b border-border-default">
+                <th className="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase">Sport</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase">Duration</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase">Travel</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-navy-800">
               {defaults.map(d => (
                 <tr key={d.id}>
-                  <td className="px-4 py-3 text-white capitalize">{d.sport_key}</td>
-                  <td className="px-4 py-3 text-navy-300">{d.match_duration_minutes} min</td>
-                  <td className="px-4 py-3 text-navy-300">{d.default_travel_arrangement || '-'}</td>
+                  <td className="px-4 py-3 text-primary capitalize">{d.sport_key}</td>
+                  <td className="px-4 py-3 text-secondary">{d.match_duration_minutes} min</td>
+                  <td className="px-4 py-3 text-secondary">{d.default_travel_arrangement || '-'}</td>
                 </tr>
               ))}
             </tbody>

@@ -4,13 +4,13 @@ import { reportingService } from '../../services/api'
 import { ArrowLeft, Search, Download } from 'lucide-react'
 
 const STATUS_BADGE = {
-  draft: 'bg-navy-700 text-navy-300',
+  draft: 'bg-border-default text-secondary',
   submitted: 'bg-amber-400/20 text-amber-400',
   published: 'bg-blue-500/20 text-blue-400',
 }
 
 const WINDOW_STATUS_BADGE = {
-  draft: 'bg-navy-700 text-navy-300',
+  draft: 'bg-border-default text-secondary',
   open: 'bg-pitch-600/20 text-pitch-400',
   closed: 'bg-amber-400/20 text-amber-400',
   published: 'bg-blue-500/20 text-blue-400',
@@ -75,28 +75,28 @@ export default function WindowReportsList() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      <button onClick={() => navigate('/teacher/hod/reporting')} className="flex items-center gap-1.5 text-navy-400 hover:text-white text-sm mb-5 transition-colors">
+      <button onClick={() => navigate('/teacher/hod/reporting')} className="flex items-center gap-1.5 text-secondary hover:text-link text-sm mb-5 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Reporting Windows
       </button>
 
       <div className="flex items-start justify-between mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-white">{window_?.name || 'Reports'}</h1>
+            <h1 className="text-2xl font-bold text-primary">{window_?.name || 'Reports'}</h1>
             {window_ && <span className={`px-2 py-0.5 rounded text-xs font-medium ${wb}`}>{window_.status}</span>}
           </div>
-          <p className="text-navy-400 text-sm mt-1">
+          <p className="text-secondary text-sm mt-1">
             {window_?.academic_year} {window_?.term && `· ${window_.term} term`} · {reports.length} reports
           </p>
         </div>
-        <button onClick={() => exportCSV(filtered)} className="flex items-center gap-2 px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white rounded-lg text-sm transition-colors">
+        <button onClick={() => exportCSV(filtered)} className="flex items-center gap-2 px-4 py-2 bg-subtle hover:bg-border-default text-primary rounded-lg text-sm transition-colors">
           <Download className="w-4 h-4" /> Export CSV
         </button>
       </div>
 
       <div className="flex flex-wrap gap-3 mb-5">
         <div className="relative flex-1 min-w-[200px]">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-500" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-tertiary" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search by pupil name…" className="input pl-9 w-full" />
         </div>
         <select value={groupFilter} onChange={e => setGroupFilter(e.target.value)} className="input w-44">
@@ -112,12 +112,12 @@ export default function WindowReportsList() {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-10 text-center text-navy-400">No reports match your filters.</div>
+        <div className="bg-card rounded-xl border border-border-default p-10 text-center text-secondary">No reports match your filters.</div>
       ) : (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 overflow-hidden">
+        <div className="bg-card rounded-xl border border-border-default overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-navy-800 text-left text-xs text-navy-500 uppercase tracking-wide">
+              <tr className="border-b border-border-default text-left text-xs text-tertiary uppercase tracking-wide">
                 <th className="px-4 py-3">Pupil</th>
                 <th className="px-4 py-3">Year</th>
                 <th className="px-4 py-3">Group</th>
@@ -131,16 +131,16 @@ export default function WindowReportsList() {
                 <tr
                   key={r.id}
                   onClick={() => navigate(`/teacher/hod/reporting/windows/${windowId}/reports/${r.id}`)}
-                  className="border-b border-navy-800/60 hover:bg-navy-800/50 cursor-pointer transition-colors"
+                  className="border-b border-border-default/60 hover:bg-subtle cursor-pointer transition-colors"
                 >
-                  <td className="px-4 py-3 font-medium text-white">{r.first_name} {r.last_name}</td>
-                  <td className="px-4 py-3 text-navy-400">Yr {r.year_group}</td>
-                  <td className="px-4 py-3 text-navy-400">{r.class_name || '—'}</td>
-                  <td className="px-4 py-3 text-navy-400">{r.unit_name || r.sport || '—'}</td>
+                  <td className="px-4 py-3 font-medium text-primary">{r.first_name} {r.last_name}</td>
+                  <td className="px-4 py-3 text-secondary">Yr {r.year_group}</td>
+                  <td className="px-4 py-3 text-secondary">{r.class_name || '—'}</td>
+                  <td className="px-4 py-3 text-secondary">{r.unit_name || r.sport || '—'}</td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${STATUS_BADGE[r.status] || ''}`}>{r.status}</span>
                   </td>
-                  <td className="px-4 py-3 text-navy-400">{r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : '—'}</td>
+                  <td className="px-4 py-3 text-secondary">{r.updated_at ? new Date(r.updated_at).toLocaleDateString('en-GB') : '—'}</td>
                 </tr>
               ))}
             </tbody>

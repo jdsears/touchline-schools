@@ -63,7 +63,7 @@ export default function AcademicStructureTab({ access }) {
 
   if (loading || !data) return (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 
@@ -73,16 +73,16 @@ export default function AcademicStructureTab({ access }) {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-white">Academic Structure</h2>
-        <p className="text-sm text-navy-400 mt-1">
+        <h2 className="text-xl font-semibold text-primary">Academic Structure</h2>
+        <p className="text-sm text-secondary mt-1">
           Year groups, house system, and term configuration for your school.
           {!canEdit && <span className="ml-2 text-amber-400">View only.</span>}
         </p>
       </div>
 
       {/* Year groups */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-        <h3 className="text-sm font-semibold text-white mb-3">Year Groups Offered</h3>
+      <div className="bg-card rounded-xl border border-border-default p-5">
+        <h3 className="text-sm font-semibold text-primary mb-3">Year Groups Offered</h3>
         <div className="flex flex-wrap gap-2">
           {ALL_YEAR_GROUPS.map(yr => {
             const active = yearGroups.includes(yr)
@@ -95,7 +95,7 @@ export default function AcademicStructureTab({ access }) {
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border transition-all ${
                   active
                     ? 'border-pitch-600/50 bg-pitch-600/10 text-pitch-400'
-                    : 'border-navy-700 bg-navy-800/30 text-navy-500'
+                    : 'border-border-strong bg-subtle text-tertiary'
                 } ${canEdit ? 'cursor-pointer' : 'cursor-default'}`}
               >
                 {active && <Check className="w-3 h-3" />}
@@ -107,10 +107,10 @@ export default function AcademicStructureTab({ access }) {
       </div>
 
       {/* House system */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-        <h3 className="text-sm font-semibold text-white mb-3">House System</h3>
+      <div className="bg-card rounded-xl border border-border-default p-5">
+        <h3 className="text-sm font-semibold text-primary mb-3">House System</h3>
         {houseNames.length === 0 ? (
-          <p className="text-sm text-navy-500 mb-3">No house system configured.</p>
+          <p className="text-sm text-tertiary mb-3">No house system configured.</p>
         ) : (
           <div className="flex flex-wrap gap-2 mb-3">
             {houseNames.map(h => (
@@ -133,12 +133,12 @@ export default function AcademicStructureTab({ access }) {
               onChange={e => setNewHouse(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addHouse())}
               placeholder="Add house name..."
-              className="flex-1 px-3 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+              className="flex-1 px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
             />
             <button
               type="button"
               onClick={addHouse}
-              className="px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm transition-colors"
+              className="px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -147,17 +147,17 @@ export default function AcademicStructureTab({ access }) {
       </div>
 
       {/* Term dates placeholder */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-        <h3 className="text-sm font-semibold text-white mb-1">Term Dates</h3>
-        <p className="text-xs text-navy-500 mb-3">Set start and end dates for each term.</p>
+      <div className="bg-card rounded-xl border border-border-default p-5">
+        <h3 className="text-sm font-semibold text-primary mb-1">Term Dates</h3>
+        <p className="text-xs text-tertiary mb-3">Set start and end dates for each term.</p>
         <div className="space-y-3">
           {TERMS.map(term => {
             const td = (data.term_dates || []).find(t => t.term === term) || {}
             return (
               <div key={term} className="grid grid-cols-3 gap-3 items-center">
-                <span className="text-sm text-white capitalize">{term} term</span>
+                <span className="text-sm text-primary capitalize">{term} term</span>
                 <div>
-                  <label className="text-xs text-navy-500 mb-1 block">Start</label>
+                  <label className="text-xs text-tertiary mb-1 block">Start</label>
                   <input
                     type="date"
                     value={td.start || ''}
@@ -172,11 +172,11 @@ export default function AcademicStructureTab({ access }) {
                         return { ...d, term_dates: dates }
                       })
                     }}
-                    className="w-full px-2 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-xs focus:outline-none focus:border-pitch-500"
+                    className="w-full px-2 py-1.5 bg-subtle border border-border-strong rounded-lg text-primary text-xs focus:outline-none focus:border-pitch-500"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-navy-500 mb-1 block">End</label>
+                  <label className="text-xs text-tertiary mb-1 block">End</label>
                   <input
                     type="date"
                     value={td.end || ''}
@@ -191,7 +191,7 @@ export default function AcademicStructureTab({ access }) {
                         return { ...d, term_dates: dates }
                       })
                     }}
-                    className="w-full px-2 py-1.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-xs focus:outline-none focus:border-pitch-500"
+                    className="w-full px-2 py-1.5 bg-subtle border border-border-strong rounded-lg text-primary text-xs focus:outline-none focus:border-pitch-500"
                   />
                 </div>
               </div>
@@ -204,7 +204,7 @@ export default function AcademicStructureTab({ access }) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save Academic Structure

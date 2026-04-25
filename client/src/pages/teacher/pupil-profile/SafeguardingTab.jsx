@@ -6,7 +6,7 @@ const FLAG_META = {
   monitoring: { colour: 'bg-amber-500/20 text-amber-400', label: 'Monitoring' },
   concern:    { colour: 'bg-orange-500/20 text-orange-400', label: 'Concern' },
   incident:   { colour: 'bg-red-500/20 text-red-400', label: 'Incident' },
-  resolved:   { colour: 'bg-navy-700 text-navy-400', label: 'Resolved' },
+  resolved:   { colour: 'bg-border-default text-secondary', label: 'Resolved' },
 }
 
 function formatDateTime(d) {
@@ -31,13 +31,13 @@ export default function SafeguardingTab({ pupilId }) {
       .finally(() => setLoading(false))
   }, [pupilId])
 
-  if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-navy-400" /></div>
+  if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>
 
   if (error === 'forbidden') {
     return (
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-8 text-center">
-        <Shield className="w-6 h-6 text-navy-500 mx-auto mb-2" />
-        <p className="text-sm text-navy-300">Safeguarding records require DSL or Head of Department access.</p>
+      <div className="bg-card rounded-xl border border-border-default p-8 text-center">
+        <Shield className="w-6 h-6 text-tertiary mx-auto mb-2" />
+        <p className="text-sm text-secondary">Safeguarding records require DSL or Head of Department access.</p>
       </div>
     )
   }
@@ -54,20 +54,20 @@ export default function SafeguardingTab({ pupilId }) {
         </div>
       </div>
 
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-        <h2 className="text-sm font-semibold text-white flex items-center gap-2 mb-4">
+      <div className="bg-card rounded-xl border border-border-default p-5">
+        <h2 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
           <AlertTriangle className="w-4 h-4 text-red-400" />Open flags ({open.length})
         </h2>
         {open.length === 0 ? (
-          <p className="text-sm text-navy-500 text-center py-4">No open safeguarding flags.</p>
+          <p className="text-sm text-tertiary text-center py-4">No open safeguarding flags.</p>
         ) : (
           <div className="space-y-3">{open.map(n => <FlagCard key={n.id} n={n} />)}</div>
         )}
       </div>
 
       {resolved.length > 0 && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-          <h2 className="text-sm font-semibold text-navy-400 flex items-center gap-2 mb-4">
+        <div className="bg-card rounded-xl border border-border-default p-5">
+          <h2 className="text-sm font-semibold text-secondary flex items-center gap-2 mb-4">
             <CheckCircle2 className="w-4 h-4 text-pitch-400" />Resolved ({resolved.length})
           </h2>
           <div className="space-y-3">{resolved.map(n => <FlagCard key={n.id} n={n} />)}</div>
@@ -80,13 +80,13 @@ export default function SafeguardingTab({ pupilId }) {
 function FlagCard({ n }) {
   const meta = FLAG_META[n.flag_type] || FLAG_META.monitoring
   return (
-    <div className="p-3 rounded-lg bg-navy-800/50">
+    <div className="p-3 rounded-lg bg-subtle">
       <div className="flex items-center justify-between mb-2">
         <span className={`px-2 py-0.5 rounded text-xs font-medium ${meta.colour}`}>{meta.label}</span>
-        <span className="text-xs text-navy-500">{formatDateTime(n.added_at)}</span>
+        <span className="text-xs text-tertiary">{formatDateTime(n.added_at)}</span>
       </div>
-      {n.note && <p className="text-sm text-navy-200 leading-relaxed">{n.note}</p>}
-      <div className="text-xs text-navy-500 mt-2 flex items-center gap-2 flex-wrap">
+      {n.note && <p className="text-sm text-primary leading-relaxed">{n.note}</p>}
+      <div className="text-xs text-tertiary mt-2 flex items-center gap-2 flex-wrap">
         {n.added_by_name && <span>Added by {n.added_by_name}</span>}
         {n.resolved_at && <span>· Resolved {formatDateTime(n.resolved_at)}</span>}
       </div>

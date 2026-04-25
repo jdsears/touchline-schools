@@ -97,7 +97,7 @@ function NavItem({ tab, active, onClick }) {
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
         active
           ? 'bg-pitch-600/20 text-pitch-400 font-medium'
-          : 'text-navy-400 hover:text-white hover:bg-navy-800/50'
+          : 'text-secondary hover:text-link hover:bg-subtle'
       }`}
     >
       <Icon className="w-4 h-4 flex-shrink-0" />
@@ -130,7 +130,7 @@ export default function TeacherSettings() {
   if (loadingAccess) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-secondary" />
       </div>
     )
   }
@@ -153,8 +153,8 @@ export default function TeacherSettings() {
   return (
     <div className="flex gap-0 min-h-screen">
       {/* Sidebar */}
-      <aside className="w-56 flex-shrink-0 border-r border-navy-800 p-3 sticky top-0 h-screen overflow-y-auto">
-        <h1 className="text-sm font-bold text-white px-3 py-2 mb-1">Settings</h1>
+      <aside className="w-56 flex-shrink-0 border-r border-border-default p-3 sticky top-0 h-screen overflow-y-auto">
+        <h1 className="text-sm font-bold text-primary px-3 py-2 mb-1">Settings</h1>
 
         {showSchool && (
           <>
@@ -183,21 +183,21 @@ export default function TeacherSettings() {
       {/* Content */}
       <main className="flex-1 p-6 min-w-0">
         {/* Breadcrumb */}
-        <div className="flex items-center gap-1.5 text-xs text-navy-500 mb-5">
+        <div className="flex items-center gap-1.5 text-xs text-tertiary mb-5">
           <span>Settings</span>
           <ChevronRight className="w-3 h-3" />
-          <span className="text-navy-400">{tierLabel}</span>
+          <span className="text-secondary">{tierLabel}</span>
           {tabMeta && (
             <>
               <ChevronRight className="w-3 h-3" />
-              <span className="text-white">{tabMeta.label}</span>
+              <span className="text-primary">{tabMeta.label}</span>
             </>
           )}
         </div>
 
         <Suspense fallback={
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+            <Loader2 className="w-6 h-6 animate-spin text-secondary" />
           </div>
         }>
           <ActiveComponent

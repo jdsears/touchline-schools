@@ -38,7 +38,7 @@ export default function StaffDirectoryTab({ access }) {
 
   if (loading) return (
     <div className="flex items-center justify-center py-16">
-      <Loader2 className="w-6 h-6 animate-spin text-navy-400" />
+      <Loader2 className="w-6 h-6 animate-spin text-secondary" />
     </div>
   )
 
@@ -46,12 +46,12 @@ export default function StaffDirectoryTab({ access }) {
     <div className="max-w-3xl space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-white">Staff Directory</h2>
-          <p className="text-sm text-navy-400 mt-1">{staff.length} staff members in your school.</p>
+          <h2 className="text-xl font-semibold text-primary">Staff Directory</h2>
+          <p className="text-sm text-secondary mt-1">{staff.length} staff members in your school.</p>
         </div>
         {access?.isAdmin && (
           <button
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
             onClick={() => toast('Invite flow coming soon')}
           >
             <UserPlus className="w-4 h-4" />
@@ -65,23 +65,23 @@ export default function StaffDirectoryTab({ access }) {
         value={search}
         onChange={e => setSearch(e.target.value)}
         placeholder="Search by name or email..."
-        className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+        className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
       />
 
-      <div className="bg-navy-900 rounded-xl border border-navy-800 overflow-hidden">
+      <div className="bg-card rounded-xl border border-border-default overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-navy-800">
-              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-400 uppercase tracking-wide">Name</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-400 uppercase tracking-wide">Role</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-400 uppercase tracking-wide">Status</th>
-              <th className="text-left px-4 py-3 text-xs font-semibold text-navy-400 uppercase tracking-wide">Qualifications</th>
+            <tr className="border-b border-border-default">
+              <th className="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wide">Name</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wide">Role</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wide">Status</th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-secondary uppercase tracking-wide">Qualifications</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-navy-800">
             {filtered.length === 0 && (
               <tr>
-                <td colSpan={4} className="px-4 py-8 text-center text-navy-500 text-sm">
+                <td colSpan={4} className="px-4 py-8 text-center text-tertiary text-sm">
                   {search ? 'No staff matching your search.' : 'No staff found.'}
                 </td>
               </tr>
@@ -90,17 +90,17 @@ export default function StaffDirectoryTab({ access }) {
               const quals = s.qualifications?.filter(Boolean) || []
               const expiring = quals.filter(q => expiryStatus(q.expiry))
               return (
-                <tr key={s.id} className="hover:bg-navy-800/30 transition-colors">
+                <tr key={s.id} className="hover:bg-subtle transition-colors">
                   <td className="px-4 py-3">
-                    <div className="font-medium text-white">{s.name}</div>
-                    <div className="text-xs text-navy-500">{s.email}</div>
+                    <div className="font-medium text-primary">{s.name}</div>
+                    <div className="text-xs text-tertiary">{s.email}</div>
                   </td>
-                  <td className="px-4 py-3 text-navy-300">
+                  <td className="px-4 py-3 text-secondary">
                     {ROLE_LABELS[s.school_role] || s.school_role || 'Teacher'}
                   </td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      s.status === 'active' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-navy-700 text-navy-400'
+                      s.status === 'active' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-border-default text-secondary'
                     }`}>
                       {s.status || 'active'}
                     </span>
@@ -112,7 +112,7 @@ export default function StaffDirectoryTab({ access }) {
                         <span className="text-xs">{expiring.length} expiring</span>
                       </div>
                     ) : (
-                      <span className="text-xs text-navy-500">
+                      <span className="text-xs text-tertiary">
                         {quals.length > 0 ? `${quals.length} recorded` : 'None recorded'}
                       </span>
                     )}
