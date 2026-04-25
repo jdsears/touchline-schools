@@ -656,6 +656,14 @@ export const knowledgeBaseService = {
 }
 
 // Teacher Hub cross-team service (extra-curricular)
+export const concussionService = {
+  getPupilIncidents: (pupilId) => api.get(`/concussion/pupil/${pupilId}`),
+  getIncident: (id) => api.get(`/concussion/${id}`),
+  create: (data) => api.post('/concussion', data),
+  completeStage: (id, stage, notes) => api.post(`/concussion/${id}/followup/${stage}/complete`, { notes }),
+  getActiveIncidents: () => api.get('/concussion/school/active'),
+}
+
 export const misService = {
   getConfig: () => api.get('/mis/config'),
   saveConfig: (data) => api.put('/mis/config', data),
