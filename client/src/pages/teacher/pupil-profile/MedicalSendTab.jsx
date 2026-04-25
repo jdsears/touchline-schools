@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { pupilProfileService } from '../../../services/api'
 import { Stethoscope, Brain, Phone, Loader2, AlertTriangle, CalendarCheck } from 'lucide-react'
+import ConcussionPanel from '../../../components/ConcussionPanel'
 
 function formatDate(d) {
   if (!d) return ''
@@ -100,6 +101,9 @@ export default function MedicalSendTab({ pupilId }) {
           </div>
         )}
       </div>
+
+      {/* Concussion History */}
+      <ConcussionPanel pupilId={pupilId} />
     </div>
   )
 }
