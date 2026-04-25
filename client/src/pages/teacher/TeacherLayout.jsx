@@ -109,8 +109,8 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
         className={`
           flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
           ${isActive
-            ? 'bg-pitch-600/20 text-pitch-400'
-            : 'text-navy-400 hover:text-white hover:bg-navy-800'
+            ? 'bg-brand-navy text-on-dark'
+            : 'text-secondary hover:text-primary hover:bg-card'
           }
         `}
       >
@@ -124,23 +124,23 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-navy-800">
+      <div className="flex items-center justify-between h-14 px-4 bg-brand-navy">
         <div className="flex items-center gap-3">
           {schoolBranding?.logoUrl ? (
             <img src={schoolBranding.logoUrl} alt="" className="w-8 h-8 rounded-lg object-cover" />
           ) : (
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: schoolBranding?.primaryColor || '#16a34a' }}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/10">
               <GraduationCap className="w-5 h-5 text-white" />
             </div>
           )}
           <div>
             <div className="text-sm font-semibold text-white">{schoolBranding?.schoolName || 'Teacher Hub'}</div>
-            <div className="text-xs text-navy-400">{roleDisplay || user?.name}</div>
+            <div className="text-xs text-brand-gold">{roleDisplay || user?.name}</div>
           </div>
         </div>
         <button
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-1 text-navy-400 hover:text-white"
+          className="lg:hidden p-1 text-white/60 hover:text-white"
         >
           <X className="w-5 h-5" />
         </button>
@@ -151,7 +151,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
         {isHoD && (
           <>
             <div className="mb-1 px-3">
-              <span className="text-xs font-semibold uppercase tracking-wider text-amber-400">
+              <span className="heading-caption">
                 Head of Department
               </span>
             </div>
@@ -165,7 +165,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
 
         {/* Curriculum PE */}
         <div className="mb-1 px-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-navy-500">
+          <span className="heading-caption">
             Curriculum PE
           </span>
         </div>
@@ -177,7 +177,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
 
         {/* Extra-curricular Sport */}
         <div className="mb-1 px-3">
-          <span className="text-xs font-semibold uppercase tracking-wider text-navy-500">
+          <span className="heading-caption">
             Extra-curricular
           </span>
         </div>
@@ -188,7 +188,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
         </div>
 
         {/* Shared */}
-        <div className="border-t border-navy-800 pt-4 space-y-1">
+        <div className="border-t border-border-default pt-4 space-y-1">
           {sharedNav.map(item => (
             <NavItem key={item.href} item={item} />
           ))}
@@ -196,20 +196,20 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEn
       </nav>
 
       {/* User profile + logout */}
-      <div className="border-t border-navy-800 p-4">
+      <div className="border-t border-border-default p-4">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-brand-navy flex items-center justify-center">
             <span className="text-xs font-medium text-white">
               {user?.name?.charAt(0)?.toUpperCase() || '?'}
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="text-sm font-medium text-white truncate">{user?.name}</div>
-            <div className="text-xs text-navy-400">{roleDisplay}</div>
+            <div className="text-sm font-medium text-primary truncate">{user?.name}</div>
+            <div className="text-xs text-secondary">{roleDisplay}</div>
           </div>
           <button
             onClick={logout}
-            className="p-1.5 text-navy-400 hover:text-alert-400 transition-colors"
+            className="p-1.5 text-secondary hover:text-error transition-colors"
             title="Log out"
           >
             <LogOut className="w-4 h-4" />
@@ -266,7 +266,7 @@ export default function TeacherLayout() {
   }, [location.pathname])
 
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className="min-h-screen bg-page">
       {/* Mobile backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -275,7 +275,7 @@ export default function TeacherLayout() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
           />
         )}
       </AnimatePresence>
@@ -283,7 +283,7 @@ export default function TeacherLayout() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-navy-900 border-r border-navy-800
+          fixed inset-y-0 left-0 z-50 w-60 bg-subtle border-r border-border-default
           flex flex-col transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
@@ -302,20 +302,20 @@ export default function TeacherLayout() {
       </aside>
 
       {/* Main content */}
-      <div className="lg:pl-64">
+      <div className="lg:pl-60">
         {/* Mobile header */}
-        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-16 px-4 bg-navy-900/80 backdrop-blur-md border-b border-navy-800">
+        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-14 px-4 bg-brand-navy">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 text-navy-400 hover:text-white"
+            className="p-2 text-white/60 hover:text-white"
           >
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-pitch-400" />
+            <GraduationCap className="w-5 h-5 text-brand-gold" />
             <span className="text-sm font-semibold text-white">Teacher Hub</span>
           </div>
-          <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center">
+          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
             <span className="text-xs font-medium text-white">
               {user?.name?.charAt(0)?.toUpperCase() || '?'}
             </span>
@@ -325,11 +325,11 @@ export default function TeacherLayout() {
         {/* Role switcher for dual-role HoD+Teacher users */}
         {isHoD && (isOnHoDView || isOnTeacherHome) && (
           <div className="flex items-center justify-end px-4 md:px-6 pt-4 pb-0">
-            <div className="inline-flex rounded-lg bg-navy-800 border border-navy-700 p-0.5">
+            <div className="inline-flex rounded-lg bg-card border border-border-default p-0.5">
               <button
                 onClick={() => switchView('hod')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  isOnHoDView ? 'bg-amber-500/20 text-amber-400' : 'text-navy-400 hover:text-navy-200'
+                  isOnHoDView ? 'bg-brand-navy text-white' : 'text-secondary hover:text-primary'
                 }`}
               >
                 School Admin
@@ -337,7 +337,7 @@ export default function TeacherLayout() {
               <button
                 onClick={() => switchView('teacher')}
                 className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  isOnTeacherHome ? 'bg-pitch-500/20 text-pitch-400' : 'text-navy-400 hover:text-navy-200'
+                  isOnTeacherHome ? 'bg-brand-navy text-white' : 'text-secondary hover:text-primary'
                 }`}
               >
                 Teacher
