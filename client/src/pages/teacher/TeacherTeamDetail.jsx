@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { teamService, matchService } from '../../services/api'
+import { teamService } from '../../services/api'
 import {
   ChevronLeft, Users, Trophy, Calendar, MapPin,
   Shield, Loader2, Clock, Plus,

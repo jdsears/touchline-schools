@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { matchService } from '../services/api'
+import { teamService } from '../services/api'
 import { FileText, Sparkles, Send, Edit2, Loader2, Check, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -13,7 +13,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
   async function generate() {
     setGenerating(true)
     try {
-      const res = await matchService.generatePublicReport(matchId)
+      const res = await teamService.generatePublicReport(matchId)
       setText(res.data.text)
       setStatus('draft')
       toast.success('Match report drafted by AI - review before publishing')
@@ -25,7 +25,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
   async function saveEdit() {
     setSaving(true)
     try {
-      await matchService.updatePublicReport(matchId, text)
+      await teamService.updatePublicReport(matchId, text)
       setEditing(false)
       toast.success('Report updated')
     } catch { toast.error('Failed to save') }
@@ -35,7 +35,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
   async function togglePublish() {
     const newPublish = status !== 'published'
     try {
-      await matchService.publishPublicReport(matchId, newPublish)
+      await teamService.publishPublicReport(matchId, newPublish)
       setStatus(newPublish ? 'published' : 'draft')
       toast.success(newPublish ? 'Report published to public site' : 'Report unpublished')
     } catch { toast.error('Failed to update') }
