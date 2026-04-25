@@ -63,6 +63,7 @@ import schoolSettingsRoutes from './routes/schoolSettings.js'
 import venueRoutes from './routes/venues.js'
 import fixtureTravelRoutes from './routes/fixtureTravel.js'
 import consentRoutes from './routes/consent.js'
+import publicFixtureRoutes from './routes/publicFixtures.js'
 
 // Demo seed
 import { seedSchool } from './db/demo-seed/school.js'
@@ -258,6 +259,7 @@ app.use('/api/settings', schoolSettingsRoutes)
 app.use('/api/venues', venueRoutes)
 app.use('/api/fixture-travel', fixtureTravelRoutes)
 app.use('/api/consent', consentRoutes)
+app.use('/api/public/sport', publicFixtureRoutes)
 
 // Helper to convert buffer to base64 data URL
 function bufferToDataUrl(buffer, mimeType) {
@@ -753,6 +755,13 @@ async function ensureDemoPrerequisites() {
   for (const sql of createTables) stmts.push(sql)
   stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS venue_id UUID REFERENCES venues(id) ON DELETE SET NULL`)
   stmts.push(`CREATE INDEX IF NOT EXISTS idx_venues_school ON venues(school_id)`)
+  stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS public_fixtures_enabled BOOLEAN DEFAULT false`)
+  stmts.push(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS public_name_format TEXT DEFAULT 'first_initial'`)
+  stmts.push(`ALTER TABLE teams ADD COLUMN IF NOT EXISTS is_public BOOLEAN DEFAULT false`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_text TEXT`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_status TEXT DEFAULT 'none'`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_approved_by UUID`)
+  stmts.push(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS match_report_approved_at TIMESTAMPTZ`)
 
   for (const sql of stmts) {
     try { await pool.query(sql) } catch (e) { console.warn('[DemoPrereq]', e.message.slice(0, 80)) }

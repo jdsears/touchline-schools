@@ -33,6 +33,7 @@ import Landing from './pages/Landing'
 
 // Lazy-loaded pages - only loaded when the route is visited
 const Login = lazy(() => import('./pages/Login'))
+const PublicFixtures = lazy(() => import('./pages/PublicFixtures'))
 const Register = lazy(() => import('./pages/Register'))
 const Dashboard = lazy(() => import('./pages/Dashboard'))
 const Chat = lazy(() => import('./pages/Chat'))
@@ -235,6 +236,7 @@ export default function App() {
         <Route path="/about" element={<About />} />
         <Route path="/request-demo" element={<RequestDemoAccess />} />
         <Route path="/watch/:shareCode" element={<WatchStream />} />
+        <Route path="/sport/:slug" element={<PublicFixtures />} />
 
         {/* Enterprise billing (MoonBoots staff only) */}
         <Route path="/enterprise-billing" element={<EnterpriseBilling />} />
