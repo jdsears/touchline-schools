@@ -69,28 +69,28 @@ export default function TeacherDashboard() {
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-navy-400 text-sm mt-0.5">{todayDate}</p>
+        <h1 className="text-xl md:text-2xl font-bold text-primary">Dashboard</h1>
+        <p className="text-secondary text-sm mt-0.5">{todayDate}</p>
       </div>
 
       {/* Today strip */}
-      <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-        <h2 className="text-base font-semibold text-white flex items-center gap-2 mb-4">
+      <div className="bg-card rounded-xl border border-border-default p-5">
+        <h2 className="text-base font-semibold text-primary flex items-center gap-2 mb-4">
           <Calendar className="w-4 h-4 text-pitch-400" />Today
         </h2>
         {todayItems.length === 0 ? (
-          <p className="text-navy-500 text-sm text-center py-4">Nothing scheduled today</p>
+          <p className="text-tertiary text-sm text-center py-4">Nothing scheduled today</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {todayItems.map((item, i) => (
-              <Link key={i} to={item.href} className="flex items-center gap-3 p-3 rounded-lg bg-navy-800/50 hover:bg-navy-800 transition-colors">
+              <Link key={i} to={item.href} className="flex items-center gap-3 p-3 rounded-lg bg-subtle hover:bg-subtle transition-colors">
                 <div className="w-12 text-right shrink-0">
-                  <span className="text-xs text-navy-400 font-mono">{item.time ? fmt(item.time) : '—'}</span>
+                  <span className="text-xs text-secondary font-mono">{item.time ? fmt(item.time) : '—'}</span>
                 </div>
                 <span className={`text-[10px] uppercase tracking-wide font-semibold px-1.5 py-0.5 rounded shrink-0 ${TYPE_PILL[item.type]}`}>{item.type}</span>
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm text-white truncate">{item.label}</div>
-                  <div className="text-xs text-navy-400 truncate">{item.sub}</div>
+                  <div className="text-sm text-primary truncate">{item.label}</div>
+                  <div className="text-xs text-secondary truncate">{item.sub}</div>
                 </div>
               </Link>
             ))}
@@ -101,30 +101,30 @@ export default function TeacherDashboard() {
       {/* Two-column: Classes + Teams */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* My Classes */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
+        <div className="bg-card rounded-xl border border-border-default p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+            <h2 className="text-base font-semibold text-primary flex items-center gap-2">
               <GraduationCap className="w-4 h-4 text-pitch-400" />My Classes
             </h2>
             <Link to="/teacher/classes" className="text-xs text-pitch-400 hover:text-pitch-300">View all</Link>
           </div>
-          {classes.length === 0 ? <p className="text-navy-500 text-sm text-center py-6">No classes assigned yet</p> : (
+          {classes.length === 0 ? <p className="text-tertiary text-sm text-center py-6">No classes assigned yet</p> : (
             <div className="space-y-2">
               {classes.map(c => {
                 const unit = c.current_units?.[0]
                 return (
-                  <Link key={c.id} to={`/teacher/classes/${c.id}`} className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 hover:bg-navy-800 transition-colors">
+                  <Link key={c.id} to={`/teacher/classes/${c.id}`} className="flex items-center justify-between p-3 rounded-lg bg-subtle hover:bg-subtle transition-colors">
                     <div className="min-w-0 flex-1">
-                      <div className="text-sm font-medium text-white truncate">{c.name}</div>
-                      <div className="text-xs text-navy-400">Yr {c.year_group} · {c.pupil_count} pupils{unit ? ` · ${unit.sport}` : ''}</div>
+                      <div className="text-sm font-medium text-primary truncate">{c.name}</div>
+                      <div className="text-xs text-secondary">Yr {c.year_group} · {c.pupil_count} pupils{unit ? ` · ${unit.sport}` : ''}</div>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       {c.assessments_this_term > 0 && (
-                        <span className="text-[11px] text-navy-400 flex items-center gap-1">
+                        <span className="text-[11px] text-secondary flex items-center gap-1">
                           <ClipboardCheck className="w-3 h-3" />{c.assessments_this_term}
                         </span>
                       )}
-                      <ChevronRight className="w-4 h-4 text-navy-600" />
+                      <ChevronRight className="w-4 h-4 text-tertiary" />
                     </div>
                   </Link>
                 )
@@ -134,27 +134,27 @@ export default function TeacherDashboard() {
         </div>
 
         {/* My Teams */}
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
+        <div className="bg-card rounded-xl border border-border-default p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base font-semibold text-white flex items-center gap-2">
+            <h2 className="text-base font-semibold text-primary flex items-center gap-2">
               <Shield className="w-4 h-4 text-amber-400" />My Teams
             </h2>
             <Link to="/teacher/teams" className="text-xs text-pitch-400 hover:text-pitch-300">View all</Link>
           </div>
-          {teams.length === 0 ? <p className="text-navy-500 text-sm text-center py-6">No teams assigned yet</p> : (
+          {teams.length === 0 ? <p className="text-tertiary text-sm text-center py-6">No teams assigned yet</p> : (
             <div className="space-y-2">
               {teams.map(t => (
-                <Link key={t.id} to={`/teacher/teams/${t.id}`} className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 hover:bg-navy-800 transition-colors">
+                <Link key={t.id} to={`/teacher/teams/${t.id}`} className="flex items-center justify-between p-3 rounded-lg bg-subtle hover:bg-subtle transition-colors">
                   <div className="min-w-0 flex-1">
-                    <div className="text-sm font-medium text-white truncate">{t.name}</div>
-                    <div className="text-xs text-navy-400">
+                    <div className="text-sm font-medium text-primary truncate">{t.name}</div>
+                    <div className="text-xs text-secondary">
                       {t.pupil_count} pupils
                       {t.next_fixture && <> · Next: vs {t.next_fixture.opponent} {fmtDate(t.next_fixture.date)}</>}
                     </div>
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {resultBadge(t.last_result)}
-                    <ChevronRight className="w-4 h-4 text-navy-600" />
+                    <ChevronRight className="w-4 h-4 text-tertiary" />
                   </div>
                 </Link>
               ))}
@@ -165,19 +165,19 @@ export default function TeacherDashboard() {
 
       {/* Pupils needing attention */}
       {attention.length > 0 && (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-5">
-          <h2 className="text-base font-semibold text-white flex items-center gap-2 mb-4">
+        <div className="bg-card rounded-xl border border-border-default p-5">
+          <h2 className="text-base font-semibold text-primary flex items-center gap-2 mb-4">
             <AlertTriangle className="w-4 h-4 text-amber-400" />Pupils needing attention
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {attention.map(a => (
-              <Link key={a.pupil_id} to={`/teacher/hod/pupils/${a.pupil_id}`} className="flex items-center gap-3 p-3 rounded-lg bg-navy-800/50 hover:bg-navy-800 transition-colors">
+              <Link key={a.pupil_id} to={`/teacher/hod/pupils/${a.pupil_id}`} className="flex items-center gap-3 p-3 rounded-lg bg-subtle hover:bg-subtle transition-colors">
                 <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
                   <AlertTriangle className="w-4 h-4 text-amber-400" />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="text-sm text-white truncate">{a.name}</div>
-                  <div className="text-xs text-navy-500 truncate capitalize">{a.observation_type} · {a.team_name}</div>
+                  <div className="text-sm text-primary truncate">{a.name}</div>
+                  <div className="text-xs text-tertiary truncate capitalize">{a.observation_type} · {a.team_name}</div>
                 </div>
               </Link>
             ))}
