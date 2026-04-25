@@ -13,7 +13,7 @@ import path from 'path'
 import fs from 'fs'
 import pool from '../config/database.js'
 import { authenticateToken, requireTeamAccess } from '../middleware/auth.js'
-import { extractFixturesFromImage, extractPlayersFromImage, generateTrainingSession, generateTrainingSummary } from '../services/claudeService.js'
+import { extractFixturesFromImage, extractPlayersFromImage, generateTrainingSession, generateTrainingSummary, generateSeasonFixtures } from '../services/claudeService.js'
 import { normalizePlayerPositions, normalizePlayersPositions } from '../utils/pupilUtils.js'
 import { sendTeamInviteEmail, sendNotificationEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
 import { sendPushToUser } from '../services/pushService.js'
@@ -805,6 +805,36 @@ router.post('/:id/matches/bulk', authenticateToken, requireTeamAccess, async (re
     })
   } catch (error) {
     next(error)
+  }
+})
+
+// AI-assisted season fixture generation
+router.post('/:id/matches/generate-season', authenticateToken, requireTeamAccess, async (req, res, next) => {
+  try {
+    const { id } = req.params
+
+    const teamRes = await pool.query('SELECT name, sport, age_group, gender FROM teams WHERE id = $1', [id])
+    if (!teamRes.rows.length) return res.status(404).json({ message: 'Team not found' })
+    const team = teamRes.rows[0]
+
+    const pastRes = await pool.query(
+      `SELECT DISTINCT opponent FROM matches WHERE team_id = $1 AND opponent IS NOT NULL ORDER BY opponent`,
+      [id]
+    )
+    const pastOpponents = pastRes.rows.map(r => r.opponent)
+
+    const fixtures = await generateSeasonFixtures({
+      teamName: team.name,
+      sport: team.sport,
+      ageGroup: team.age_group,
+      gender: team.gender,
+      pastOpponents,
+    })
+
+    res.json({ fixtures })
+  } catch (error) {
+    console.error('AI season generation failed:', error)
+    res.status(500).json({ message: error.message || 'Failed to generate season fixtures' })
   }
 })
 

@@ -3835,4 +3835,71 @@ export default {
   generateComplianceAnalysis,
   generateCoachDevelopment,
   generateLessonPlan,
+  generateSeasonFixtures,
+}
+
+export async function generateSeasonFixtures({ teamName, sport, ageGroup, gender, pastOpponents, termDates }) {
+  const opponentList = pastOpponents?.length
+    ? `Past opponents (suggest from these first): ${pastOpponents.join(', ')}`
+    : 'No previous fixture history. Use placeholder "[Opposition - please specify]" for opponent names.'
+
+  const termInfo = termDates
+    ? `School term dates: ${termDates}`
+    : 'No term dates provided. Use a standard UK school term pattern (Sept-Dec, Jan-Mar, Apr-Jul, avoiding half-term weeks).'
+
+  const sportDay = {
+    football: 'Saturday afternoons (14:00) for senior, Wednesday afternoons (14:30) for prep',
+    rugby: 'Wednesday afternoons (14:00) and Saturday mornings (10:00)',
+    cricket: 'Wednesday afternoons (13:30) and Saturday mornings (10:30)',
+    hockey: 'Wednesday afternoons (14:00) and Saturday mornings (10:00)',
+    netball: 'Wednesday afternoons (14:00) and Saturday mornings (10:00)',
+  }[sport] || 'Wednesday afternoons (14:00) and Saturday mornings (10:00)'
+
+  const prompt = `Generate a realistic school sport fixture schedule for the upcoming season. British English.
+
+Team: ${teamName}
+Sport: ${sport}
+Age group: ${ageGroup || 'secondary'}
+Gender: ${gender || 'mixed'}
+
+Standard fixture days for ${sport}: ${sportDay}
+${opponentList}
+${termInfo}
+
+Rules:
+- Generate 8-12 fixtures spread across the season
+- Alternate home and away realistically (roughly 50/50)
+- No fixtures on consecutive days
+- Space fixtures at least 5 days apart
+- If past opponents are available, reuse them. If not, use "[Opposition - please specify]"
+- NEVER invent realistic-sounding school names. Only use names from the past opponents list
+- Use realistic UK venue names for away matches (e.g. the opponent's school name + "Playing Fields")
+- Dates should be in the current or next academic year
+
+Return ONLY valid JSON. Array of fixture objects:
+[{
+  "date": "YYYY-MM-DD",
+  "time": "HH:MM",
+  "opponent": "Team Name",
+  "location": "Venue or null for home",
+  "isHome": true,
+  "kitType": "home",
+  "competition": "League",
+  "assumptions": "Brief note on what was assumed for this fixture"
+}]`
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 2000,
+      system: cacheableSystem('You are a UK school sport fixture scheduler. Return only valid JSON arrays.'),
+      messages: [{ role: 'user', content: prompt }],
+    })
+    const text = response.content[0]?.text?.trim() || '[]'
+    const jsonMatch = text.match(/\[[\s\S]*\]/)
+    return JSON.parse(jsonMatch?.[0] || '[]')
+  } catch (error) {
+    console.error('AI fixture generation failed:', error.message)
+    throw new Error('Failed to generate fixtures: ' + error.message)
+  }
 }

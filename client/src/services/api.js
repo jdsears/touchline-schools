@@ -99,6 +99,7 @@ export const teamService = {
   addMatch: (teamId, data) => api.post(`/teams/${teamId}/matches`, data),
   bulkAddMatches: (teamId, matches) => api.post(`/teams/${teamId}/matches/bulk`, { matches }),
   validateMatches: (teamId, matches) => api.post(`/teams/${teamId}/matches/validate`, { matches }),
+  generateSeasonFixtures: (teamId) => api.post(`/teams/${teamId}/matches/generate-season`),
   getMatch: (matchId) => api.get(`/matches/${matchId}`),
   updateMatch: (matchId, data) => api.put(`/matches/${matchId}`, data),
   deleteMatch: (matchId) => api.delete(`/matches/${matchId}`),

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { teamService, teacherService } from '../../services/api'
-import { Plus, Trash2, Copy, Upload, Save, AlertTriangle, Loader2, ArrowLeft } from 'lucide-react'
+import { Plus, Trash2, Copy, Upload, Save, AlertTriangle, Loader2, ArrowLeft, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const EMPTY_ROW = { date: '', time: '15:00', opponent: '', location: '', isHome: true, kitType: 'home', competition: '', meetTime: '' }
@@ -18,6 +18,7 @@ export default function BlockFixtureCreation() {
   const [rows, setRows] = useState(() => Array.from({ length: 4 }, () => newRow()))
   const [warnings, setWarnings] = useState([])
   const [saving, setSaving] = useState(false)
+  const [generating, setGenerating] = useState(false)
   const [loading, setLoading] = useState(true)
   const [defaults, setDefaults] = useState({ competition: '', kitType: 'home', time: '15:00' })
 
@@ -78,6 +79,26 @@ export default function BlockFixtureCreation() {
     }
     reader.readAsText(file)
     e.target.value = ''
+  }
+
+  async function aiGenerate() {
+    setGenerating(true)
+    try {
+      const res = await teamService.generateSeasonFixtures(teamId)
+      const fixtures = res.data.fixtures || []
+      if (!fixtures.length) { toast.error('AI returned no fixtures'); return }
+      const generated = fixtures.map(f => newRow({
+        date: f.date || '', time: f.time || '15:00', opponent: f.opponent || '',
+        location: f.location || '', isHome: f.isHome !== false,
+        kitType: f.kitType || (f.isHome !== false ? 'home' : 'away'),
+        competition: f.competition || defaults.competition,
+        _assumption: f.assumptions || null,
+      }))
+      setRows(generated)
+      toast.success(`AI drafted ${generated.length} fixtures - review and edit before saving`)
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'AI generation failed')
+    } finally { setGenerating(false) }
   }
 
   async function validate() {
@@ -157,6 +178,11 @@ export default function BlockFixtureCreation() {
             className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg border border-navy-700">
             <Upload className="w-3.5 h-3.5" /> Import CSV
           </button>
+          <button onClick={aiGenerate} disabled={generating}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-lg">
+            {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+            {generating ? 'Generating...' : 'AI Assist'}
+          </button>
         </div>
       </div>
 
@@ -224,6 +250,11 @@ export default function BlockFixtureCreation() {
                       <button onClick={() => duplicateRow(idx)} title="Duplicate" className="p-1 text-navy-500 hover:text-navy-300"><Copy className="w-3.5 h-3.5" /></button>
                       <button onClick={() => removeRow(idx)} title="Remove" className="p-1 text-navy-500 hover:text-alert-400"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
+                    {row._assumption && (
+                      <div className="text-[10px] text-purple-400 mt-0.5 flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 shrink-0" />{row._assumption}
+                      </div>
+                    )}
                     {rw.map((w, wi) => (
                       <div key={wi} className="flex items-center gap-1 text-[10px] text-amber-400 mt-0.5">
                         <AlertTriangle className="w-3 h-3 shrink-0" />{w.message}
