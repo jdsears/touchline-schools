@@ -656,6 +656,12 @@ export const knowledgeBaseService = {
 }
 
 // Teacher Hub cross-team service (extra-curricular)
+export const misService = {
+  getConfig: () => api.get('/mis/config'),
+  saveConfig: (data) => api.put('/mis/config', data),
+  getHistory: () => api.get('/mis/history'),
+}
+
 export const consentService = {
   getTypes: () => api.get('/consent/types'),
   seedDefaults: () => api.post('/consent/types/seed-defaults'),
