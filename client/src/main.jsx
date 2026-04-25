@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast'
 import App from './App'
 import { AuthProvider } from './context/AuthContext'
 import { TeamProvider } from './context/TeamContext'
+import { ThemeProvider } from './context/ThemeContext'
 import CookieConsent from './components/common/CookieConsent'
 import InstallPrompt from './components/common/InstallPrompt'
 import IOSInstallInstructions from './components/common/IOSInstallInstructions'
@@ -40,6 +41,7 @@ if ('serviceWorker' in navigator) {
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
+    <ThemeProvider defaultTheme="light">
     <HelmetProvider>
     <BrowserRouter>
       <AuthProvider>
@@ -77,5 +79,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </AuthProvider>
     </BrowserRouter>
     </HelmetProvider>
+    </ThemeProvider>
   </React.StrictMode>
 )
