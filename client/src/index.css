@@ -1,10 +1,11 @@
+@import './styles/tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* MoonBoots Sports brand CSS variables */
+/* MoonBoots Sports legacy brand CSS variables (kept for existing component compat) */
 :root {
-  /* MoonBoots brand palette */
   --mb-navy: #0F1E3D;
   --mb-navy-deep: #0A1530;
   --mb-gold: #C9A961;
@@ -15,16 +16,12 @@
   --mb-light-grey: #E7E7E7;
   --mb-dark: #1A1A1A;
 
-  /* Typography */
-  --font-serif: 'Crimson Pro', 'Times New Roman', Georgia, serif;
-  --font-sans: 'Poppins', -apple-system, sans-serif;
-
   /* Team/sport colours - overridden per team by TeamContext */
-  --team-primary: #2ED573;      /* Pitch Green - guidance, confirmation */
-  --team-secondary: #0B1C2D;    /* Background primary */
-  --team-accent: #F5A623;       /* Amber - attention, emphasis */
-  --team-primary-text: #F5F7FA; /* Text primary */
-  --team-accent-text: #F5F7FA;  /* Text on accent */
+  --team-primary: #2ED573;
+  --team-secondary: #0B1C2D;
+  --team-accent: #F5A623;
+  --team-primary-text: #F5F7FA;
+  --team-accent-text: #F5F7FA;
 
   /* School branding - set by useSchoolBranding hook */
   --school-primary: #1a365d;
@@ -35,34 +32,36 @@
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: var(--font-sans);
     scroll-behavior: smooth;
   }
 
   body {
-    @apply bg-navy-950 text-navy-100;
+    background-color: var(--color-bg-page);
+    color: var(--color-text-primary);
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Outfit', system-ui, sans-serif;
+    font-family: var(--font-display);
   }
 
-  /* Custom scrollbar */
+  /* Custom scrollbar - theme-aware */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-navy-900;
+    background: var(--color-scrollbar-track);
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-navy-700 rounded-full;
+    background: var(--color-scrollbar-thumb);
+    border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-navy-600;
+    background: var(--color-scrollbar-thumb-hover);
   }
 }
 
