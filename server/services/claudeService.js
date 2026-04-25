@@ -3836,6 +3836,55 @@ export default {
   generateCoachDevelopment,
   generateLessonPlan,
   generateSeasonFixtures,
+  generatePublicMatchReport,
+}
+
+export async function generatePublicMatchReport({ teamName, opponent, scoreFor, scoreAgainst, sport, ageGroup, date, venue, homeAway, coachNotes, potmName, goals, nameFormat }) {
+  const safePlayerName = (name) => {
+    if (!name) return null
+    if (nameFormat === 'full') return name
+    const parts = name.trim().split(' ')
+    return parts.length < 2 ? parts[0] : `${parts[0]} ${parts[parts.length - 1][0]}.`
+  }
+
+  const goalsText = goals?.length
+    ? goals.map(g => `${safePlayerName(g.scorer)} ${g.minute ? `(${g.minute}')` : ''}`).join(', ')
+    : null
+
+  const prompt = `Write a match report suitable for a school public fixture website. British English.
+
+Match: ${teamName} ${homeAway === 'home' ? 'vs' : 'at'} ${opponent}
+Score: ${scoreFor} - ${scoreAgainst}
+Sport: ${sport || 'football'}
+Age group: ${ageGroup || 'school'}
+Date: ${date || 'recent'}
+Venue: ${venue || (homeAway === 'home' ? 'Home' : 'Away')}
+${potmName ? `Player of the match: ${safePlayerName(potmName)}` : ''}
+${goalsText ? `Goals: ${goalsText}` : ''}
+${coachNotes ? `Coach observations: ${coachNotes}` : ''}
+
+Rules:
+- 150-250 words
+- School-appropriate, positive, balanced tone
+- Pupils referenced ONLY by: ${nameFormat === 'full' ? 'full name' : 'first name and surname initial (e.g. "James O.")'}
+- No critical commentary on individual pupils
+- Highlight team performance and notable contributions
+- Close with a forward-looking note to the next fixture
+- Do NOT invent pupil names not provided above
+- British English throughout`
+
+  try {
+    const response = await anthropic.messages.create({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 800,
+      system: cacheableSystem('You write match reports for UK school sport websites. Tone: positive, balanced, age-appropriate. British English.'),
+      messages: [{ role: 'user', content: prompt }],
+    })
+    return response.content[0]?.text?.trim() || ''
+  } catch (error) {
+    console.error('Public match report generation failed:', error.message)
+    throw new Error('Failed to generate match report: ' + error.message)
+  }
 }
 
 export async function generateSeasonFixtures({ teamName, sport, ageGroup, gender, pastOpponents, termDates }) {

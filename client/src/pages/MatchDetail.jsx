@@ -55,6 +55,7 @@ import AIMarkdown from '../components/AIMarkdown'
 import FormationPitch, { formationsByFormat, defaultFormationByFormat } from '../components/FormationPitch'
 import VideoUpload from '../components/VideoUpload'
 import FixtureTravelPanel from '../components/FixtureTravelPanel'
+import PublicReportPanel from '../components/PublicReportPanel'
 import PlayingTimeCalculator from '../components/PlayingTimeCalculator'
 
 const tabs = [
@@ -1442,6 +1443,11 @@ export default function MatchDetail() {
 
             {/* Travel arrangements (away fixtures) */}
             <FixtureTravelPanel matchId={id} isAway={!match.is_home} />
+
+            {/* Public match report (for completed matches) */}
+            {resultDisplay && (
+              <PublicReportPanel matchId={id} reportText={match.match_report_text} reportStatus={match.match_report_status} />
+            )}
 
             {/* Goalscorers & Assists - Only show when match has a result */}
             {resultDisplay && (

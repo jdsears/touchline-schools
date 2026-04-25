@@ -4,7 +4,7 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { generateMatchPrep, generateMatchReport, generatePepTalk } from '../services/claudeService.js'
+import { generateMatchPrep, generateMatchReport, generatePepTalk, generatePublicMatchReport } from '../services/claudeService.js'
 import { sendPotmEmail, sendSquadAnnouncementEmail, sendAvailabilityRequestEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
 import { sendPushToUser } from '../services/pushService.js'
 import { normalizePositions } from '../utils/pupilUtils.js'
@@ -809,6 +809,74 @@ router.put('/:id/report', authenticateToken, async (req, res, next) => {
   } catch (error) {
     next(error)
   }
+})
+
+// Generate public match report (AI draft)
+router.post('/:id/public-report/generate', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const match = await pool.query(
+      `SELECT m.*, t.name AS team_name, t.sport, t.age_group, t.school_id,
+              (SELECT name FROM pupils WHERE id = m.player_of_match_id) AS potm_name
+       FROM matches m JOIN teams t ON t.id = m.team_id WHERE m.id = $1`, [id]
+    )
+    if (!match.rows.length) return res.status(404).json({ message: 'Match not found' })
+    const m = match.rows[0]
+
+    const school = await pool.query('SELECT public_name_format FROM schools WHERE id = $1', [m.school_id])
+    const nameFormat = school.rows[0]?.public_name_format || 'first_initial'
+
+    const goals = await pool.query(
+      `SELECT mg.*, p.name AS scorer FROM match_goals mg LEFT JOIN pupils p ON p.id = mg.pupil_id WHERE mg.match_id = $1`,
+      [id]
+    ).catch(() => ({ rows: [] }))
+
+    const text = await generatePublicMatchReport({
+      teamName: m.team_name, opponent: m.opponent,
+      scoreFor: m.score_for, scoreAgainst: m.score_against,
+      sport: m.sport, ageGroup: m.age_group,
+      date: m.date || m.match_date, venue: m.location,
+      homeAway: m.home_away, coachNotes: m.team_notes,
+      potmName: m.potm_name, goals: goals.rows, nameFormat,
+    })
+
+    await pool.query(
+      `UPDATE matches SET match_report_text = $1, match_report_status = 'draft', updated_at = NOW() WHERE id = $2`,
+      [text, id]
+    )
+    res.json({ text, status: 'draft' })
+  } catch (error) {
+    console.error('Public report generation failed:', error)
+    res.status(500).json({ message: error.message || 'Failed to generate report' })
+  }
+})
+
+// Update public match report text (coach edits)
+router.put('/:id/public-report', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { text } = req.body
+    await pool.query(
+      `UPDATE matches SET match_report_text = $1, match_report_status = 'draft', updated_at = NOW() WHERE id = $2`,
+      [text, id]
+    )
+    res.json({ text, status: 'draft' })
+  } catch (error) { next(error) }
+})
+
+// Approve and publish public match report
+router.post('/:id/public-report/publish', authenticateToken, async (req, res, next) => {
+  try {
+    const { id } = req.params
+    const { publish } = req.body
+    const status = publish !== false ? 'published' : 'draft'
+    await pool.query(
+      `UPDATE matches SET match_report_status = $1, match_report_approved_by = $2,
+        match_report_approved_at = NOW(), updated_at = NOW() WHERE id = $3`,
+      [status, req.user.id, id]
+    )
+    res.json({ status })
+  } catch (error) { next(error) }
 })
 
 // Generate pre-match pep talk for a pupil

@@ -109,6 +109,9 @@ export const teamService = {
   generateMatchReport: (matchId) => api.post(`/matches/${matchId}/report/generate`),
   publishMatchReport: (matchId, published = true) => api.post(`/matches/${matchId}/report/publish`, { published }),
   updateMatchReport: (matchId, content) => api.put(`/matches/${matchId}/report`, { content }),
+  generatePublicReport: (matchId) => api.post(`/matches/${matchId}/public-report/generate`),
+  updatePublicReport: (matchId, text) => api.put(`/matches/${matchId}/public-report`, { text }),
+  publishPublicReport: (matchId, publish = true) => api.post(`/matches/${matchId}/public-report/publish`, { publish }),
 
   // Match Goals & Assists
   getMatchGoals: (matchId) => api.get(`/matches/${matchId}/goals`),
