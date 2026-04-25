@@ -30,6 +30,7 @@ import { seedSendNotes } from '../seeds/seed-send-notes.js'
 import { seedIdps } from '../seeds/seed-idps.js'
 import { seedAchievements } from '../seeds/seed-achievements.js'
 import { seedSafeguardingFlags } from '../seeds/seed-safeguarding-flags.js'
+import { seedV2Capabilities } from './v2Capabilities.js'
 
 dotenv.config()
 
@@ -86,6 +87,11 @@ export async function wipeDemoTenant() {
     await pool.query(`DELETE FROM demo_prospects WHERE id IN (
       SELECT prospect_id FROM demo_prospect_credentials WHERE user_id = ANY($1::uuid[])
     )`, [demoUserIds]).catch(() => {}) // subquery depends on credentials table; swallow if partial
+  }
+
+  // Clean up v2.0 tables that reference the school
+  for (const tbl of ['concussion_followups', 'concussion_incidents', 'mis_sync_log', 'mis_integrations', 'venues', 'fixture_travel', 'travel_assignments', 'pupil_consents', 'consent_types']) {
+    await pool.query(`DELETE FROM ${tbl} WHERE school_id = $1`, [schoolId]).catch(() => {})
   }
 
   // Delete the school (cascades to school_members, teams, teaching_groups, etc.)
@@ -195,6 +201,9 @@ export async function runDemoSeed({ wipeOnly = false, onLog } = {}) {
 
   await seedSafeguardingFlags().catch(e => log(`[demo-seed] Safeguarding flags failed: ${e.message}`))
   log('[demo-seed] Safeguarding flags seeded')
+
+  await seedV2Capabilities(school.id).catch(e => log(`[demo-seed] v2.0 capabilities failed: ${e.message}`))
+  log('[demo-seed] v2.0 capabilities seeded (venues, consents, reports, concussion, MIS)')
 
   log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
   return { wiped: true, seeded: true, schoolId: school.id }
