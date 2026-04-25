@@ -63,9 +63,87 @@
   ::-webkit-scrollbar-thumb:hover {
     background: var(--color-scrollbar-thumb-hover);
   }
+
+  /* Base link styles */
+  a {
+    color: var(--color-text-link);
+    text-decoration: none;
+  }
+  a:hover {
+    color: var(--color-text-link-hover);
+    text-decoration: underline;
+  }
+
+  /* Focus ring */
+  :focus-visible {
+    outline: 2px solid var(--color-border-focus);
+    outline-offset: 2px;
+  }
+
+  /* Tabular figures for numbers */
+  .tabular-nums,
+  table td,
+  table th {
+    font-feature-settings: "tnum" 1;
+  }
 }
 
 @layer components {
+  /* Heading hierarchy */
+  .heading-page {
+    font-family: var(--font-serif);
+    font-size: var(--text-3xl);
+    line-height: var(--leading-3xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .heading-section {
+    font-family: var(--font-serif);
+    font-size: var(--text-xl);
+    line-height: var(--leading-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .heading-subsection {
+    font-family: var(--font-sans);
+    font-size: var(--text-md);
+    line-height: var(--leading-base);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-text-primary);
+  }
+
+  .heading-caption {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--color-brand-gold);
+  }
+
+  .text-body {
+    font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--leading-base);
+    color: var(--color-text-primary);
+  }
+
+  .text-secondary-styled {
+    font-family: var(--font-sans);
+    font-size: var(--text-sm);
+    line-height: var(--leading-sm);
+    color: var(--color-text-secondary);
+  }
+
+  .text-meta {
+    font-family: var(--font-sans);
+    font-size: var(--text-xs);
+    line-height: var(--leading-xs);
+    color: var(--color-text-tertiary);
+  }
   /* Card styles */
   .card {
     @apply bg-navy-900/50 backdrop-blur-sm border border-navy-800 rounded-xl;

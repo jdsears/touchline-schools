@@ -9,6 +9,13 @@ import { TeamProvider } from './context/TeamContext'
 import CookieConsent from './components/common/CookieConsent'
 import InstallPrompt from './components/common/InstallPrompt'
 import IOSInstallInstructions from './components/common/IOSInstallInstructions'
+import '@fontsource/source-serif-4/400.css'
+import '@fontsource/source-serif-4/600.css'
+import '@fontsource/source-serif-4/700.css'
+import '@fontsource/inter/400.css'
+import '@fontsource/inter/500.css'
+import '@fontsource/inter/600.css'
+import '@fontsource/inter/700.css'
 import './index.css'
 
 // Register service worker for PWA

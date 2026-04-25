@@ -25,6 +25,8 @@
   "author": "MoonBoots Consultancy",
   "license": "UNLICENSED",
   "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/source-serif-4": "^5.2.9",
     "pdfkit": "^0.18.0"
   }
 }

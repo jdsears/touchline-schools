@@ -120,6 +120,7 @@ export default {
       },
       fontFamily: {
         display: ['Outfit', 'system-ui', 'sans-serif'],
+        serif: ['Source Serif 4', 'Crimson Pro', 'Georgia', 'serif'],
         body: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Consolas', 'monospace'],
       },
