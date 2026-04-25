@@ -29,6 +29,7 @@ const AccessibilityTab     = lazy(() => import('./settings/AccessibilityTab'))
 const SecurityTab          = lazy(() => import('./settings/SecurityTab'))
 const CalendarExportTab    = lazy(() => import('./settings/CalendarExportTab'))
 const VenuesTab            = lazy(() => import('./settings/VenuesTab'))
+const MISIntegrationTab    = lazy(() => import('./settings/MISIntegrationTab'))
 
 const SCHOOL_TABS = [
   { id: 'school-profile',    label: 'School Profile',       icon: School },
@@ -38,6 +39,7 @@ const SCHOOL_TABS = [
   { id: 'staff-directory',   label: 'Staff Directory',      icon: Users },
   { id: 'licence',           label: 'Licence',              icon: FileText },
   { id: 'audit-log',         label: 'Audit Log',            icon: ScrollText },
+  { id: 'mis-integration',   label: 'MIS Integration',      icon: Shield },
 ]
 
 const DEPARTMENT_TABS = [
@@ -68,6 +70,7 @@ const TAB_COMPONENTS = {
   'knowledge-base':    KnowledgeBaseTab,
   'fixture-defaults':  FixtureDefaultsTab,
   'venues':            VenuesTab,
+  'mis-integration':   MISIntegrationTab,
   'profile':           PersonalProfileTab,
   'qualifications':    QualificationsTab,
   'notifications':     NotificationsTab,
