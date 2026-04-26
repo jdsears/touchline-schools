@@ -88,7 +88,7 @@ export default function ConcussionPanel({ pupilId, matchId }) {
         </h3>
         {!showForm && (
           <button onClick={() => setShowForm(true)}
-            className="flex items-center gap-1 px-2.5 py-1 bg-red-600 hover:bg-red-500 text-primary rounded text-xs">
+            className="flex items-center gap-1 px-2.5 py-1 bg-red-600 hover:bg-red-500 text-on-dark rounded text-xs">
             <Plus className="w-3 h-3" /> Log Incident
           </button>
         )}
@@ -136,7 +136,7 @@ export default function ConcussionPanel({ pupilId, matchId }) {
             <div className="flex gap-2">
               <button onClick={() => setShowForm(false)} className="px-3 py-1.5 text-xs text-secondary">Cancel</button>
               <button onClick={handleCreate} disabled={saving}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-primary rounded text-xs">
+                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-on-dark rounded text-xs">
                 {saving ? 'Logging...' : 'Log Incident'}
               </button>
             </div>

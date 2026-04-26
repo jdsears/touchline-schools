@@ -199,7 +199,7 @@ export default function ClubAnnouncements() {
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowBulkEmail(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" disabled={sending} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-primary rounded-lg text-sm">
+            <button type="submit" disabled={sending} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
               <Send className="w-4 h-4" />
               {sending ? 'Sending...' : 'Send Email'}
             </button>
@@ -272,7 +272,7 @@ export default function ClubAnnouncements() {
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm">
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
               {saving ? 'Creating...' : 'Create Announcement'}
             </button>
           </div>

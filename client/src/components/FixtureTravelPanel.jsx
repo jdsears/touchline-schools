@@ -129,7 +129,7 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
       <div className="flex justify-end gap-2 pt-1">
         <button onClick={() => setEditing(false)} className="px-3 py-1.5 text-xs text-secondary hover:text-primary">Cancel</button>
         <button onClick={handleSave} disabled={saving}
-          className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-xs">
+          className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs">
           {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
           Save
         </button>

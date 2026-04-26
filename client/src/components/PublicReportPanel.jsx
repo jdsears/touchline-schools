@@ -82,7 +82,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
           <div className="flex justify-end gap-2">
             <button onClick={() => setEditing(false)} className="px-3 py-1.5 text-xs text-secondary">Cancel</button>
             <button onClick={saveEdit} disabled={saving}
-              className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-xs">
+              className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs">
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />} Save
             </button>
           </div>

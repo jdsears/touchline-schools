@@ -169,7 +169,7 @@ export default function ClubSubscriptions() {
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowAssign(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" disabled={assigning} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm">
+            <button type="submit" disabled={assigning} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
               {assigning ? 'Assigning...' : 'Assign'}
             </button>
           </div>

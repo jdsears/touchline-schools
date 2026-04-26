@@ -190,7 +190,7 @@ export default function CreateClub() {
         <button
           type="submit"
           disabled={saving || !dpaAccepted}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-xl text-sm font-medium transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-xl text-sm font-medium transition-colors"
         >
           <Building2 className="w-5 h-5" />
           {saving ? 'Creating...' : 'Create School'}

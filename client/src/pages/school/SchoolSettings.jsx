@@ -286,7 +286,7 @@ export default function ClubSettings() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
           >
             <Save className="w-4 h-4" />
             {saving ? 'Saving...' : 'Save Settings'}
@@ -427,7 +427,7 @@ export default function ClubSettings() {
             <button
               type="submit"
               disabled={savingCharity}
-              className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
             >
               <Save className="w-4 h-4" />
               {savingCharity ? 'Saving...' : 'Save Gift Aid Settings'}
