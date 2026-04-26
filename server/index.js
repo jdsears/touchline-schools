@@ -3,6 +3,7 @@ import cors from 'cors'
 import helmet from 'helmet'
 import dotenv from 'dotenv'
 import path from 'path'
+import fs from 'fs'
 import { fileURLToPath } from 'url'
 import http from 'http'
 import jwt from 'jsonwebtoken'
@@ -621,23 +622,21 @@ Sitemap: https://app.moonbootssports.com/sitemap.xml
   res.send(robotsTxt)
 })
 
-// Serve static files in production
-if (process.env.NODE_ENV === 'production') {
-  // Hashed assets (JS/CSS with content hash in filename) are safe to cache forever
-  app.use('/assets', express.static(path.join(__dirname, '../client/dist/assets'), {
+// Serve static files (SPA catch-all)
+const distPath = path.join(__dirname, '../client/dist')
+if (fs.existsSync(distPath)) {
+  app.use('/assets', express.static(path.join(distPath, 'assets'), {
     maxAge: '1y',
     immutable: true,
   }))
 
-  // Other static files (favicon, manifest, images) get moderate cache
-  app.use(express.static(path.join(__dirname, '../client/dist'), {
+  app.use(express.static(distPath, {
     maxAge: '1h',
   }))
 
   app.get('*', (req, res) => {
-    // HTML should not be cached long, so browsers always get the latest version
     res.set('Cache-Control', 'public, max-age=0, must-revalidate')
-    res.sendFile(path.join(__dirname, '../client/dist/index.html'))
+    res.sendFile(path.join(distPath, 'index.html'))
   })
 }
 
