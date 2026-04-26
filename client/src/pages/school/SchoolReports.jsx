@@ -144,7 +144,7 @@ function SeasonSummarySection({ schoolId }) {
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
           >
             {generating ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -370,7 +370,7 @@ function GrantHelperSection({ schoolId }) {
               <button
                 type="submit"
                 disabled={generating}
-                className="flex items-center gap-1.5 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
               >
                 {generating ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -452,7 +452,7 @@ function GrantHelperSection({ schoolId }) {
                             <button
                               onClick={() => handleSaveEdit(draft.id)}
                               disabled={savingEdit}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-xs transition-colors"
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs transition-colors"
                             >
                               {savingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                               {savingEdit ? 'Saving...' : 'Save'}
@@ -550,7 +550,7 @@ function ComplianceAnalysisSection({ schoolId }) {
         <button
           onClick={handleRun}
           disabled={running}
-          className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
         >
           {running ? (
             <Loader2 className="w-4 h-4 animate-spin" />

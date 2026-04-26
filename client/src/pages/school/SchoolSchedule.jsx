@@ -452,7 +452,7 @@ export default function ClubSchedule() {
             <button type="button" onClick={resetForm} className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors">
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors">
               {saving ? 'Saving...' : editingSession ? 'Update Session' : 'Create Session'}
             </button>
           </div>

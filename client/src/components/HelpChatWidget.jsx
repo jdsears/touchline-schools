@@ -248,7 +248,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                             <div className={`
                               rounded-2xl px-3 py-2 text-sm
                               ${message.role === 'user'
-                                ? 'bg-blue-600 text-primary rounded-br-md'
+                                ? 'bg-blue-600 text-on-dark rounded-br-md'
                                 : 'bg-subtle text-primary rounded-bl-md'
                               }
                             `}>
@@ -294,7 +294,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                     <button
                       onClick={() => handleSend()}
                       disabled={!input.trim() || loading}
-                      className="p-2 rounded-xl bg-blue-600 text-primary disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
+                      className="p-2 rounded-xl bg-blue-600 text-on-dark disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
                     >
                       <Send className="w-4 h-4" />
                     </button>
@@ -365,7 +365,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-primary rounded-lg text-sm font-medium transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-on-dark rounded-lg text-sm font-medium transition-colors"
                     >
                       {submitting ? 'Sending...' : <><Send className="w-4 h-4" /> Send</>}
                     </button>

@@ -288,7 +288,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
               <button
                 onClick={(e) => { e.stopPropagation(); onMarkActioned(insight.id) }}
                 disabled={isActioning}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs font-medium transition-colors"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 {isActioning ? 'Updating...' : 'Mark as actioned'}

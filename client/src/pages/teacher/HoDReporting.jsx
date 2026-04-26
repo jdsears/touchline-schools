@@ -172,7 +172,7 @@ export default function HoDReporting() {
                     {w.status === 'closed' && (
                       <button
                         onClick={() => requestAction(w, 'publish')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-primary rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-on-dark rounded-lg text-sm transition-colors"
                       >
                         <Check className="w-3.5 h-3.5" />
                         Publish
@@ -211,7 +211,7 @@ export default function HoDReporting() {
             }
             warning={drafts > 0 ? `${drafts} report${drafts !== 1 ? 's are' : ' is'} still in draft and will not be included. Continue without them?` : null}
             confirmLabel={`Publish ${total} report${total !== 1 ? 's' : ''}`}
-            confirmClass="bg-blue-600 hover:bg-blue-700 text-primary"
+            confirmClass="bg-blue-600 hover:bg-blue-700 text-on-dark"
             onConfirm={() => updateStatus(w.id, 'published')}
             onCancel={() => setConfirm(null)}
           />

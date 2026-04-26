@@ -197,7 +197,7 @@ export default function PupilRadarChart({ pupil, teamPlayers }) {
                 onClick={() => setView(v.id)}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
                   view === v.id
-                    ? 'bg-pitch-500 text-primary'
+                    ? 'bg-pitch-500 text-on-dark'
                     : 'text-secondary hover:text-primary'
                 }`}
               >
