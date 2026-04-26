@@ -170,7 +170,7 @@ function FlaggedCard({ item, onReview }) {
         </button>
         <button
           onClick={() => onReview(item.observation_id, 'escalate', notes)}
-          className="flex items-center gap-1.5 px-4 py-2 bg-alert-600 hover:bg-alert-700 text-primary rounded-lg text-xs transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 bg-alert-600 hover:bg-alert-700 text-on-dark rounded-lg text-xs transition-colors"
         >
           <AlertTriangle className="w-3.5 h-3.5" />
           Escalate to incident

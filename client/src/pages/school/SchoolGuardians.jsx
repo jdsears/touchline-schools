@@ -95,25 +95,25 @@ export default function ClubGuardians() {
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Guardians</h1>
-          <p className="text-navy-400 text-sm mt-1">{guardians.length} guardian{guardians.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-bold text-primary">Guardians</h1>
+          <p className="text-secondary text-sm mt-1">{guardians.length} guardian{guardians.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-navy-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary" />
             <input
               type="text"
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent w-48"
+              className="pl-9 pr-4 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent w-48"
             />
           </div>
           {canManage && (
             <>
               <button
                 onClick={handleInviteAll}
-                className="flex items-center gap-2 px-3 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 hover:text-white rounded-lg text-sm transition-colors"
+                className="flex items-center gap-2 px-3 py-2 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-sm transition-colors"
                 title="Send parent account invites to all unlinked guardians"
               >
                 <Send className="w-4 h-4" />
@@ -121,7 +121,7 @@ export default function ClubGuardians() {
               </button>
               <button
                 onClick={() => setShowAdd(!showAdd)}
-                className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Add
@@ -133,98 +133,98 @@ export default function ClubGuardians() {
 
       {/* Add form */}
       {showAdd && (
-        <form onSubmit={handleAdd} className="bg-navy-900 border border-navy-800 rounded-xl p-4 space-y-4">
+        <form onSubmit={handleAdd} className="bg-card border border-border-default rounded-xl p-4 space-y-4">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">First Name *</label>
+              <label className="block text-xs text-secondary mb-1">First Name *</label>
               <input
                 type="text" required value={form.first_name}
                 onChange={(e) => setForm(f => ({ ...f, first_name: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Last Name *</label>
+              <label className="block text-xs text-secondary mb-1">Last Name *</label>
               <input
                 type="text" required value={form.last_name}
                 onChange={(e) => setForm(f => ({ ...f, last_name: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Email *</label>
+              <label className="block text-xs text-secondary mb-1">Email *</label>
               <input
                 type="email" required value={form.email}
                 onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Phone</label>
+              <label className="block text-xs text-secondary mb-1">Phone</label>
               <input
                 type="tel" value={form.phone}
                 onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
           </div>
           <div className="flex gap-2 justify-end">
-            <button type="button" onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm text-navy-400 hover:text-white">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm">Add Guardian</button>
+            <button type="button" onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
+            <button type="submit" className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm">Add Guardian</button>
           </div>
         </form>
       )}
 
       {/* Guardians list */}
       {guardians.length === 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <UserPlus className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">No guardians yet</h3>
-          <p className="text-navy-400 text-sm">Guardians will appear here when parents register their children.</p>
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <UserPlus className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">No guardians yet</h3>
+          <p className="text-secondary text-sm">Guardians will appear here when parents register their children.</p>
         </div>
       ) : (
         <div className="space-y-3">
           {guardians.map((g) => (
-            <div key={g.id} className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+            <div key={g.id} className="bg-card border border-border-default rounded-xl overflow-hidden">
               <button
                 onClick={() => setExpandedId(expandedId === g.id ? null : g.id)}
-                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-navy-800/50 transition-colors"
+                className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-subtle transition-colors"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full bg-navy-800 flex items-center justify-center text-sm font-medium text-navy-300 shrink-0">
+                  <div className="w-10 h-10 rounded-full bg-subtle flex items-center justify-center text-sm font-medium text-secondary shrink-0">
                     {g.first_name?.charAt(0)}{g.last_name?.charAt(0)}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-white">{g.first_name} {g.last_name}</p>
-                    <p className="text-xs text-navy-400 truncate">{g.email}</p>
+                    <p className="text-sm font-medium text-primary">{g.first_name} {g.last_name}</p>
+                    <p className="text-xs text-secondary truncate">{g.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
                   {g.children && (
-                    <span className="text-xs bg-navy-800 text-navy-300 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-subtle text-secondary px-2 py-1 rounded-full">
                       {g.children.length} child{g.children.length !== 1 ? 'ren' : ''}
                     </span>
                   )}
-                  {expandedId === g.id ? <ChevronUp className="w-4 h-4 text-navy-400" /> : <ChevronDown className="w-4 h-4 text-navy-400" />}
+                  {expandedId === g.id ? <ChevronUp className="w-4 h-4 text-secondary" /> : <ChevronDown className="w-4 h-4 text-secondary" />}
                 </div>
               </button>
 
               {expandedId === g.id && (
-                <div className="px-4 pb-4 pt-2 border-t border-navy-800 space-y-3">
+                <div className="px-4 pb-4 pt-2 border-t border-border-default space-y-3">
                   <div className="grid sm:grid-cols-3 gap-3 text-sm">
-                    <div className="flex items-center gap-2 text-navy-300">
-                      <Mail className="w-4 h-4 text-navy-500" />
-                      <a href={`mailto:${g.email}`} className="hover:text-white">{g.email}</a>
+                    <div className="flex items-center gap-2 text-secondary">
+                      <Mail className="w-4 h-4 text-tertiary" />
+                      <a href={`mailto:${g.email}`} className="hover:text-primary">{g.email}</a>
                     </div>
                     {g.phone && (
-                      <div className="flex items-center gap-2 text-navy-300">
-                        <Phone className="w-4 h-4 text-navy-500" />
-                        <a href={`tel:${g.phone}`} className="hover:text-white">{g.phone}</a>
+                      <div className="flex items-center gap-2 text-secondary">
+                        <Phone className="w-4 h-4 text-tertiary" />
+                        <a href={`tel:${g.phone}`} className="hover:text-primary">{g.phone}</a>
                       </div>
                     )}
                     {g.city && (
-                      <div className="flex items-center gap-2 text-navy-300">
-                        <MapPin className="w-4 h-4 text-navy-500" />
+                      <div className="flex items-center gap-2 text-secondary">
+                        <MapPin className="w-4 h-4 text-tertiary" />
                         <span>{g.city}{g.postcode ? `, ${g.postcode}` : ''}</span>
                       </div>
                     )}
@@ -240,14 +240,14 @@ export default function ClubGuardians() {
                   {/* Children */}
                   {g.children && g.children.length > 0 && (
                     <div>
-                      <p className="text-xs text-navy-400 mb-2">Children</p>
+                      <p className="text-xs text-secondary mb-2">Children</p>
                       <div className="space-y-1">
                         {g.children.map((c, i) => (
                           <div key={i} className="flex items-center gap-2 text-sm">
-                            <span className="text-white">{c.player_name}</span>
-                            <span className="text-navy-500">&middot;</span>
-                            <span className="text-navy-400">{c.team_name}</span>
-                            <span className="text-xs text-navy-500 capitalize">({c.relationship})</span>
+                            <span className="text-primary">{c.player_name}</span>
+                            <span className="text-tertiary">&middot;</span>
+                            <span className="text-secondary">{c.team_name}</span>
+                            <span className="text-xs text-tertiary capitalize">({c.relationship})</span>
                           </div>
                         ))}
                       </div>

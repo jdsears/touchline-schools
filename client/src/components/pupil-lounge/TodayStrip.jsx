@@ -27,11 +27,11 @@ export default function TodayStrip() {
   return (
     <div className="px-4 pt-2 pb-3">
       <div className="flex items-center justify-between">
-        <span className="text-[11px] text-navy-400 font-medium">{dateStr}</span>
+        <span className="text-[11px] text-secondary font-medium">{dateStr}</span>
       </div>
 
       {loading ? (
-        <div className="h-3.5 w-48 bg-navy-800/50 rounded animate-pulse mt-1.5" />
+        <div className="h-3.5 w-48 bg-subtle rounded animate-pulse mt-1.5" />
       ) : events.length > 0 ? (
         <div className="flex items-center gap-1.5 mt-1.5">
           <Clock size={11} className="text-gold-400 flex-shrink-0" />
@@ -44,7 +44,7 @@ export default function TodayStrip() {
           </span>
         </div>
       ) : (
-        <p className="text-[11px] text-navy-600 mt-1.5">No sport or PE today</p>
+        <p className="text-[11px] text-tertiary mt-1.5">No sport or PE today</p>
       )}
     </div>
   )

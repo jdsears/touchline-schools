@@ -296,7 +296,7 @@ export default function HoDSSOSettings() {
           <button
             onClick={handleAddDomain}
             disabled={!newDomain.trim() || domainLoading}
-            className="flex items-center gap-1.5 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm disabled:opacity-50"
+            className="flex items-center gap-1.5 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm disabled:opacity-50"
           >
             {domainLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             Add
@@ -328,7 +328,7 @@ export default function HoDSSOSettings() {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg font-medium transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save SSO Settings

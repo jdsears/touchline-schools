@@ -12,9 +12,9 @@ export default function Terms() {
         noIndex={true}
       />
 
-      <div className="min-h-screen bg-navy-950">
+      <div className="min-h-screen bg-page">
         <div className="max-w-3xl mx-auto px-4 py-12">
-          <Link to="/" className="inline-flex items-center gap-2 text-navy-400 hover:text-white transition-colors text-sm mb-8">
+          <Link to="/" className="inline-flex items-center gap-2 text-secondary hover:text-white transition-colors text-sm mb-8">
             <ArrowLeft className="w-4 h-4" />
             Back to home
           </Link>
@@ -33,7 +33,7 @@ export default function Terms() {
           <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>
             Terms, Privacy &amp; Policies
           </h1>
-          <p className="text-navy-400 text-sm mb-10">MoonBoots Sports - MoonBoots Consultancy UK Ltd</p>
+          <p className="text-secondary text-sm mb-10">MoonBoots Sports - MoonBoots Consultancy UK Ltd</p>
 
           {/* Terms of Service */}
           <PolicySection title="Terms of Service" lastUpdated="[DATE - pending review]">
@@ -160,11 +160,11 @@ export default function Terms() {
             </p>
           </PolicySection>
 
-          <div className="mt-12 pt-8 border-t border-navy-800 text-xs text-navy-500">
+          <div className="mt-12 pt-8 border-t border-border-default text-xs text-tertiary">
             <p>MoonBoots Consultancy UK Ltd - Registered in England and Wales</p>
             <p className="mt-1">
               Questions?{' '}
-              <a href="mailto:hello@moonbootssports.com" className="text-navy-400 hover:text-white transition-colors">
+              <a href="mailto:hello@moonbootssports.com" className="text-secondary hover:text-white transition-colors">
                 hello@moonbootssports.com
               </a>
             </p>
@@ -179,8 +179,8 @@ function PolicySection({ title, lastUpdated, children }) {
   return (
     <div className="mb-12">
       <h2 className="text-xl font-bold text-white mb-1">{title}</h2>
-      <p className="text-xs text-navy-500 mb-5">Last updated: {lastUpdated}</p>
-      <div className="space-y-4 text-sm text-navy-300 leading-relaxed">
+      <p className="text-xs text-tertiary mb-5">Last updated: {lastUpdated}</p>
+      <div className="space-y-4 text-sm text-secondary leading-relaxed">
         {children}
       </div>
     </div>

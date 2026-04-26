@@ -75,6 +75,7 @@ export default function ClubLayout() {
         // Try public endpoint
         const pubRes = await clubService.getClubBySlug(slug)
         setClub(pubRes.data)
+        if (user?.is_admin) setMyRole('owner')
       }
     } catch (err) {
       console.error('Failed to load school:', err)
@@ -86,7 +87,7 @@ export default function ClubLayout() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="spinner w-8 h-8" />
       </div>
     )
@@ -94,12 +95,12 @@ export default function ClubLayout() {
 
   if (!school) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-xl font-bold text-white mb-2">
+          <h2 className="text-xl font-bold text-primary mb-2">
             {loadError === 'error' ? 'Failed to load school' : 'School not found'}
           </h2>
-          <p className="text-navy-400 mb-4">
+          <p className="text-secondary mb-4">
             {loadError === 'error'
               ? 'Something went wrong loading the school. Please check your connection and try again.'
               : "The school you're looking for doesn't exist."}
@@ -107,7 +108,7 @@ export default function ClubLayout() {
           {loadError === 'error' && (
             <button
               onClick={() => { setLoading(true); loadClub() }}
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
             >
               Try Again
             </button>
@@ -124,7 +125,7 @@ export default function ClubLayout() {
   })
 
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className="min-h-screen bg-page">
       {/* Mobile sidebar backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -140,29 +141,29 @@ export default function ClubLayout() {
 
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 z-50 h-full w-64 bg-navy-900 border-r border-navy-800
+        fixed top-0 left-0 z-50 h-full w-64 bg-card border-r border-border-default
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
         <div className="flex flex-col h-full">
           {/* School header */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-navy-800">
+          <div className="flex items-center justify-between h-16 px-4 border-b border-border-default">
             <div className="flex items-center gap-2 min-w-0">
               <div
-                className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm shrink-0"
+                className="w-8 h-8 rounded-lg flex items-center justify-center text-primary font-bold text-sm shrink-0"
                 style={{ backgroundColor: school.primary_color || '#1a365d' }}
               >
                 {school.name?.charAt(0)}
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-semibold text-white truncate">{school.name}</p>
-                {myRole && <p className="text-xs text-navy-400 capitalize">{myRole}</p>}
+                <p className="text-sm font-semibold text-primary truncate">{school.name}</p>
+                {myRole && <p className="text-xs text-secondary capitalize">{myRole}</p>}
               </div>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 text-navy-400 hover:text-white"
+              className="lg:hidden p-2 text-secondary hover:text-primary"
             >
               <X className="w-5 h-5" />
             </button>
@@ -185,7 +186,7 @@ export default function ClubLayout() {
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive
                       ? 'bg-pitch-600/20 text-pitch-400'
-                      : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                      : 'text-secondary hover:text-primary hover:bg-subtle'
                     }
                   `}
                 >
@@ -198,9 +199,9 @@ export default function ClubLayout() {
           </nav>
 
           {/* Registration link */}
-          <div className="px-3 py-2 border-t border-navy-800">
-            <div className="bg-navy-800/50 rounded-lg p-3">
-              <p className="text-xs text-navy-400 mb-1">Registration link</p>
+          <div className="px-3 py-2 border-t border-border-default">
+            <div className="bg-subtle rounded-lg p-3">
+              <p className="text-xs text-secondary mb-1">Registration link</p>
               <p className="text-xs text-pitch-400 truncate font-mono">
                 /school/{slug}/register
               </p>
@@ -208,26 +209,26 @@ export default function ClubLayout() {
           </div>
 
           {/* Bottom nav */}
-          <div className="px-3 py-4 border-t border-navy-800 space-y-1">
+          <div className="px-3 py-4 border-t border-border-default space-y-1">
             <NavLink
               to="/dashboard"
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-navy-400 hover:text-white hover:bg-navy-800 transition-all"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary hover:text-primary hover:bg-subtle transition-all"
             >
               <ChevronLeft className="w-5 h-5" />
               <span className="font-medium">Back to Team</span>
             </NavLink>
 
             <div className="flex items-center gap-3 px-3 py-2.5 mt-2">
-              <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-navy-300">
+              <div className="w-8 h-8 rounded-full bg-border-default flex items-center justify-center text-sm font-medium text-secondary">
                 {user?.name?.charAt(0) || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-                <p className="text-xs text-navy-400 capitalize">{user?.role}</p>
+                <p className="text-sm font-medium text-primary truncate">{user?.name}</p>
+                <p className="text-xs text-secondary capitalize">{user?.role}</p>
               </div>
               <button
                 onClick={logout}
-                className="p-2 text-navy-400 hover:text-alert-400 transition-colors"
+                className="p-2 text-secondary hover:text-alert-400 transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />
@@ -240,25 +241,25 @@ export default function ClubLayout() {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Mobile header */}
-        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-16 px-4 bg-navy-900/80 backdrop-blur-md border-b border-navy-800">
+        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-16 px-4 bg-card backdrop-blur-md border-b border-border-default">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 text-navy-400 hover:text-white"
+            className="p-2 text-secondary hover:text-primary"
           >
             <Menu className="w-6 h-6" />
           </button>
 
           <div className="flex items-center gap-2">
             <div
-              className="w-6 h-6 rounded flex items-center justify-center text-white font-bold text-xs"
+              className="w-6 h-6 rounded flex items-center justify-center text-primary font-bold text-xs"
               style={{ backgroundColor: school.primary_color || '#1a365d' }}
             >
               {school.name?.charAt(0)}
             </div>
-            <span className="font-semibold text-navy-50 text-sm truncate max-w-[200px]">{school.name}</span>
+            <span className="font-semibold text-primary text-sm truncate max-w-[200px]">{school.name}</span>
           </div>
 
-          <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-navy-300">
+          <div className="w-8 h-8 rounded-full bg-border-default flex items-center justify-center text-sm font-medium text-secondary">
             {user?.name?.charAt(0) || 'U'}
           </div>
         </header>

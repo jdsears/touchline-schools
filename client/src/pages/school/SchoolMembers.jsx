@@ -10,8 +10,8 @@ const ROLE_COLORS = {
   admin: 'bg-purple-500/20 text-purple-400',
   treasurer: 'bg-blue-500/20 text-blue-400',
   secretary: 'bg-pitch-600/20 text-pitch-400',
-  coach: 'bg-navy-600/20 text-navy-300',
-  parent: 'bg-navy-700/20 text-navy-400',
+  coach: 'bg-navy-600/20 text-secondary',
+  parent: 'bg-border-default/20 text-secondary',
 }
 
 export default function ClubMembers() {
@@ -87,13 +87,13 @@ export default function ClubMembers() {
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">School Members</h1>
-          <p className="text-navy-400 text-sm mt-1">{members.length} member{members.length !== 1 ? 's' : ''}</p>
+          <h1 className="text-2xl font-bold text-primary">School Members</h1>
+          <p className="text-secondary text-sm mt-1">{members.length} member{members.length !== 1 ? 's' : ''}</p>
         </div>
         {canManage && (
           <button
             onClick={() => setShowInvite(!showInvite)}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             Invite Member
@@ -103,35 +103,35 @@ export default function ClubMembers() {
 
       {/* Invite form */}
       {showInvite && (
-        <form onSubmit={handleInvite} className="bg-navy-900 border border-navy-800 rounded-xl p-4 space-y-4">
+        <form onSubmit={handleInvite} className="bg-card border border-border-default rounded-xl p-4 space-y-4">
           <div className="grid sm:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Email *</label>
+              <label className="block text-xs text-secondary mb-1">Email *</label>
               <input
                 type="email"
                 required
                 value={inviteForm.email}
                 onChange={(e) => setInviteForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="coach@example.com"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Name</label>
+              <label className="block text-xs text-secondary mb-1">Name</label>
               <input
                 type="text"
                 value={inviteForm.name}
                 onChange={(e) => setInviteForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="John Smith"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Role *</label>
+              <label className="block text-xs text-secondary mb-1">Role *</label>
               <select
                 value={inviteForm.role}
                 onChange={(e) => setInviteForm(f => ({ ...f, role: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 <option value="admin">Admin</option>
                 <option value="treasurer">Treasurer</option>
@@ -144,13 +144,13 @@ export default function ClubMembers() {
             <button
               type="button"
               onClick={() => setShowInvite(false)}
-              className="px-4 py-2 text-sm text-navy-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
             >
               Send Invite
             </button>
@@ -159,30 +159,30 @@ export default function ClubMembers() {
       )}
 
       {/* Members list */}
-      <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+      <div className="bg-card border border-border-default rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-navy-800">
-                <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Name</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Email</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Role</th>
-                <th className="text-left px-4 py-3 text-xs font-medium text-navy-400 uppercase">Status</th>
-                {canManage && <th className="text-right px-4 py-3 text-xs font-medium text-navy-400 uppercase">Actions</th>}
+              <tr className="border-b border-border-default">
+                <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Name</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Email</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Role</th>
+                <th className="text-left px-4 py-3 text-xs font-medium text-secondary uppercase">Status</th>
+                {canManage && <th className="text-right px-4 py-3 text-xs font-medium text-secondary uppercase">Actions</th>}
               </tr>
             </thead>
             <tbody>
               {members.map((m) => (
-                <tr key={m.id} className="border-b border-navy-800/50 last:border-0">
-                  <td className="px-4 py-3 text-sm text-white font-medium">{m.name}</td>
-                  <td className="px-4 py-3 text-sm text-navy-300">{m.email}</td>
+                <tr key={m.id} className="border-b border-border-subtle last:border-0">
+                  <td className="px-4 py-3 text-sm text-primary font-medium">{m.name}</td>
+                  <td className="px-4 py-3 text-sm text-secondary">{m.email}</td>
                   <td className="px-4 py-3">
                     {editingId === m.id ? (
                       <div className="flex items-center gap-2">
                         <select
                           value={editRole}
                           onChange={(e) => setEditRole(e.target.value)}
-                          className="bg-navy-800 border border-navy-700 rounded px-2 py-1 text-white text-xs"
+                          className="bg-subtle border border-border-strong rounded px-2 py-1 text-primary text-xs"
                         >
                           {ROLES.filter(r => r !== 'owner' || myRole === 'owner').map(r => (
                             <option key={r} value={r}>{r}</option>
@@ -191,7 +191,7 @@ export default function ClubMembers() {
                         <button onClick={() => handleUpdateRole(m.id)} className="text-pitch-400 hover:text-pitch-300">
                           <Check className="w-4 h-4" />
                         </button>
-                        <button onClick={() => setEditingId(null)} className="text-navy-400 hover:text-white">
+                        <button onClick={() => setEditingId(null)} className="text-secondary hover:text-primary">
                           <X className="w-4 h-4" />
                         </button>
                       </div>
@@ -205,7 +205,7 @@ export default function ClubMembers() {
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       m.status === 'active' ? 'bg-pitch-600/20 text-pitch-400' :
                       m.status === 'invited' ? 'bg-amber-500/20 text-amber-400' :
-                      'bg-navy-700 text-navy-400'
+                      'bg-border-default text-secondary'
                     }`}>
                       {m.status}
                     </span>
@@ -217,14 +217,14 @@ export default function ClubMembers() {
                           <>
                             <button
                               onClick={() => { setEditingId(m.id); setEditRole(m.role) }}
-                              className="p-1.5 text-navy-400 hover:text-white transition-colors"
+                              className="p-1.5 text-secondary hover:text-primary transition-colors"
                               title="Edit role"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleRemove(m.id, m.name)}
-                              className="p-1.5 text-navy-400 hover:text-alert-400 transition-colors"
+                              className="p-1.5 text-secondary hover:text-alert-400 transition-colors"
                               title="Remove member"
                             >
                               <Trash2 className="w-4 h-4" />

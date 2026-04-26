@@ -55,13 +55,13 @@ export default function RugbyPitch({ teamFormat = 15 }) {
         </svg>
 
         {/* Zone labels */}
-        <span className="absolute top-[2%] left-1/2 -translate-x-1/2 text-[8px] text-white/40 uppercase tracking-wider font-semibold">In-Goal</span>
-        <span className="absolute bottom-[2%] left-1/2 -translate-x-1/2 text-[8px] text-white/40 uppercase tracking-wider font-semibold">In-Goal</span>
-        <span className="absolute top-[11%] left-1 text-[7px] text-white/30 font-medium">Try Line</span>
-        <span className="absolute top-[30%] left-1 text-[7px] text-white/30 font-medium">22m</span>
-        <span className="absolute bottom-[30%] left-1 text-[7px] text-white/30 font-medium">22m</span>
-        <span className="absolute top-[43%] left-1 text-[7px] text-white/25 font-medium">10m</span>
-        <span className="absolute bottom-[43%] left-1 text-[7px] text-white/25 font-medium">10m</span>
+        <span className="absolute top-[2%] left-1/2 -translate-x-1/2 text-[8px] text-primary/40 uppercase tracking-wider font-semibold">In-Goal</span>
+        <span className="absolute bottom-[2%] left-1/2 -translate-x-1/2 text-[8px] text-primary/40 uppercase tracking-wider font-semibold">In-Goal</span>
+        <span className="absolute top-[11%] left-1 text-[7px] text-primary/30 font-medium">Try Line</span>
+        <span className="absolute top-[30%] left-1 text-[7px] text-primary/30 font-medium">22m</span>
+        <span className="absolute bottom-[30%] left-1 text-[7px] text-primary/30 font-medium">22m</span>
+        <span className="absolute top-[43%] left-1 text-[7px] text-primary/25 font-medium">10m</span>
+        <span className="absolute bottom-[43%] left-1 text-[7px] text-primary/25 font-medium">10m</span>
       </div>
     </>
   )

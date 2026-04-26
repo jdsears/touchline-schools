@@ -12,7 +12,7 @@ const TABS = [
 export default function BottomTabBar() {
   return (
     <nav
-      className="absolute bottom-0 left-0 right-0 z-40 bg-navy-900/95 backdrop-blur-md border-t border-navy-800/50"
+      className="absolute bottom-0 left-0 right-0 z-40 bg-card/95 backdrop-blur-md border-t border-border-subtle"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
     >
       <div className="flex items-center justify-around h-[56px]">
@@ -24,7 +24,7 @@ export default function BottomTabBar() {
               `flex flex-col items-center justify-center gap-0.5 min-w-[48px] min-h-[44px] transition-all duration-150 ${
                 isActive
                   ? 'text-gold-400 scale-105'
-                  : 'text-white/40 hover:text-white/60'
+                  : 'text-primary/40 hover:text-primary/60'
               }`
             }
           >

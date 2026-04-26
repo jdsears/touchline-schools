@@ -225,8 +225,8 @@ export default function PlayingTimePrintView({
   const content = (
     <div className="fixed inset-0 z-[9999] bg-black/80 flex flex-col print-overlay">
       {/* Screen-only toolbar */}
-      <div className="print-hide flex items-center justify-between px-4 py-3 bg-navy-900 border-b border-navy-800">
-        <h2 className="text-white font-display font-semibold">Rotation Plan - Print Preview</h2>
+      <div className="print-hide flex items-center justify-between px-4 py-3 bg-card border-b border-border-default">
+        <h2 className="text-primary font-display font-semibold">Rotation Plan - Print Preview</h2>
         <div className="flex items-center gap-3">
           <button
             onClick={handlePrint}
@@ -235,7 +235,7 @@ export default function PlayingTimePrintView({
             <Printer className="w-4 h-4" />
             Print
           </button>
-          <button onClick={onClose} className="text-navy-400 hover:text-white transition-colors">
+          <button onClick={onClose} className="text-secondary hover:text-primary transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>

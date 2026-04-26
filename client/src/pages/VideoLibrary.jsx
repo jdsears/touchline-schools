@@ -131,7 +131,7 @@ export default function VideoLibrary() {
     switch (status) {
       case 'ready': return <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded-full">Ready</span>
       case 'processing': return <span className="px-2 py-0.5 bg-caution-500/20 text-caution-400 text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Processing</span>
-      case 'waiting_upload': return <span className="px-2 py-0.5 bg-navy-700 text-navy-400 text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Uploading</span>
+      case 'waiting_upload': return <span className="px-2 py-0.5 bg-border-default text-secondary text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Uploading</span>
       case 'error': return <span className="px-2 py-0.5 bg-alert-500/20 text-alert-400 text-xs rounded-full">Error</span>
       default: return null
     }
@@ -142,7 +142,7 @@ export default function VideoLibrary() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display text-2xl lg:text-3xl font-bold text-white">Video Library</h1>
-          <p className="text-navy-400 mt-1">All team videos, clips, and analyses</p>
+          <p className="text-secondary mt-1">All team videos, clips, and analyses</p>
         </div>
         <button onClick={() => setShowUploader(true)} className="btn-primary">
           <Plus className="w-4 h-4" /> Upload Video
@@ -174,7 +174,7 @@ export default function VideoLibrary() {
             key={f.key}
             onClick={() => setFilter(f.key)}
             className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors text-sm ${
-              filter === f.key ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+              filter === f.key ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
             }`}
           >
             {f.label}
@@ -188,9 +188,9 @@ export default function VideoLibrary() {
         </div>
       ) : filteredVideos.length === 0 ? (
         <div className="card p-12 text-center max-w-lg mx-auto">
-          <Film className="w-16 h-16 text-navy-600 mx-auto mb-4" />
+          <Film className="w-16 h-16 text-tertiary mx-auto mb-4" />
           <h2 className="font-display text-xl font-semibold text-white mb-2">No Videos Yet</h2>
-          <p className="text-navy-400 mb-6">Upload match or training videos to unlock AI analysis, clips, and pupil feedback.</p>
+          <p className="text-secondary mb-6">Upload match or training videos to unlock AI analysis, clips, and pupil feedback.</p>
           <button onClick={() => setShowUploader(true)} className="btn-primary">
             <Upload className="w-4 h-4" /> Upload First Video
           </button>
@@ -207,7 +207,7 @@ export default function VideoLibrary() {
             >
               {/* Thumbnail */}
               <div
-                className="aspect-video bg-navy-800 relative cursor-pointer"
+                className="aspect-video bg-subtle relative cursor-pointer"
                 onClick={() => video.mux_playback_id ? setActiveVideo(video) : null}
               >
                 {video.mux_playback_id ? (
@@ -221,12 +221,12 @@ export default function VideoLibrary() {
                     {(video.status === 'processing' || video.status === 'waiting_upload') ? (
                       <div className="text-center">
                         <Loader2 className="w-8 h-8 text-caution-400 animate-spin mx-auto" />
-                        <p className="text-xs text-navy-400 mt-2">
+                        <p className="text-xs text-secondary mt-2">
                           {video.status === 'waiting_upload' ? 'Uploading...' : 'Processing...'}
                         </p>
                       </div>
                     ) : (
-                      <Film className="w-8 h-8 text-navy-600" />
+                      <Film className="w-8 h-8 text-tertiary" />
                     )}
                   </div>
                 )}
@@ -246,16 +246,16 @@ export default function VideoLibrary() {
                 <div className="flex items-start justify-between gap-2 mb-2">
                   <h3 className="font-medium text-white line-clamp-1">{video.title || video.original_filename || 'Untitled Video'}</h3>
                   <div className="flex items-center gap-1 shrink-0">
-                    <button onClick={(e) => { e.stopPropagation(); openEditModal(video) }} className="p-1 text-navy-500 hover:text-white" title="Edit">
+                    <button onClick={(e) => { e.stopPropagation(); openEditModal(video) }} className="p-1 text-tertiary hover:text-white" title="Edit">
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={(e) => handleDelete(e, video.id)} className="p-1 text-navy-500 hover:text-alert-400" title="Delete">
+                    <button onClick={(e) => handleDelete(e, video.id)} className="p-1 text-tertiary hover:text-alert-400" title="Delete">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2 py-0.5 bg-navy-700 text-navy-300 text-xs rounded-full capitalize">{video.type || 'match'}</span>
+                  <span className="px-2 py-0.5 bg-border-default text-secondary text-xs rounded-full capitalize">{video.type || 'match'}</span>
                   {statusBadge(video.status)}
                   {video.match_opponent && (
                     <span className="px-2 py-0.5 bg-energy-500/20 text-energy-400 text-xs rounded-full">
@@ -264,7 +264,7 @@ export default function VideoLibrary() {
                   )}
                 </div>
                 {video.recorded_at && (
-                  <p className="text-xs text-navy-500 mt-2 flex items-center gap-1">
+                  <p className="text-xs text-tertiary mt-2 flex items-center gap-1">
                     <Calendar className="w-3 h-3" />
                     {new Date(video.recorded_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                   </p>
@@ -279,7 +279,7 @@ export default function VideoLibrary() {
                   {!video.match_id && video.status === 'ready' && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setAssigningVideo(video) }}
-                      className="flex items-center gap-1 text-sm text-navy-400 hover:text-pitch-400"
+                      className="flex items-center gap-1 text-sm text-secondary hover:text-pitch-400"
                     >
                       <LinkIcon className="w-3.5 h-3.5" /> Assign to match
                     </button>
@@ -305,12 +305,12 @@ export default function VideoLibrary() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-navy-900 rounded-2xl overflow-hidden max-w-4xl w-full"
+              className="bg-card rounded-2xl overflow-hidden max-w-4xl w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-4 border-b border-border-default flex items-center justify-between">
                 <h3 className="font-medium text-white">{activeVideo.title}</h3>
-                <button onClick={() => setActiveVideo(null)} className="p-2 text-navy-400 hover:text-white">
+                <button onClick={() => setActiveVideo(null)} className="p-2 text-secondary hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -341,28 +341,28 @@ export default function VideoLibrary() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-navy-900 rounded-2xl overflow-hidden max-w-md w-full p-6"
+              className="bg-card rounded-2xl overflow-hidden max-w-md w-full p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-white">Assign to Match</h3>
-                <button onClick={() => setAssigningVideo(null)} className="p-2 text-navy-400 hover:text-white">
+                <button onClick={() => setAssigningVideo(null)} className="p-2 text-secondary hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>
-              <p className="text-sm text-navy-400 mb-4">Select a match to link "{assigningVideo.title}" to:</p>
+              <p className="text-sm text-secondary mb-4">Select a match to link "{assigningVideo.title}" to:</p>
               <div className="space-y-2 max-h-60 overflow-y-auto">
                 {matches.length === 0 ? (
-                  <p className="text-sm text-navy-500 text-center py-4">No matches found</p>
+                  <p className="text-sm text-tertiary text-center py-4">No matches found</p>
                 ) : (
                   matches.map(m => (
                     <button
                       key={m.id}
                       onClick={() => handleAssign(assigningVideo.id, m.id)}
-                      className="w-full text-left px-4 py-3 rounded-lg bg-navy-800 hover:bg-navy-700 transition-colors"
+                      className="w-full text-left px-4 py-3 rounded-lg bg-subtle hover:bg-border-default transition-colors"
                     >
                       <p className="text-white text-sm font-medium">{m.opponent}</p>
-                      <p className="text-xs text-navy-400">
+                      <p className="text-xs text-secondary">
                         {new Date(m.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </p>
                     </button>
@@ -388,12 +388,12 @@ export default function VideoLibrary() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-navy-900 rounded-2xl overflow-hidden max-w-md w-full p-6"
+              className="bg-card rounded-2xl overflow-hidden max-w-md w-full p-6"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-white">Edit Video</h3>
-                <button onClick={() => setEditingVideo(null)} className="p-2 text-navy-400 hover:text-white">
+                <button onClick={() => setEditingVideo(null)} className="p-2 text-secondary hover:text-white">
                   <X className="w-5 h-5" />
                 </button>
               </div>

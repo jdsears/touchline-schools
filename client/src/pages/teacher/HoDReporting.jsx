@@ -121,7 +121,7 @@ export default function HoDReporting() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           New Reporting Window
@@ -154,7 +154,7 @@ export default function HoDReporting() {
                     {w.status === 'draft' && (
                       <button
                         onClick={() => updateStatus(w.id, 'open')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
                       >
                         <Unlock className="w-3.5 h-3.5" />
                         Open
@@ -163,7 +163,7 @@ export default function HoDReporting() {
                     {w.status === 'open' && (
                       <button
                         onClick={() => requestAction(w, 'close')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-primary rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-on-dark rounded-lg text-sm transition-colors"
                       >
                         <Lock className="w-3.5 h-3.5" />
                         Close
@@ -228,7 +228,7 @@ export default function HoDReporting() {
             }
             warning={null}
             confirmLabel="Close window"
-            confirmClass="bg-amber-500 hover:bg-amber-600 text-primary"
+            confirmClass="bg-amber-500 hover:bg-amber-600 text-on-dark"
             onConfirm={() => updateStatus(w.id, 'closed')}
             onCancel={() => setConfirm(null)}
           />
@@ -271,7 +271,7 @@ export default function HoDReporting() {
                 <button type="button" onClick={() => setShowCreate(false)}
                   className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">Cancel</button>
                 <button type="submit" disabled={creating}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
                   {creating ? 'Creating...' : 'Create'}
                 </button>
               </div>

@@ -66,7 +66,7 @@ export default function CookieConsent() {
           className="fixed bottom-0 left-0 right-0 z-[9999] p-4 md:p-6"
         >
           <div className="max-w-4xl mx-auto">
-            <div className="bg-navy-900 border border-navy-700 rounded-xl shadow-2xl overflow-hidden">
+            <div className="bg-card border border-border-strong rounded-xl shadow-2xl overflow-hidden">
               {!showSettings ? (
                 // Main Banner
                 <div className="p-4 md:p-6">
@@ -75,10 +75,10 @@ export default function CookieConsent() {
                       <Cookie className="w-6 h-6" />
                     </div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-white mb-2">
+                      <h3 className="text-lg font-semibold text-primary mb-2">
                         Cookies
                       </h3>
-                      <p className="text-navy-300 text-sm mb-4">
+                      <p className="text-secondary text-sm mb-4">
                         We use essential cookies to make MoonBoots Sports work and anonymised analytics to improve it.
                         We don't use advertising, marketing, or third-party tracking cookies.
                         Learn more in our{' '}
@@ -95,13 +95,13 @@ export default function CookieConsent() {
                         </button>
                         <button
                           onClick={handleEssentialOnly}
-                          className="px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white font-medium rounded-lg border border-navy-600 transition-colors"
+                          className="px-4 py-2 bg-subtle hover:bg-border-default text-primary font-medium rounded-lg border border-border-strong transition-colors"
                         >
                           Essential Only
                         </button>
                         <button
                           onClick={handleOpenSettings}
-                          className="px-4 py-2 text-navy-300 hover:text-white font-medium rounded-lg transition-colors flex items-center gap-2"
+                          className="px-4 py-2 text-secondary hover:text-primary font-medium rounded-lg transition-colors flex items-center gap-2"
                         >
                           <Settings className="w-4 h-4" />
                           Manage Preferences
@@ -110,7 +110,7 @@ export default function CookieConsent() {
                     </div>
                     <button
                       onClick={handleEssentialOnly}
-                      className="text-navy-400 hover:text-white transition-colors p-1"
+                      className="text-secondary hover:text-primary transition-colors p-1"
                       aria-label="Close"
                     >
                       <X className="w-5 h-5" />
@@ -121,10 +121,10 @@ export default function CookieConsent() {
                 // Settings Panel
                 <div className="p-4 md:p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-semibold text-white">Cookie Preferences</h3>
+                    <h3 className="text-lg font-semibold text-primary">Cookie Preferences</h3>
                     <button
                       onClick={() => setShowSettings(false)}
-                      className="text-navy-400 hover:text-white transition-colors p-1"
+                      className="text-secondary hover:text-primary transition-colors p-1"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -132,13 +132,13 @@ export default function CookieConsent() {
 
                   <div className="space-y-4 mb-6">
                     {/* Essential Cookies - Always On */}
-                    <div className="flex items-start justify-between p-4 bg-navy-800/50 rounded-lg border border-navy-700">
+                    <div className="flex items-start justify-between p-4 bg-subtle rounded-lg border border-border-strong">
                       <div className="flex-1 pr-4">
                         <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-medium text-white">Essential Cookies</h4>
-                          <span className="text-xs px-2 py-0.5 bg-navy-700 text-navy-300 rounded">Always On</span>
+                          <h4 className="font-medium text-primary">Essential Cookies</h4>
+                          <span className="text-xs px-2 py-0.5 bg-border-default text-secondary rounded">Always On</span>
                         </div>
-                        <p className="text-sm text-navy-400">
+                        <p className="text-sm text-secondary">
                           Required for the platform to function (session token, CSRF protection, display preferences). These cannot be disabled.
                         </p>
                       </div>
@@ -148,10 +148,10 @@ export default function CookieConsent() {
                     </div>
 
                     {/* Analytics Cookies */}
-                    <div className="flex items-start justify-between p-4 bg-navy-800/50 rounded-lg border border-navy-700">
+                    <div className="flex items-start justify-between p-4 bg-subtle rounded-lg border border-border-strong">
                       <div className="flex-1 pr-4">
-                        <h4 className="font-medium text-white mb-1">Analytics (anonymised)</h4>
-                        <p className="text-sm text-navy-400">
+                        <h4 className="font-medium text-primary mb-1">Analytics (anonymised)</h4>
+                        <p className="text-sm text-secondary">
                           Anonymised usage data to understand how the platform is used and where we can improve it. This data cannot identify you personally.
                         </p>
                       </div>
@@ -179,7 +179,7 @@ export default function CookieConsent() {
                     </button>
                     <button
                       onClick={handleAcceptAll}
-                      className="px-4 py-2 bg-navy-800 hover:bg-navy-700 text-white font-medium rounded-lg border border-navy-600 transition-colors"
+                      className="px-4 py-2 bg-subtle hover:bg-border-default text-primary font-medium rounded-lg border border-border-strong transition-colors"
                     >
                       Accept All
                     </button>

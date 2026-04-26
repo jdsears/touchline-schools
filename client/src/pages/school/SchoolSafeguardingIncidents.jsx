@@ -35,7 +35,7 @@ const STATUS_STYLES = {
   investigating: 'bg-blue-500/20 text-blue-400',
   referred: 'bg-purple-500/20 text-purple-400',
   resolved: 'bg-pitch-600/20 text-pitch-400',
-  closed: 'bg-navy-700 text-navy-400',
+  closed: 'bg-border-default text-secondary',
 }
 
 const STATUS_ICONS = {
@@ -185,18 +185,18 @@ export default function ClubSafeguardingIncidents() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(basePath)}
-            className="p-2 text-navy-400 hover:text-white transition-colors"
+            className="p-2 text-secondary hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white">Incident Reports</h1>
+            <h1 className="text-2xl font-bold text-primary">Incident Reports</h1>
           </div>
         </div>
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <Lock className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">Access Restricted</h3>
-          <p className="text-navy-400 text-sm max-w-md mx-auto">
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <Lock className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">Access Restricted</h3>
+          <p className="text-secondary text-sm max-w-md mx-auto">
             Incident reports are only accessible to school owners, administrators, and designated welfare officers.
             If you need to report a safeguarding concern, please contact your School Welfare Officer directly.
           </p>
@@ -220,18 +220,18 @@ export default function ClubSafeguardingIncidents() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(basePath)}
-            className="p-2 text-navy-400 hover:text-white transition-colors"
+            className="p-2 text-secondary hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white">Incident Reports</h1>
-            <p className="text-navy-400 text-sm mt-1">{incidents.length} incident{incidents.length !== 1 ? 's' : ''} recorded</p>
+            <h1 className="text-2xl font-bold text-primary">Incident Reports</h1>
+            <p className="text-secondary text-sm mt-1">{incidents.length} incident{incidents.length !== 1 ? 's' : ''} recorded</p>
           </div>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           Report New Incident
@@ -252,27 +252,27 @@ export default function ClubSafeguardingIncidents() {
 
       {/* Report form */}
       {showForm && (
-        <form onSubmit={handleCreate} className="bg-navy-900 border border-navy-800 rounded-xl p-4 space-y-4">
-          <h3 className="text-sm font-semibold text-white">Report New Incident</h3>
+        <form onSubmit={handleCreate} className="bg-card border border-border-default rounded-xl p-4 space-y-4">
+          <h3 className="text-sm font-semibold text-primary">Report New Incident</h3>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Date *</label>
+              <label className="block text-xs text-secondary mb-1">Date *</label>
               <input
                 type="date"
                 required
                 value={form.date}
                 onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Type *</label>
+              <label className="block text-xs text-secondary mb-1">Type *</label>
               <select
                 required
                 value={form.type}
                 onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 {INCIDENT_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -280,12 +280,12 @@ export default function ClubSafeguardingIncidents() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Severity *</label>
+              <label className="block text-xs text-secondary mb-1">Severity *</label>
               <select
                 required
                 value={form.severity}
                 onChange={(e) => setForm(f => ({ ...f, severity: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 {SEVERITY_OPTIONS.map(s => (
                   <option key={s.value} value={s.value}>{s.label}</option>
@@ -296,35 +296,35 @@ export default function ClubSafeguardingIncidents() {
 
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">People Involved</label>
+              <label className="block text-xs text-secondary mb-1">People Involved</label>
               <input
                 type="text"
                 value={form.people_involved}
                 onChange={(e) => setForm(f => ({ ...f, people_involved: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="Names of people involved"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Location</label>
+              <label className="block text-xs text-secondary mb-1">Location</label>
               <input
                 type="text"
                 value={form.location}
                 onChange={(e) => setForm(f => ({ ...f, location: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="Where did this occur?"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Description *</label>
+            <label className="block text-xs text-secondary mb-1">Description *</label>
             <textarea
               required
               value={form.description}
               onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
               rows={4}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
               placeholder="Describe the incident in detail. Include what happened, who was involved, and any immediate actions taken..."
             />
           </div>
@@ -333,14 +333,14 @@ export default function ClubSafeguardingIncidents() {
             <button
               type="button"
               onClick={() => { setShowForm(false); setForm({ ...EMPTY_FORM }) }}
-              className="px-4 py-2 text-sm text-navy-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
             >
               {saving ? 'Submitting...' : 'Submit Report'}
             </button>
@@ -350,10 +350,10 @@ export default function ClubSafeguardingIncidents() {
 
       {/* Incidents list */}
       {incidents.length === 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <FileText className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">No incidents recorded</h3>
-          <p className="text-navy-400 text-sm">Incident reports will appear here when they are filed.</p>
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <FileText className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">No incidents recorded</h3>
+          <p className="text-secondary text-sm">Incident reports will appear here when they are filed.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -363,11 +363,11 @@ export default function ClubSafeguardingIncidents() {
             const detail = isExpanded ? (expandedDetail || incident) : incident
 
             return (
-              <div key={incident.id} className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+              <div key={incident.id} className="bg-card border border-border-default rounded-xl overflow-hidden">
                 {/* Row header */}
                 <button
                   onClick={() => handleExpand(incident.id)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-navy-800/50 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-subtle transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
@@ -377,14 +377,14 @@ export default function ClubSafeguardingIncidents() {
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <p className="text-sm font-medium text-white capitalize">
+                        <p className="text-sm font-medium text-primary capitalize">
                           {incident.type}
                         </p>
-                        <span className="text-xs text-navy-500">
+                        <span className="text-xs text-tertiary">
                           {new Date(incident.date).toLocaleDateString('en-GB')}
                         </span>
                       </div>
-                      <p className="text-xs text-navy-400 truncate max-w-md mt-0.5">
+                      <p className="text-xs text-secondary truncate max-w-md mt-0.5">
                         {incident.description?.substring(0, 100)}{incident.description?.length > 100 ? '...' : ''}
                       </p>
                     </div>
@@ -402,34 +402,34 @@ export default function ClubSafeguardingIncidents() {
                       {incident.status}
                     </span>
                     {isExpanded
-                      ? <ChevronUp className="w-4 h-4 text-navy-400" />
-                      : <ChevronDown className="w-4 h-4 text-navy-400" />
+                      ? <ChevronUp className="w-4 h-4 text-secondary" />
+                      : <ChevronDown className="w-4 h-4 text-secondary" />
                     }
                   </div>
                 </button>
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 pt-2 border-t border-navy-800 space-y-4">
+                  <div className="px-4 pb-4 pt-2 border-t border-border-default space-y-4">
                     {/* Full details */}
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                       <div className="flex items-start gap-2">
-                        <Calendar className="w-4 h-4 text-navy-500 mt-0.5 shrink-0" />
+                        <Calendar className="w-4 h-4 text-tertiary mt-0.5 shrink-0" />
                         <div>
-                          <p className="text-xs text-navy-400">Date</p>
-                          <p className="text-navy-200">{new Date(detail.date).toLocaleDateString('en-GB')}</p>
+                          <p className="text-xs text-secondary">Date</p>
+                          <p className="text-primary">{new Date(detail.date).toLocaleDateString('en-GB')}</p>
                         </div>
                       </div>
                       <div>
-                        <p className="text-xs text-navy-400">Type</p>
-                        <p className="text-navy-200 capitalize">{detail.type}</p>
+                        <p className="text-xs text-secondary">Type</p>
+                        <p className="text-primary capitalize">{detail.type}</p>
                       </div>
                       {detail.location && (
                         <div className="flex items-start gap-2">
-                          <MapPin className="w-4 h-4 text-navy-500 mt-0.5 shrink-0" />
+                          <MapPin className="w-4 h-4 text-tertiary mt-0.5 shrink-0" />
                           <div>
-                            <p className="text-xs text-navy-400">Location</p>
-                            <p className="text-navy-200">{detail.location}</p>
+                            <p className="text-xs text-secondary">Location</p>
+                            <p className="text-primary">{detail.location}</p>
                           </div>
                         </div>
                       )}
@@ -437,14 +437,14 @@ export default function ClubSafeguardingIncidents() {
 
                     {detail.people_involved && (
                       <div>
-                        <p className="text-xs text-navy-400 mb-1">People Involved</p>
-                        <p className="text-sm text-navy-200">{detail.people_involved}</p>
+                        <p className="text-xs text-secondary mb-1">People Involved</p>
+                        <p className="text-sm text-primary">{detail.people_involved}</p>
                       </div>
                     )}
 
                     <div>
-                      <p className="text-xs text-navy-400 mb-1">Description</p>
-                      <p className="text-sm text-navy-200 whitespace-pre-wrap">{detail.description}</p>
+                      <p className="text-xs text-secondary mb-1">Description</p>
+                      <p className="text-sm text-primary whitespace-pre-wrap">{detail.description}</p>
                     </div>
 
                     {detail.referral_info && (
@@ -456,21 +456,21 @@ export default function ClubSafeguardingIncidents() {
 
                     {/* Actions taken timeline */}
                     <div>
-                      <p className="text-xs text-navy-400 mb-2">Actions Taken</p>
+                      <p className="text-xs text-secondary mb-2">Actions Taken</p>
                       {detail.actions_taken && detail.actions_taken.length > 0 ? (
                         <div className="space-y-2 mb-3">
                           {detail.actions_taken.map((action, i) => (
-                            <div key={i} className="flex items-start gap-3 pl-3 border-l-2 border-navy-700">
+                            <div key={i} className="flex items-start gap-3 pl-3 border-l-2 border-border-strong">
                               <div className="flex-1">
-                                <p className="text-sm text-navy-200">{action.text}</p>
+                                <p className="text-sm text-primary">{action.text}</p>
                                 <div className="flex items-center gap-2 mt-1">
                                   {action.date && (
-                                    <span className="text-xs text-navy-500">
+                                    <span className="text-xs text-tertiary">
                                       {new Date(action.date).toLocaleDateString('en-GB')}
                                     </span>
                                   )}
                                   {action.by && (
-                                    <span className="text-xs text-navy-500">{action.by}</span>
+                                    <span className="text-xs text-tertiary">{action.by}</span>
                                   )}
                                 </div>
                               </div>
@@ -478,7 +478,7 @@ export default function ClubSafeguardingIncidents() {
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-navy-500 mb-3">No actions recorded yet.</p>
+                        <p className="text-sm text-tertiary mb-3">No actions recorded yet.</p>
                       )}
 
                       {/* Add action form */}
@@ -488,7 +488,7 @@ export default function ClubSafeguardingIncidents() {
                             type="text"
                             value={actionText}
                             onChange={(e) => setActionText(e.target.value)}
-                            className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                            className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             placeholder="Record an action taken..."
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && !e.shiftKey) {
@@ -500,7 +500,7 @@ export default function ClubSafeguardingIncidents() {
                           <button
                             onClick={() => handleAddAction(incident.id)}
                             disabled={saving || !actionText.trim()}
-                            className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+                            className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
                           >
                             Add
                           </button>
@@ -510,8 +510,8 @@ export default function ClubSafeguardingIncidents() {
 
                     {/* Status update */}
                     {canManage && (
-                      <div className="flex items-center gap-3 pt-2 border-t border-navy-800">
-                        <span className="text-xs text-navy-400">Update status:</span>
+                      <div className="flex items-center gap-3 pt-2 border-t border-border-default">
+                        <span className="text-xs text-secondary">Update status:</span>
                         <div className="flex gap-2 flex-wrap">
                           {['open', 'investigating', 'referred', 'resolved', 'closed'].map(status => (
                             <button
@@ -520,8 +520,8 @@ export default function ClubSafeguardingIncidents() {
                               disabled={updatingStatus === incident.id || incident.status === status}
                               className={`text-xs px-3 py-1.5 rounded-lg transition-colors capitalize ${
                                 incident.status === status
-                                  ? 'bg-navy-700 text-white cursor-default'
-                                  : 'bg-navy-800 text-navy-400 hover:text-white hover:bg-navy-700 disabled:opacity-50'
+                                  ? 'bg-border-default text-primary cursor-default'
+                                  : 'bg-subtle text-secondary hover:text-primary hover:bg-border-default disabled:opacity-50'
                               }`}
                             >
                               {status}

@@ -291,7 +291,7 @@ export default function HoDTeachers() {
                 </button>
                 <button
                   onClick={handleAssign}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors"
                 >
                   Assign
                 </button>
@@ -352,7 +352,7 @@ export default function HoDTeachers() {
               <button
                 onClick={handleRoleChange}
                 disabled={roleLoading || newRole === roleModal.currentRole}
-                className="flex-1 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {roleLoading ? <div className="spinner w-4 h-4" /> : <Check className="w-4 h-4" />}
                 Save Role

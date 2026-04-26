@@ -639,7 +639,7 @@ export default function Training() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">Training</h1>
-          <p className="text-navy-400">Plan and generate AI-powered training sessions</p>
+          <p className="text-secondary">Plan and generate AI-powered training sessions</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
@@ -659,7 +659,7 @@ export default function Training() {
             </div>
             <h2 className="font-display text-lg font-semibold text-white">AI Session Generator</h2>
           </div>
-          <p className="text-navy-400 mb-4">
+          <p className="text-secondary mb-4">
             Describe your time, pupils, and focus areas - get a complete session plan with drills, coaching points, and progressions.
           </p>
           <button onClick={() => setShowCreateModal(true)} className="btn-primary w-full">
@@ -675,7 +675,7 @@ export default function Training() {
             </div>
             <h2 className="font-display text-lg font-semibold text-white">Weekly Planner</h2>
           </div>
-          <p className="text-navy-400 mb-4">
+          <p className="text-secondary mb-4">
             View your training week at a glance. Plan sessions around matches and track what you've covered.
           </p>
           <button
@@ -693,7 +693,7 @@ export default function Training() {
         <button
           onClick={() => setView('list')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            view === 'list' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+            view === 'list' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
           }`}
         >
           List View
@@ -701,7 +701,7 @@ export default function Training() {
         <button
           onClick={() => setView('weekly')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            view === 'weekly' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+            view === 'weekly' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
           }`}
         >
           Weekly View
@@ -716,17 +716,17 @@ export default function Training() {
       ) : view === 'weekly' ? (
         /* Weekly View */
         <div className="card overflow-hidden">
-          <div className="grid grid-cols-7 border-b border-navy-800">
+          <div className="grid grid-cols-7 border-b border-border-default">
             {getWeeklySessions().map((day, idx) => (
               <div
                 key={idx}
-                className={`p-3 text-center border-r border-navy-800 last:border-r-0 ${
+                className={`p-3 text-center border-r border-border-default last:border-r-0 ${
                   day.date.toDateString() === new Date().toDateString()
                     ? 'bg-pitch-500/10'
                     : ''
                 }`}
               >
-                <p className="text-xs text-navy-500 uppercase">{day.dayName}</p>
+                <p className="text-xs text-tertiary uppercase">{day.dayName}</p>
                 <p className={`text-lg font-semibold ${
                   day.date.toDateString() === new Date().toDateString()
                     ? 'text-pitch-400'
@@ -741,7 +741,7 @@ export default function Training() {
             {getWeeklySessions().map((day, idx) => (
               <div
                 key={idx}
-                className={`p-2 border-r border-navy-800 last:border-r-0 ${
+                className={`p-2 border-r border-border-default last:border-r-0 ${
                   day.date.toDateString() === new Date().toDateString()
                     ? 'bg-pitch-500/5'
                     : ''
@@ -758,7 +758,7 @@ export default function Training() {
                         <p className="text-xs font-medium text-pitch-400 truncate">
                           {session.focus_areas?.join(', ') || 'Training'}
                         </p>
-                        <p className="text-xs text-navy-400">
+                        <p className="text-xs text-secondary">
                           {formatTime(session.duration)}
                         </p>
                       </button>
@@ -773,7 +773,7 @@ export default function Training() {
                       }))
                       setShowCreateModal(true)
                     }}
-                    className="w-full h-full min-h-[60px] rounded-lg border-2 border-dashed border-navy-700 hover:border-navy-600 flex items-center justify-center text-navy-600 hover:text-navy-500 transition-colors"
+                    className="w-full h-full min-h-[60px] rounded-lg border-2 border-dashed border-border-strong hover:border-border-strong flex items-center justify-center text-tertiary hover:text-tertiary transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
@@ -829,7 +829,7 @@ export default function Training() {
                               ))
                             )}
                           </div>
-                          <div className="flex flex-wrap items-center gap-3 text-sm text-navy-400">
+                          <div className="flex flex-wrap items-center gap-3 text-sm text-secondary">
                             {session.meet_time && (
                               <span className="flex items-center gap-1" title="Meet time">
                                 <Users className="w-3.5 h-3.5" />
@@ -855,12 +855,12 @@ export default function Training() {
                           </div>
                         </div>
                         <div className="text-right mr-2">
-                          <p className="text-xs text-navy-500">Availability</p>
+                          <p className="text-xs text-tertiary">Availability</p>
                           <p className="text-sm font-medium text-pitch-400">
                             {parseInt(session.available_count) || 0} ready
                           </p>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-navy-600" />
+                        <ChevronRight className="w-5 h-5 text-tertiary" />
                       </button>
                     </motion.div>
                   )
@@ -868,11 +868,11 @@ export default function Training() {
               </div>
             ) : (
               <div className="card p-8 text-center">
-                <Calendar className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+                <Calendar className="w-12 h-12 text-tertiary mx-auto mb-4" />
                 <h3 className="font-display text-lg font-semibold text-white mb-2">
                   No upcoming sessions
                 </h3>
-                <p className="text-navy-400 mb-4">
+                <p className="text-secondary mb-4">
                   Create your next training session with AI assistance.
                 </p>
                 <button onClick={() => setShowCreateModal(true)} className="btn-primary">
@@ -902,11 +902,11 @@ export default function Training() {
                       onClick={() => setSelectedSession(session)}
                       className="card p-4 w-full flex items-center gap-4 text-left opacity-75 hover:opacity-100 transition-opacity"
                     >
-                      <div className="w-12 h-12 rounded-xl bg-navy-800 flex flex-col items-center justify-center shrink-0">
-                        <span className="text-xs text-navy-500 uppercase">
+                      <div className="w-12 h-12 rounded-xl bg-subtle flex flex-col items-center justify-center shrink-0">
+                        <span className="text-xs text-tertiary uppercase">
                           {new Date(session.date).toLocaleDateString('en-GB', { weekday: 'short' })}
                         </span>
-                        <span className="text-lg font-bold text-navy-400">
+                        <span className="text-lg font-bold text-secondary">
                           {new Date(session.date).getDate()}
                         </span>
                       </div>
@@ -918,7 +918,7 @@ export default function Training() {
                             </span>
                           ))}
                         </div>
-                        <div className="flex items-center gap-3 text-sm text-navy-500">
+                        <div className="flex items-center gap-3 text-sm text-tertiary">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3.5 h-3.5" />
                             {formatTime(session.duration)}
@@ -926,7 +926,7 @@ export default function Training() {
                           <span>{formatDate(session.date)}</span>
                         </div>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-navy-600" />
+                      <ChevronRight className="w-5 h-5 text-tertiary" />
                     </button>
                   </motion.div>
                 ))}
@@ -958,7 +958,7 @@ export default function Training() {
               className="modal-content max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between shrink-0">
+              <div className="p-6 border-b border-border-default flex items-center justify-between shrink-0">
                 <h2 className="font-display text-xl font-semibold text-white">
                   {generatedPlan ? 'Generated Session Plan' : 'New Training Session'}
                 </h2>
@@ -968,7 +968,7 @@ export default function Training() {
                     setGeneratedPlan(null)
                   }}
                   disabled={generating}
-                  className="p-2 text-navy-400 hover:text-white transition-colors disabled:opacity-50"
+                  className="p-2 text-secondary hover:text-white transition-colors disabled:opacity-50"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -987,7 +987,7 @@ export default function Training() {
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.session_type === 'training'
                               ? 'bg-pitch-600 text-white'
-                              : 'bg-navy-800 text-navy-400 hover:text-white'
+                              : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
                           <Target className="w-5 h-5 mx-auto mb-1" />
@@ -999,7 +999,7 @@ export default function Training() {
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.session_type === 's&c'
                               ? 'bg-energy-600 text-white'
-                              : 'bg-navy-800 text-navy-400 hover:text-white'
+                              : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
                           <Dumbbell className="w-5 h-5 mx-auto mb-1" />
@@ -1058,7 +1058,7 @@ export default function Training() {
                           className="input"
                           placeholder="17:45"
                         />
-                        <p className="text-xs text-navy-500 mt-1">When pupils arrive</p>
+                        <p className="text-xs text-tertiary mt-1">When pupils arrive</p>
                       </div>
                       <div>
                         <label className="label">Session Start</label>
@@ -1084,7 +1084,7 @@ export default function Training() {
                           className="input"
                           placeholder="18:00"
                         />
-                        <p className="text-xs text-navy-500 mt-1">When coaching begins</p>
+                        <p className="text-xs text-tertiary mt-1">When coaching begins</p>
                       </div>
                     </div>
 
@@ -1110,7 +1110,7 @@ export default function Training() {
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.venue_type === 'outdoor'
                               ? 'bg-pitch-600 text-white'
-                              : 'bg-navy-800 text-navy-400 hover:text-white'
+                              : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
                           Outdoor
@@ -1121,7 +1121,7 @@ export default function Training() {
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.venue_type === 'indoor'
                               ? 'bg-energy-600 text-white'
-                              : 'bg-navy-800 text-navy-400 hover:text-white'
+                              : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
                           Indoor
@@ -1133,14 +1133,14 @@ export default function Training() {
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <label className="label mb-0 flex items-center gap-2">
-                          <Repeat className="w-4 h-4 text-navy-400" />
+                          <Repeat className="w-4 h-4 text-secondary" />
                           Recurring Weekly
                         </label>
                         <button
                           type="button"
                           onClick={() => setCreateForm(prev => ({ ...prev, recurring: !prev.recurring, recurring_end_date: '' }))}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            createForm.recurring ? 'bg-pitch-500' : 'bg-navy-700'
+                            createForm.recurring ? 'bg-pitch-500' : 'bg-border-default'
                           }`}
                         >
                           <span
@@ -1151,8 +1151,8 @@ export default function Training() {
                         </button>
                       </div>
                       {createForm.recurring && (
-                        <div className="mt-3 p-4 rounded-lg bg-navy-800/50 border border-navy-700 space-y-3">
-                          <p className="text-sm text-navy-300">
+                        <div className="mt-3 p-4 rounded-lg bg-subtle border border-border-strong space-y-3">
+                          <p className="text-sm text-secondary">
                             A session will be created every <strong className="text-white">{new Date(createForm.date + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long' })}</strong> from{' '}
                             <strong className="text-white">{new Date(createForm.date + 'T12:00:00').toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</strong> until the end date below.
                             Each session can be edited independently.
@@ -1171,7 +1171,7 @@ export default function Training() {
                               const end = new Date(createForm.recurring_end_date + 'T12:00:00')
                               const weeks = Math.floor((end - start) / (7 * 24 * 60 * 60 * 1000)) + 1
                               return weeks > 0 ? (
-                                <p className="text-xs text-navy-400 mt-2">
+                                <p className="text-xs text-secondary mt-2">
                                   This will create <strong className="text-pitch-400">{weeks} session{weeks !== 1 ? 's' : ''}</strong>
                                 </p>
                               ) : null
@@ -1211,7 +1211,7 @@ export default function Training() {
                                   p-2 rounded-lg text-sm font-medium transition-colors text-left
                                   ${createForm.focusAreas.includes(area.value)
                                     ? 'bg-pitch-600 text-white'
-                                    : 'bg-navy-800 text-navy-400 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'
+                                    : 'bg-subtle text-secondary hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'
                                   }
                                 `}
                               >
@@ -1234,12 +1234,12 @@ export default function Training() {
                                   p-3 rounded-lg text-sm font-medium transition-colors text-center
                                   ${createForm.level === opt.value
                                     ? 'bg-pitch-600 text-white ring-2 ring-pitch-400'
-                                    : 'bg-navy-800 text-navy-400 hover:text-white'
+                                    : 'bg-subtle text-secondary hover:text-white'
                                   }
                                 `}
                               >
                                 <div className="font-semibold">{opt.label}</div>
-                                <div className={`text-xs mt-1 ${createForm.level === opt.value ? 'text-pitch-200' : 'text-navy-500'}`}>
+                                <div className={`text-xs mt-1 ${createForm.level === opt.value ? 'text-pitch-200' : 'text-tertiary'}`}>
                                   {opt.description}
                                 </div>
                               </button>
@@ -1260,7 +1260,7 @@ export default function Training() {
                           rows={3}
                           placeholder="e.g., I want to use a 4v2 rondo for warm-up, and a crossing & finishing drill where wingers deliver into the box..."
                         />
-                        <p className="text-xs text-navy-500 mt-1">
+                        <p className="text-xs text-tertiary mt-1">
                           Describe drills you'd like included - the AI will build on your ideas and fit them into the session structure.
                         </p>
                       </div>
@@ -1289,7 +1289,7 @@ export default function Training() {
                       <CheckCircle className="w-8 h-8 text-pitch-400 shrink-0" />
                       <div>
                         <p className="font-medium text-white">Session Generated!</p>
-                        <p className="text-sm text-navy-400">
+                        <p className="text-sm text-secondary">
                           {formatTime(generatedPlan.duration || createForm.duration)} session focusing on{' '}
                           {createForm.focusAreas.map(a => focusAreaOptions.find(f => f.value === a)?.label).join(', ')}
                         </p>
@@ -1351,13 +1351,13 @@ export default function Training() {
                         )}
                       </div>
                     ) : (
-                      <p className="text-navy-400">Session plan generated and saved.</p>
+                      <p className="text-secondary">Session plan generated and saved.</p>
                     )}
                   </div>
                 )}
               </div>
 
-              <div className="p-6 border-t border-navy-800 shrink-0">
+              <div className="p-6 border-t border-border-default shrink-0">
                 {!generatedPlan ? (
                   <div className="space-y-3">
                     {createForm.session_type === 'training' && (
@@ -1375,7 +1375,7 @@ export default function Training() {
                           <>
                             <CalendarPlus className="w-4 h-4" />
                             Schedule Session
-                            <span className="text-xs text-navy-500 ml-1">(add plan later)</span>
+                            <span className="text-xs text-tertiary ml-1">(add plan later)</span>
                           </>
                         )}
                       </button>
@@ -1457,12 +1457,12 @@ export default function Training() {
               className="modal-content max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between shrink-0">
+              <div className="p-6 border-b border-border-default flex items-center justify-between shrink-0">
                 <div>
                   <h2 className="font-display text-xl font-semibold text-white">
                     Training Session
                   </h2>
-                  <p className="text-sm text-navy-400">{formatDate(selectedSession.date)}</p>
+                  <p className="text-sm text-secondary">{formatDate(selectedSession.date)}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -1478,7 +1478,7 @@ export default function Training() {
                   </button>
                   <button
                     onClick={closeSessionDetail}
-                    className="p-2 text-navy-400 hover:text-white transition-colors"
+                    className="p-2 text-secondary hover:text-white transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -1489,24 +1489,24 @@ export default function Training() {
                 {/* Session Info */}
                 <div className="flex flex-wrap gap-4 mb-6">
                   {selectedSession.meet_time && (
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-navy-800">
-                      <Users className="w-4 h-4 text-navy-400" />
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-subtle">
+                      <Users className="w-4 h-4 text-secondary" />
                       <span className="text-sm text-white">Meet {selectedSession.meet_time.slice(0, 5)}</span>
                     </div>
                   )}
                   {selectedSession.time && (
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-navy-800">
-                      <Play className="w-4 h-4 text-navy-400" />
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-subtle">
+                      <Play className="w-4 h-4 text-secondary" />
                       <span className="text-sm text-white">Start {selectedSession.time.slice(0, 5)}</span>
                     </div>
                   )}
-                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-navy-800">
-                    <Clock className="w-4 h-4 text-navy-400" />
+                  <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-subtle">
+                    <Clock className="w-4 h-4 text-secondary" />
                     <span className="text-sm text-white">{formatTime(selectedSession.duration)}</span>
                   </div>
                   {selectedSession.location && (
-                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-navy-800">
-                      <MapPin className="w-4 h-4 text-navy-400" />
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-subtle">
+                      <MapPin className="w-4 h-4 text-secondary" />
                       <span className="text-sm text-white">{selectedSession.location}</span>
                     </div>
                   )}
@@ -1604,7 +1604,7 @@ export default function Training() {
                 )}
 
                 {/* Coach's Own Plan */}
-                <div className={`${selectedSession.plan && Object.keys(selectedSession.plan).length > 0 ? 'mt-6 pt-6 border-t border-navy-800' : ''}`}>
+                <div className={`${selectedSession.plan && Object.keys(selectedSession.plan).length > 0 ? 'mt-6 pt-6 border-t border-border-default' : ''}`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
                       <PenLine className="w-4 h-4 text-energy-400" />
@@ -1616,7 +1616,7 @@ export default function Training() {
                           setCustomPlanText(selectedSession.custom_plan || '')
                           setEditingCustomPlan(true)
                         }}
-                        className="btn-ghost text-sm text-navy-400 hover:text-white"
+                        className="btn-ghost text-sm text-secondary hover:text-white"
                       >
                         <Edit2 className="w-3.5 h-3.5" />
                         {selectedSession.custom_plan ? 'Edit' : 'Write Plan'}
@@ -1655,22 +1655,22 @@ export default function Training() {
                       </div>
                     </div>
                   ) : selectedSession.custom_plan ? (
-                    <div className="p-4 rounded-lg bg-navy-800/50 border border-navy-700">
-                      <p className="text-sm text-navy-300 whitespace-pre-wrap">{selectedSession.custom_plan}</p>
+                    <div className="p-4 rounded-lg bg-subtle border border-border-strong">
+                      <p className="text-sm text-secondary whitespace-pre-wrap">{selectedSession.custom_plan}</p>
                     </div>
                   ) : (
-                    <p className="text-navy-500 text-sm">No custom plan written yet. Click "Write Plan" to add your own session notes and drills.</p>
+                    <p className="text-tertiary text-sm">No custom plan written yet. Click "Write Plan" to add your own session notes and drills.</p>
                   )}
                 </div>
 
                 {/* Plan Images */}
-                <div className="mt-6 pt-6 border-t border-navy-800">
+                <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
                       <ImagePlus className="w-4 h-4 text-pitch-400" />
                       Session Images
                     </h3>
-                    <label className={`btn-ghost text-sm text-navy-400 hover:text-white cursor-pointer ${uploadingImages ? 'opacity-50 pointer-events-none' : ''}`}>
+                    <label className={`btn-ghost text-sm text-secondary hover:text-white cursor-pointer ${uploadingImages ? 'opacity-50 pointer-events-none' : ''}`}>
                       {uploadingImages ? (
                         <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Uploading...</>
                       ) : (
@@ -1694,7 +1694,7 @@ export default function Training() {
                   {selectedSession.plan_images && selectedSession.plan_images.length > 0 ? (
                     <div className="grid grid-cols-2 gap-3">
                       {selectedSession.plan_images.map(img => (
-                        <div key={img.id} className="relative group rounded-lg overflow-hidden border border-navy-700">
+                        <div key={img.id} className="relative group rounded-lg overflow-hidden border border-border-strong">
                           <img
                             src={img.url}
                             alt={img.filename || 'Session plan image'}
@@ -1722,15 +1722,15 @@ export default function Training() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-navy-500 text-sm">No images yet. Upload photos of whiteboard plans, drill diagrams, or session setups.</p>
+                    <p className="text-tertiary text-sm">No images yet. Upload photos of whiteboard plans, drill diagrams, or session setups.</p>
                   )}
                 </div>
 
                 {/* Generate AI Plan - shown when no AI plan exists */}
                 {(!selectedSession.plan || Object.keys(selectedSession.plan).length === 0) && selectedSession.session_type !== 's&c' && (
-                  <div className="mt-6 pt-6 border-t border-navy-800">
+                  <div className="mt-6 pt-6 border-t border-border-default">
                     <div className="text-center py-4">
-                      <p className="text-navy-400 text-sm mb-3">Want an AI-generated session plan?</p>
+                      <p className="text-secondary text-sm mb-3">Want an AI-generated session plan?</p>
 
                       {/* Focus Areas Selector */}
                       <div className="mb-4 max-w-md mx-auto text-left">
@@ -1750,7 +1750,7 @@ export default function Training() {
                                 p-2 rounded-lg text-xs font-medium transition-colors text-center
                                 ${sessionPlanFocusAreas.includes(area.value)
                                   ? 'bg-pitch-600 text-white ring-2 ring-pitch-400'
-                                  : 'bg-navy-800 text-navy-400 hover:text-white'
+                                  : 'bg-subtle text-secondary hover:text-white'
                                 }
                                 disabled:opacity-50
                               `}
@@ -1775,13 +1775,13 @@ export default function Training() {
                                 p-2 rounded-lg text-xs font-medium transition-colors text-center
                                 ${sessionPlanLevel === opt.value
                                   ? 'bg-pitch-600 text-white ring-2 ring-pitch-400'
-                                  : 'bg-navy-800 text-navy-400 hover:text-white'
+                                  : 'bg-subtle text-secondary hover:text-white'
                                 }
                                 disabled:opacity-50
                               `}
                             >
                               <div className="font-semibold">{opt.label}</div>
-                              <div className={`text-[10px] mt-0.5 ${sessionPlanLevel === opt.value ? 'text-pitch-200' : 'text-navy-500'}`}>
+                              <div className={`text-[10px] mt-0.5 ${sessionPlanLevel === opt.value ? 'text-pitch-200' : 'text-tertiary'}`}>
                                 {opt.description}
                               </div>
                             </button>
@@ -1812,19 +1812,19 @@ export default function Training() {
 
                 {/* Share Plan with Players Toggle */}
                 {(selectedSession.plan || selectedSession.custom_plan) && (
-                  <div className="mt-6 pt-6 border-t border-navy-800">
+                  <div className="mt-6 pt-6 border-t border-border-default">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {selectedSession.share_plan_with_players ? (
                           <Eye className="w-5 h-5 text-pitch-400" />
                         ) : (
-                          <EyeOff className="w-5 h-5 text-navy-500" />
+                          <EyeOff className="w-5 h-5 text-tertiary" />
                         )}
                         <div>
                           <h3 className="font-display font-semibold text-white">
                             Share Plan with Players
                           </h3>
-                          <p className="text-sm text-navy-400">
+                          <p className="text-sm text-secondary">
                             {selectedSession.share_plan_with_players
                               ? 'Players can see this training plan in their Pupil Zone'
                               : 'Training plan is hidden from pupils'}
@@ -1837,7 +1837,7 @@ export default function Training() {
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                           selectedSession.share_plan_with_players
                             ? 'bg-pitch-500'
-                            : 'bg-navy-700'
+                            : 'bg-border-default'
                         }`}
                       >
                         {togglingShare ? (
@@ -1855,7 +1855,7 @@ export default function Training() {
                 )}
 
                 {/* Parent Summary Section */}
-                <div className="mt-6 pt-6 border-t border-navy-800">
+                <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
                       <Send className="w-4 h-4 text-pitch-400" />
@@ -1885,13 +1885,13 @@ export default function Training() {
                   {selectedSession.summary ? (
                     <div className="p-4 rounded-lg bg-pitch-500/10 border border-pitch-500/20">
                       <AIMarkdown>{selectedSession.summary}</AIMarkdown>
-                      <p className="text-xs text-navy-500 mt-3 flex items-center gap-1">
+                      <p className="text-xs text-tertiary mt-3 flex items-center gap-1">
                         <CheckCircle className="w-3 h-3 text-pitch-400" />
                         This summary is visible to parents in the Pupil Zone
                       </p>
                     </div>
                   ) : (
-                    <p className="text-navy-400 text-sm">
+                    <p className="text-secondary text-sm">
                       {new Date(selectedSession.date) < new Date()
                         ? 'Generate a parent-friendly summary of this session to share with families.'
                         : 'You can generate a summary after the session is complete.'}
@@ -1901,14 +1901,14 @@ export default function Training() {
 
                 {/* Notes */}
                 {selectedSession.notes && (
-                  <div className="mt-6 pt-6 border-t border-navy-800">
+                  <div className="mt-6 pt-6 border-t border-border-default">
                     <h3 className="font-display font-semibold text-white mb-2">Notes</h3>
-                    <p className="text-navy-300 whitespace-pre-wrap">{selectedSession.notes}</p>
+                    <p className="text-secondary whitespace-pre-wrap">{selectedSession.notes}</p>
                   </div>
                 )}
 
                 {/* Availability */}
-                <div className="mt-6 pt-6 border-t border-navy-800">
+                <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
                       <UserCheck className="w-4 h-4 text-pitch-400" />
@@ -1956,7 +1956,7 @@ export default function Training() {
                   {showAvailability && (
                     loadingAvailability ? (
                       <div className="flex justify-center py-4">
-                        <Loader2 className="w-5 h-5 animate-spin text-navy-400" />
+                        <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                       </div>
                     ) : (
                       <div>
@@ -1977,9 +1977,9 @@ export default function Training() {
                                 <p className="text-lg font-bold text-red-400">{summary.unavailable}</p>
                                 <p className="text-xs text-red-400/70">No</p>
                               </div>
-                              <div className="text-center p-2 rounded-lg bg-navy-700/50 border border-navy-600">
-                                <p className="text-lg font-bold text-navy-400">{summary.pending}</p>
-                                <p className="text-xs text-navy-500">Waiting</p>
+                              <div className="text-center p-2 rounded-lg bg-border-default/50 border border-border-strong">
+                                <p className="text-lg font-bold text-secondary">{summary.pending}</p>
+                                <p className="text-xs text-tertiary">Waiting</p>
                               </div>
                             </div>
                           )
@@ -1990,10 +1990,10 @@ export default function Training() {
                           {availability.map(pupil => (
                             <div
                               key={pupil.pupil_id}
-                              className="flex items-center justify-between px-3 py-2 rounded-lg bg-navy-800/50 border border-navy-700"
+                              className="flex items-center justify-between px-3 py-2 rounded-lg bg-subtle border border-border-strong"
                             >
                               <div className="flex items-center gap-3">
-                                <div className="w-7 h-7 rounded-full bg-navy-700 flex items-center justify-center text-xs font-medium text-white">
+                                <div className="w-7 h-7 rounded-full bg-border-default flex items-center justify-center text-xs font-medium text-white">
                                   {pupil.squad_number || pupil.player_name?.charAt(0)}
                                 </div>
                                 <span className="text-sm text-white">{pupil.player_name}</span>
@@ -2013,7 +2013,7 @@ export default function Training() {
                                         key={status}
                                         onClick={() => handleAvailabilityUpdate(selectedSession.id, pupil.pupil_id, status)}
                                         className={`p-1.5 rounded transition ${
-                                          pupil.status === status ? colors : 'text-navy-500 hover:text-navy-300'
+                                          pupil.status === status ? colors : 'text-tertiary hover:text-secondary'
                                         }`}
                                       >
                                         <Icon className="w-4 h-4" />
@@ -2026,7 +2026,7 @@ export default function Training() {
                                   pupil.status === 'available' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
                                   pupil.status === 'maybe' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
                                   pupil.status === 'unavailable' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
-                                  'bg-navy-700 text-navy-400 border-navy-600'
+                                  'bg-border-default text-secondary border-border-strong'
                                 }`}>
                                   {pupil.status}
                                 </span>
@@ -2040,7 +2040,7 @@ export default function Training() {
                 </div>
 
                 {/* Attendance */}
-                <div className="mt-6 pt-6 border-t border-navy-800">
+                <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
                       <Users className="w-4 h-4 text-pitch-400" />
@@ -2058,7 +2058,7 @@ export default function Training() {
                       </button>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <button onClick={markAllPresent} className="btn-ghost text-xs text-navy-400">
+                        <button onClick={markAllPresent} className="btn-ghost text-xs text-secondary">
                           All Present
                         </button>
                         <button
@@ -2079,18 +2079,18 @@ export default function Training() {
                   {showAttendance && (
                     loadingAttendance ? (
                       <div className="flex justify-center py-4">
-                        <Loader2 className="w-5 h-5 animate-spin text-navy-400" />
+                        <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                       </div>
                     ) : (
                       <div className="space-y-1">
-                        <div className="text-xs text-navy-500 mb-2">
+                        <div className="text-xs text-tertiary mb-2">
                           {attendance.filter(p => p.attended).length} / {attendance.length} present
                         </div>
                         {attendance.map(pupil => (
                           <div key={pupil.pupil_id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition text-sm ${
                             pupil.attended
                               ? 'bg-pitch-500/10 border-pitch-500/30 text-white'
-                              : 'bg-navy-800/50 border-navy-700 text-navy-400'
+                              : 'bg-subtle border-border-strong text-secondary'
                           }`}>
                             <button
                               onClick={() => togglePlayerAttendance(pupil.pupil_id)}
@@ -2100,7 +2100,7 @@ export default function Training() {
                               {pupil.attended ? (
                                 <CheckCircle className="w-4 h-4 text-pitch-400 shrink-0" />
                               ) : (
-                                <X className="w-4 h-4 text-navy-600 shrink-0" />
+                                <X className="w-4 h-4 text-tertiary shrink-0" />
                               )}
                             </button>
                             {pupil.attended && (
@@ -2113,7 +2113,7 @@ export default function Training() {
                                     className={`w-5 h-5 text-xs rounded transition ${
                                       pupil.effort_rating >= star
                                         ? 'bg-energy-500/20 text-energy-400'
-                                        : 'bg-navy-800 text-navy-600 hover:text-navy-400'
+                                        : 'bg-subtle text-tertiary hover:text-secondary'
                                     }`}
                                   >
                                     {pupil.effort_rating >= star ? '\u2605' : '\u2606'}
@@ -2140,11 +2140,11 @@ export default function Training() {
 function SessionSection({ title, duration, content, editing, editData, onEdit, onSave, onCancel, onChange, saving }) {
   if (editing && editData) {
     return (
-      <div className="p-4 rounded-lg bg-navy-800/50 border border-pitch-500/30">
+      <div className="p-4 rounded-lg bg-subtle border border-pitch-500/30">
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-display font-semibold text-white">{title}</h4>
           <div className="flex items-center gap-2">
-            <button onClick={onCancel} className="text-xs text-navy-400 hover:text-white transition-colors px-2 py-1">Cancel</button>
+            <button onClick={onCancel} className="text-xs text-secondary hover:text-white transition-colors px-2 py-1">Cancel</button>
             <button onClick={onSave} disabled={saving} className="flex items-center gap-1 text-xs bg-pitch-500 text-white px-3 py-1 rounded-lg hover:bg-pitch-600 transition-colors disabled:opacity-50">
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
               Save
@@ -2153,36 +2153,36 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
         </div>
         <div className="space-y-3">
           <div>
-            <label className="text-xs text-navy-500 uppercase mb-1 block">Drill Name</label>
-            <input value={editData.name || ''} onChange={e => onChange({ ...editData, name: e.target.value })} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+            <label className="text-xs text-tertiary uppercase mb-1 block">Drill Name</label>
+            <input value={editData.name || ''} onChange={e => onChange({ ...editData, name: e.target.value })} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="text-xs text-navy-500 uppercase mb-1 block">Duration (mins)</label>
-              <input value={editData.duration || ''} onChange={e => onChange({ ...editData, duration: e.target.value })} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+              <label className="text-xs text-tertiary uppercase mb-1 block">Duration (mins)</label>
+              <input value={editData.duration || ''} onChange={e => onChange({ ...editData, duration: e.target.value })} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
             </div>
           </div>
           <div>
-            <label className="text-xs text-navy-500 uppercase mb-1 block">Description</label>
-            <textarea value={editData.description || ''} onChange={e => onChange({ ...editData, description: e.target.value })} rows={3} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+            <label className="text-xs text-tertiary uppercase mb-1 block">Description</label>
+            <textarea value={editData.description || ''} onChange={e => onChange({ ...editData, description: e.target.value })} rows={3} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-navy-500 uppercase mb-1 block">Setup</label>
-            <textarea value={editData.setup || ''} onChange={e => onChange({ ...editData, setup: e.target.value })} rows={2} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+            <label className="text-xs text-tertiary uppercase mb-1 block">Setup</label>
+            <textarea value={editData.setup || ''} onChange={e => onChange({ ...editData, setup: e.target.value })} rows={2} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-navy-500 uppercase mb-1 block">Coaching Points (one per line)</label>
+            <label className="text-xs text-tertiary uppercase mb-1 block">Coaching Points (one per line)</label>
             <textarea
               value={(editData.coachingPoints || []).join('\n')}
               onChange={e => onChange({ ...editData, coachingPoints: e.target.value.split('\n') })}
               rows={4}
-              className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
             />
           </div>
           {editData.progression !== undefined && (
             <div>
-              <label className="text-xs text-navy-500 uppercase mb-1 block">Progression</label>
-              <textarea value={editData.progression || ''} onChange={e => onChange({ ...editData, progression: e.target.value })} rows={2} className="w-full px-3 py-2 bg-navy-900 border border-navy-700 rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+              <label className="text-xs text-tertiary uppercase mb-1 block">Progression</label>
+              <textarea value={editData.progression || ''} onChange={e => onChange({ ...editData, progression: e.target.value })} rows={2} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
             </div>
           )}
         </div>
@@ -2191,18 +2191,18 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
   }
 
   return (
-    <div className="p-4 rounded-lg bg-navy-800/50 border border-navy-700 group">
+    <div className="p-4 rounded-lg bg-subtle border border-border-strong group">
       <div className="flex items-center justify-between mb-3">
         <h4 className="font-display font-semibold text-white">{title}</h4>
         <div className="flex items-center gap-2">
           {duration && (
-            <span className="text-xs text-navy-400 flex items-center gap-1">
+            <span className="text-xs text-secondary flex items-center gap-1">
               <Clock className="w-3 h-3" />
               {duration} mins
             </span>
           )}
           {onEdit && (
-            <button onClick={onEdit} className="opacity-0 group-hover:opacity-100 transition-opacity text-navy-400 hover:text-pitch-400 p-1" title="Edit drill">
+            <button onClick={onEdit} className="opacity-0 group-hover:opacity-100 transition-opacity text-secondary hover:text-pitch-400 p-1" title="Edit drill">
               <Edit2 className="w-3.5 h-3.5" />
             </button>
           )}
@@ -2214,30 +2214,30 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
       )}
 
       {content.description && (
-        <p className="text-sm text-navy-300 mb-3">{content.description}</p>
+        <p className="text-sm text-secondary mb-3">{content.description}</p>
       )}
 
       {/* Drill Diagram */}
       {content.diagram && (content.diagram.pupils?.length > 0 || content.diagram.cones?.length > 0) && (
         <div className="mb-3">
-          <p className="text-xs text-navy-500 uppercase mb-2">Drill Setup</p>
+          <p className="text-xs text-tertiary uppercase mb-2">Drill Setup</p>
           <DrillDiagram diagram={content.diagram} />
         </div>
       )}
 
       {content.setup && (
         <div className="mb-3">
-          <p className="text-xs text-navy-500 uppercase mb-1">Setup</p>
-          <p className="text-sm text-navy-300">{content.setup}</p>
+          <p className="text-xs text-tertiary uppercase mb-1">Setup</p>
+          <p className="text-sm text-secondary">{content.setup}</p>
         </div>
       )}
 
       {content.coachingPoints && content.coachingPoints.length > 0 && (
         <div>
-          <p className="text-xs text-navy-500 uppercase mb-1">Coaching Points</p>
+          <p className="text-xs text-tertiary uppercase mb-1">Coaching Points</p>
           <ul className="space-y-1">
             {content.coachingPoints.map((point, i) => (
-              <li key={i} className="text-sm text-navy-300 flex items-start gap-2">
+              <li key={i} className="text-sm text-secondary flex items-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-pitch-500 mt-1.5 shrink-0" />
                 {point}
               </li>
@@ -2247,9 +2247,9 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
       )}
 
       {content.progression && (
-        <div className="mt-3 pt-3 border-t border-navy-700">
-          <p className="text-xs text-navy-500 uppercase mb-1">Progression</p>
-          <p className="text-sm text-navy-300">{content.progression}</p>
+        <div className="mt-3 pt-3 border-t border-border-strong">
+          <p className="text-xs text-tertiary uppercase mb-1">Progression</p>
+          <p className="text-sm text-secondary">{content.progression}</p>
         </div>
       )}
     </div>

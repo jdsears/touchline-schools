@@ -15,8 +15,8 @@ const SPORT_EMOJI = {
 
 function DetailRow({ icon: Icon, children }) {
   return (
-    <div className="flex items-start gap-3 text-sm text-white/80">
-      <Icon size={16} className="text-navy-400 mt-0.5 flex-shrink-0" />
+    <div className="flex items-start gap-3 text-sm text-primary/80">
+      <Icon size={16} className="text-secondary mt-0.5 flex-shrink-0" />
       <span>{children}</span>
     </div>
   )
@@ -93,16 +93,16 @@ export default function EventDetailModal({ event, onClose }) {
       <div className="fixed inset-0 z-50 bg-black/60" onClick={onClose} />
 
       {/* Sheet */}
-      <div className="fixed bottom-0 left-0 right-0 z-50 bg-navy-900 rounded-t-2xl max-h-[80vh] overflow-y-auto animate-sheet-up">
+      <div className="fixed bottom-0 left-0 right-0 z-50 bg-card rounded-t-2xl max-h-[80vh] overflow-y-auto animate-sheet-up">
         {/* Handle */}
         <div className="flex justify-center pt-3 pb-1">
-          <div className="w-10 h-1 rounded-full bg-navy-700" />
+          <div className="w-10 h-1 rounded-full bg-border-default" />
         </div>
 
         {/* Close */}
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 p-2 text-navy-400 hover:text-white"
+          className="absolute top-3 right-3 p-2 text-secondary hover:text-primary"
           aria-label="Close"
         >
           <X size={20} />
@@ -111,18 +111,18 @@ export default function EventDetailModal({ event, onClose }) {
         <div className="px-5 pb-8 pt-2">
           {/* Header */}
           <div className="flex items-center gap-2 mb-1">
-            <span className="text-[10px] uppercase tracking-wider font-bold text-navy-400">
+            <span className="text-[10px] uppercase tracking-wider font-bold text-secondary">
               {typeLabel}
             </span>
             {sport && <span className="text-sm">{SPORT_EMOJI[sport] || ''}</span>}
           </div>
 
-          <h2 className="text-xl font-bold text-white mb-1">
+          <h2 className="text-xl font-bold text-primary mb-1">
             {event.type === 'fixture' ? `vs ${event.title}` : event.title}
           </h2>
 
           {eventDate && (
-            <p className="text-sm text-navy-400 mb-4">
+            <p className="text-sm text-secondary mb-4">
               {format(eventDate, 'EEEE d MMMM yyyy')}
               {event.start_time ? ` at ${event.start_time.slice(0, 5)}` : ''}
             </p>
@@ -135,9 +135,9 @@ export default function EventDetailModal({ event, onClose }) {
 
           {/* Score (for past fixtures) */}
           {event.type === 'fixture' && extra.score_for != null && (
-            <div className="mt-5 bg-navy-800 rounded-xl p-4 text-center">
-              <p className="text-[10px] uppercase tracking-wider text-navy-500 mb-1">Result</p>
-              <p className="text-2xl font-bold text-white">
+            <div className="mt-5 bg-subtle rounded-xl p-4 text-center">
+              <p className="text-[10px] uppercase tracking-wider text-tertiary mb-1">Result</p>
+              <p className="text-2xl font-bold text-primary">
                 {extra.score_for} - {extra.score_against}
               </p>
             </div>

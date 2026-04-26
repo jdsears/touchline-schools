@@ -43,10 +43,10 @@ export default function CricketField({ size = 'medium', className = '', children
         </div>
 
         {/* Field position labels */}
-        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 text-[7px] text-white/25 font-medium">LONG ON</div>
-        <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 text-[7px] text-white/25 font-medium">LONG OFF</div>
-        <div className="absolute top-1/2 left-[10%] -translate-y-1/2 text-[7px] text-white/25 font-medium">SQUARE LEG</div>
-        <div className="absolute top-1/2 right-[8%] -translate-y-1/2 text-[7px] text-white/25 font-medium">POINT</div>
+        <div className="absolute top-[10%] left-1/2 -translate-x-1/2 text-[7px] text-primary/25 font-medium">LONG ON</div>
+        <div className="absolute bottom-[10%] left-1/2 -translate-x-1/2 text-[7px] text-primary/25 font-medium">LONG OFF</div>
+        <div className="absolute top-1/2 left-[10%] -translate-y-1/2 text-[7px] text-primary/25 font-medium">SQUARE LEG</div>
+        <div className="absolute top-1/2 right-[8%] -translate-y-1/2 text-[7px] text-primary/25 font-medium">POINT</div>
 
         {children}
       </div>

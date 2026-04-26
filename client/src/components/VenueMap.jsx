@@ -13,7 +13,7 @@ const icon = new L.Icon({
 export default function VenueMap({ venue, schoolPostcode }) {
   if (!venue.latitude || !venue.longitude) {
     return (
-      <div className="bg-navy-800 rounded-lg p-6 text-center text-navy-400 text-sm">
+      <div className="bg-subtle rounded-lg p-6 text-center text-secondary text-sm">
         No location data. Add a postcode to show the map.
       </div>
     )
@@ -26,7 +26,7 @@ export default function VenueMap({ venue, schoolPostcode }) {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-lg overflow-hidden border border-navy-700" style={{ height: 240 }}>
+      <div className="rounded-lg overflow-hidden border border-border-strong" style={{ height: 240 }}>
         <MapContainer center={pos} zoom={14} style={{ height: '100%', width: '100%' }} scrollWheelZoom={false}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -39,12 +39,12 @@ export default function VenueMap({ venue, schoolPostcode }) {
       </div>
       <div className="flex gap-2">
         <a href={directionsUrl} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm">
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm">
           <Navigation className="w-3.5 h-3.5" /> Get Directions
         </a>
         <a href={`https://www.openstreetmap.org/?mlat=${venue.latitude}&mlon=${venue.longitude}#map=16/${venue.latitude}/${venue.longitude}`}
           target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm border border-navy-700">
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm border border-border-strong">
           <ExternalLink className="w-3.5 h-3.5" /> Open Map
         </a>
       </div>

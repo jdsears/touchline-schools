@@ -41,10 +41,10 @@ export default function InstallPrompt() {
   if (!showPrompt) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 bg-navy-800 border border-navy-600 text-white p-4 rounded-xl shadow-xl max-w-md mx-auto">
+    <div className="fixed bottom-4 left-4 right-4 z-50 bg-subtle border border-border-strong text-primary p-4 rounded-xl shadow-xl max-w-md mx-auto">
       <button
         onClick={dismiss}
-        className="absolute top-2 right-2 text-white/60 hover:text-white"
+        className="absolute top-2 right-2 text-primary/60 hover:text-primary"
       >
         <X size={18} />
       </button>
@@ -54,17 +54,17 @@ export default function InstallPrompt() {
         </div>
         <div>
           <p className="font-semibold">Install Touchline</p>
-          <p className="text-sm text-white/70 mt-0.5">Add to your home screen for quick access</p>
+          <p className="text-sm text-primary/70 mt-0.5">Add to your home screen for quick access</p>
           <div className="mt-3 flex gap-2">
             <button
               onClick={handleInstall}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
+              className="bg-green-500 hover:bg-green-600 text-primary px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
             >
               Install
             </button>
             <button
               onClick={dismiss}
-              className="text-white/60 hover:text-white px-4 py-1.5 text-sm transition-colors"
+              className="text-primary/60 hover:text-primary px-4 py-1.5 text-sm transition-colors"
             >
               Not now
             </button>

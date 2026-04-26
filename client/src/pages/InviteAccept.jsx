@@ -60,7 +60,7 @@ export default function InviteAccept() {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center">
+      <div className="min-h-screen bg-page flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
       </div>
     )
@@ -68,11 +68,11 @@ export default function InviteAccept() {
   
   if (error && !invite) {
     return (
-      <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="card p-8 max-w-md text-center">
           <AlertCircle className="w-12 h-12 text-alert-400 mx-auto mb-4" />
           <h1 className="font-display text-xl font-bold text-white mb-2">Invalid Invite</h1>
-          <p className="text-navy-400 mb-6">{error}</p>
+          <p className="text-secondary mb-6">{error}</p>
           <Link to="/login" className="btn-primary">
             Go to Login
           </Link>
@@ -82,7 +82,7 @@ export default function InviteAccept() {
   }
   
   return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-page flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -95,7 +95,7 @@ export default function InviteAccept() {
           <h1 className="font-display text-2xl font-bold text-white mb-2">
             You've Been Invited!
           </h1>
-          <p className="text-navy-400">
+          <p className="text-secondary">
             You've been invited to join <span className="text-white">{invite?.team_name}</span> as {invite?.role === 'assistant' ? 'an' : 'a'} <span className="text-white capitalize">{invite?.role}</span>
           </p>
         </div>
@@ -106,7 +106,7 @@ export default function InviteAccept() {
             <input
               type="email"
               value={invite?.email || ''}
-              className="input bg-navy-800"
+              className="input bg-subtle"
               disabled
             />
           </div>
@@ -114,7 +114,7 @@ export default function InviteAccept() {
           <div>
             <label className="label">Create Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
               <input
                 type="password"
                 value={password}
@@ -130,7 +130,7 @@ export default function InviteAccept() {
           <div>
             <label className="label">Confirm Password</label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
               <input
                 type="password"
                 value={confirmPassword}

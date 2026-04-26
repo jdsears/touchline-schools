@@ -577,7 +577,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
   }
 
   return (
-    <div className="min-h-screen bg-navy-950 flex">
+    <div className="min-h-screen bg-page flex">
       <SEO
         title="Register"
         path="/register"
@@ -593,13 +593,13 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--mb-gold)' }}>
               <span className="text-sm font-bold" style={{ color: 'var(--mb-navy)', fontFamily: 'Poppins, system-ui, sans-serif' }}>M</span>
             </div>
-            <span className="font-bold text-navy-50 text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
+            <span className="font-bold text-primary text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
           </Link>
 
           <h1 className="font-display text-3xl font-bold text-white mb-2">
             {step === 1 ? 'Get started' : step === 2 ? 'Create your account' : step === 3 ? (accountType === 'school' ? 'Set up your school' : 'Set up your team') : 'Customize your hub'}
           </h1>
-          <p className="text-navy-400 mb-8">
+          <p className="text-secondary mb-8">
             {step === 1
               ? 'What are you setting up?'
               : step === 2
@@ -613,7 +613,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
           {/* Progress */}
           <div className="flex items-center gap-2 mb-8">
             {Array.from({ length: totalSteps }, (_, i) => (
-              <div key={i} className={`h-1 flex-1 rounded-full ${step >= i + 1 ? 'bg-pitch-500' : 'bg-navy-700'}`} />
+              <div key={i} className={`h-1 flex-1 rounded-full ${step >= i + 1 ? 'bg-pitch-500' : 'bg-border-default'}`} />
             ))}
           </div>
 
@@ -624,7 +624,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   type="button"
                   onClick={() => selectAccountType('team')}
                   className={`w-full text-left p-5 rounded-xl border-2 transition-all hover:border-pitch-500 ${
-                    accountType === 'team' ? 'border-pitch-500 bg-pitch-500/10' : 'border-navy-700 bg-navy-900/50 hover:bg-navy-800/50'
+                    accountType === 'team' ? 'border-pitch-500 bg-pitch-500/10' : 'border-border-strong bg-card/50 hover:bg-subtle'
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -633,9 +633,9 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                     </div>
                     <div>
                       <p className="text-white font-semibold text-lg">A Team</p>
-                      <p className="text-navy-400 text-sm">I coach a single team and want to manage pupils, sessions, and fixtures</p>
+                      <p className="text-secondary text-sm">I coach a single team and want to manage pupils, sessions, and fixtures</p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-navy-500 ml-auto flex-shrink-0" />
+                    <ArrowRight className="w-5 h-5 text-tertiary ml-auto flex-shrink-0" />
                   </div>
                 </button>
 
@@ -643,7 +643,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   type="button"
                   onClick={() => selectAccountType('school')}
                   className={`w-full text-left p-5 rounded-xl border-2 transition-all hover:border-amber-500 ${
-                    accountType === 'school' ? 'border-amber-500 bg-amber-500/10' : 'border-navy-700 bg-navy-900/50 hover:bg-navy-800/50'
+                    accountType === 'school' ? 'border-amber-500 bg-amber-500/10' : 'border-border-strong bg-card/50 hover:bg-subtle'
                   }`}
                 >
                   <div className="flex items-center gap-4">
@@ -652,9 +652,9 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                     </div>
                     <div>
                       <p className="text-white font-semibold text-lg">A School</p>
-                      <p className="text-navy-400 text-sm">I run a school with multiple teams and want to manage payments, guardians, and registrations</p>
+                      <p className="text-secondary text-sm">I run a school with multiple teams and want to manage payments, guardians, and registrations</p>
                     </div>
-                    <ArrowRight className="w-5 h-5 text-navy-500 ml-auto flex-shrink-0" />
+                    <ArrowRight className="w-5 h-5 text-tertiary ml-auto flex-shrink-0" />
                   </div>
                 </button>
               </div>
@@ -665,7 +665,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 <div>
                   <label htmlFor="name" className="label">Your Name</label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                     <input
                       id="name"
                       name="name"
@@ -682,7 +682,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 <div>
                   <label htmlFor="email" className="label">Email</label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                     <input
                       id="email"
                       name="email"
@@ -699,7 +699,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 <div>
                   <label htmlFor="password" className="label">Password</label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                     <input
                       id="password"
                       name="password"
@@ -712,11 +712,11 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       required
                     />
                   </div>
-                  <p className="text-xs text-navy-500 mt-1">Minimum 8 characters</p>
+                  <p className="text-xs text-tertiary mt-1">Minimum 8 characters</p>
                 </div>
 
                 {/* Terms Agreement */}
-                <div className="mt-6 p-4 bg-navy-900/50 rounded-xl border border-navy-800">
+                <div className="mt-6 p-4 bg-card/50 rounded-xl border border-border-default">
                   <div className="flex items-start gap-3">
                     <button
                       type="button"
@@ -725,14 +725,14 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
                         ${agreedToTerms
                           ? 'bg-pitch-500 border-pitch-500'
-                          : 'border-navy-600 hover:border-navy-500'
+                          : 'border-border-strong hover:border-navy-500'
                         }
                       `}
                     >
                       {agreedToTerms && <Check className="w-3 h-3 text-white" />}
                     </button>
                     <div className="flex-1">
-                      <p className="text-sm text-navy-300">
+                      <p className="text-sm text-secondary">
                         I agree to the{' '}
                         <Link
                           to="/terms"
@@ -747,7 +747,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   <button
                     type="button"
                     onClick={downloadTerms}
-                    className="mt-3 flex items-center gap-2 text-xs text-navy-400 hover:text-navy-300 transition-colors"
+                    className="mt-3 flex items-center gap-2 text-xs text-secondary hover:text-secondary transition-colors"
                   >
                     <FileDown className="w-4 h-4" />
                     Download policies
@@ -759,17 +759,17 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   <button
                     type="button"
                     onClick={() => setShowPromoInput(true)}
-                    className="flex items-center gap-2 text-sm text-navy-400 hover:text-pitch-400 transition-colors"
+                    className="flex items-center gap-2 text-sm text-secondary hover:text-pitch-400 transition-colors"
                   >
                     <Ticket className="w-4 h-4" />
                     Have a promo code?
                   </button>
                 ) : (
-                  <div className="p-4 bg-navy-900/50 rounded-xl border border-navy-800">
-                    <label className="label">Promo Code <span className="text-navy-500">(optional)</span></label>
+                  <div className="p-4 bg-card/50 rounded-xl border border-border-default">
+                    <label className="label">Promo Code <span className="text-tertiary">(optional)</span></label>
                     <div className="flex gap-2">
                       <div className="relative flex-1">
-                        <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                        <Ticket className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                         <input
                           type="text"
                           value={promoCode}
@@ -813,7 +813,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                                 : `£${promoResult.discount_value} discount applied!`}
                               {promoResult.description && ` - ${promoResult.description}`}
                             </span>
-                            <button type="button" onClick={clearPromoCode} className="ml-auto text-navy-400 hover:text-white">
+                            <button type="button" onClick={clearPromoCode} className="ml-auto text-secondary hover:text-white">
                               <X className="w-4 h-4" />
                             </button>
                           </>
@@ -836,7 +836,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   <div>
                     <label htmlFor="clubName" className="label">School Name</label>
                     <div className="relative">
-                      <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                      <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                       <input
                         id="clubName"
                         name="clubName"
@@ -848,14 +848,14 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         required
                       />
                     </div>
-                    <p className="text-xs text-navy-500 mt-1">The name of your school - teams sit under this</p>
+                    <p className="text-xs text-tertiary mt-1">The name of your school - teams sit under this</p>
                   </div>
                 )}
 
                 <div>
                   <label htmlFor="teamName" className="label">{accountType === 'school' ? 'First Team Name' : 'Team Name'}</label>
                   <div className="relative">
-                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                     <input
                       id="teamName"
                       name="teamName"
@@ -901,7 +901,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                           py-2.5 rounded-lg text-sm font-medium transition-all border-2
                           ${formData.teamFormat === format.value
                             ? 'bg-pitch-600 border-pitch-500 text-white'
-                            : 'bg-navy-800 border-navy-700 text-navy-400 hover:text-white hover:border-navy-600'
+                            : 'bg-subtle border-border-strong text-secondary hover:text-white hover:border-border-strong'
                           }
                         `}
                       >
@@ -913,10 +913,10 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
 
                 <div>
                   <label htmlFor="faFulltimeUrl" className="label">
-                    FA Full-Time URL <span className="text-navy-500">(optional)</span>
+                    FA Full-Time URL <span className="text-tertiary">(optional)</span>
                   </label>
                   <div className="relative">
-                    <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                    <ExternalLink className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                     <input
                       id="faFulltimeUrl"
                       name="faFulltimeUrl"
@@ -927,7 +927,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       placeholder="https://fulltime.thefa.com/..."
                     />
                   </div>
-                  <p className="text-xs text-navy-500 mt-1">Link to your league page for fixtures & table sync</p>
+                  <p className="text-xs text-tertiary mt-1">Link to your league page for fixtures & table sync</p>
                 </div>
               </>
             )}
@@ -937,7 +937,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 <div>
                   <label htmlFor="hubName" className="label">Hub Name</label>
                   <div className="relative">
-                    <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                    <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                     <input
                       id="hubName"
                       name="hubName"
@@ -948,18 +948,18 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       placeholder={`${formData.teamName} ${formData.ageGroup} Hub`}
                     />
                   </div>
-                  <p className="text-xs text-navy-500 mt-1">This will be displayed as your team's hub name</p>
+                  <p className="text-xs text-tertiary mt-1">This will be displayed as your team's hub name</p>
                 </div>
 
                 <div>
-                  <label className="label">School Logo <span className="text-navy-500">(optional)</span></label>
+                  <label className="label">School Logo <span className="text-tertiary">(optional)</span></label>
                   <div className="flex items-center gap-3">
                     {logoPreview ? (
                       <div className="relative">
                         <img
                           src={logoPreview}
                           alt="Logo preview"
-                          className="w-16 h-16 rounded-xl object-cover border border-navy-700"
+                          className="w-16 h-16 rounded-xl object-cover border border-border-strong"
                         />
                         <button
                           type="button"
@@ -970,12 +970,12 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         </button>
                       </div>
                     ) : (
-                      <label className="w-16 h-16 rounded-xl border-2 border-dashed border-navy-600 flex flex-col items-center justify-center cursor-pointer hover:border-pitch-500 transition-colors">
+                      <label className="w-16 h-16 rounded-xl border-2 border-dashed border-border-strong flex flex-col items-center justify-center cursor-pointer hover:border-pitch-500 transition-colors">
                         {uploadingLogo ? (
-                          <Loader2 className="w-6 h-6 text-navy-400 animate-spin" />
+                          <Loader2 className="w-6 h-6 text-secondary animate-spin" />
                         ) : (
                           <>
-                            <Image className="w-6 h-6 text-navy-400" />
+                            <Image className="w-6 h-6 text-secondary" />
                           </>
                         )}
                         <input
@@ -987,7 +987,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         />
                       </label>
                     )}
-                    <div className="text-xs text-navy-400">
+                    <div className="text-xs text-secondary">
                       <p>Upload your school badge or logo</p>
                       <p>PNG, JPG, SVG (max 2MB)</p>
                     </div>
@@ -1006,7 +1006,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                           h-10 rounded-lg border-2 transition-all relative overflow-hidden
                           ${formData.primaryColor === preset.primary
                             ? 'border-white scale-105'
-                            : 'border-transparent hover:border-navy-600'
+                            : 'border-transparent hover:border-border-strong'
                           }
                         `}
                         title={preset.name}
@@ -1029,7 +1029,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         name="primaryColor"
                         value={formData.primaryColor}
                         onChange={handleChange}
-                        className="w-full h-10 rounded-lg cursor-pointer border border-navy-700"
+                        className="w-full h-10 rounded-lg cursor-pointer border border-border-strong"
                       />
                     </div>
                   </div>
@@ -1041,7 +1041,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         name="secondaryColor"
                         value={formData.secondaryColor}
                         onChange={handleChange}
-                        className="w-full h-10 rounded-lg cursor-pointer border border-navy-700"
+                        className="w-full h-10 rounded-lg cursor-pointer border border-border-strong"
                       />
                     </div>
                   </div>
@@ -1053,19 +1053,19 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         name="accentColor"
                         value={formData.accentColor}
                         onChange={handleChange}
-                        className="w-full h-10 rounded-lg cursor-pointer border border-navy-700"
+                        className="w-full h-10 rounded-lg cursor-pointer border border-border-strong"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-4">
-                  <label className="label text-xs text-navy-500">Preview</label>
+                  <label className="label text-xs text-tertiary">Preview</label>
                   <BrandingPreview />
                 </div>
 
                 {accountType === 'school' && (
-                  <div className="mt-6 p-4 bg-navy-900/50 rounded-xl border border-navy-800 space-y-4">
+                  <div className="mt-6 p-4 bg-card/50 rounded-xl border border-border-default space-y-4">
                     <div className="flex items-center gap-2">
                       <Shield className="w-5 h-5 text-amber-400" />
                       <h2 className="text-sm font-semibold text-white">Data Processing Agreement</h2>
@@ -1074,25 +1074,25 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                     <button
                       type="button"
                       onClick={() => setShowDpa(!showDpa)}
-                      className="flex items-center justify-between w-full text-left px-3 py-2 bg-navy-800 rounded-lg text-sm text-navy-300 hover:bg-navy-700 transition-colors"
+                      className="flex items-center justify-between w-full text-left px-3 py-2 bg-subtle rounded-lg text-sm text-secondary hover:bg-border-default transition-colors"
                     >
                       <span>Read the Data Processing Agreement</span>
                       {showDpa ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
 
                     {showDpa && (
-                      <div className="bg-navy-800/50 rounded-lg p-4 text-xs text-navy-300 space-y-3 max-h-60 overflow-y-auto border border-navy-700">
+                      <div className="bg-subtle rounded-lg p-4 text-xs text-secondary space-y-3 max-h-60 overflow-y-auto border border-border-strong">
                         <h3 className="font-semibold text-white text-sm">Data Processing Agreement (DPA) - v1.0</h3>
                         <p>This Data Processing Agreement ("DPA") forms part of the agreement between MoonBoots Sports ("Processor") and the School ("Controller") for the use of the MoonBoots Sports platform.</p>
-                        <h4 className="font-medium text-navy-200">1. Roles & Responsibilities</h4>
-                        <p>The School acts as the <strong className="text-navy-200">Data Controller</strong> under UK GDPR. MoonBoots Sports acts as a<strong className="text-navy-200">Data Processor</strong>, processing data solely on the School's instructions.</p>
-                        <h4 className="font-medium text-navy-200">2. Data Processed</h4>
+                        <h4 className="font-medium text-primary">1. Roles & Responsibilities</h4>
+                        <p>The School acts as the <strong className="text-primary">Data Controller</strong> under UK GDPR. MoonBoots Sports acts as a<strong className="text-primary">Data Processor</strong>, processing data solely on the School's instructions.</p>
+                        <h4 className="font-medium text-primary">2. Data Processed</h4>
                         <p>Pupil names, dates of birth, medical information, emergency contacts, photographs, identity documents, guardian contact details, payment information (via Stripe), and consent records.</p>
-                        <h4 className="font-medium text-navy-200">3. School Obligations</h4>
+                        <h4 className="font-medium text-primary">3. School Obligations</h4>
                         <p>Ensure lawful basis for processing, respond to DSARs within 30 days, report breaches to the ICO within 72 hours, and inform guardians about data processing.</p>
-                        <h4 className="font-medium text-navy-200">4. MoonBoots SportsObligations</h4>
+                        <h4 className="font-medium text-primary">4. MoonBoots SportsObligations</h4>
                         <p>Process data only as instructed, implement security measures, not transfer data outside UK/EEA, assist with DSARs, and delete data upon account termination.</p>
-                        <h4 className="font-medium text-navy-200">5. Security & Retention</h4>
+                        <h4 className="font-medium text-primary">5. Security & Retention</h4>
                         <p>Data retained while account is active, deleted within 30 days of closure. HTTPS/TLS encryption, JWT authentication, role-based access controls.</p>
                       </div>
                     )}
@@ -1105,13 +1105,13 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                           mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
                           ${dpaAccepted
                             ? 'bg-amber-500 border-amber-500'
-                            : 'border-navy-600 hover:border-navy-500'
+                            : 'border-border-strong hover:border-navy-500'
                           }
                         `}
                       >
                         {dpaAccepted && <Check className="w-3 h-3 text-white" />}
                       </button>
-                      <span className="text-xs text-navy-300">
+                      <span className="text-xs text-secondary">
                         I confirm that I am authorised to act on behalf of this school and I accept the Data Processing Agreement. I understand that the school is the Data Controller.
                       </span>
                     </label>
@@ -1149,14 +1149,14 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
             )}
           </form>
 
-          <p className="text-center text-navy-400 mt-6">
+          <p className="text-center text-secondary mt-6">
             Already have an account?{' '}
             <Link to="/login" className="text-pitch-400 hover:text-pitch-300">Sign in</Link>
           </p>
         </motion.div>
       </div>
 
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-navy-900 via-navy-900 to-pitch-950/30 border-l border-navy-800 relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-navy-900 via-navy-900 to-pitch-950/30 border-l border-border-default relative overflow-hidden">
         {/* Background glow effects */}
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-pitch-500/10 rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
@@ -1275,7 +1275,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
             <h2 className="font-display text-2xl font-bold text-white mb-3">
               {step <= 2 ? 'Start Free Today' : step === 3 ? (accountType === 'school' ? 'Your School Hub' : 'Your Team Hub') : 'Your Brand'}
             </h2>
-            <p className="text-navy-400">
+            <p className="text-secondary">
               {step <= 2
                 ? 'No credit card required. Full access to all features.'
                 : step === 3
@@ -1320,12 +1320,12 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 + i * 0.1 }}
-                className="flex items-center gap-3 p-3 rounded-lg bg-navy-800/50 border border-navy-700/50"
+                className="flex items-center gap-3 p-3 rounded-lg bg-subtle border border-border-strong/50"
               >
                 <div className={`w-8 h-8 rounded-md bg-${color}-500/20 flex items-center justify-center`}>
                   <Icon className={`w-4 h-4 text-${color}-400`} />
                 </div>
-                <span className="text-sm text-navy-200 font-medium">{label}</span>
+                <span className="text-sm text-primary font-medium">{label}</span>
               </motion.div>
             ))}
           </motion.div>

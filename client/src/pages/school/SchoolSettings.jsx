@@ -85,45 +85,45 @@ export default function ClubSettings() {
   return (
     <div className="p-4 sm:p-6 max-w-3xl mx-auto space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">School Settings</h1>
-        <p className="text-navy-400 text-sm mt-1">Manage your school details and branding</p>
+        <h1 className="text-2xl font-bold text-primary">School Settings</h1>
+        <p className="text-secondary text-sm mt-1">Manage your school details and branding</p>
       </div>
 
       <form onSubmit={handleSave} className="space-y-6">
         {/* Basic info */}
-        <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">School Details</h2>
+        <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
+          <h2 className="text-lg font-semibold text-primary">School Details</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs text-navy-400 mb-1">School Name *</label>
+              <label className="block text-xs text-secondary mb-1">School Name *</label>
               <input
                 type="text" required value={form.name}
                 onChange={(e) => updateField('name', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Contact Email</label>
+              <label className="block text-xs text-secondary mb-1">Contact Email</label>
               <input
                 type="email" value={form.contact_email}
                 onChange={(e) => updateField('contact_email', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Contact Phone</label>
+              <label className="block text-xs text-secondary mb-1">Contact Phone</label>
               <input
                 type="tel" value={form.contact_phone}
                 onChange={(e) => updateField('contact_phone', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs text-navy-400 mb-1">Website</label>
+              <label className="block text-xs text-secondary mb-1">Website</label>
               <input
                 type="url" value={form.website}
                 onChange={(e) => updateField('website', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="https://..."
               />
             </div>
@@ -131,79 +131,79 @@ export default function ClubSettings() {
         </section>
 
         {/* Address */}
-        <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">Address</h2>
+        <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
+          <h2 className="text-lg font-semibold text-primary">Address</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs text-navy-400 mb-1">Address Line 1</label>
+              <label className="block text-xs text-secondary mb-1">Address Line 1</label>
               <input
                 type="text" value={form.address_line1}
                 onChange={(e) => updateField('address_line1', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div className="sm:col-span-2">
-              <label className="block text-xs text-navy-400 mb-1">Address Line 2</label>
+              <label className="block text-xs text-secondary mb-1">Address Line 2</label>
               <input
                 type="text" value={form.address_line2}
                 onChange={(e) => updateField('address_line2', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">City</label>
+              <label className="block text-xs text-secondary mb-1">City</label>
               <input
                 type="text" value={form.city}
                 onChange={(e) => updateField('city', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">County</label>
+              <label className="block text-xs text-secondary mb-1">County</label>
               <input
                 type="text" value={form.county}
                 onChange={(e) => updateField('county', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Postcode</label>
+              <label className="block text-xs text-secondary mb-1">Postcode</label>
               <input
                 type="text" value={form.postcode}
                 onChange={(e) => updateField('postcode', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
           </div>
         </section>
 
         {/* Football org */}
-        <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">Football Organisation</h2>
+        <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
+          <h2 className="text-lg font-semibold text-primary">Football Organisation</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">FA Affiliation Number</label>
+              <label className="block text-xs text-secondary mb-1">FA Affiliation Number</label>
               <input
                 type="text" value={form.fa_affiliation_number}
                 onChange={(e) => updateField('fa_affiliation_number', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">League</label>
+              <label className="block text-xs text-secondary mb-1">League</label>
               <input
                 type="text" value={form.league}
                 onChange={(e) => updateField('league', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="e.g. Norfolk Youth League"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Charter Standard</label>
+              <label className="block text-xs text-secondary mb-1">Charter Standard</label>
               <select
                 value={form.charter_standard}
                 onChange={(e) => updateField('charter_standard', e.target.value)}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 <option value="">None</option>
                 <option value="Standard">Standard</option>
@@ -215,36 +215,36 @@ export default function ClubSettings() {
         </section>
 
         {/* Branding */}
-        <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">Branding</h2>
+        <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
+          <h2 className="text-lg font-semibold text-primary">Branding</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Primary Colour</label>
+              <label className="block text-xs text-secondary mb-1">Primary Colour</label>
               <div className="flex items-center gap-3">
                 <input
                   type="color" value={form.primary_color}
                   onChange={(e) => updateField('primary_color', e.target.value)}
-                  className="w-10 h-10 rounded-lg border border-navy-700 cursor-pointer"
+                  className="w-10 h-10 rounded-lg border border-border-strong cursor-pointer"
                 />
                 <input
                   type="text" value={form.primary_color}
                   onChange={(e) => updateField('primary_color', e.target.value)}
-                  className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Secondary Colour</label>
+              <label className="block text-xs text-secondary mb-1">Secondary Colour</label>
               <div className="flex items-center gap-3">
                 <input
                   type="color" value={form.secondary_color}
                   onChange={(e) => updateField('secondary_color', e.target.value)}
-                  className="w-10 h-10 rounded-lg border border-navy-700 cursor-pointer"
+                  className="w-10 h-10 rounded-lg border border-border-strong cursor-pointer"
                 />
                 <input
                   type="text" value={form.secondary_color}
                   onChange={(e) => updateField('secondary_color', e.target.value)}
-                  className="flex-1 bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
             </div>
@@ -252,15 +252,15 @@ export default function ClubSettings() {
         </section>
 
         {/* Season */}
-        <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
-          <h2 className="text-lg font-semibold text-white">Season</h2>
+        <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
+          <h2 className="text-lg font-semibold text-primary">Season</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Season Start</label>
+              <label className="block text-xs text-secondary mb-1">Season Start</label>
               <select
                 value={form.season_start_month}
                 onChange={(e) => updateField('season_start_month', parseInt(e.target.value))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 {months.map((m, i) => (
                   <option key={i} value={i + 1}>{m}</option>
@@ -268,11 +268,11 @@ export default function ClubSettings() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Season End</label>
+              <label className="block text-xs text-secondary mb-1">Season End</label>
               <select
                 value={form.season_end_month}
                 onChange={(e) => updateField('season_end_month', parseInt(e.target.value))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 {months.map((m, i) => (
                   <option key={i} value={i + 1}>{m}</option>
@@ -286,7 +286,7 @@ export default function ClubSettings() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors"
           >
             <Save className="w-4 h-4" />
             {saving ? 'Saving...' : 'Save Settings'}
@@ -297,15 +297,15 @@ export default function ClubSettings() {
       {/* Gift Aid & Charity Settings */}
       {(myRole === 'owner' || myRole === 'admin') && (
         <form onSubmit={handleSaveCharity} className="space-y-6 mt-8">
-          <section className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
+          <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-pink-600/10">
                   <Heart className="w-4.5 h-4.5 text-pink-400" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-white">Gift Aid & Charity</h2>
-                  <p className="text-navy-400 text-xs mt-0.5">HMRC charity details for Gift Aid claims</p>
+                  <h2 className="text-lg font-semibold text-primary">Gift Aid & Charity</h2>
+                  <p className="text-secondary text-xs mt-0.5">HMRC charity details for Gift Aid claims</p>
                 </div>
               </div>
               {charityForm.gift_aid_enabled ? (
@@ -317,72 +317,72 @@ export default function ClubSettings() {
 
             <div className="grid sm:grid-cols-2 gap-4">
               <div className="sm:col-span-2">
-                <label className="block text-xs text-navy-400 mb-1">Organisation Name (for Gift Aid) *</label>
+                <label className="block text-xs text-secondary mb-1">Organisation Name (for Gift Aid) *</label>
                 <input
                   type="text" value={charityForm.organisation_name || ''}
                   onChange={(e) => updateCharityField('organisation_name', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   required
                 />
               </div>
               <div>
-                <label className="block text-xs text-navy-400 mb-1">Registered Charity Number</label>
+                <label className="block text-xs text-secondary mb-1">Registered Charity Number</label>
                 <input
                   type="text" value={charityForm.charity_number || ''}
                   onChange={(e) => updateCharityField('charity_number', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   placeholder="Optional if CASC"
                 />
               </div>
               <div>
-                <label className="block text-xs text-navy-400 mb-1">CASC Number</label>
+                <label className="block text-xs text-secondary mb-1">CASC Number</label>
                 <input
                   type="text" value={charityForm.casc_number || ''}
                   onChange={(e) => updateCharityField('casc_number', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   placeholder="Community Amateur Sports School number"
                 />
               </div>
               <div>
-                <label className="block text-xs text-navy-400 mb-1">HMRC Gift Aid Reference</label>
+                <label className="block text-xs text-secondary mb-1">HMRC Gift Aid Reference</label>
                 <input
                   type="text" value={charityForm.hmrc_reference || ''}
                   onChange={(e) => updateCharityField('hmrc_reference', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-xs text-navy-400 mb-1">Authorised Official Name</label>
+                <label className="block text-xs text-secondary mb-1">Authorised Official Name</label>
                 <input
                   type="text" value={charityForm.authorised_official_name || ''}
                   onChange={(e) => updateCharityField('authorised_official_name', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
               <div>
-                <label className="block text-xs text-navy-400 mb-1">Authorised Official Position</label>
+                <label className="block text-xs text-secondary mb-1">Authorised Official Position</label>
                 <input
                   type="text" value={charityForm.authorised_official_position || ''}
                   onChange={(e) => updateCharityField('authorised_official_position', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   placeholder="e.g. School Secretary"
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-xs text-navy-400 mb-1">Organisation Address</label>
+                <label className="block text-xs text-secondary mb-1">Organisation Address</label>
                 <textarea
                   value={charityForm.organisation_address || ''}
                   onChange={(e) => updateCharityField('organisation_address', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   rows={2}
                 />
               </div>
               <div>
-                <label className="block text-xs text-navy-400 mb-1">Postcode</label>
+                <label className="block text-xs text-secondary mb-1">Postcode</label>
                 <input
                   type="text" value={charityForm.organisation_postcode || ''}
                   onChange={(e) => updateCharityField('organisation_postcode', e.target.value)}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
             </div>
@@ -394,16 +394,16 @@ export default function ClubSettings() {
               </div>
             )}
 
-            <div className="flex items-center justify-between pt-2 border-t border-navy-800">
+            <div className="flex items-center justify-between pt-2 border-t border-border-default">
               <div>
-                <label className="text-sm text-white font-medium">Enable Gift Aid for this school</label>
-                <p className="text-xs text-navy-400 mt-0.5">Parents will be offered Gift Aid opt-in during payment</p>
+                <label className="text-sm text-primary font-medium">Enable Gift Aid for this school</label>
+                <p className="text-xs text-secondary mt-0.5">Parents will be offered Gift Aid opt-in during payment</p>
               </div>
               <button
                 type="button"
                 onClick={() => updateCharityField('gift_aid_enabled', !charityForm.gift_aid_enabled)}
                 className={`relative w-11 h-6 rounded-full transition-colors ${
-                  charityForm.gift_aid_enabled ? 'bg-pitch-600' : 'bg-navy-700'
+                  charityForm.gift_aid_enabled ? 'bg-pitch-600' : 'bg-border-default'
                 }`}
               >
                 <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
@@ -427,7 +427,7 @@ export default function ClubSettings() {
             <button
               type="submit"
               disabled={savingCharity}
-              className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm transition-colors"
             >
               <Save className="w-4 h-4" />
               {savingCharity ? 'Saving...' : 'Save Gift Aid Settings'}

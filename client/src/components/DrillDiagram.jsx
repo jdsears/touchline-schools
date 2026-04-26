@@ -229,7 +229,7 @@ export default function DrillDiagram({ diagram, className = '' }) {
       </div>
 
       {/* Legend */}
-      <div className="flex items-center gap-4 mt-2 text-[10px] text-navy-400">
+      <div className="flex items-center gap-4 mt-2 text-[10px] text-secondary">
         <span className="flex items-center gap-1">
           <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" /> Team A
         </span>

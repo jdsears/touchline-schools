@@ -156,7 +156,7 @@ export default function HoDTestPersonas() {
                   <button
                     onClick={() => handleQuickLogin(p)}
                     disabled={impersonating === p.id}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-primary rounded-lg text-sm transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
                   >
                     {impersonating === p.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

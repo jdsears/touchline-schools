@@ -12,10 +12,10 @@ export default function PupilInstallPrompt() {
   if (!showPrompt) return null
 
   return (
-    <div className="absolute bottom-16 left-3 right-3 z-50 bg-navy-800 border border-gold-500/30 text-white p-4 rounded-xl shadow-xl">
+    <div className="absolute bottom-16 left-3 right-3 z-50 bg-subtle border border-gold-500/30 text-primary p-4 rounded-xl shadow-xl">
       <button
         onClick={dismiss}
-        className="absolute top-2 right-2 text-white/60 hover:text-white p-1"
+        className="absolute top-2 right-2 text-primary/60 hover:text-primary p-1"
         aria-label="Dismiss"
       >
         <X size={18} />
@@ -28,14 +28,14 @@ export default function PupilInstallPrompt() {
         <div>
           <p className="font-semibold text-sm">Add to Home Screen</p>
           {isIOSDevice ? (
-            <p className="text-xs text-white/70 mt-1">
+            <p className="text-xs text-primary/70 mt-1">
               Tap{' '}
               <Share size={12} className="inline -mt-0.5" />{' '}
-              then <span className="font-medium text-white">"Add to Home Screen"</span> for the full app experience.
+              then <span className="font-medium text-primary">"Add to Home Screen"</span> for the full app experience.
             </p>
           ) : (
             <>
-              <p className="text-xs text-white/70 mt-0.5">
+              <p className="text-xs text-primary/70 mt-0.5">
                 Install for quick access from your home screen
               </p>
               <div className="mt-2.5 flex gap-2">
@@ -47,7 +47,7 @@ export default function PupilInstallPrompt() {
                 </button>
                 <button
                   onClick={dismiss}
-                  className="text-white/50 hover:text-white px-3 py-1.5 text-xs transition-colors"
+                  className="text-primary/50 hover:text-primary px-3 py-1.5 text-xs transition-colors"
                 >
                   Not now
                 </button>

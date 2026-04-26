@@ -639,14 +639,14 @@ export default function VideoAnalysis() {
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
-      <Link to={match ? `/matches/${match.id}` : '/videos'} className="inline-flex items-center gap-2 text-navy-400 hover:text-white mb-6">
+      <Link to={match ? `/matches/${match.id}` : '/videos'} className="inline-flex items-center gap-2 text-secondary hover:text-white mb-6">
         <ArrowLeft className="w-4 h-4" /> {match ? 'Back to Match' : 'Back to Videos'}
       </Link>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">Video Analysis</h1>
-          <p className="text-navy-400">
+          <p className="text-secondary">
             {match?.opponent ? `vs ${match.opponent}` : video?.title || 'Review footage and get AI tactical insights'}
           </p>
         </div>
@@ -668,7 +668,7 @@ export default function VideoAnalysis() {
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-              activeTab === tab.key ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+              activeTab === tab.key ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
             }`}
           >
             <tab.icon className="w-4 h-4" /> {tab.label}
@@ -682,7 +682,7 @@ export default function VideoAnalysis() {
           <motion.div key="video" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             <div className="lg:col-span-2">
               <div className="card">
-                <div className="p-4 border-b border-navy-800">
+                <div className="p-4 border-b border-border-default">
                   <h2 className="font-display font-semibold text-white">Match Video</h2>
                 </div>
                 <div className="p-4">
@@ -690,7 +690,7 @@ export default function VideoAnalysis() {
                     <button
                       onClick={() => setVideoMode('upload')}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
-                        videoMode === 'upload' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+                        videoMode === 'upload' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
                       }`}
                     >
                       <Upload className="w-4 h-4" /> Upload Video
@@ -698,7 +698,7 @@ export default function VideoAnalysis() {
                     <button
                       onClick={() => setVideoMode('link')}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
-                        videoMode === 'link' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+                        videoMode === 'link' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
                       }`}
                     >
                       <LinkIcon className="w-4 h-4" /> Video Link
@@ -709,7 +709,7 @@ export default function VideoAnalysis() {
                     <>
                       {video?.mux_playback_id ? (
                         <div className="space-y-4">
-                          <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
+                          <div className="aspect-video bg-card rounded-lg overflow-hidden">
                             <mux-player
                               ref={playerRef}
                               playback-id={video.mux_playback_id}
@@ -718,7 +718,7 @@ export default function VideoAnalysis() {
                               metadata={`{"video_title":"${video.title || ''}"}`}
                             />
                           </div>
-                          <p className="text-xs text-navy-500 font-mono">
+                          <p className="text-xs text-tertiary font-mono">
                             {formatTime(currentTime)} / {formatTime(video.duration_seconds)}
                           </p>
                           <button onClick={() => setShowUploader(true)} className="btn-secondary">
@@ -726,10 +726,10 @@ export default function VideoAnalysis() {
                           </button>
                         </div>
                       ) : video?.status === 'processing' ? (
-                        <div className="aspect-video bg-navy-800 rounded-lg flex flex-col items-center justify-center">
+                        <div className="aspect-video bg-subtle rounded-lg flex flex-col items-center justify-center">
                           <Loader2 className="w-12 h-12 text-caution-400 animate-spin mb-4" />
                           <p className="text-white font-medium">Processing Video</p>
-                          <p className="text-sm text-navy-400">Mux is transcoding - usually 1-2 minutes</p>
+                          <p className="text-sm text-secondary">Mux is transcoding - usually 1-2 minutes</p>
                         </div>
                       ) : showUploader ? (
                         <VideoUpload
@@ -739,10 +739,10 @@ export default function VideoAnalysis() {
                           onCancel={() => setShowUploader(false)}
                         />
                       ) : (
-                        <div className="aspect-video bg-navy-800 rounded-lg flex flex-col items-center justify-center">
-                          <Upload className="w-16 h-16 text-navy-600 mb-4" />
-                          <p className="text-navy-400 mb-2">No video uploaded yet</p>
-                          <p className="text-sm text-navy-500 text-center max-w-xs mb-4">
+                        <div className="aspect-video bg-subtle rounded-lg flex flex-col items-center justify-center">
+                          <Upload className="w-16 h-16 text-tertiary mb-4" />
+                          <p className="text-secondary mb-2">No video uploaded yet</p>
+                          <p className="text-sm text-tertiary text-center max-w-xs mb-4">
                             Upload your match video for AI analysis - uploads go direct to cloud
                           </p>
                           <button onClick={() => setShowUploader(true)} className="btn-primary">
@@ -765,13 +765,13 @@ export default function VideoAnalysis() {
                         </button>
                       </div>
                       {veoUrl ? (
-                        <div className="aspect-video bg-navy-900 rounded-lg overflow-hidden">
+                        <div className="aspect-video bg-card rounded-lg overflow-hidden">
                           <iframe src={getVeoEmbedUrl(veoUrl)} className="w-full h-full" allow="autoplay; fullscreen" allowFullScreen title="Match Video" />
                         </div>
                       ) : (
-                        <div className="aspect-video bg-navy-800 rounded-lg flex flex-col items-center justify-center">
-                          <Video className="w-16 h-16 text-navy-600 mb-4" />
-                          <p className="text-navy-400">No video link added</p>
+                        <div className="aspect-video bg-subtle rounded-lg flex flex-col items-center justify-center">
+                          <Video className="w-16 h-16 text-tertiary mb-4" />
+                          <p className="text-secondary">No video link added</p>
                         </div>
                       )}
                     </>
@@ -789,7 +789,7 @@ export default function VideoAnalysis() {
                   </div>
                   <div>
                     <h2 className="font-display font-semibold text-white">AI Analysis</h2>
-                    <p className="text-xs text-navy-400">Powered by The Gaffer</p>
+                    <p className="text-xs text-secondary">Powered by The Gaffer</p>
                   </div>
                 </div>
                 <div className="mb-3">
@@ -802,7 +802,7 @@ export default function VideoAnalysis() {
                         className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                           teamColour === colour
                             ? 'bg-pitch-500 text-white ring-2 ring-pitch-400 ring-offset-1 ring-offset-navy-900'
-                            : 'bg-navy-700 text-navy-300 hover:bg-navy-600'
+                            : 'bg-border-default text-secondary hover:bg-navy-600'
                         }`}
                       >
                         {colour}
@@ -820,7 +820,7 @@ export default function VideoAnalysis() {
                       <AlertCircle className="w-5 h-5 text-alert-400" />
                       <h3 className="font-display font-semibold text-white">Analysis Limit Reached</h3>
                     </div>
-                    <p className="text-sm text-navy-300 mb-4">You've used all your analyses this month. Purchase additional credits to keep analysing.</p>
+                    <p className="text-sm text-secondary mb-4">You've used all your analyses this month. Purchase additional credits to keep analysing.</p>
                     <div className="space-y-2 mb-4">
                       {[
                         { id: 'pack_3', credits: 3, price: '£3.49' },
@@ -831,7 +831,7 @@ export default function VideoAnalysis() {
                           key={pack.id}
                           onClick={() => handlePurchaseCredits(pack.id)}
                           disabled={purchasingCredits}
-                          className="w-full flex items-center justify-between p-3 rounded-lg border border-navy-600 hover:border-pitch-500 bg-navy-800/50 hover:bg-navy-800 transition-colors text-left"
+                          className="w-full flex items-center justify-between p-3 rounded-lg border border-border-strong hover:border-pitch-500 bg-subtle hover:bg-subtle transition-colors text-left"
                         >
                           <div>
                             <span className="text-white font-medium">{pack.credits} analysis credits</span>
@@ -841,7 +841,7 @@ export default function VideoAnalysis() {
                         </button>
                       ))}
                     </div>
-                    <button onClick={() => setShowCreditPurchase(false)} className="text-xs text-navy-500 hover:text-navy-300 w-full text-center">
+                    <button onClick={() => setShowCreditPurchase(false)} className="text-xs text-tertiary hover:text-secondary w-full text-center">
                       Cancel
                     </button>
                   </div>
@@ -849,7 +849,7 @@ export default function VideoAnalysis() {
                   <div className="rounded-xl border border-energy-500/30 bg-energy-500/5 p-4 text-center">
                     <Crown className="w-8 h-8 text-energy-400 mx-auto mb-2" />
                     <h3 className="font-display font-semibold text-white mb-1">Pro Feature</h3>
-                    <p className="text-sm text-navy-300 mb-4">AI video analysis is available on the Grassroots Pro plan. Upgrade to get tactical breakdowns, individual pupil feedback, and training recommendations from your match footage.</p>
+                    <p className="text-sm text-secondary mb-4">AI video analysis is available on the Grassroots Pro plan. Upgrade to get tactical breakdowns, individual pupil feedback, and training recommendations from your match footage.</p>
                     <Link to="/settings" className="btn-primary w-full inline-flex items-center justify-center gap-2">
                       <Crown className="w-4 h-4" /> Upgrade to Pro
                     </Link>
@@ -858,14 +858,14 @@ export default function VideoAnalysis() {
                   <>
                     {/* Analysis depth selector */}
                     <div className="mb-3">
-                      <label className="text-xs font-medium text-navy-400 mb-1.5 block">Analysis Mode</label>
-                      <div className="flex bg-navy-800 rounded-lg p-0.5">
+                      <label className="text-xs font-medium text-secondary mb-1.5 block">Analysis Mode</label>
+                      <div className="flex bg-subtle rounded-lg p-0.5">
                         <button
                           onClick={() => setAnalysisDepth('standard')}
                           className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                             analysisDepth === 'standard'
                               ? 'bg-pitch-500 text-white'
-                              : 'text-navy-400 hover:text-navy-200'
+                              : 'text-secondary hover:text-primary'
                           }`}
                         >
                           Standard
@@ -875,13 +875,13 @@ export default function VideoAnalysis() {
                           className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-1 ${
                             analysisDepth === 'deep'
                               ? 'bg-energy-500 text-white'
-                              : 'text-navy-400 hover:text-navy-200'
+                              : 'text-secondary hover:text-primary'
                           }`}
                         >
                           <Zap className="w-3 h-3" /> Deep
                         </button>
                       </div>
-                      <p className="text-xs text-navy-500 mt-1">
+                      <p className="text-xs text-tertiary mt-1">
                         {analysisDepth === 'deep'
                           ? '4x more frames analysed for greater detail'
                           : 'Quick overview of the match'}
@@ -907,7 +907,7 @@ export default function VideoAnalysis() {
                         <Play className="w-4 h-4" /> {latestAnalysis ? 'Re-Analyse' : 'Analyse Match'}
                       </button>
                     )}
-                    <p className="text-xs text-navy-500 text-center">
+                    <p className="text-xs text-tertiary text-center">
                       {analysing
                         ? 'Tap the stop button to cancel'
                         : analysisDepth === 'deep' ? 'Deep analysis reviews 480 frames for comprehensive insights' : 'AI reviews key frames for tactical insights'}
@@ -924,7 +924,7 @@ export default function VideoAnalysis() {
                     </div>
                     <div>
                       <h2 className="font-display font-semibold text-white">Create Clip</h2>
-                      <p className="text-xs text-navy-400">Mark key moments</p>
+                      <p className="text-xs text-secondary">Mark key moments</p>
                     </div>
                   </div>
                   <button onClick={() => setShowClipModal(true)} className="btn-secondary w-full">
@@ -935,7 +935,7 @@ export default function VideoAnalysis() {
 
               <div className="card p-4">
                 <h3 className="font-display font-semibold text-white mb-3">What AI Analyses</h3>
-                <ul className="space-y-2 text-sm text-navy-400">
+                <ul className="space-y-2 text-sm text-secondary">
                   <li className="flex items-start gap-2"><Target className="w-4 h-4 text-pitch-400 mt-0.5 shrink-0" /> Team shape and formation</li>
                   <li className="flex items-start gap-2"><Zap className="w-4 h-4 text-energy-400 mt-0.5 shrink-0" /> Key tactical moments</li>
                   <li className="flex items-start gap-2"><Users className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" /> Individual contributions</li>
@@ -954,11 +954,11 @@ export default function VideoAnalysis() {
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2">
                   <div className="card p-6">
-                    <div className="flex items-center gap-3 mb-4 pb-4 border-b border-navy-800">
+                    <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border-default">
                       <CheckCircle className="w-6 h-6 text-pitch-400" />
                       <div className="flex-1">
                         <h2 className="font-display text-lg font-semibold text-white">The Gaffer's Analysis</h2>
-                        <p className="text-sm text-navy-400">
+                        <p className="text-sm text-secondary">
                           {latestAnalysis.frames_analysed} frames analysed{match?.opponent && ` - vs ${match.opponent}`}
                         </p>
                       </div>
@@ -1012,7 +1012,7 @@ export default function VideoAnalysis() {
                         </h3>
                         <div className="space-y-3">
                           {editData.observations.map((obs, i) => (
-                            <div key={i} className="p-3 bg-navy-800/50 rounded-lg border border-navy-700 space-y-2">
+                            <div key={i} className="p-3 bg-subtle rounded-lg border border-border-strong space-y-2">
                               <div className="flex items-center gap-2">
                                 <select
                                   value={obs.category}
@@ -1023,7 +1023,7 @@ export default function VideoAnalysis() {
                                     <option key={cat} value={cat}>{cat}</option>
                                   ))}
                                 </select>
-                                <button onClick={() => removeObservation(i)} className="ml-auto p-1 text-navy-500 hover:text-alert-400 transition-colors" title="Remove">
+                                <button onClick={() => removeObservation(i)} className="ml-auto p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1044,11 +1044,11 @@ export default function VideoAnalysis() {
                         </h3>
                         <div className="space-y-2">
                           {latestAnalysis.observations.map((obs, i) => (
-                            <div key={i} className="p-3 bg-navy-800/50 rounded-lg flex gap-3">
+                            <div key={i} className="p-3 bg-subtle rounded-lg flex gap-3">
                               <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full h-fit whitespace-nowrap">{obs.category}</span>
                               <div>
-                                <p className="text-sm text-navy-200">{obs.observation}</p>
-                                {obs.timestamp && <p className="text-xs text-navy-500 mt-1">{obs.timestamp}</p>}
+                                <p className="text-sm text-primary">{obs.observation}</p>
+                                {obs.timestamp && <p className="text-xs text-tertiary mt-1">{obs.timestamp}</p>}
                               </div>
                             </div>
                           ))}
@@ -1080,7 +1080,7 @@ export default function VideoAnalysis() {
                                   className="input text-xs w-24"
                                   placeholder="Duration"
                                 />
-                                <button onClick={() => removeRecommendation(i)} className="p-1 text-navy-500 hover:text-alert-400 transition-colors" title="Remove">
+                                <button onClick={() => removeRecommendation(i)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1105,9 +1105,9 @@ export default function VideoAnalysis() {
                             <div key={i} className="p-3 bg-energy-500/10 rounded-lg border border-energy-500/20">
                               <div className="flex justify-between mb-1">
                                 <p className="font-medium text-sm text-white">{rec.focus}</p>
-                                {rec.duration && <span className="text-xs text-navy-400">{rec.duration}</span>}
+                                {rec.duration && <span className="text-xs text-secondary">{rec.duration}</span>}
                               </div>
-                              <p className="text-sm text-navy-300">{rec.drill}</p>
+                              <p className="text-sm text-secondary">{rec.drill}</p>
                             </div>
                           ))}
                         </div>
@@ -1122,7 +1122,7 @@ export default function VideoAnalysis() {
                         </h3>
                         <div className="space-y-3">
                           {editData.player_feedback.map((pf, i) => (
-                            <div key={i} className="p-3 bg-navy-800/50 rounded-lg border border-navy-700 space-y-2">
+                            <div key={i} className="p-3 bg-subtle rounded-lg border border-border-strong space-y-2">
                               <div className="flex items-center gap-2">
                                 {pf.squad_number && (
                                   <span className="w-6 h-6 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center shrink-0">
@@ -1140,9 +1140,9 @@ export default function VideoAnalysis() {
                                     className="input text-xs w-14 text-center py-1"
                                     placeholder="0-10"
                                   />
-                                  <span className="text-xs text-navy-500">/10</span>
+                                  <span className="text-xs text-tertiary">/10</span>
                                 </div>
-                                <button onClick={() => removePlayerFeedback(i)} className="p-1 text-navy-500 hover:text-alert-400 transition-colors" title="Remove">
+                                <button onClick={() => removePlayerFeedback(i)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1163,7 +1163,7 @@ export default function VideoAnalysis() {
                         </h3>
                         <div className="space-y-2">
                           {latestAnalysis.player_feedback.map((pf, i) => (
-                            <div key={i} className="p-3 bg-navy-800/50 rounded-lg">
+                            <div key={i} className="p-3 bg-subtle rounded-lg">
                               <div className="flex items-center gap-2 mb-1">
                                 {pf.squad_number && (
                                   <span className="w-6 h-6 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center">
@@ -1175,7 +1175,7 @@ export default function VideoAnalysis() {
                                   <span className="ml-auto px-2 py-0.5 bg-energy-500/20 text-energy-400 text-xs rounded-full">{pf.rating}/10</span>
                                 )}
                               </div>
-                              <p className="text-sm text-navy-300">{pf.feedback}</p>
+                              <p className="text-sm text-secondary">{pf.feedback}</p>
                             </div>
                           ))}
                         </div>
@@ -1184,7 +1184,7 @@ export default function VideoAnalysis() {
 
                     {/* Approve / Edit bottom actions */}
                     {!editing && latestAnalysis.player_feedback?.length > 0 && (
-                      <div className="mt-4 p-3 rounded-lg border border-navy-700 bg-navy-800/30">
+                      <div className="mt-4 p-3 rounded-lg border border-border-strong bg-subtle">
                         {latestAnalysis.approved ? (
                           <div className="flex items-center gap-2 text-pitch-400">
                             <CheckCircle className="w-4 h-4" />
@@ -1192,17 +1192,17 @@ export default function VideoAnalysis() {
                           </div>
                         ) : (
                           <div className="space-y-3">
-                            <p className="text-sm text-navy-300">Review the analysis above. Edit anything you'd like to change, then approve to save to pupil profiles.</p>
-                            <label className="flex items-center gap-3 p-2 rounded-lg bg-navy-800/50 cursor-pointer">
+                            <p className="text-sm text-secondary">Review the analysis above. Edit anything you'd like to change, then approve to save to pupil profiles.</p>
+                            <label className="flex items-center gap-3 p-2 rounded-lg bg-subtle cursor-pointer">
                               <input
                                 type="checkbox"
                                 checked={includeRatings}
                                 onChange={(e) => setIncludeRatings(e.target.checked)}
-                                className="rounded border-navy-600 bg-navy-700 text-pitch-500 focus:ring-pitch-500"
+                                className="rounded border-border-strong bg-border-default text-pitch-500 focus:ring-pitch-500"
                               />
                               <div>
                                 <p className="text-sm text-white font-medium">Include pupil ratings</p>
-                                <p className="text-xs text-navy-400">Save the /10 scores to pupil profiles (can be sensitive for younger age groups)</p>
+                                <p className="text-xs text-secondary">Save the /10 scores to pupil profiles (can be sensitive for younger age groups)</p>
                               </div>
                             </label>
                             <div className="flex gap-2">
@@ -1268,22 +1268,22 @@ export default function VideoAnalysis() {
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-white">Discuss with AI</p>
-                      <p className="text-xs text-navy-400">Ask follow-up questions</p>
+                      <p className="text-xs text-secondary">Ask follow-up questions</p>
                     </div>
-                    <ChevronRight className="w-5 h-5 text-navy-600" />
+                    <ChevronRight className="w-5 h-5 text-tertiary" />
                   </Link>
                 </div>
               </div>
             ) : (
               <div className="card p-12 text-center max-w-xl mx-auto">
-                <Sparkles className="w-16 h-16 text-navy-600 mx-auto mb-4" />
+                <Sparkles className="w-16 h-16 text-tertiary mx-auto mb-4" />
                 <h2 className="font-display text-xl font-semibold text-white mb-2">No Analysis Yet</h2>
                 {analysisError && !analysing ? (
                   <div className="p-3 rounded-lg bg-alert-500/10 border border-alert-500/30 mb-4">
                     <p className="text-sm text-alert-300">{analysisError}</p>
                   </div>
                 ) : (
-                  <p className="text-navy-400 mb-6">
+                  <p className="text-secondary mb-6">
                     {video?.mux_playback_id ? 'Run AI analysis to get tactical insights.' : 'Upload a video first.'}
                   </p>
                 )}
@@ -1327,7 +1327,7 @@ export default function VideoAnalysis() {
                   const category = clipCategories.find(c => c.value === clip.clip_type)
                   return (
                     <motion.div key={clip.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }} className="card overflow-hidden">
-                      <div className="aspect-video bg-navy-800 relative cursor-pointer" onClick={() => jumpToClip(clip)}>
+                      <div className="aspect-video bg-subtle relative cursor-pointer" onClick={() => jumpToClip(clip)}>
                         {video?.mux_playback_id ? (
                           <img
                             src={`https://image.mux.com/${video.mux_playback_id}/thumbnail.jpg?time=${Math.round(clip.start_time)}&width=480`}
@@ -1335,7 +1335,7 @@ export default function VideoAnalysis() {
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="absolute inset-0 flex items-center justify-center"><Video className="w-8 h-8 text-navy-600" /></div>
+                          <div className="absolute inset-0 flex items-center justify-center"><Video className="w-8 h-8 text-tertiary" /></div>
                         )}
                         <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-xs text-white font-mono">
                           {formatTime(clip.start_time)} - {formatTime(clip.end_time)}
@@ -1344,17 +1344,17 @@ export default function VideoAnalysis() {
                       <div className="p-4">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="font-medium text-white line-clamp-1">{clip.title}</h3>
-                          <button onClick={() => handleDeleteClip(clip.id)} className="p-1 text-navy-500 hover:text-alert-400 transition-colors">
+                          <button onClick={() => handleDeleteClip(clip.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className={`badge-${category?.color || 'navy'} text-xs`}>{category?.label || clip.clip_type}</span>
                           {clip.player_tags?.length > 0 && (
-                            <span className="text-xs text-navy-400">{clip.player_tags.length} pupil{clip.player_tags.length > 1 ? 's' : ''}</span>
+                            <span className="text-xs text-secondary">{clip.player_tags.length} pupil{clip.player_tags.length > 1 ? 's' : ''}</span>
                           )}
                         </div>
-                        {clip.description && <p className="text-sm text-navy-400 line-clamp-2 mt-2">{clip.description}</p>}
+                        {clip.description && <p className="text-sm text-secondary line-clamp-2 mt-2">{clip.description}</p>}
                       </div>
                     </motion.div>
                   )
@@ -1362,9 +1362,9 @@ export default function VideoAnalysis() {
               </div>
             ) : (
               <div className="card p-12 text-center max-w-xl mx-auto">
-                <Scissors className="w-16 h-16 text-navy-600 mx-auto mb-4" />
+                <Scissors className="w-16 h-16 text-tertiary mx-auto mb-4" />
                 <h2 className="font-display text-xl font-semibold text-white mb-2">No Clips Yet</h2>
-                <p className="text-navy-400 mb-6">
+                <p className="text-secondary mb-6">
                   {video?.mux_playback_id ? 'Mark key moments from the match.' : 'Upload a video first.'}
                 </p>
                 <button onClick={video?.mux_playback_id ? () => setShowClipModal(true) : () => setActiveTab('video')} className="btn-primary">
@@ -1381,13 +1381,13 @@ export default function VideoAnalysis() {
         {showClipModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="modal-overlay" onClick={() => setShowClipModal(false)}>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="modal-content max-w-lg" onClick={(e) => e.stopPropagation()}>
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Create Clip</h2>
-                <button onClick={() => setShowClipModal(false)} className="p-2 text-navy-400 hover:text-white"><X className="w-5 h-5" /></button>
+                <button onClick={() => setShowClipModal(false)} className="p-2 text-secondary hover:text-white"><X className="w-5 h-5" /></button>
               </div>
 
               <form onSubmit={handleSaveClip} className="p-6 space-y-4">
-                <p className="text-sm text-navy-400">Navigate the video pupil, then mark start/end times.</p>
+                <p className="text-sm text-secondary">Navigate the video pupil, then mark start/end times.</p>
 
                 <div className="flex gap-3">
                   <button type="button" onClick={markClipStart} className="btn-primary flex-1 text-sm">
@@ -1414,7 +1414,7 @@ export default function VideoAnalysis() {
                     {clipCategories.map(cat => (
                       <button key={cat.value} type="button" onClick={() => setNewClip(prev => ({ ...prev, clipType: cat.value }))}
                         className={`p-2 rounded-lg text-sm font-medium transition-colors text-left flex items-center gap-2 ${
-                          newClip.clipType === cat.value ? `bg-${cat.color}-500/20 border border-${cat.color}-500 text-white` : 'bg-navy-800 border border-navy-700 text-navy-400 hover:text-white'
+                          newClip.clipType === cat.value ? `bg-${cat.color}-500/20 border border-${cat.color}-500 text-white` : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                         }`}
                       >
                         <Tag className="w-3 h-3" /> {cat.label}
@@ -1430,7 +1430,7 @@ export default function VideoAnalysis() {
                       {pupils.slice(0, 20).map(pupil => (
                         <button key={pupil.id} type="button" onClick={() => togglePlayer(pupil.id)}
                           className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
-                            newClip.pupils.includes(pupil.id) ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+                            newClip.pupils.includes(pupil.id) ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
                           {pupil.name}

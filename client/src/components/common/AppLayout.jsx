@@ -74,7 +74,7 @@ export default function AppLayout() {
   }, [user?.id])
 
   return (
-    <div className="min-h-screen bg-navy-950">
+    <div className="min-h-screen bg-page">
       {/* Mobile sidebar backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -90,21 +90,21 @@ export default function AppLayout() {
       
       {/* Sidebar */}
       <aside className={`
-        fixed top-0 left-0 z-50 h-full w-64 bg-navy-900 border-r border-navy-800
+        fixed top-0 left-0 z-50 h-full w-64 bg-card border-r border-border-default
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0
       `}>
         <div className="flex flex-col h-full">
           {/* Logo */}
-          <div className="flex items-center justify-between h-16 px-4 border-b border-navy-800">
+          <div className="flex items-center justify-between h-16 px-4 border-b border-border-default">
             <div className="flex items-center gap-2">
               <MoonBootsMark className="w-7 h-7" />
-              <h1 className="font-semibold text-navy-50 text-base" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots</h1>
+              <h1 className="font-semibold text-primary text-base" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots</h1>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden p-2 text-navy-400 hover:text-white"
+              className="lg:hidden p-2 text-secondary hover:text-primary"
             >
               <X className="w-5 h-5" />
             </button>
@@ -118,13 +118,13 @@ export default function AppLayout() {
             >
               <div className="flex items-center gap-2">
                 <div
-                  className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+                  className="w-8 h-8 rounded-lg flex items-center justify-center text-primary font-bold text-sm"
                   style={{ backgroundColor: branding.primaryColor }}
                 >
                   {branding.teamName.charAt(0)}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-white truncate">{branding.hubName}</p>
+                  <p className="text-sm font-medium text-primary truncate">{branding.hubName}</p>
                   <p className="text-xs" style={{ color: branding.primaryColor }}>{branding.ageGroup}</p>
                 </div>
               </div>
@@ -146,9 +146,9 @@ export default function AppLayout() {
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive 
                       ? 'bg-pitch-600/20 text-pitch-400' 
-                      : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                      : 'text-secondary hover:text-primary hover:bg-subtle'
                     }
-                    ${item.highlight && !isActive ? 'bg-navy-800/50' : ''}
+                    ${item.highlight && !isActive ? 'bg-subtle' : ''}
                   `}
                 >
                   <item.icon className={`w-5 h-5 ${item.highlight && !isActive ? 'text-pitch-400' : ''}`} />
@@ -168,7 +168,7 @@ export default function AppLayout() {
           
           {/* School links */}
           {(myClubs.length > 0 || (user?.role === 'manager' || user?.role === 'assistant')) && (
-            <div className="px-3 py-2 border-t border-navy-800">
+            <div className="px-3 py-2 border-t border-border-default">
               {myClubs.map((school) => (
                 <NavLink
                   key={school.id}
@@ -178,7 +178,7 @@ export default function AppLayout() {
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive
                       ? 'bg-amber-600/20 text-amber-400'
-                      : 'text-amber-400/70 hover:text-amber-400 hover:bg-navy-800'
+                      : 'text-amber-400/70 hover:text-amber-400 hover:bg-subtle'
                     }
                   `}
                 >
@@ -197,7 +197,7 @@ export default function AppLayout() {
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive
                       ? 'bg-amber-600/20 text-amber-400'
-                      : 'text-navy-400 hover:text-amber-400 hover:bg-navy-800'
+                      : 'text-secondary hover:text-amber-400 hover:bg-subtle'
                     }
                   `}
                 >
@@ -209,7 +209,7 @@ export default function AppLayout() {
           )}
 
           {/* Bottom navigation */}
-          <div className="px-3 py-4 border-t border-navy-800 space-y-1">
+          <div className="px-3 py-4 border-t border-border-default space-y-1">
             {bottomNav.map((item) => (
               <NavLink
                 key={item.name}
@@ -219,7 +219,7 @@ export default function AppLayout() {
                   flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                   ${isActive
                     ? 'bg-pitch-600/20 text-pitch-400'
-                    : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                    : 'text-secondary hover:text-primary hover:bg-subtle'
                   }
                 `}
               >
@@ -237,7 +237,7 @@ export default function AppLayout() {
                   flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                   ${isActive
                     ? 'bg-amber-600/20 text-amber-400'
-                    : 'text-amber-400/70 hover:text-amber-400 hover:bg-navy-800'
+                    : 'text-amber-400/70 hover:text-amber-400 hover:bg-subtle'
                   }
                 `}
               >
@@ -248,16 +248,16 @@ export default function AppLayout() {
 
             {/* User & Logout */}
             <div className="flex items-center gap-3 px-3 py-2.5 mt-2">
-              <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-navy-300">
+              <div className="w-8 h-8 rounded-full bg-border-default flex items-center justify-center text-sm font-medium text-secondary">
                 {user?.name?.charAt(0) || 'U'}
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">{user?.name}</p>
-                <p className="text-xs text-navy-400 capitalize">{user?.role}</p>
+                <p className="text-sm font-medium text-primary truncate">{user?.name}</p>
+                <p className="text-xs text-secondary capitalize">{user?.role}</p>
               </div>
               <button
                 onClick={logout}
-                className="p-2 text-navy-400 hover:text-alert-400 transition-colors"
+                className="p-2 text-secondary hover:text-alert-400 transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />
@@ -270,20 +270,20 @@ export default function AppLayout() {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Mobile header */}
-        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-16 px-4 bg-navy-900/80 backdrop-blur-md border-b border-navy-800">
+        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-16 px-4 bg-card backdrop-blur-md border-b border-border-default">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 text-navy-400 hover:text-white"
+            className="p-2 text-secondary hover:text-primary"
           >
             <Menu className="w-6 h-6" />
           </button>
           
           <div className="flex items-center gap-1.5">
             <MoonBootsMark className="w-6 h-6" />
-            <span className="font-semibold text-navy-50 text-sm" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots</span>
+            <span className="font-semibold text-primary text-sm" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots</span>
           </div>
           
-          <div className="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-navy-300">
+          <div className="w-10 h-10 rounded-full bg-border-default flex items-center justify-center text-sm font-medium text-secondary">
             {user?.name?.charAt(0) || 'U'}
           </div>
         </header>

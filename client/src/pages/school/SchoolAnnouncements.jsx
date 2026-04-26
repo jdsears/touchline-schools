@@ -136,28 +136,28 @@ export default function ClubAnnouncements() {
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Announcements & Comms</h1>
-          <p className="text-navy-400 text-sm mt-1">Send announcements and communicate with parents</p>
+          <h1 className="text-2xl font-bold text-primary">Announcements & Comms</h1>
+          <p className="text-secondary text-sm mt-1">Send announcements and communicate with parents</p>
         </div>
         {canManage && (
           <div className="flex flex-wrap gap-2">
             <button
               onClick={loadCommsLog}
-              className="flex items-center gap-2 px-3 py-1.5 bg-navy-800 hover:bg-navy-700 text-navy-300 hover:text-white rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-sm transition-colors"
             >
               <Clock className="w-4 h-4" />
               History
             </button>
             <button
               onClick={() => setShowBulkEmail(!showBulkEmail)}
-              className="flex items-center gap-2 px-3 py-2 bg-navy-800 hover:bg-navy-700 text-navy-300 hover:text-white rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-sm transition-colors"
             >
               <Mail className="w-4 h-4" />
               Email Parents
             </button>
             <button
               onClick={() => setShowCreate(!showCreate)}
-              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
             >
               <Plus className="w-4 h-4" />
               New Announcement
@@ -168,8 +168,8 @@ export default function ClubAnnouncements() {
 
       {/* Bulk email form */}
       {showBulkEmail && (
-        <form onSubmit={handleBulkEmail} className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
-          <h3 className="font-semibold text-white flex items-center gap-2">
+        <form onSubmit={handleBulkEmail} className="bg-card border border-border-default rounded-xl p-5 space-y-4">
+          <h3 className="font-semibold text-primary flex items-center gap-2">
             <Mail className="w-5 h-5 text-blue-400" />
             Email Parents
           </h3>
@@ -180,26 +180,26 @@ export default function ClubAnnouncements() {
             onChange={(updates) => setEmailForm(f => ({ ...f, ...updates }))}
           />
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Subject *</label>
+            <label className="block text-xs text-secondary mb-1">Subject *</label>
             <input
               type="text" required value={emailForm.subject}
               onChange={(e) => setEmailForm(f => ({ ...f, subject: e.target.value }))}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               placeholder="Email subject line"
             />
           </div>
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Message *</label>
+            <label className="block text-xs text-secondary mb-1">Message *</label>
             <textarea
               required value={emailForm.message} rows={4}
               onChange={(e) => setEmailForm(f => ({ ...f, message: e.target.value }))}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
               placeholder="Write your message to parents..."
             />
           </div>
           <div className="flex gap-2 justify-end">
-            <button type="button" onClick={() => setShowBulkEmail(false)} className="px-4 py-2 text-sm text-navy-400 hover:text-white">Cancel</button>
-            <button type="submit" disabled={sending} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white rounded-lg text-sm">
+            <button type="button" onClick={() => setShowBulkEmail(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
+            <button type="submit" disabled={sending} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-primary rounded-lg text-sm">
               <Send className="w-4 h-4" />
               {sending ? 'Sending...' : 'Send Email'}
             </button>
@@ -209,8 +209,8 @@ export default function ClubAnnouncements() {
 
       {/* Create announcement form */}
       {showCreate && (
-        <form onSubmit={handleCreate} className="bg-navy-900 border border-navy-800 rounded-xl p-5 space-y-4">
-          <h3 className="font-semibold text-white flex items-center gap-2">
+        <form onSubmit={handleCreate} className="bg-card border border-border-default rounded-xl p-5 space-y-4">
+          <h3 className="font-semibold text-primary flex items-center gap-2">
             <Megaphone className="w-5 h-5 text-pitch-400" />
             New Announcement
           </h3>
@@ -221,30 +221,30 @@ export default function ClubAnnouncements() {
             onChange={(updates) => setForm(f => ({ ...f, ...updates }))}
           />
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Title *</label>
+            <label className="block text-xs text-secondary mb-1">Title *</label>
             <input
               type="text" required value={form.title}
               onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               placeholder="Announcement title"
             />
           </div>
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Content *</label>
+            <label className="block text-xs text-secondary mb-1">Content *</label>
             <textarea
               required value={form.content} rows={4}
               onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
               placeholder="Write your announcement..."
             />
           </div>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Priority</label>
+              <label className="block text-xs text-secondary mb-1">Priority</label>
               <select
                 value={form.priority}
                 onChange={(e) => setForm(f => ({ ...f, priority: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 <option value="normal">Normal</option>
                 <option value="important">Important</option>
@@ -252,27 +252,27 @@ export default function ClubAnnouncements() {
               </select>
             </div>
             <div className="space-y-2 pt-5">
-              <label className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
                 <input
                   type="checkbox" checked={form.is_pinned}
                   onChange={(e) => setForm(f => ({ ...f, is_pinned: e.target.checked }))}
-                  className="rounded bg-navy-800 border-navy-700 text-pitch-600 focus:ring-pitch-600"
+                  className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
                 />
                 Pin to top
               </label>
-              <label className="flex items-center gap-2 text-sm text-navy-300 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
                 <input
                   type="checkbox" checked={form.send_email}
                   onChange={(e) => setForm(f => ({ ...f, send_email: e.target.checked }))}
-                  className="rounded bg-navy-800 border-navy-700 text-pitch-600 focus:ring-pitch-600"
+                  className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
                 />
                 Also send as email
               </label>
             </div>
           </div>
           <div className="flex gap-2 justify-end">
-            <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-navy-400 hover:text-white">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-white rounded-lg text-sm">
+            <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg text-sm">
               {saving ? 'Creating...' : 'Create Announcement'}
             </button>
           </div>
@@ -281,23 +281,23 @@ export default function ClubAnnouncements() {
 
       {/* Comms log */}
       {showCommsLog && commsLog.length > 0 && (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
-          <div className="px-5 py-3 border-b border-navy-800 flex items-center justify-between">
-            <h3 className="font-semibold text-white text-sm">Communication History</h3>
-            <button onClick={() => setShowCommsLog(false)} className="text-xs text-navy-400 hover:text-white">Close</button>
+        <div className="bg-card border border-border-default rounded-xl overflow-hidden">
+          <div className="px-5 py-3 border-b border-border-default flex items-center justify-between">
+            <h3 className="font-semibold text-primary text-sm">Communication History</h3>
+            <button onClick={() => setShowCommsLog(false)} className="text-xs text-secondary hover:text-primary">Close</button>
           </div>
           <div className="divide-y divide-navy-800/50">
             {commsLog.map(log => (
               <div key={log.id} className="px-5 py-3 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-white">{log.subject || log.type}</p>
-                  <p className="text-xs text-navy-400">
+                  <p className="text-sm text-primary">{log.subject || log.type}</p>
+                  <p className="text-xs text-secondary">
                     {log.sent_by_name} · {new Date(log.created_at).toLocaleDateString('en-GB')}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs bg-navy-800 text-navy-300 px-2 py-0.5 rounded capitalize">{log.type.replace('_', ' ')}</span>
-                  <span className="text-xs text-navy-400">{log.recipient_count} sent</span>
+                  <span className="text-xs bg-subtle text-secondary px-2 py-0.5 rounded capitalize">{log.type.replace('_', ' ')}</span>
+                  <span className="text-xs text-secondary">{log.recipient_count} sent</span>
                 </div>
               </div>
             ))}
@@ -307,10 +307,10 @@ export default function ClubAnnouncements() {
 
       {/* Announcements list */}
       {announcements.length === 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <Megaphone className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">No announcements yet</h3>
-          <p className="text-navy-400 text-sm">Create your first announcement to communicate with parents.</p>
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <Megaphone className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">No announcements yet</h3>
+          <p className="text-secondary text-sm">Create your first announcement to communicate with parents.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -332,13 +332,13 @@ export default function ClubAnnouncements() {
 function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
   return (
     <div className="space-y-2">
-      <label className="block text-xs text-navy-400">Send to</label>
+      <label className="block text-xs text-secondary">Send to</label>
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={() => onChange({ target_type: 'all_parents', target_team_ids: [] })}
           className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-            targetType === 'all_parents' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+            targetType === 'all_parents' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
           }`}
         >
           <Users className="w-3.5 h-3.5 inline mr-1" />
@@ -348,7 +348,7 @@ function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
           type="button"
           onClick={() => onChange({ target_type: 'specific_teams' })}
           className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-            targetType === 'specific_teams' ? 'bg-pitch-600 text-white' : 'bg-navy-800 text-navy-400 hover:text-white'
+            targetType === 'specific_teams' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
           }`}
         >
           Specific Teams
@@ -357,7 +357,7 @@ function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
       {targetType === 'specific_teams' && teams.length > 0 && (
         <div className="flex flex-wrap gap-2 pt-1">
           {teams.map(team => (
-            <label key={team.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 rounded-lg text-sm text-navy-300 cursor-pointer hover:bg-navy-700">
+            <label key={team.id} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle rounded-lg text-sm text-secondary cursor-pointer hover:bg-border-default">
               <input
                 type="checkbox"
                 checked={targetTeamIds.includes(team.id)}
@@ -367,7 +367,7 @@ function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
                     : targetTeamIds.filter(id => id !== team.id)
                   onChange({ target_team_ids: ids })
                 }}
-                className="rounded bg-navy-700 border-navy-600 text-pitch-600 focus:ring-pitch-600"
+                className="rounded bg-border-default border-border-strong text-pitch-600 focus:ring-pitch-600"
               />
               {team.name}
             </label>
@@ -381,22 +381,22 @@ function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
 function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
   const [expanded, setExpanded] = useState(false)
   const priorityColors = {
-    normal: 'border-navy-800',
+    normal: 'border-border-default',
     important: 'border-amber-600/30',
     urgent: 'border-alert-600/30',
   }
 
   return (
-    <div className={`bg-navy-900 border rounded-xl overflow-hidden ${priorityColors[announcement.priority] || priorityColors.normal}`}>
+    <div className={`bg-card border rounded-xl overflow-hidden ${priorityColors[announcement.priority] || priorityColors.normal}`}>
       <button
         onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-navy-800/50 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-subtle transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">
           {announcement.is_pinned && <Pin className="w-4 h-4 text-amber-400 shrink-0" />}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="font-medium text-white truncate">{announcement.title}</p>
+              <p className="font-medium text-primary truncate">{announcement.title}</p>
               {announcement.priority === 'urgent' && (
                 <span className="text-xs bg-alert-600/20 text-alert-400 px-2 py-0.5 rounded">Urgent</span>
               )}
@@ -404,7 +404,7 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
                 <span className="text-xs bg-amber-600/20 text-amber-400 px-2 py-0.5 rounded">Important</span>
               )}
             </div>
-            <p className="text-xs text-navy-400 mt-0.5">
+            <p className="text-xs text-secondary mt-0.5">
               {announcement.created_by_name} · {new Date(announcement.created_at).toLocaleDateString('en-GB')}
               {announcement.email_sent && (
                 <span className="ml-2 text-pitch-400">
@@ -414,12 +414,12 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
             </p>
           </div>
         </div>
-        {expanded ? <ChevronUp className="w-4 h-4 text-navy-400 shrink-0" /> : <ChevronDown className="w-4 h-4 text-navy-400 shrink-0" />}
+        {expanded ? <ChevronUp className="w-4 h-4 text-secondary shrink-0" /> : <ChevronDown className="w-4 h-4 text-secondary shrink-0" />}
       </button>
       {expanded && (
-        <div className="px-5 pb-4 pt-1 border-t border-navy-800">
-          <p className="text-sm text-navy-300 whitespace-pre-wrap">{announcement.content}</p>
-          <div className="flex items-center gap-3 mt-3 text-xs text-navy-500">
+        <div className="px-5 pb-4 pt-1 border-t border-border-default">
+          <p className="text-sm text-secondary whitespace-pre-wrap">{announcement.content}</p>
+          <div className="flex items-center gap-3 mt-3 text-xs text-tertiary">
             <span className="capitalize">{announcement.target_type?.replace('_', ' ')}</span>
             {announcement.expires_at && (
               <span>Expires {new Date(announcement.expires_at).toLocaleDateString('en-GB')}</span>
@@ -429,14 +429,14 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
             <div className="flex gap-2 mt-3">
               <button
                 onClick={() => onTogglePin(announcement)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-navy-700 text-navy-400 hover:text-white rounded-lg text-xs transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary hover:text-primary rounded-lg text-xs transition-colors"
               >
                 <Pin className="w-3.5 h-3.5" />
                 {announcement.is_pinned ? 'Unpin' : 'Pin'}
               </button>
               <button
                 onClick={() => onDelete(announcement.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-navy-800 hover:bg-alert-600/20 text-navy-400 hover:text-alert-400 rounded-lg text-xs transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-alert-600/20 text-secondary hover:text-alert-400 rounded-lg text-xs transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Delete

@@ -630,14 +630,14 @@ export default function PupilDetail() {
   if (!pupil) {
     return (
       <div className="p-6 lg:p-8 max-w-4xl mx-auto">
-        <Link to="/pupils" className="inline-flex items-center gap-2 text-navy-400 hover:text-white mb-6">
+        <Link to="/pupils" className="inline-flex items-center gap-2 text-secondary hover:text-white mb-6">
           <ArrowLeft className="w-4 h-4" />
           Back to Players
         </Link>
         <div className="card p-8 text-center">
-          <User className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+          <User className="w-12 h-12 text-tertiary mx-auto mb-4" />
           <h1 className="font-display text-xl font-bold text-white mb-2">Pupil Not Found</h1>
-          <p className="text-navy-400">This pupil may have been deleted or doesn't exist.</p>
+          <p className="text-secondary">This pupil may have been deleted or doesn't exist.</p>
         </div>
       </div>
     )
@@ -648,7 +648,7 @@ export default function PupilDetail() {
   return (
     <div className="p-6 lg:p-8 max-w-6xl mx-auto">
       {/* Back link */}
-      <Link to="/pupils" className="inline-flex items-center gap-2 text-navy-400 hover:text-white mb-6">
+      <Link to="/pupils" className="inline-flex items-center gap-2 text-secondary hover:text-white mb-6">
         <ArrowLeft className="w-4 h-4" />
         Back to Players
       </Link>
@@ -707,7 +707,7 @@ export default function PupilDetail() {
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-sm text-navy-400">
+            <div className="flex flex-wrap gap-4 text-sm text-secondary">
               {age && (
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-4 h-4" />
@@ -737,14 +737,14 @@ export default function PupilDetail() {
                 flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors
                 ${activeTab === tab.id
                   ? 'bg-pitch-600 text-white'
-                  : 'bg-navy-800 text-navy-400 hover:text-white hover:bg-navy-700'
+                  : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                 }
               `}
             >
               <Icon className="w-4 h-4" />
               {tab.label}
               {tab.id === 'observations' && observations.length > 0 && (
-                <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-navy-900">
+                <span className="ml-1 px-1.5 py-0.5 text-xs rounded-full bg-card">
                   {observations.length}
                 </span>
               )}
@@ -774,9 +774,9 @@ export default function PupilDetail() {
                   {parseParentContacts(pupil.parent_contact).map((contact, index) => (
                     <div
                       key={index}
-                      className="flex items-start gap-4 p-4 bg-navy-800/50 rounded-lg"
+                      className="flex items-start gap-4 p-4 bg-subtle rounded-lg"
                     >
-                      <div className="w-10 h-10 rounded-full bg-navy-700 flex items-center justify-center text-navy-300 text-sm font-medium shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-border-default flex items-center justify-center text-secondary text-sm font-medium shrink-0">
                         {contact.name ? contact.name.charAt(0).toUpperCase() : 'P'}
                       </div>
                       <div className="flex-1 min-w-0">
@@ -787,7 +787,7 @@ export default function PupilDetail() {
                           {contact.email && (
                             <a
                               href={`mailto:${contact.email}`}
-                              className="text-sm text-navy-400 hover:text-pitch-400 flex items-center gap-1.5"
+                              className="text-sm text-secondary hover:text-pitch-400 flex items-center gap-1.5"
                             >
                               <Mail className="w-3.5 h-3.5" />
                               {contact.email}
@@ -796,7 +796,7 @@ export default function PupilDetail() {
                           {contact.phone && (
                             <a
                               href={`tel:${contact.phone}`}
-                              className="text-sm text-navy-400 hover:text-pitch-400 flex items-center gap-1.5"
+                              className="text-sm text-secondary hover:text-pitch-400 flex items-center gap-1.5"
                             >
                               <Phone className="w-3.5 h-3.5" />
                               {contact.phone}
@@ -804,7 +804,7 @@ export default function PupilDetail() {
                           )}
                         </div>
                         {!contact.name && !contact.email && !contact.phone && (
-                          <p className="text-sm text-navy-500">No contact details</p>
+                          <p className="text-sm text-tertiary">No contact details</p>
                         )}
                       </div>
                     </div>
@@ -820,13 +820,13 @@ export default function PupilDetail() {
                   <MessageSquare className="w-5 h-5 text-pitch-400" />
                   Notes
                 </h2>
-                <p className="text-navy-300 whitespace-pre-wrap">{pupil.notes}</p>
+                <p className="text-secondary whitespace-pre-wrap">{pupil.notes}</p>
               </div>
             )}
 
             {/* Discreet Notes - Private coach notes about pupil psychology/communication */}
             {pupil.discreet_notes && (
-              <div className="card p-6 border border-navy-600 bg-navy-900/50">
+              <div className="card p-6 border border-border-strong bg-card/50">
                 <h2 className="font-display font-semibold text-white mb-2 flex items-center gap-2">
                   <Lock className="w-5 h-5 text-caution-400" />
                   Discreet Notes
@@ -834,10 +834,10 @@ export default function PupilDetail() {
                     Coach Only
                   </span>
                 </h2>
-                <p className="text-xs text-navy-500 mb-3">
+                <p className="text-xs text-tertiary mb-3">
                   Private notes about pupil psychology and communication. Never shared with AI or the pupil/parent portal.
                 </p>
-                <p className="text-navy-300 whitespace-pre-wrap">{pupil.discreet_notes}</p>
+                <p className="text-secondary whitespace-pre-wrap">{pupil.discreet_notes}</p>
               </div>
             )}
 
@@ -862,11 +862,11 @@ export default function PupilDetail() {
                   {achievements.map(achievement => (
                     <div
                       key={achievement.id}
-                      className="relative group bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-4 text-center border border-navy-700 hover:border-energy-500/30 transition-all"
+                      className="relative group bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-4 text-center border border-border-strong hover:border-energy-500/30 transition-all"
                     >
                       <button
                         onClick={() => handleDeleteAchievement(achievement.id)}
-                        className="absolute top-1 right-1 p-1 rounded-full bg-navy-700 text-navy-400 hover:text-alert-400 hover:bg-alert-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1 rounded-full bg-border-default text-secondary hover:text-alert-400 hover:bg-alert-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
                         title="Remove badge"
                       >
                         <X className="w-3 h-3" />
@@ -874,22 +874,22 @@ export default function PupilDetail() {
                       <div className="text-3xl mb-2">{achievement.icon || '🏅'}</div>
                       <p className="font-medium text-white text-sm">{achievement.title}</p>
                       {achievement.match_opponent && (
-                        <p className="text-xs text-navy-400 mt-1">vs {achievement.match_opponent}</p>
+                        <p className="text-xs text-secondary mt-1">vs {achievement.match_opponent}</p>
                       )}
                       {achievement.description && (
-                        <p className="text-xs text-navy-500 mt-1 line-clamp-2">{achievement.description}</p>
+                        <p className="text-xs text-tertiary mt-1 line-clamp-2">{achievement.description}</p>
                       )}
-                      <p className="text-xs text-navy-600 mt-2">
+                      <p className="text-xs text-tertiary mt-2">
                         {new Date(achievement.earned_at).toLocaleDateString()}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-navy-400">
+                <div className="text-center py-8 text-secondary">
                   <Award className="w-12 h-12 mx-auto mb-3 opacity-30" />
                   <p>No badges earned yet</p>
-                  <p className="text-sm text-navy-500 mt-1">Award badges to recognize great performances</p>
+                  <p className="text-sm text-tertiary mt-1">Award badges to recognize great performances</p>
                 </div>
               )}
             </div>
@@ -932,9 +932,9 @@ export default function PupilDetail() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-white">Add Observation</p>
-                  <p className="text-sm text-navy-400">Log a training or match note</p>
+                  <p className="text-sm text-secondary">Log a training or match note</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-navy-600 ml-auto" />
+                <ChevronRight className="w-5 h-5 text-tertiary ml-auto" />
               </button>
 
               <Link
@@ -946,9 +946,9 @@ export default function PupilDetail() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-white">Pupil AI Coach</p>
-                  <p className="text-sm text-navy-400">Personal assistant for {pupil.name?.split(' ')[0]}</p>
+                  <p className="text-sm text-secondary">Personal assistant for {pupil.name?.split(' ')[0]}</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-navy-600 ml-auto" />
+                <ChevronRight className="w-5 h-5 text-tertiary ml-auto" />
               </Link>
 
               <Link
@@ -960,9 +960,9 @@ export default function PupilDetail() {
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-white">Coach AI</p>
-                  <p className="text-sm text-navy-400">Get development advice</p>
+                  <p className="text-sm text-secondary">Get development advice</p>
                 </div>
-                <ChevronRight className="w-5 h-5 text-navy-600 ml-auto" />
+                <ChevronRight className="w-5 h-5 text-tertiary ml-auto" />
               </Link>
             </div>
           </motion.div>
@@ -987,11 +987,11 @@ export default function PupilDetail() {
 
             {observations.length === 0 ? (
               <div className="card p-8 text-center">
-                <FileText className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+                <FileText className="w-12 h-12 text-tertiary mx-auto mb-4" />
                 <h3 className="font-display text-lg font-semibold text-white mb-2">
                   No observations yet
                 </h3>
-                <p className="text-navy-400 mb-4">
+                <p className="text-secondary mb-4">
                   Start logging observations from training and matches to track development.
                 </p>
                 <button onClick={() => setShowObsModal(true)} className="btn-primary">
@@ -1034,12 +1034,12 @@ export default function PupilDetail() {
                               </span>
                             )}
                             {obs.context && (
-                              <span className="text-xs text-navy-500">{obs.context}</span>
+                              <span className="text-xs text-tertiary">{obs.context}</span>
                             )}
                           </div>
-                          <p className="text-navy-300 whitespace-pre-wrap">{obs.content}</p>
+                          <p className="text-secondary whitespace-pre-wrap">{obs.content}</p>
                           <div className="flex items-center justify-between mt-2">
-                            <div className="flex items-center gap-3 text-xs text-navy-500">
+                            <div className="flex items-center gap-3 text-xs text-tertiary">
                               <span className="flex items-center gap-1">
                                 <Clock className="w-3 h-3" />
                                 {formatDate(obs.created_at)}
@@ -1051,7 +1051,7 @@ export default function PupilDetail() {
                             <div className="flex items-center gap-1">
                               <button
                                 onClick={() => openEditObsModal(obs)}
-                                className="p-1.5 text-navy-500 hover:text-white hover:bg-navy-700 rounded-lg transition-colors"
+                                className="p-1.5 text-tertiary hover:text-white hover:bg-border-default rounded-lg transition-colors"
                                 title="Edit observation"
                               >
                                 <Edit2 className="w-3.5 h-3.5" />
@@ -1061,7 +1061,7 @@ export default function PupilDetail() {
                                   setDeletingObsId(obs.id)
                                   setConfirmDeleteObs(true)
                                 }}
-                                className="p-1.5 text-navy-500 hover:text-alert-400 hover:bg-alert-500/10 rounded-lg transition-colors"
+                                className="p-1.5 text-tertiary hover:text-alert-400 hover:bg-alert-500/10 rounded-lg transition-colors"
                                 title="Delete observation"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1111,7 +1111,7 @@ export default function PupilDetail() {
             {/* Review period settings */}
             <div className="card p-4 mb-4 flex flex-col sm:flex-row sm:items-center gap-4">
               <div className="flex items-center gap-2 flex-1">
-                <label className="text-sm text-navy-300 whitespace-nowrap">Review period:</label>
+                <label className="text-sm text-secondary whitespace-nowrap">Review period:</label>
                 <select
                   value={idpReviewWeeks}
                   onChange={(e) => handleReviewWeeksChange(Number(e.target.value))}
@@ -1130,11 +1130,11 @@ export default function PupilDetail() {
                     onChange={(e) => handleAutoReviewChange(e.target.checked)}
                     className="sr-only"
                   />
-                  <div className={`w-9 h-5 rounded-full transition-colors ${idpAutoReview ? 'bg-pitch-500' : 'bg-navy-700'}`}>
+                  <div className={`w-9 h-5 rounded-full transition-colors ${idpAutoReview ? 'bg-pitch-500' : 'bg-border-default'}`}>
                     <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5 ${idpAutoReview ? 'translate-x-4.5 ml-[18px]' : 'translate-x-0.5 ml-[2px]'}`} />
                   </div>
                 </div>
-                <span className="text-sm text-navy-300">Auto-generate after review period</span>
+                <span className="text-sm text-secondary">Auto-generate after review period</span>
               </label>
             </div>
 
@@ -1153,7 +1153,7 @@ export default function PupilDetail() {
                           <span className="w-2 h-2 rounded-full bg-pitch-500" />
                           Strengths
                         </h3>
-                        <ul className="space-y-1 text-navy-300">
+                        <ul className="space-y-1 text-secondary">
                           {idp.strengths.map((s, i) => (
                             <li key={i}>• {s}</li>
                           ))}
@@ -1168,7 +1168,7 @@ export default function PupilDetail() {
                           <span className="w-2 h-2 rounded-full bg-energy-500" />
                           Areas to Improve
                         </h3>
-                        <ul className="space-y-1 text-navy-300">
+                        <ul className="space-y-1 text-secondary">
                           {idp.areas_to_improve.map((a, i) => (
                             <li key={i}>• {a}</li>
                           ))}
@@ -1183,7 +1183,7 @@ export default function PupilDetail() {
                           <span className="w-2 h-2 rounded-full bg-blue-500" />
                           Development Goals
                         </h3>
-                        <ul className="space-y-1 text-navy-300">
+                        <ul className="space-y-1 text-secondary">
                           {idp.goals.map((g, i) => (
                             <li key={i}>• {g}</li>
                           ))}
@@ -1193,7 +1193,7 @@ export default function PupilDetail() {
                   </div>
                 )}
 
-                <div className="mt-4 pt-4 border-t border-navy-800 text-xs text-navy-500 flex flex-wrap items-center gap-x-4 gap-y-1">
+                <div className="mt-4 pt-4 border-t border-border-default text-xs text-tertiary flex flex-wrap items-center gap-x-4 gap-y-1">
                   <span>Generated on {formatDate(idp.created_at)}</span>
                   {idp.next_review_at && (
                     <span>
@@ -1205,11 +1205,11 @@ export default function PupilDetail() {
               </div>
             ) : (
               <div className="card p-8 text-center">
-                <TrendingUp className="w-12 h-12 text-navy-600 mx-auto mb-4" />
+                <TrendingUp className="w-12 h-12 text-tertiary mx-auto mb-4" />
                 <h3 className="font-display text-lg font-semibold text-white mb-2">
                   No Development Plan Yet
                 </h3>
-                <p className="text-navy-400 mb-4 max-w-md mx-auto">
+                <p className="text-secondary mb-4 max-w-md mx-auto">
                   Generate an AI-powered Individual Development Plan based on observations and pupil data.
                   {observations.length === 0 && (
                     <span className="block mt-2 text-caution-400">
@@ -1257,11 +1257,11 @@ export default function PupilDetail() {
               className="modal-content max-w-2xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Edit Pupil</h2>
                 <button
                   onClick={() => setEditing(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1305,7 +1305,7 @@ export default function PupilDetail() {
 
                 <div>
                   <label className="label">Positions ({getPositionsArray(editData.positions).length}/3)</label>
-                  <p className="text-xs text-navy-500 mb-2">
+                  <p className="text-xs text-tertiary mb-2">
                     Click to add position, click again to cycle priority (1st → 2nd → 3rd → remove)
                   </p>
                   <div className="flex flex-wrap gap-2">
@@ -1332,8 +1332,8 @@ export default function PupilDetail() {
                                   ? 'bg-pitch-600/70 text-white'
                                   : 'bg-pitch-600/50 text-white'
                               : isDisabled
-                                ? 'bg-navy-900 text-navy-600 cursor-not-allowed'
-                                : 'bg-navy-800 text-navy-400 hover:text-white'
+                                ? 'bg-card text-tertiary cursor-not-allowed'
+                                : 'bg-subtle text-secondary hover:text-white'
                             }
                           `}
                           title={isDisabled ? 'Maximum 3 positions' : isSelected ? `Click to change priority (${priorityLabel})` : label}
@@ -1347,12 +1347,12 @@ export default function PupilDetail() {
                     })}
                   </div>
                   {getPositionsArray(editData.positions).length > 0 && (
-                    <div className="mt-3 text-xs text-navy-400">
+                    <div className="mt-3 text-xs text-secondary">
                       <span className="font-medium text-white">Selected:</span>{' '}
                       {getSortedPositions(editData.positions).map(({ position: pos, priority }, idx) => (
                         <span key={pos}>
                           {idx > 0 && ' → '}
-                          <span className={priority === 'primary' ? 'text-pitch-400' : 'text-navy-300'}>
+                          <span className={priority === 'primary' ? 'text-pitch-400' : 'text-secondary'}>
                             {positions[pos]?.label} ({priority === 'primary' ? '1st' : priority === 'secondary' ? '2nd' : '3rd'})
                           </span>
                         </span>
@@ -1365,9 +1365,9 @@ export default function PupilDetail() {
                   <label className="label">Parent/Guardian Contacts</label>
                   <div className="space-y-3">
                     {parseParentContacts(editData.parent_contact).map((contact, index) => (
-                      <div key={index} className="p-3 bg-navy-800/50 rounded-lg space-y-2">
+                      <div key={index} className="p-3 bg-subtle rounded-lg space-y-2">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs text-navy-400 font-medium">Contact {index + 1}</span>
+                          <span className="text-xs text-secondary font-medium">Contact {index + 1}</span>
                           <button
                             type="button"
                             onClick={() => {
@@ -1378,7 +1378,7 @@ export default function PupilDetail() {
                                 parent_contact: updated.length > 0 ? JSON.stringify(updated) : null
                               }))
                             }}
-                            className="p-1 text-navy-500 hover:text-alert-400 hover:bg-alert-500/10 rounded transition-colors"
+                            className="p-1 text-tertiary hover:text-alert-400 hover:bg-alert-500/10 rounded transition-colors"
                             title="Remove contact"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1428,13 +1428,13 @@ export default function PupilDetail() {
                         const updated = [...contacts, { name: '', email: '', phone: '' }]
                         setEditData(prev => ({ ...prev, parent_contact: JSON.stringify(updated) }))
                       }}
-                      className="w-full p-2 border border-dashed border-navy-600 rounded-lg text-sm text-navy-400 hover:text-pitch-400 hover:border-pitch-500 transition-colors flex items-center justify-center gap-2"
+                      className="w-full p-2 border border-dashed border-border-strong rounded-lg text-sm text-secondary hover:text-pitch-400 hover:border-pitch-500 transition-colors flex items-center justify-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
                       Add Contact
                     </button>
                   </div>
-                  <p className="text-xs text-navy-500 mt-2">
+                  <p className="text-xs text-tertiary mt-2">
                     To give a parent login access, use the "Invite Parent" button after saving.
                   </p>
                 </div>
@@ -1450,7 +1450,7 @@ export default function PupilDetail() {
                   />
                 </div>
 
-                <div className="p-4 bg-navy-800/50 rounded-lg border border-navy-600">
+                <div className="p-4 bg-subtle rounded-lg border border-border-strong">
                   <label className="label flex items-center gap-2">
                     <Lock className="w-4 h-4 text-caution-400" />
                     Discreet Notes
@@ -1458,7 +1458,7 @@ export default function PupilDetail() {
                       Private
                     </span>
                   </label>
-                  <p className="text-xs text-navy-500 mb-2">
+                  <p className="text-xs text-tertiary mb-2">
                     Private notes about pupil psychology, communication style, or sensitive context. These notes are never shared with the AI assistant or visible to pupils/parents.
                   </p>
                   <textarea
@@ -1471,7 +1471,7 @@ export default function PupilDetail() {
                 </div>
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex justify-end gap-3">
+              <div className="p-6 border-t border-border-default flex justify-end gap-3">
                 <button
                   onClick={() => setEditing(false)}
                   className="btn-secondary"
@@ -1505,11 +1505,11 @@ export default function PupilDetail() {
               className="modal-content"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Add Observation</h2>
                 <button
                   onClick={() => setShowObsModal(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1530,7 +1530,7 @@ export default function PupilDetail() {
                             p-3 rounded-lg flex items-center gap-2 transition-colors
                             ${newObs.type === type.value
                               ? `bg-${type.color}-500/20 border border-${type.color}-500 text-white`
-                              : 'bg-navy-800 border border-navy-700 text-navy-400 hover:text-white'
+                              : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}
                         >
@@ -1565,7 +1565,7 @@ export default function PupilDetail() {
                             p-2.5 rounded-lg flex items-center justify-center gap-2 text-sm transition-colors
                             ${newObs.contextType === ctx.value
                               ? 'bg-pitch-500/20 border border-pitch-500 text-white'
-                              : 'bg-navy-800 border border-navy-700 text-navy-400 hover:text-white'
+                              : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}
                         >
@@ -1635,9 +1635,9 @@ export default function PupilDetail() {
                     type="checkbox"
                     checked={newObs.visibleToPupil}
                     onChange={(e) => setNewObs(prev => ({ ...prev, visibleToPupil: e.target.checked }))}
-                    className="w-4 h-4 rounded border-navy-600 bg-navy-800 text-pitch-500 focus:ring-pitch-500"
+                    className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-500 focus:ring-pitch-500"
                   />
-                  <span className="text-sm text-navy-300">Share with pupil</span>
+                  <span className="text-sm text-secondary">Share with pupil</span>
                 </label>
 
                 <div className="flex justify-end gap-3 pt-4">
@@ -1682,7 +1682,7 @@ export default function PupilDetail() {
                 <h2 className="font-display text-xl font-semibold text-white text-center mb-2">
                   Delete Pupil?
                 </h2>
-                <p className="text-navy-400 text-center mb-6">
+                <p className="text-secondary text-center mb-6">
                   Are you sure you want to delete <span className="text-white font-medium">{pupil.name}</span>?
                   This action cannot be undone and will remove all associated observations.
                 </p>
@@ -1728,7 +1728,7 @@ export default function PupilDetail() {
               className="modal-content"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">
                   Invite Parent for {pupil.name}
                 </h2>
@@ -1738,7 +1738,7 @@ export default function PupilDetail() {
                     setParentInviteError('')
                     setParentInviteSuccess(null)
                   }}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1773,7 +1773,7 @@ export default function PupilDetail() {
                             </button>
                           </div>
                         </div>
-                        <p className="text-xs text-navy-500">
+                        <p className="text-xs text-tertiary">
                           Send this link to the parent via WhatsApp, text, or email. The link expires in 30 days.
                         </p>
                       </div>
@@ -1799,7 +1799,7 @@ export default function PupilDetail() {
                   </div>
                 ) : (
                   <form onSubmit={handleInviteParent} className="space-y-4">
-                    <p className="text-navy-400 text-sm">
+                    <p className="text-secondary text-sm">
                       Generate an invite link for {pupil.name}'s parent or guardian. They'll be able to view
                       the pupil's profile, development plan, and upcoming matches.
                     </p>
@@ -1821,20 +1821,20 @@ export default function PupilDetail() {
                         placeholder="parent@example.com"
                         className="input"
                       />
-                      <p className="text-xs text-navy-500 mt-1">Used to identify them when they sign up</p>
+                      <p className="text-xs text-tertiary mt-1">Used to identify them when they sign up</p>
                     </div>
 
                     {/* Show pending invites */}
                     {parentInvites.length > 0 && (
                       <div className="pt-2">
-                        <p className="text-xs text-navy-400 mb-2 flex items-center gap-1">
+                        <p className="text-xs text-secondary mb-2 flex items-center gap-1">
                           <Clock className="w-3 h-3" /> Pending Invites
                         </p>
                         <div className="space-y-2">
                           {parentInvites.map(invite => (
-                            <div key={invite.id} className="flex items-center gap-2 p-2 bg-navy-800/30 rounded-lg text-sm">
-                              <Mail className="w-4 h-4 text-navy-500" />
-                              <span className="text-navy-300 truncate flex-1">{invite.email}</span>
+                            <div key={invite.id} className="flex items-center gap-2 p-2 bg-subtle rounded-lg text-sm">
+                              <Mail className="w-4 h-4 text-tertiary" />
+                              <span className="text-secondary truncate flex-1">{invite.email}</span>
                             </div>
                           ))}
                         </div>
@@ -1889,11 +1889,11 @@ export default function PupilDetail() {
               className="modal-content"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white">Edit Observation</h2>
                 <button
                   onClick={() => setEditingObs(null)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -1914,7 +1914,7 @@ export default function PupilDetail() {
                             p-3 rounded-lg flex items-center gap-2 transition-colors
                             ${editObsData.type === type.value
                               ? `bg-${type.color}-500/20 border border-${type.color}-500 text-white`
-                              : 'bg-navy-800 border border-navy-700 text-navy-400 hover:text-white'
+                              : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}
                         >
@@ -1949,7 +1949,7 @@ export default function PupilDetail() {
                             p-2.5 rounded-lg flex items-center justify-center gap-2 text-sm transition-colors
                             ${editObsData.contextType === ctx.value
                               ? 'bg-pitch-500/20 border border-pitch-500 text-white'
-                              : 'bg-navy-800 border border-navy-700 text-navy-400 hover:text-white'
+                              : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}
                         >
@@ -2049,14 +2049,14 @@ export default function PupilDetail() {
               className="modal-content max-w-lg"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
                   <Award className="w-6 h-6 text-energy-400" />
                   Award Badge to {pupil.name}
                 </h2>
                 <button
                   onClick={() => setShowAwardModal(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2075,14 +2075,14 @@ export default function PupilDetail() {
                           p-3 rounded-lg flex items-center gap-3 transition-colors text-left
                           ${awardData.achievement_type === key
                             ? 'bg-energy-500/20 border border-energy-500 text-white'
-                            : 'bg-navy-800 border border-navy-700 text-navy-400 hover:text-white hover:border-navy-600'
+                            : 'bg-subtle border border-border-strong text-secondary hover:text-white hover:border-border-strong'
                           }
                         `}
                       >
                         <span className="text-2xl">{badge.icon}</span>
                         <div>
                           <p className="font-medium text-sm">{badge.title}</p>
-                          <p className="text-xs text-navy-500">{badge.description}</p>
+                          <p className="text-xs text-tertiary">{badge.description}</p>
                         </div>
                       </button>
                     ))}
@@ -2100,7 +2100,7 @@ export default function PupilDetail() {
                         rows={2}
                         className="input resize-none"
                       />
-                      <p className="text-xs text-navy-500 mt-1">
+                      <p className="text-xs text-tertiary mt-1">
                         This message will be shown to the pupil and parents
                       </p>
                     </div>
@@ -2108,7 +2108,7 @@ export default function PupilDetail() {
                 )}
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex gap-3">
+              <div className="p-6 border-t border-border-default flex gap-3">
                 <button
                   onClick={() => setShowAwardModal(false)}
                   className="btn-secondary flex-1"
@@ -2162,7 +2162,7 @@ export default function PupilDetail() {
                 <h2 className="font-display text-xl font-semibold text-white text-center mb-2">
                   Delete Observation?
                 </h2>
-                <p className="text-navy-400 text-center mb-6">
+                <p className="text-secondary text-center mb-6">
                   Are you sure you want to delete this observation? This action cannot be undone.
                 </p>
                 <div className="flex gap-3">
@@ -2205,14 +2205,14 @@ export default function PupilDetail() {
               className="modal-content max-w-3xl"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-pitch-400" />
                   Attribute Analysis for {pupil.name}
                 </h2>
                 <button
                   onClick={() => setShowAttributeAnalysis(false)}
-                  className="p-2 text-navy-400 hover:text-white transition-colors"
+                  className="p-2 text-secondary hover:text-white transition-colors"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -2222,8 +2222,8 @@ export default function PupilDetail() {
                 {analyzingAttributes ? (
                   <div className="flex flex-col items-center justify-center py-12">
                     <Loader2 className="w-8 h-8 animate-spin text-pitch-400 mb-4" />
-                    <p className="text-navy-400">Analyzing pupil attributes...</p>
-                    <p className="text-sm text-navy-500 mt-1">This may take a few seconds</p>
+                    <p className="text-secondary">Analyzing pupil attributes...</p>
+                    <p className="text-sm text-tertiary mt-1">This may take a few seconds</p>
                   </div>
                 ) : attributeAnalysis ? (
                   <div>
@@ -2231,7 +2231,7 @@ export default function PupilDetail() {
                       {attributeAnalysis.analysis}
                     </AIMarkdown>
                     {attributeAnalysis.generated_at && (
-                      <div className="mt-6 pt-4 border-t border-navy-800 text-xs text-navy-500">
+                      <div className="mt-6 pt-4 border-t border-border-default text-xs text-tertiary">
                         Generated on {new Date(attributeAnalysis.generated_at).toLocaleDateString('en-GB', {
                           day: 'numeric',
                           month: 'short',
@@ -2243,13 +2243,13 @@ export default function PupilDetail() {
                     )}
                   </div>
                 ) : (
-                  <div className="text-center py-8 text-navy-400">
+                  <div className="text-center py-8 text-secondary">
                     No analysis available
                   </div>
                 )}
               </div>
 
-              <div className="p-6 border-t border-navy-800 flex justify-end gap-3">
+              <div className="p-6 border-t border-border-default flex justify-end gap-3">
                 <button
                   onClick={() => setShowAttributeAnalysis(false)}
                   className="btn-secondary"
@@ -2293,13 +2293,13 @@ function AttributeCard({ title, icon: Icon, iconColor, attributes, placeholder }
         <div className="space-y-2">
           {Object.entries(attributes).map(([key, value]) => (
             <div key={key} className="flex items-center justify-between text-sm">
-              <span className="text-navy-400 capitalize">{key.replace(/_/g, ' ')}</span>
-              <span className="text-navy-200">{value}</span>
+              <span className="text-secondary capitalize">{key.replace(/_/g, ' ')}</span>
+              <span className="text-primary">{value}</span>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-sm text-navy-500">{placeholder}</p>
+        <p className="text-sm text-tertiary">{placeholder}</p>
       )}
     </div>
   )

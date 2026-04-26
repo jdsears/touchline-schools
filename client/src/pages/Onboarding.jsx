@@ -147,7 +147,7 @@ export default function Onboarding() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-page flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
         {/* Progress */}
         <div className="flex items-center justify-center gap-2 mb-8">
@@ -157,43 +157,43 @@ export default function Onboarding() {
                 w-10 h-10 rounded-full flex items-center justify-center transition-colors
                 ${i < step ? 'bg-pitch-600 text-white' :
                   i === step ? 'bg-pitch-600/20 text-pitch-400 ring-2 ring-pitch-600' :
-                  'bg-navy-800 text-navy-500'}
+                  'bg-subtle text-tertiary'}
               `}>
                 {i < step ? <Check className="w-5 h-5" /> : <s.icon className="w-5 h-5" />}
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`w-8 h-0.5 ${i < step ? 'bg-pitch-600' : 'bg-navy-800'}`} />
+                <div className={`w-8 h-0.5 ${i < step ? 'bg-pitch-600' : 'bg-subtle'}`} />
               )}
             </div>
           ))}
         </div>
 
-        <div className="bg-navy-900 rounded-2xl border border-navy-800 p-8">
+        <div className="bg-card rounded-2xl border border-border-default p-8">
           {/* Step 1: School Details */}
           {step === 0 && (
             <>
               <h1 className="text-2xl font-bold text-white mb-2">Set up your school</h1>
-              <p className="text-navy-400 mb-6">Tell us about your school to get started.</p>
+              <p className="text-secondary mb-6">Tell us about your school to get started.</p>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm text-navy-300 mb-1">School Name *</label>
+                  <label className="block text-sm text-secondary mb-1">School Name *</label>
                   <input
                     type="text"
                     placeholder="e.g., Langley Prep School"
                     value={school.name}
                     onChange={e => setSchool({ ...school, name: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                     autoFocus
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-navy-300 mb-1">School Type</label>
+                    <label className="block text-sm text-secondary mb-1">School Type</label>
                     <select
                       value={school.school_type}
                       onChange={e => setSchool({ ...school, school_type: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
                     >
                       {SCHOOL_TYPES.map(t => (
                         <option key={t.value} value={t.value}>{t.label}</option>
@@ -201,76 +201,76 @@ export default function Onboarding() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm text-navy-300 mb-1">URN (optional)</label>
+                    <label className="block text-sm text-secondary mb-1">URN (optional)</label>
                     <input
                       type="text"
                       placeholder="Unique Reference Number"
                       value={school.urn}
                       onChange={e => setSchool({ ...school, urn: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                     />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-navy-300 mb-1">Contact Email</label>
+                    <label className="block text-sm text-secondary mb-1">Contact Email</label>
                     <input
                       type="email"
                       placeholder="pe@school.ac.uk"
                       value={school.contact_email}
                       onChange={e => setSchool({ ...school, contact_email: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-navy-300 mb-1">Phone (optional)</label>
+                    <label className="block text-sm text-secondary mb-1">Phone (optional)</label>
                     <input
                       type="tel"
                       value={school.contact_phone}
                       onChange={e => setSchool({ ...school, contact_phone: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                     />
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-navy-300 mb-1">Address</label>
+                  <label className="block text-sm text-secondary mb-1">Address</label>
                   <input
                     type="text"
                     placeholder="Street address"
                     value={school.address_line1}
                     onChange={e => setSchool({ ...school, address_line1: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <input type="text" placeholder="City" value={school.city}
                     onChange={e => setSchool({ ...school, city: e.target.value })}
-                    className="px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500" />
+                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
                   <input type="text" placeholder="County" value={school.county}
                     onChange={e => setSchool({ ...school, county: e.target.value })}
-                    className="px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500" />
+                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
                   <input type="text" placeholder="Postcode" value={school.postcode}
                     onChange={e => setSchool({ ...school, postcode: e.target.value })}
-                    className="px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500" />
+                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
                 </div>
 
                 {/* School colours */}
                 <div>
-                  <label className="block text-sm text-navy-300 mb-2">School Colours</label>
+                  <label className="block text-sm text-secondary mb-2">School Colours</label>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <input type="color" value={school.primary_color}
                         onChange={e => setSchool({ ...school, primary_color: e.target.value })}
                         className="w-10 h-10 rounded cursor-pointer border-0" />
-                      <span className="text-xs text-navy-400">Primary</span>
+                      <span className="text-xs text-secondary">Primary</span>
                     </div>
                     <div className="flex items-center gap-2">
                       <input type="color" value={school.secondary_color}
                         onChange={e => setSchool({ ...school, secondary_color: e.target.value })}
                         className="w-10 h-10 rounded cursor-pointer border-0" />
-                      <span className="text-xs text-navy-400">Secondary</span>
+                      <span className="text-xs text-secondary">Secondary</span>
                     </div>
-                    <div className="w-12 h-12 rounded-lg flex items-center justify-center border border-navy-700"
+                    <div className="w-12 h-12 rounded-lg flex items-center justify-center border border-border-strong"
                       style={{ background: `linear-gradient(135deg, ${school.primary_color}, ${school.secondary_color})` }}>
                       <GraduationCap className="w-6 h-6 text-white drop-shadow" />
                     </div>
@@ -296,7 +296,7 @@ export default function Onboarding() {
           {step === 1 && (
             <>
               <h1 className="text-2xl font-bold text-white mb-2">Invite your teachers</h1>
-              <p className="text-navy-400 mb-6">Add PE staff and sports coaches. You can always add more later.</p>
+              <p className="text-secondary mb-6">Add PE staff and sports coaches. You can always add more later.</p>
 
               <div className="space-y-3 mb-4">
                 {teachers.map((t, i) => (
@@ -306,25 +306,25 @@ export default function Onboarding() {
                       placeholder="Name"
                       value={t.name}
                       onChange={e => updateTeacher(i, 'name', e.target.value)}
-                      className="flex-1 px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                      className="flex-1 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                     />
                     <input
                       type="email"
                       placeholder="Email"
                       value={t.email}
                       onChange={e => updateTeacher(i, 'email', e.target.value)}
-                      className="flex-1 px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                      className="flex-1 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                     />
                     <select
                       value={t.role}
                       onChange={e => updateTeacher(i, 'role', e.target.value)}
-                      className="w-32 px-2 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                      className="w-32 px-2 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
                     >
                       <option value="admin">Head of PE</option>
                       <option value="coach">Teacher</option>
                     </select>
                     {teachers.length > 1 && (
-                      <button onClick={() => removeTeacherRow(i)} className="p-1.5 text-navy-500 hover:text-alert-400">
+                      <button onClick={() => removeTeacherRow(i)} className="p-1.5 text-tertiary hover:text-alert-400">
                         <X className="w-4 h-4" />
                       </button>
                     )}
@@ -337,12 +337,12 @@ export default function Onboarding() {
               </button>
 
               <div className="flex justify-between">
-                <button onClick={() => setStep(0)} className="flex items-center gap-2 px-4 py-2.5 text-navy-400 hover:text-white transition-colors">
+                <button onClick={() => setStep(0)} className="flex items-center gap-2 px-4 py-2.5 text-secondary hover:text-white transition-colors">
                   <ChevronLeft className="w-4 h-4" />
                   Back
                 </button>
                 <div className="flex gap-3">
-                  <button onClick={() => setStep(2)} className="px-4 py-2.5 text-navy-400 hover:text-white text-sm transition-colors">
+                  <button onClick={() => setStep(2)} className="px-4 py-2.5 text-secondary hover:text-white text-sm transition-colors">
                     Skip for now
                   </button>
                   <button
@@ -363,15 +363,15 @@ export default function Onboarding() {
           {step === 2 && (
             <>
               <h1 className="text-2xl font-bold text-white mb-2">Import your pupils</h1>
-              <p className="text-navy-400 mb-6">Upload a CSV file from your MIS or spreadsheet. You can always add more later.</p>
+              <p className="text-secondary mb-6">Upload a CSV file from your MIS or spreadsheet. You can always add more later.</p>
 
-              <div className="bg-navy-800/50 rounded-xl border border-navy-700 p-6 mb-6">
+              <div className="bg-subtle rounded-xl border border-border-strong p-6 mb-6">
                 <h3 className="text-sm font-semibold text-white mb-3">CSV Format</h3>
-                <p className="text-xs text-navy-400 mb-3">
+                <p className="text-xs text-secondary mb-3">
                   Your CSV should have columns for pupil names. Year group and house are optional but recommended.
                   We accept flexible header names.
                 </p>
-                <div className="bg-navy-950 rounded-lg p-3 font-mono text-xs text-navy-300 overflow-x-auto">
+                <div className="bg-page rounded-lg p-3 font-mono text-xs text-secondary overflow-x-auto">
                   first_name,last_name,year_group,house<br />
                   James,Wilson,7,Tudor<br />
                   Sophie,Chen,7,Stuart<br />
@@ -384,27 +384,27 @@ export default function Onboarding() {
                 <label className="block w-full cursor-pointer">
                   <div className={`
                     border-2 border-dashed rounded-xl p-8 text-center transition-colors
-                    ${csvFile ? 'border-pitch-600 bg-pitch-600/10' : 'border-navy-700 hover:border-navy-500'}
+                    ${csvFile ? 'border-pitch-600 bg-pitch-600/10' : 'border-border-strong hover:border-navy-500'}
                   `}>
                     {csvFile ? (
                       <div className="flex items-center justify-center gap-3">
                         <Check className="w-6 h-6 text-pitch-400" />
                         <div>
                           <p className="text-sm font-medium text-white">{csvFile.name}</p>
-                          <p className="text-xs text-navy-400">{(csvFile.size / 1024).toFixed(1)} KB</p>
+                          <p className="text-xs text-secondary">{(csvFile.size / 1024).toFixed(1)} KB</p>
                         </div>
                         <button
                           onClick={e => { e.preventDefault(); setCsvFile(null); setImportResult(null) }}
-                          className="ml-2 p-1 text-navy-400 hover:text-alert-400"
+                          className="ml-2 p-1 text-secondary hover:text-alert-400"
                         >
                           <X className="w-4 h-4" />
                         </button>
                       </div>
                     ) : (
                       <>
-                        <Upload className="w-8 h-8 text-navy-500 mx-auto mb-2" />
-                        <p className="text-sm text-navy-300">Click to upload CSV file</p>
-                        <p className="text-xs text-navy-500 mt-1">or drag and drop</p>
+                        <Upload className="w-8 h-8 text-tertiary mx-auto mb-2" />
+                        <p className="text-sm text-secondary">Click to upload CSV file</p>
+                        <p className="text-xs text-tertiary mt-1">or drag and drop</p>
                       </>
                     )}
                   </div>
@@ -430,12 +430,12 @@ export default function Onboarding() {
               )}
 
               <div className="flex justify-between">
-                <button onClick={() => setStep(1)} className="flex items-center gap-2 px-4 py-2.5 text-navy-400 hover:text-white transition-colors">
+                <button onClick={() => setStep(1)} className="flex items-center gap-2 px-4 py-2.5 text-secondary hover:text-white transition-colors">
                   <ChevronLeft className="w-4 h-4" />
                   Back
                 </button>
                 <div className="flex gap-3">
-                  <button onClick={() => setStep(3)} className="px-4 py-2.5 text-navy-400 hover:text-white text-sm transition-colors">
+                  <button onClick={() => setStep(3)} className="px-4 py-2.5 text-secondary hover:text-white text-sm transition-colors">
                     Skip for now
                   </button>
                   <button
@@ -456,22 +456,22 @@ export default function Onboarding() {
           {step === 3 && (
             <>
               <h1 className="text-2xl font-bold text-white mb-2">Create your first team</h1>
-              <p className="text-navy-400 mb-6">Set up an extra-curricular sports team. You can add more from the Teacher Hub.</p>
+              <p className="text-secondary mb-6">Set up an extra-curricular sports team. You can add more from the Teacher Hub.</p>
 
               <div className="space-y-4 mb-8">
                 <div>
-                  <label className="block text-sm text-navy-300 mb-1">Team Name</label>
+                  <label className="block text-sm text-secondary mb-1">Team Name</label>
                   <input
                     type="text"
                     placeholder="e.g., U13 Boys Football"
                     value={team.name}
                     onChange={e => setTeam({ ...team, name: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm text-navy-300 mb-2">Sport</label>
+                  <label className="block text-sm text-secondary mb-2">Sport</label>
                   <div className="flex flex-wrap gap-2">
                     {SPORTS.map(s => (
                       <button
@@ -481,7 +481,7 @@ export default function Onboarding() {
                           flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm transition-colors
                           ${team.sport === s.value
                             ? 'bg-pitch-600/20 text-pitch-400 ring-1 ring-pitch-600'
-                            : 'bg-navy-800 text-navy-400 hover:text-white'}
+                            : 'bg-subtle text-secondary hover:text-white'}
                         `}
                       >
                         <span className="text-lg">{s.icon}</span>
@@ -493,21 +493,21 @@ export default function Onboarding() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-navy-300 mb-1">Age Group</label>
+                    <label className="block text-sm text-secondary mb-1">Age Group</label>
                     <input
                       type="text"
                       placeholder="e.g., U13, 1st XI"
                       value={team.age_group}
                       onChange={e => setTeam({ ...team, age_group: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm placeholder:text-navy-500 focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-navy-300 mb-1">Gender</label>
+                    <label className="block text-sm text-secondary mb-1">Gender</label>
                     <select
                       value={team.gender}
                       onChange={e => setTeam({ ...team, gender: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
                     >
                       <option value="boys">Boys</option>
                       <option value="girls">Girls</option>
@@ -518,12 +518,12 @@ export default function Onboarding() {
               </div>
 
               <div className="flex justify-between">
-                <button onClick={() => setStep(2)} className="flex items-center gap-2 px-4 py-2.5 text-navy-400 hover:text-white transition-colors">
+                <button onClick={() => setStep(2)} className="flex items-center gap-2 px-4 py-2.5 text-secondary hover:text-white transition-colors">
                   <ChevronLeft className="w-4 h-4" />
                   Back
                 </button>
                 <div className="flex gap-3">
-                  <button onClick={handleFinish} className="px-4 py-2.5 text-navy-400 hover:text-white text-sm transition-colors">
+                  <button onClick={handleFinish} className="px-4 py-2.5 text-secondary hover:text-white text-sm transition-colors">
                     Skip for now
                   </button>
                   <button
@@ -542,7 +542,7 @@ export default function Onboarding() {
         </div>
 
         {/* Step indicator text */}
-        <p className="text-center text-xs text-navy-500 mt-4">
+        <p className="text-center text-xs text-tertiary mt-4">
           Step {step + 1} of {STEPS.length}: {STEPS[step].label}
         </p>
       </div>

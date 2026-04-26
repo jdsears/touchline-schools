@@ -53,9 +53,9 @@ export default function PupilClips({ pupilId }) {
   if (clips.length === 0) {
     return (
       <div className="text-center py-12">
-        <Scissors className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-        <p className="text-navy-400 font-medium">No clips shared yet</p>
-        <p className="text-sm text-navy-500 mt-1">Your coach will tag you in video clips after matches</p>
+        <Scissors className="w-12 h-12 text-tertiary mx-auto mb-3" />
+        <p className="text-secondary font-medium">No clips shared yet</p>
+        <p className="text-sm text-tertiary mt-1">Your coach will tag you in video clips after matches</p>
       </div>
     )
   }
@@ -72,7 +72,7 @@ export default function PupilClips({ pupilId }) {
             className="card overflow-hidden cursor-pointer hover:ring-1 hover:ring-pitch-500/50 transition-all"
             onClick={() => openClip(clip)}
           >
-            <div className="aspect-video bg-navy-800 relative">
+            <div className="aspect-video bg-subtle relative">
               {clip.mux_playback_id ? (
                 <img
                   src={`https://image.mux.com/${clip.mux_playback_id}/thumbnail.jpg?time=${Math.round(clip.start_time)}&width=480`}
@@ -81,26 +81,26 @@ export default function PupilClips({ pupilId }) {
                 />
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <Video className="w-8 h-8 text-navy-600" />
+                  <Video className="w-8 h-8 text-tertiary" />
                 </div>
               )}
               <div className="absolute inset-0 bg-black/30 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                <Play className="w-12 h-12 text-white" />
+                <Play className="w-12 h-12 text-primary" />
               </div>
-              <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-xs text-white font-mono">
+              <div className="absolute bottom-2 right-2 px-2 py-1 rounded bg-black/70 text-xs text-primary font-mono">
                 {formatTime(clip.start_time)} - {formatTime(clip.end_time)}
               </div>
             </div>
             <div className="p-3">
-              <h3 className="font-medium text-white text-sm line-clamp-1">{clip.title}</h3>
-              <p className="text-xs text-navy-400 mt-1">{clip.video_title}</p>
+              <h3 className="font-medium text-primary text-sm line-clamp-1">{clip.title}</h3>
+              <p className="text-xs text-secondary mt-1">{clip.video_title}</p>
               {clip.feedback && (
                 <div className="mt-2 p-2 bg-pitch-500/10 rounded-lg">
                   <div className="flex items-center gap-1 mb-1">
                     <MessageSquare className="w-3 h-3 text-pitch-400" />
                     <span className="text-xs text-pitch-400 font-medium">Coach Feedback</span>
                   </div>
-                  <p className="text-xs text-navy-300 line-clamp-2">{clip.feedback}</p>
+                  <p className="text-xs text-secondary line-clamp-2">{clip.feedback}</p>
                 </div>
               )}
               {clip.rating && (
@@ -129,15 +129,15 @@ export default function PupilClips({ pupilId }) {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-navy-900 rounded-2xl overflow-hidden max-w-3xl w-full"
+              className="bg-card rounded-2xl overflow-hidden max-w-3xl w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+              <div className="p-4 border-b border-border-default flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-white">{activeClip.title}</h3>
-                  <p className="text-xs text-navy-400">{activeClip.video_title}</p>
+                  <h3 className="font-medium text-primary">{activeClip.title}</h3>
+                  <p className="text-xs text-secondary">{activeClip.video_title}</p>
                 </div>
-                <button onClick={closeClip} className="p-2 text-navy-400 hover:text-white">
+                <button onClick={closeClip} className="p-2 text-secondary hover:text-primary">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -159,11 +159,11 @@ export default function PupilClips({ pupilId }) {
                   {activeClip.feedback && (
                     <div className="p-3 bg-pitch-500/10 rounded-lg mb-3">
                       <p className="text-xs text-pitch-400 font-medium mb-1">Coach Feedback</p>
-                      <p className="text-sm text-navy-200">{activeClip.feedback}</p>
+                      <p className="text-sm text-primary">{activeClip.feedback}</p>
                     </div>
                   )}
                   {activeClip.description && (
-                    <p className="text-sm text-navy-400">{activeClip.description}</p>
+                    <p className="text-sm text-secondary">{activeClip.description}</p>
                   )}
                 </div>
               )}

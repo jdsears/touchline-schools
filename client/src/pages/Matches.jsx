@@ -36,7 +36,7 @@ const statusColors = {
   available: 'bg-green-500/20 text-green-400 border-green-500/30',
   unavailable: 'bg-red-500/20 text-red-400 border-red-500/30',
   maybe: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-  pending: 'bg-navy-700 text-navy-400 border-navy-600'
+  pending: 'bg-border-default text-secondary border-border-strong'
 }
 
 const statusIcons = {
@@ -300,9 +300,9 @@ export default function Matches() {
           className="card w-full max-w-md"
           onClick={e => e.stopPropagation()}
         >
-          <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+          <div className="p-4 border-b border-border-default flex items-center justify-between">
             <h2 className="text-xl font-display font-bold text-white">Add Match</h2>
-            <button onClick={() => setShowAddModal(false)} className="text-navy-400 hover:text-white">
+            <button onClick={() => setShowAddModal(false)} className="text-secondary hover:text-white">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -382,7 +382,7 @@ export default function Matches() {
                   className={`flex-1 py-2 rounded-lg border transition ${
                     formData.isHome
                       ? 'bg-pitch-500/20 border-pitch-500 text-pitch-400'
-                      : 'border-navy-700 text-navy-400 hover:border-navy-600'
+                      : 'border-border-strong text-secondary hover:border-border-strong'
                   }`}
                 >
                   Home
@@ -393,7 +393,7 @@ export default function Matches() {
                   className={`flex-1 py-2 rounded-lg border transition ${
                     !formData.isHome
                       ? 'bg-pitch-500/20 border-pitch-500 text-pitch-400'
-                      : 'border-navy-700 text-navy-400 hover:border-navy-600'
+                      : 'border-border-strong text-secondary hover:border-border-strong'
                   }`}
                 >
                   Away
@@ -412,14 +412,14 @@ export default function Matches() {
                     className={`flex-1 py-2 rounded-lg border transition text-sm capitalize ${
                       formData.kitType === kit
                         ? 'bg-pitch-500/20 border-pitch-500 text-pitch-400'
-                        : 'border-navy-700 text-navy-400 hover:border-navy-600'
+                        : 'border-border-strong text-secondary hover:border-border-strong'
                     }`}
                   >
                     {kit === 'third' ? '3rd Kit' : `${kit.charAt(0).toUpperCase() + kit.slice(1)} Kit`}
                   </button>
                 ))}
               </div>
-              <p className="text-xs text-navy-500 mt-1">Change if there's a kit clash</p>
+              <p className="text-xs text-tertiary mt-1">Change if there's a kit clash</p>
             </div>
 
             <div>
@@ -578,14 +578,14 @@ export default function Matches() {
           className="card w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
           onClick={e => e.stopPropagation()}
         >
-          <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+          <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-pitch-400" />
               <h2 className="text-xl font-display font-bold text-white">Import from Image</h2>
             </div>
             <button
               onClick={() => setShowImportModal(false)}
-              className="text-navy-400 hover:text-white"
+              className="text-secondary hover:text-white"
             >
               <X className="w-5 h-5" />
             </button>
@@ -594,7 +594,7 @@ export default function Matches() {
           <div className="p-4 flex-1 overflow-y-auto">
             {!extractedFixtures ? (
               <>
-                <p className="text-navy-400 text-sm mb-4">
+                <p className="text-secondary text-sm mb-4">
                   Upload a screenshot of your fixtures or results from FA Full-Time, and AI will extract the match data.
                 </p>
 
@@ -604,7 +604,7 @@ export default function Matches() {
                       <img
                         src={imagePreview}
                         alt="Fixture list"
-                        className="w-full rounded-lg border border-navy-700 max-h-64 object-contain bg-navy-900"
+                        className="w-full rounded-lg border border-border-strong max-h-64 object-contain bg-card"
                       />
                       <button
                         onClick={() => {
@@ -643,14 +643,14 @@ export default function Matches() {
                     className={`block w-full p-8 border-2 border-dashed rounded-lg transition cursor-pointer text-center ${
                       isDragging
                         ? 'border-pitch-500 bg-pitch-500/10'
-                        : 'border-navy-600 hover:border-pitch-500'
+                        : 'border-border-strong hover:border-pitch-500'
                     }`}
                   >
-                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-pitch-400' : 'text-navy-500'}`} />
+                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-pitch-400' : 'text-tertiary'}`} />
                     <p className="text-white font-medium">
                       {isDragging ? 'Drop image here' : 'Click or drag & drop image'}
                     </p>
-                    <p className="text-sm text-navy-400 mt-1">PNG, JPG up to 10MB</p>
+                    <p className="text-sm text-secondary mt-1">PNG, JPG up to 10MB</p>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -664,7 +664,7 @@ export default function Matches() {
             ) : (
               <>
                 <div className="flex items-center justify-between mb-4">
-                  <p className="text-navy-400 text-sm">
+                  <p className="text-secondary text-sm">
                     Found {extractedFixtures.length} matches. Select which to import:
                   </p>
                   <button
@@ -687,14 +687,14 @@ export default function Matches() {
                       className={`p-3 rounded-lg border cursor-pointer transition ${
                         selectedFixtures.includes(index)
                           ? 'bg-pitch-500/10 border-pitch-500'
-                          : 'bg-navy-800/50 border-navy-700 hover:border-navy-600'
+                          : 'bg-subtle border-border-strong hover:border-border-strong'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-5 h-5 rounded border flex items-center justify-center ${
                           selectedFixtures.includes(index)
                             ? 'bg-pitch-500 border-pitch-500'
-                            : 'border-navy-600'
+                            : 'border-border-strong'
                         }`}>
                           {selectedFixtures.includes(index) && <Check className="w-3 h-3 text-white" />}
                         </div>
@@ -718,13 +718,13 @@ export default function Matches() {
                               </span>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-navy-400 mt-1">
+                          <div className="flex items-center gap-3 text-xs text-secondary mt-1">
                             <span>{new Date(fixture.date).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' })}</span>
                             {fixture.time && <span>{fixture.time}</span>}
                             {fixture.location && <span>@ {fixture.location}</span>}
                           </div>
                           {fixture.competition && (
-                            <p className="text-xs text-navy-500 mt-1">{fixture.competition}</p>
+                            <p className="text-xs text-tertiary mt-1">{fixture.competition}</p>
                           )}
                         </div>
                       </div>
@@ -736,8 +736,8 @@ export default function Matches() {
           </div>
 
           {extractedFixtures && (
-            <div className="p-4 border-t border-navy-800 flex justify-between items-center">
-              <p className="text-sm text-navy-400">
+            <div className="p-4 border-t border-border-default flex justify-between items-center">
+              <p className="text-sm text-secondary">
                 {selectedFixtures.length} of {extractedFixtures.length} selected
               </p>
               <div className="flex gap-3">
@@ -786,35 +786,35 @@ export default function Matches() {
           className="card w-full max-w-md"
           onClick={e => e.stopPropagation()}
         >
-          <div className="p-4 border-b border-navy-800 flex items-center justify-between">
+          <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
               <Trash2 className="w-5 h-5 text-red-400" />
               <h2 className="text-xl font-display font-bold text-white">Delete Matches</h2>
             </div>
             <button
               onClick={() => setShowDeleteAllModal(false)}
-              className="text-navy-400 hover:text-white"
+              className="text-secondary hover:text-white"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           <div className="p-4 space-y-3">
-            <p className="text-navy-400 text-sm mb-4">
+            <p className="text-secondary text-sm mb-4">
               Choose which matches to delete. This action cannot be undone.
             </p>
 
             <button
               onClick={() => handleDeleteAll('upcoming')}
               disabled={upcomingMatches.length === 0}
-              className="w-full p-4 rounded-lg border border-navy-700 hover:border-red-500/50 hover:bg-red-500/10 transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-4 rounded-lg border border-border-strong hover:border-red-500/50 hover:bg-red-500/10 transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium text-white group-hover:text-red-400">Upcoming Fixtures</h3>
-                  <p className="text-sm text-navy-400">Delete all future matches without results</p>
+                  <p className="text-sm text-secondary">Delete all future matches without results</p>
                 </div>
-                <span className="text-lg font-bold text-navy-500 group-hover:text-red-400">
+                <span className="text-lg font-bold text-tertiary group-hover:text-red-400">
                   {upcomingMatches.length}
                 </span>
               </div>
@@ -823,14 +823,14 @@ export default function Matches() {
             <button
               onClick={() => handleDeleteAll('results')}
               disabled={recentResults.length === 0}
-              className="w-full p-4 rounded-lg border border-navy-700 hover:border-red-500/50 hover:bg-red-500/10 transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-4 rounded-lg border border-border-strong hover:border-red-500/50 hover:bg-red-500/10 transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="font-medium text-white group-hover:text-red-400">Results</h3>
-                  <p className="text-sm text-navy-400">Delete all past matches with results</p>
+                  <p className="text-sm text-secondary">Delete all past matches with results</p>
                 </div>
-                <span className="text-lg font-bold text-navy-500 group-hover:text-red-400">
+                <span className="text-lg font-bold text-tertiary group-hover:text-red-400">
                   {recentResults.length}
                 </span>
               </div>
@@ -866,7 +866,7 @@ export default function Matches() {
       <motion.div
         layout
         className={`card cursor-pointer transition-all ${
-          isSelected ? 'ring-2 ring-pitch-500' : 'hover:border-navy-600'
+          isSelected ? 'ring-2 ring-pitch-500' : 'hover:border-border-strong'
         }`}
         onClick={() => {
           if (isPast || showResult) {
@@ -879,11 +879,11 @@ export default function Matches() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="text-center min-w-[60px]">
-              <p className="text-xs text-navy-500 uppercase">{formatDate(match.date)}</p>
+              <p className="text-xs text-tertiary uppercase">{formatDate(match.date)}</p>
               <p className="text-lg font-bold text-white">{formatTime(match.date)}</p>
             </div>
 
-            <div className="h-12 w-px bg-navy-700" />
+            <div className="h-12 w-px bg-border-default" />
 
             <div>
               <div className="flex items-center gap-2">
@@ -896,10 +896,10 @@ export default function Matches() {
                 {match.veoLink && <Video className="w-4 h-4 text-pitch-400" />}
               </div>
               {match.competition && (
-                <p className="text-sm text-navy-400">{match.competition}</p>
+                <p className="text-sm text-secondary">{match.competition}</p>
               )}
               {match.location && (
-                <p className="text-xs text-navy-500 flex items-center gap-1 mt-1">
+                <p className="text-xs text-tertiary flex items-center gap-1 mt-1">
                   <MapPin className="w-3 h-3" />
                   {match.location}
                 </p>
@@ -917,7 +917,7 @@ export default function Matches() {
               </div>
             ) : !isPast && (
               <div className="text-right">
-                <p className="text-xs text-navy-500">Availability</p>
+                <p className="text-xs text-tertiary">Availability</p>
                 <p className="text-sm font-medium text-pitch-400">
                   {parseInt(match.available_count) || 0} ready
                 </p>
@@ -927,7 +927,7 @@ export default function Matches() {
               <button
                 onClick={(e) => handleDeleteMatch(match.id, e)}
                 disabled={deletingMatch === match.id}
-                className="p-2 text-navy-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"
+                className="p-2 text-tertiary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"
                 title="Delete match"
               >
                 {deletingMatch === match.id ? (
@@ -937,7 +937,7 @@ export default function Matches() {
                 )}
               </button>
             )}
-            <ChevronRight className="w-5 h-5 text-navy-500" />
+            <ChevronRight className="w-5 h-5 text-tertiary" />
           </div>
         </div>
       </motion.div>
@@ -963,13 +963,13 @@ export default function Matches() {
           </h3>
           <button
             onClick={() => setSelectedMatch(null)}
-            className="text-navy-400 hover:text-white"
+            className="text-secondary hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex items-center gap-4 text-sm text-navy-400 mb-4">
+        <div className="flex items-center gap-4 text-sm text-secondary mb-4">
           <span className="flex items-center gap-1">
             <Calendar className="w-4 h-4" />
             {formatDate(selectedMatch.date)}
@@ -994,9 +994,9 @@ export default function Matches() {
             <p className="text-xl font-bold text-red-400">{summary.unavailable}</p>
             <p className="text-xs text-red-400/70">No</p>
           </div>
-          <div className="text-center p-2 rounded-lg bg-navy-700/50 border border-navy-600">
-            <p className="text-xl font-bold text-navy-400">{summary.pending}</p>
-            <p className="text-xs text-navy-500">Waiting</p>
+          <div className="text-center p-2 rounded-lg bg-border-default/50 border border-border-strong">
+            <p className="text-xl font-bold text-secondary">{summary.pending}</p>
+            <p className="text-xs text-tertiary">Waiting</p>
           </div>
         </div>
 
@@ -1032,16 +1032,16 @@ export default function Matches() {
               return (
                 <div
                   key={pupilId}
-                  className="flex items-center justify-between p-3 rounded-lg bg-navy-800/50 border border-navy-700"
+                  className="flex items-center justify-between p-3 rounded-lg bg-subtle border border-border-strong"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center text-sm font-medium text-white">
+                    <div className="w-8 h-8 rounded-full bg-border-default flex items-center justify-center text-sm font-medium text-white">
                       {data.squad_number || data.player_name?.charAt(0)}
                     </div>
                     <div>
                       <p className="text-sm font-medium text-white">{data.player_name}</p>
                       {data.notes && (
-                        <p className="text-xs text-navy-400">{data.notes}</p>
+                        <p className="text-xs text-secondary">{data.notes}</p>
                       )}
                     </div>
                   </div>
@@ -1057,7 +1057,7 @@ export default function Matches() {
                             className={`p-1.5 rounded transition ${
                               data.status === status
                                 ? statusColors[status]
-                                : 'text-navy-500 hover:text-navy-300'
+                                : 'text-tertiary hover:text-secondary'
                             }`}
                           >
                             <Icon className="w-4 h-4" />
@@ -1095,16 +1095,16 @@ export default function Matches() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl font-display font-bold text-white">Matches</h1>
-          <p className="text-navy-400">{branding?.teamName} • {branding?.ageGroup}</p>
+          <p className="text-secondary">{branding?.teamName} • {branding?.ageGroup}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* View Toggle */}
-          <div className="flex rounded-lg bg-navy-800 p-1">
+          <div className="flex rounded-lg bg-subtle p-1">
             <button
               onClick={() => setShowCalendar(false)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                !showCalendar ? 'bg-pitch-600 text-white' : 'text-navy-400 hover:text-white'
+                !showCalendar ? 'bg-pitch-600 text-white' : 'text-secondary hover:text-white'
               }`}
             >
               <List className="w-4 h-4" />
@@ -1113,7 +1113,7 @@ export default function Matches() {
             <button
               onClick={() => setShowCalendar(true)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                showCalendar ? 'bg-pitch-600 text-white' : 'text-navy-400 hover:text-white'
+                showCalendar ? 'bg-pitch-600 text-white' : 'text-secondary hover:text-white'
               }`}
             >
               <CalendarDays className="w-4 h-4" />
@@ -1167,7 +1167,7 @@ export default function Matches() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
             <div className="card p-4 text-center">
               <p className="text-2xl font-display font-bold text-energy-400">{upcomingMatches.length}</p>
-              <p className="text-sm text-navy-400">Upcoming</p>
+              <p className="text-sm text-secondary">Upcoming</p>
             </div>
             <div className="card p-4 text-center">
               <p className="text-2xl font-display font-bold text-pitch-400">
@@ -1176,15 +1176,15 @@ export default function Matches() {
                   return home > away
                 }).length}
               </p>
-              <p className="text-sm text-navy-400">Wins</p>
+              <p className="text-sm text-secondary">Wins</p>
             </div>
             <div className="card p-4 text-center">
               <p className="text-2xl font-display font-bold text-white">{recentResults.length}</p>
-              <p className="text-sm text-navy-400">Played</p>
+              <p className="text-sm text-secondary">Played</p>
             </div>
             <div className="card p-4 text-center">
               <p className="text-2xl font-display font-bold text-purple-400">{trainingSessions.length}</p>
-              <p className="text-sm text-navy-400">Training</p>
+              <p className="text-sm text-secondary">Training</p>
             </div>
           </div>
         </section>
@@ -1197,7 +1197,7 @@ export default function Matches() {
               className={`px-4 py-2 rounded-lg transition ${
                 activeTab === 'upcoming'
                   ? 'bg-pitch-500 text-white'
-                  : 'bg-navy-800 text-navy-400 hover:text-white'
+                  : 'bg-subtle text-secondary hover:text-white'
               }`}
             >
               Upcoming ({upcomingMatches.length})
@@ -1207,7 +1207,7 @@ export default function Matches() {
               className={`px-4 py-2 rounded-lg transition ${
                 activeTab === 'results'
                   ? 'bg-pitch-500 text-white'
-                  : 'bg-navy-800 text-navy-400 hover:text-white'
+                  : 'bg-subtle text-secondary hover:text-white'
               }`}
             >
               Results ({recentResults.length})
@@ -1217,7 +1217,7 @@ export default function Matches() {
               className={`px-4 py-2 rounded-lg transition ${
                 activeTab === 'all'
                   ? 'bg-pitch-500 text-white'
-                  : 'bg-navy-800 text-navy-400 hover:text-white'
+                  : 'bg-subtle text-secondary hover:text-white'
               }`}
             >
               All ({matches.length})
@@ -1245,8 +1245,8 @@ export default function Matches() {
                 (activeTab === 'results' && recentResults.length === 0) ||
                 (activeTab === 'all' && matches.length === 0)) && (
                 <div className="card text-center py-12">
-                  <Calendar className="w-12 h-12 mx-auto mb-4 text-navy-600" />
-                  <p className="text-navy-400">No {activeTab} matches</p>
+                  <Calendar className="w-12 h-12 mx-auto mb-4 text-tertiary" />
+                  <p className="text-secondary">No {activeTab} matches</p>
                   {isManager && (
                     <button
                       onClick={() => setShowAddModal(true)}
@@ -1266,8 +1266,8 @@ export default function Matches() {
                 <AvailabilityPanel />
               ) : (
                 <div className="card text-center py-12">
-                  <Users className="w-12 h-12 mx-auto mb-4 text-navy-600" />
-                  <p className="text-navy-400">Select a match to view availability</p>
+                  <Users className="w-12 h-12 mx-auto mb-4 text-tertiary" />
+                  <p className="text-secondary">Select a match to view availability</p>
                 </div>
               )}
             </div>

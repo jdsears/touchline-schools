@@ -54,8 +54,8 @@ export default function RugbyPitch({ size = 'medium', className = '', children }
         </div>
 
         {/* Labels */}
-        <div className="absolute top-[4%] left-1/2 -translate-x-1/2 text-[8px] text-white/30 font-medium">TRY LINE</div>
-        <div className="absolute bottom-[4%] left-1/2 -translate-x-1/2 text-[8px] text-white/30 font-medium">TRY LINE</div>
+        <div className="absolute top-[4%] left-1/2 -translate-x-1/2 text-[8px] text-primary/30 font-medium">TRY LINE</div>
+        <div className="absolute bottom-[4%] left-1/2 -translate-x-1/2 text-[8px] text-primary/30 font-medium">TRY LINE</div>
 
         {children}
       </div>

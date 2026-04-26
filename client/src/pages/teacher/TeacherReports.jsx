@@ -303,7 +303,7 @@ export default function TeacherReports() {
                   <button
                     onClick={() => submitReport(pupil.id)}
                     disabled={saving[pupil.id]}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-primary rounded-lg text-sm transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
                   >
                     <Check className="w-3.5 h-3.5" />
                     Submit

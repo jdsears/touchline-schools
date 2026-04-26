@@ -179,7 +179,7 @@ export default function BlockFixtureCreation() {
             <Upload className="w-3.5 h-3.5" /> Import CSV
           </button>
           <button onClick={aiGenerate} disabled={generating}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-primary rounded-lg">
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-on-dark rounded-lg">
             {generating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             {generating ? 'Generating...' : 'AI Assist'}
           </button>
@@ -277,7 +277,7 @@ export default function BlockFixtureCreation() {
         <div className="flex items-center gap-3">
           <span className="text-sm text-secondary">{validCount} fixture{validCount !== 1 ? 's' : ''} ready</span>
           <button onClick={handleSave} disabled={saving || validCount === 0}
-            className="flex items-center gap-2 px-5 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-primary rounded-lg font-medium text-sm">
+            className="flex items-center gap-2 px-5 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg font-medium text-sm">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {saving ? 'Creating...' : `Create ${validCount} fixture${validCount !== 1 ? 's' : ''}`}
           </button>

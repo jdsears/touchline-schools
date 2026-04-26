@@ -50,7 +50,7 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="min-h-screen bg-navy-950 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-page flex items-center justify-center p-8">
       <SEO title="Reset Password" path="/reset-password" noIndex={true} />
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -59,7 +59,7 @@ export default function ResetPassword() {
       >
         <Link to="/" className="inline-flex items-center gap-2 mb-8">
           <MoonBootsMark />
-          <span className="font-bold text-navy-50 text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
+          <span className="font-bold text-primary text-xl" style={{ fontFamily: 'Poppins, system-ui, sans-serif' }}>MoonBoots Sports</span>
         </Link>
 
         {success ? (
@@ -68,7 +68,7 @@ export default function ResetPassword() {
               <CheckCircle className="w-8 h-8 text-pitch-400" />
             </div>
             <h1 className="font-display text-2xl font-bold text-white mb-2">Password reset</h1>
-            <p className="text-navy-400 mb-6">
+            <p className="text-secondary mb-6">
               Your password has been updated. You can now sign in with your new password.
             </p>
             <Link to="/login" className="btn-primary inline-flex items-center gap-2">
@@ -78,7 +78,7 @@ export default function ResetPassword() {
         ) : (
           <>
             <h1 className="font-display text-3xl font-bold text-white mb-2">Choose a new password</h1>
-            <p className="text-navy-400 mb-8">
+            <p className="text-secondary mb-8">
               Enter your new password below. Must be at least 8 characters.
             </p>
 
@@ -86,7 +86,7 @@ export default function ResetPassword() {
               <div>
                 <label htmlFor="password" className="label">New password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
@@ -101,7 +101,7 @@ export default function ResetPassword() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-navy-500 hover:text-navy-300 transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-tertiary hover:text-secondary transition-colors"
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -112,7 +112,7 @@ export default function ResetPassword() {
               <div>
                 <label htmlFor="confirm-password" className="label">Confirm password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-navy-500" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-tertiary" />
                   <input
                     id="confirm-password"
                     type={showPassword ? 'text' : 'password'}
@@ -133,7 +133,7 @@ export default function ResetPassword() {
               </button>
             </form>
 
-            <p className="text-center text-navy-400 mt-6">
+            <p className="text-center text-secondary mt-6">
               <Link to="/login" className="text-pitch-400 hover:text-pitch-300">
                 Back to sign in
               </Link>

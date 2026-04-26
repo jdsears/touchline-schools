@@ -169,17 +169,17 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
   if (!hasConsented) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-        <div className="bg-navy-900 rounded-2xl border border-navy-700 w-full max-w-md p-6">
+        <div className="bg-card rounded-2xl border border-border-strong w-full max-w-md p-6">
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-xl bg-pitch-600/20 flex items-center justify-center">
               <Mic className="w-5 h-5 text-pitch-400" />
             </div>
-            <h2 className="text-lg font-semibold text-white">Voice Observations</h2>
+            <h2 className="text-lg font-semibold text-primary">Voice Observations</h2>
           </div>
-          <div className="space-y-3 text-sm text-navy-300 mb-6">
+          <div className="space-y-3 text-sm text-secondary mb-6">
             <p>Voice observations let you speak coaching notes into your phone and have the AI transcribe and file them against the correct pupils.</p>
             <p>Here is how it works:</p>
-            <ul className="list-disc pl-5 space-y-1 text-navy-400">
+            <ul className="list-disc pl-5 space-y-1 text-secondary">
               <li>Audio is used only to create a transcript for observation extraction</li>
               <li>Raw audio is automatically deleted within {'{'}school retention period{'}'} days</li>
               <li>Only you and the DSL can access the transcript</li>
@@ -188,10 +188,10 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
             </ul>
           </div>
           <div className="flex gap-3">
-            <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-navy-800 hover:bg-navy-700 text-navy-300 rounded-lg text-sm transition-colors">
+            <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">
               Not now
             </button>
-            <button onClick={handleConsent} className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg text-sm font-medium transition-colors">
+            <button onClick={handleConsent} className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors">
               I understand, continue
             </button>
           </div>
@@ -202,10 +202,10 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-navy-900 rounded-2xl border border-navy-700 w-full max-w-sm p-6">
+      <div className="bg-card rounded-2xl border border-border-strong w-full max-w-sm p-6">
         {/* Close */}
         {state === 'idle' && (
-          <button onClick={onClose} className="absolute top-4 right-4 text-navy-400 hover:text-white">
+          <button onClick={onClose} className="absolute top-4 right-4 text-secondary hover:text-primary">
             <X className="w-5 h-5" />
           </button>
         )}
@@ -213,11 +213,11 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
         {/* Context selector */}
         {state === 'idle' && (
           <div className="mb-6">
-            <label className="block text-sm text-navy-300 mb-2">What are you observing?</label>
+            <label className="block text-sm text-secondary mb-2">What are you observing?</label>
             <select
               value={contextType}
               onChange={e => setContextType(e.target.value)}
-              className="w-full px-3 py-2.5 bg-navy-800 border border-navy-700 rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+              className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
             >
               {CONTEXT_OPTIONS.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -234,9 +234,9 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
                 onClick={startRecording}
                 className="w-20 h-20 rounded-full bg-pitch-600 hover:bg-pitch-700 flex items-center justify-center transition-all hover:scale-105 shadow-lg shadow-pitch-600/30"
               >
-                <Mic className="w-8 h-8 text-white" />
+                <Mic className="w-8 h-8 text-primary" />
               </button>
-              <p className="text-xs text-navy-400 mt-4">Tap to start recording</p>
+              <p className="text-xs text-secondary mt-4">Tap to start recording</p>
             </>
           )}
 
@@ -249,40 +249,40 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
                   onClick={stopRecording}
                   className="relative w-20 h-20 rounded-full bg-alert-600 hover:bg-alert-700 flex items-center justify-center transition-all shadow-lg shadow-alert-600/30"
                 >
-                  <Square className="w-6 h-6 text-white" />
+                  <Square className="w-6 h-6 text-primary" />
                 </button>
               </div>
               <div className="flex items-center gap-2 mt-4">
                 <div className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
-                <span className="text-lg font-mono text-white">{formatTime(duration)}</span>
+                <span className="text-lg font-mono text-primary">{formatTime(duration)}</span>
               </div>
-              <p className="text-xs text-navy-400 mt-2">Tap to stop recording</p>
+              <p className="text-xs text-secondary mt-2">Tap to stop recording</p>
             </>
           )}
 
           {state === 'uploading' && (
             <>
-              <div className="w-20 h-20 rounded-full bg-navy-800 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-subtle flex items-center justify-center">
                 <Loader2 className="w-8 h-8 text-pitch-400 animate-spin" />
               </div>
-              <p className="text-sm text-navy-300 mt-4">Uploading...</p>
+              <p className="text-sm text-secondary mt-4">Uploading...</p>
             </>
           )}
 
           {state === 'processing' && (
             <>
-              <div className="w-20 h-20 rounded-full bg-navy-800 flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full bg-subtle flex items-center justify-center">
                 <Loader2 className="w-8 h-8 text-pitch-400 animate-spin" />
               </div>
-              <p className="text-sm text-navy-300 mt-4">Transcribing and extracting observations...</p>
-              <p className="text-xs text-navy-500 mt-1">This usually takes 10-20 seconds</p>
+              <p className="text-sm text-secondary mt-4">Transcribing and extracting observations...</p>
+              <p className="text-xs text-tertiary mt-1">This usually takes 10-20 seconds</p>
             </>
           )}
         </div>
 
         {/* Duration recorded */}
         {(state === 'uploading' || state === 'processing') && duration > 0 && (
-          <div className="flex items-center justify-center gap-2 text-xs text-navy-500">
+          <div className="flex items-center justify-center gap-2 text-xs text-tertiary">
             <Clock className="w-3 h-3" />
             {formatTime(duration)} recorded
           </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { teamService, matchService } from '../../services/api'
+import { teamService } from '../../services/api'
 import {
   ChevronLeft, Users, Trophy, Calendar, MapPin,
   Shield, Loader2, Clock, Plus,
@@ -153,7 +153,7 @@ export default function TeacherTeamDetail() {
               Fixtures ({matches.length})
             </h2>
             <Link to={`/teacher/teams/${teamId}/fixtures/block`}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-pitch-600 hover:bg-pitch-500 text-primary rounded-lg">
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg">
               <Plus className="w-3.5 h-3.5" /> Add in bulk
             </Link>
           </div>

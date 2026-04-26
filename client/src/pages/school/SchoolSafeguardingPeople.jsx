@@ -122,8 +122,8 @@ export default function ClubSafeguardingPeople() {
   }
 
   function getDbsStatus(record) {
-    if (!record.dbs_number) return { label: 'None', color: 'text-navy-500', bg: 'bg-navy-800', Icon: Minus }
-    if (!record.dbs_expiry) return { label: 'Pending', color: 'text-navy-400', bg: 'bg-navy-700', Icon: Clock }
+    if (!record.dbs_number) return { label: 'None', color: 'text-tertiary', bg: 'bg-subtle', Icon: Minus }
+    if (!record.dbs_expiry) return { label: 'Pending', color: 'text-secondary', bg: 'bg-border-default', Icon: Clock }
     const now = new Date()
     const expiry = new Date(record.dbs_expiry)
     const daysUntil = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24))
@@ -151,19 +151,19 @@ export default function ClubSafeguardingPeople() {
         <div className="flex items-center gap-3">
           <button
             onClick={() => navigate(basePath)}
-            className="p-2 text-navy-400 hover:text-white transition-colors"
+            className="p-2 text-secondary hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h1 className="text-2xl font-bold text-white">Compliance Records</h1>
-            <p className="text-navy-400 text-sm mt-1">{records.length} record{records.length !== 1 ? 's' : ''} - DBS, training and certifications</p>
+            <h1 className="text-2xl font-bold text-primary">Compliance Records</h1>
+            <p className="text-secondary text-sm mt-1">{records.length} record{records.length !== 1 ? 's' : ''} - DBS, training and certifications</p>
           </div>
         </div>
         {canManage && (
           <button
             onClick={() => setShowAdd(!showAdd)}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             Add Record
@@ -173,16 +173,16 @@ export default function ClubSafeguardingPeople() {
 
       {/* Add record form */}
       {showAdd && (
-        <form onSubmit={handleAdd} className="bg-navy-900 border border-navy-800 rounded-xl p-4 space-y-4">
-          <h3 className="text-sm font-semibold text-white">New Compliance Record</h3>
+        <form onSubmit={handleAdd} className="bg-card border border-border-default rounded-xl p-4 space-y-4">
+          <h3 className="text-sm font-semibold text-primary">New Compliance Record</h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs text-navy-400 mb-1">School Member *</label>
+              <label className="block text-xs text-secondary mb-1">School Member *</label>
               <select
                 required
                 value={form.member_id}
                 onChange={(e) => setForm(f => ({ ...f, member_id: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 <option value="">Select member...</option>
                 {availableMembers.map(m => (
@@ -191,11 +191,11 @@ export default function ClubSafeguardingPeople() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">Role *</label>
+              <label className="block text-xs text-secondary mb-1">Role *</label>
               <select
                 value={form.role}
                 onChange={(e) => setForm(f => ({ ...f, role: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 <option value="volunteer">Volunteer</option>
                 <option value="coach">Coach</option>
@@ -206,11 +206,11 @@ export default function ClubSafeguardingPeople() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">DBS Type</label>
+              <label className="block text-xs text-secondary mb-1">DBS Type</label>
               <select
                 value={form.dbs_type}
                 onChange={(e) => setForm(f => ({ ...f, dbs_type: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               >
                 <option value="enhanced">Enhanced</option>
                 <option value="standard">Standard</option>
@@ -218,31 +218,31 @@ export default function ClubSafeguardingPeople() {
               </select>
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">DBS Number</label>
+              <label className="block text-xs text-secondary mb-1">DBS Number</label>
               <input
                 type="text"
                 value={form.dbs_number}
                 onChange={(e) => setForm(f => ({ ...f, dbs_number: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 placeholder="e.g. 001234567890"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">DBS Issue Date</label>
+              <label className="block text-xs text-secondary mb-1">DBS Issue Date</label>
               <input
                 type="date"
                 value={form.dbs_issue_date}
                 onChange={(e) => setForm(f => ({ ...f, dbs_issue_date: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
             <div>
-              <label className="block text-xs text-navy-400 mb-1">DBS Expiry Date</label>
+              <label className="block text-xs text-secondary mb-1">DBS Expiry Date</label>
               <input
                 type="date"
                 value={form.dbs_expiry}
                 onChange={(e) => setForm(f => ({ ...f, dbs_expiry: e.target.value }))}
-                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               />
             </div>
           </div>
@@ -254,18 +254,18 @@ export default function ClubSafeguardingPeople() {
                 id="first_aid"
                 checked={form.first_aid_valid}
                 onChange={(e) => setForm(f => ({ ...f, first_aid_valid: e.target.checked }))}
-                className="w-4 h-4 rounded border-navy-700 bg-navy-800 text-pitch-600 focus:ring-pitch-600"
+                className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
               />
-              <label htmlFor="first_aid" className="text-sm text-navy-300">First Aid Certified</label>
+              <label htmlFor="first_aid" className="text-sm text-secondary">First Aid Certified</label>
             </div>
             {form.first_aid_valid && (
               <div>
-                <label className="block text-xs text-navy-400 mb-1">First Aid Expiry</label>
+                <label className="block text-xs text-secondary mb-1">First Aid Expiry</label>
                 <input
                   type="date"
                   value={form.first_aid_expiry}
                   onChange={(e) => setForm(f => ({ ...f, first_aid_expiry: e.target.value }))}
-                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                 />
               </div>
             )}
@@ -278,28 +278,28 @@ export default function ClubSafeguardingPeople() {
                 id="safeguarding_training"
                 checked={form.safeguarding_training_valid}
                 onChange={(e) => setForm(f => ({ ...f, safeguarding_training_valid: e.target.checked }))}
-                className="w-4 h-4 rounded border-navy-700 bg-navy-800 text-pitch-600 focus:ring-pitch-600"
+                className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
               />
-              <label htmlFor="safeguarding_training" className="text-sm text-navy-300">Safeguarding Training Complete</label>
+              <label htmlFor="safeguarding_training" className="text-sm text-secondary">Safeguarding Training Complete</label>
             </div>
             {form.safeguarding_training_valid && (
               <>
                 <div>
-                  <label className="block text-xs text-navy-400 mb-1">Training Date</label>
+                  <label className="block text-xs text-secondary mb-1">Training Date</label>
                   <input
                     type="date"
                     value={form.safeguarding_training_date}
                     onChange={(e) => setForm(f => ({ ...f, safeguarding_training_date: e.target.value }))}
-                    className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs text-navy-400 mb-1">Training Provider</label>
+                  <label className="block text-xs text-secondary mb-1">Training Provider</label>
                   <input
                     type="text"
                     value={form.safeguarding_training_provider}
                     onChange={(e) => setForm(f => ({ ...f, safeguarding_training_provider: e.target.value }))}
-                    className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                     placeholder="e.g. FA, NSPCC"
                   />
                 </div>
@@ -308,23 +308,23 @@ export default function ClubSafeguardingPeople() {
           </div>
 
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Coaching Badges</label>
+            <label className="block text-xs text-secondary mb-1">Coaching Badges</label>
             <input
               type="text"
               value={form.coaching_badges}
               onChange={(e) => setForm(f => ({ ...f, coaching_badges: e.target.value }))}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
               placeholder="e.g. FA Level 1, UEFA B"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-navy-400 mb-1">Notes</label>
+            <label className="block text-xs text-secondary mb-1">Notes</label>
             <textarea
               value={form.notes}
               onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))}
               rows={2}
-              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
               placeholder="Any additional notes..."
             />
           </div>
@@ -333,14 +333,14 @@ export default function ClubSafeguardingPeople() {
             <button
               type="button"
               onClick={() => { setShowAdd(false); setForm({ ...EMPTY_FORM }) }}
-              className="px-4 py-2 text-sm text-navy-400 hover:text-white transition-colors"
+              className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
             >
               {saving ? 'Creating...' : 'Create Record'}
             </button>
@@ -350,10 +350,10 @@ export default function ClubSafeguardingPeople() {
 
       {/* Records list */}
       {records.length === 0 ? (
-        <div className="bg-navy-900 border border-navy-800 rounded-xl p-8 text-center">
-          <ShieldCheck className="w-12 h-12 text-navy-600 mx-auto mb-3" />
-          <h3 className="text-lg font-medium text-white mb-1">No compliance records</h3>
-          <p className="text-navy-400 text-sm">Add records for volunteers and coaches to track DBS checks and training.</p>
+        <div className="bg-card border border-border-default rounded-xl p-8 text-center">
+          <ShieldCheck className="w-12 h-12 text-tertiary mx-auto mb-3" />
+          <h3 className="text-lg font-medium text-primary mb-1">No compliance records</h3>
+          <p className="text-secondary text-sm">Add records for volunteers and coaches to track DBS checks and training.</p>
         </div>
       ) : (
         <div className="space-y-3">
@@ -364,22 +364,22 @@ export default function ClubSafeguardingPeople() {
             const isEditing = editingId === r.id
 
             return (
-              <div key={r.id} className="bg-navy-900 border border-navy-800 rounded-xl overflow-hidden">
+              <div key={r.id} className="bg-card border border-border-default rounded-xl overflow-hidden">
                 {/* Row header */}
                 <button
                   onClick={() => {
                     setExpandedId(isExpanded ? null : r.id)
                     if (isEditing && !isExpanded) setEditingId(null)
                   }}
-                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-navy-800/50 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-3 text-left hover:bg-subtle transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-navy-800 flex items-center justify-center text-sm font-medium text-navy-300 shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-subtle flex items-center justify-center text-sm font-medium text-secondary shrink-0">
                       {(r.member_name || r.name || '?').charAt(0)}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium text-white">{r.member_name || r.name}</p>
-                      <p className="text-xs text-navy-400 capitalize">{r.safeguarding_role || r.role || 'volunteer'}</p>
+                      <p className="text-sm font-medium text-primary">{r.member_name || r.name}</p>
+                      <p className="text-xs text-secondary capitalize">{r.safeguarding_role || r.role || 'volunteer'}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -398,25 +398,25 @@ export default function ClubSafeguardingPeople() {
                       </span>
                     )}
                     {isExpanded
-                      ? <ChevronUp className="w-4 h-4 text-navy-400" />
-                      : <ChevronDown className="w-4 h-4 text-navy-400" />
+                      ? <ChevronUp className="w-4 h-4 text-secondary" />
+                      : <ChevronDown className="w-4 h-4 text-secondary" />
                     }
                   </div>
                 </button>
 
                 {/* Expanded details */}
                 {isExpanded && (
-                  <div className="px-4 pb-4 pt-2 border-t border-navy-800 space-y-4">
+                  <div className="px-4 pb-4 pt-2 border-t border-border-default space-y-4">
                     {isEditing ? (
                       /* Edit mode */
                       <div className="space-y-4">
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                           <div>
-                            <label className="block text-xs text-navy-400 mb-1">Role</label>
+                            <label className="block text-xs text-secondary mb-1">Role</label>
                             <select
                               value={editForm.role}
                               onChange={(e) => setEditForm(f => ({ ...f, role: e.target.value }))}
-                              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             >
                               <option value="volunteer">Volunteer</option>
                               <option value="coach">Coach</option>
@@ -427,20 +427,20 @@ export default function ClubSafeguardingPeople() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-xs text-navy-400 mb-1">DBS Number</label>
+                            <label className="block text-xs text-secondary mb-1">DBS Number</label>
                             <input
                               type="text"
                               value={editForm.dbs_number}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_number: e.target.value }))}
-                              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs text-navy-400 mb-1">DBS Type</label>
+                            <label className="block text-xs text-secondary mb-1">DBS Type</label>
                             <select
                               value={editForm.dbs_type}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_type: e.target.value }))}
-                              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             >
                               <option value="enhanced">Enhanced</option>
                               <option value="standard">Standard</option>
@@ -448,21 +448,21 @@ export default function ClubSafeguardingPeople() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-xs text-navy-400 mb-1">DBS Issue Date</label>
+                            <label className="block text-xs text-secondary mb-1">DBS Issue Date</label>
                             <input
                               type="date"
                               value={editForm.dbs_issue_date}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_issue_date: e.target.value }))}
-                              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             />
                           </div>
                           <div>
-                            <label className="block text-xs text-navy-400 mb-1">DBS Expiry</label>
+                            <label className="block text-xs text-secondary mb-1">DBS Expiry</label>
                             <input
                               type="date"
                               value={editForm.dbs_expiry}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_expiry: e.target.value }))}
-                              className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             />
                           </div>
                         </div>
@@ -474,18 +474,18 @@ export default function ClubSafeguardingPeople() {
                               id={`edit_first_aid_${r.id}`}
                               checked={editForm.first_aid_valid}
                               onChange={(e) => setEditForm(f => ({ ...f, first_aid_valid: e.target.checked }))}
-                              className="w-4 h-4 rounded border-navy-700 bg-navy-800 text-pitch-600 focus:ring-pitch-600"
+                              className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
                             />
-                            <label htmlFor={`edit_first_aid_${r.id}`} className="text-sm text-navy-300">First Aid Certified</label>
+                            <label htmlFor={`edit_first_aid_${r.id}`} className="text-sm text-secondary">First Aid Certified</label>
                           </div>
                           {editForm.first_aid_valid && (
                             <div>
-                              <label className="block text-xs text-navy-400 mb-1">First Aid Expiry</label>
+                              <label className="block text-xs text-secondary mb-1">First Aid Expiry</label>
                               <input
                                 type="date"
                                 value={editForm.first_aid_expiry}
                                 onChange={(e) => setEditForm(f => ({ ...f, first_aid_expiry: e.target.value }))}
-                                className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                               />
                             </div>
                           )}
@@ -498,28 +498,28 @@ export default function ClubSafeguardingPeople() {
                               id={`edit_safeguarding_${r.id}`}
                               checked={editForm.safeguarding_training_valid}
                               onChange={(e) => setEditForm(f => ({ ...f, safeguarding_training_valid: e.target.checked }))}
-                              className="w-4 h-4 rounded border-navy-700 bg-navy-800 text-pitch-600 focus:ring-pitch-600"
+                              className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
                             />
-                            <label htmlFor={`edit_safeguarding_${r.id}`} className="text-sm text-navy-300">Safeguarding Training</label>
+                            <label htmlFor={`edit_safeguarding_${r.id}`} className="text-sm text-secondary">Safeguarding Training</label>
                           </div>
                           {editForm.safeguarding_training_valid && (
                             <>
                               <div>
-                                <label className="block text-xs text-navy-400 mb-1">Training Date</label>
+                                <label className="block text-xs text-secondary mb-1">Training Date</label>
                                 <input
                                   type="date"
                                   value={editForm.safeguarding_training_date}
                                   onChange={(e) => setEditForm(f => ({ ...f, safeguarding_training_date: e.target.value }))}
-                                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                                 />
                               </div>
                               <div>
-                                <label className="block text-xs text-navy-400 mb-1">Provider</label>
+                                <label className="block text-xs text-secondary mb-1">Provider</label>
                                 <input
                                   type="text"
                                   value={editForm.safeguarding_training_provider}
                                   onChange={(e) => setEditForm(f => ({ ...f, safeguarding_training_provider: e.target.value }))}
-                                  className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                                 />
                               </div>
                             </>
@@ -527,30 +527,30 @@ export default function ClubSafeguardingPeople() {
                         </div>
 
                         <div>
-                          <label className="block text-xs text-navy-400 mb-1">Coaching Badges</label>
+                          <label className="block text-xs text-secondary mb-1">Coaching Badges</label>
                           <input
                             type="text"
                             value={editForm.coaching_badges}
                             onChange={(e) => setEditForm(f => ({ ...f, coaching_badges: e.target.value }))}
-                            className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
                             placeholder="e.g. FA Level 1, UEFA B"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-xs text-navy-400 mb-1">Notes</label>
+                          <label className="block text-xs text-secondary mb-1">Notes</label>
                           <textarea
                             value={editForm.notes}
                             onChange={(e) => setEditForm(f => ({ ...f, notes: e.target.value }))}
                             rows={2}
-                            className="w-full bg-navy-800 border border-navy-700 rounded-lg px-3 py-2 text-white text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
                           />
                         </div>
 
                         {/* Document upload */}
                         <div>
-                          <label className="block text-xs text-navy-400 mb-2">Upload Document</label>
-                          <label className="flex items-center gap-2 px-4 py-2 bg-navy-800 border border-navy-700 rounded-lg text-navy-300 text-sm hover:bg-navy-700 hover:text-white cursor-pointer transition-colors w-fit">
+                          <label className="block text-xs text-secondary mb-2">Upload Document</label>
+                          <label className="flex items-center gap-2 px-4 py-2 bg-subtle border border-border-strong rounded-lg text-secondary text-sm hover:bg-border-default hover:text-primary cursor-pointer transition-colors w-fit">
                             <Upload className="w-4 h-4" />
                             Choose File
                             <input
@@ -567,14 +567,14 @@ export default function ClubSafeguardingPeople() {
                         <div className="flex gap-2 justify-end">
                           <button
                             onClick={() => setEditingId(null)}
-                            className="px-4 py-2 text-sm text-navy-400 hover:text-white transition-colors"
+                            className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors"
                           >
                             Cancel
                           </button>
                           <button
                             onClick={() => handleUpdate(r.id)}
                             disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-white rounded-lg text-sm transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
                           >
                             <Save className="w-4 h-4" />
                             {saving ? 'Saving...' : 'Save Changes'}
@@ -586,35 +586,35 @@ export default function ClubSafeguardingPeople() {
                       <div className="space-y-3">
                         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">DBS Number</p>
-                            <p className="text-navy-200">{r.dbs_number || 'Not provided'}</p>
+                            <p className="text-xs text-secondary mb-1">DBS Number</p>
+                            <p className="text-primary">{r.dbs_number || 'Not provided'}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">DBS Type</p>
-                            <p className="text-navy-200 capitalize">{r.dbs_type || 'N/A'}</p>
+                            <p className="text-xs text-secondary mb-1">DBS Type</p>
+                            <p className="text-primary capitalize">{r.dbs_type || 'N/A'}</p>
                           </div>
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">DBS Issue Date</p>
-                            <p className="text-navy-200">
+                            <p className="text-xs text-secondary mb-1">DBS Issue Date</p>
+                            <p className="text-primary">
                               {r.dbs_issue_date ? new Date(r.dbs_issue_date).toLocaleDateString('en-GB') : 'N/A'}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">DBS Expiry</p>
-                            <p className="text-navy-200">
+                            <p className="text-xs text-secondary mb-1">DBS Expiry</p>
+                            <p className="text-primary">
                               {r.dbs_expiry ? new Date(r.dbs_expiry).toLocaleDateString('en-GB') : 'N/A'}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">First Aid</p>
-                            <p className="text-navy-200">
+                            <p className="text-xs text-secondary mb-1">First Aid</p>
+                            <p className="text-primary">
                               {r.first_aid_valid ? 'Valid' : 'None'}
                               {r.first_aid_expiry && ` (expires ${new Date(r.first_aid_expiry).toLocaleDateString('en-GB')})`}
                             </p>
                           </div>
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">Safeguarding Training</p>
-                            <p className="text-navy-200">
+                            <p className="text-xs text-secondary mb-1">Safeguarding Training</p>
+                            <p className="text-primary">
                               {r.safeguarding_training_valid ? 'Complete' : 'None'}
                               {r.safeguarding_training_provider && ` (${r.safeguarding_training_provider})`}
                             </p>
@@ -623,10 +623,10 @@ export default function ClubSafeguardingPeople() {
 
                         {r.coaching_badges && (
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">Coaching Badges</p>
+                            <p className="text-xs text-secondary mb-1">Coaching Badges</p>
                             <div className="flex flex-wrap gap-2">
                               {r.coaching_badges.split(',').map((badge, i) => (
-                                <span key={i} className="text-xs bg-navy-800 text-navy-300 px-2 py-1 rounded-full">
+                                <span key={i} className="text-xs bg-subtle text-secondary px-2 py-1 rounded-full">
                                   {badge.trim()}
                                 </span>
                               ))}
@@ -636,14 +636,14 @@ export default function ClubSafeguardingPeople() {
 
                         {r.notes && (
                           <div>
-                            <p className="text-xs text-navy-400 mb-1">Notes</p>
-                            <p className="text-sm text-navy-300">{r.notes}</p>
+                            <p className="text-xs text-secondary mb-1">Notes</p>
+                            <p className="text-sm text-secondary">{r.notes}</p>
                           </div>
                         )}
 
                         {r.documents && r.documents.length > 0 && (
                           <div>
-                            <p className="text-xs text-navy-400 mb-2">Documents</p>
+                            <p className="text-xs text-secondary mb-2">Documents</p>
                             <div className="flex flex-wrap gap-2">
                               {r.documents.map((doc, i) => (
                                 <a
@@ -651,7 +651,7 @@ export default function ClubSafeguardingPeople() {
                                   href={doc.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs bg-navy-800 text-pitch-400 hover:text-pitch-300 px-3 py-1.5 rounded-lg transition-colors"
+                                  className="text-xs bg-subtle text-pitch-400 hover:text-pitch-300 px-3 py-1.5 rounded-lg transition-colors"
                                 >
                                   {doc.name || `Document ${i + 1}`}
                                 </a>
