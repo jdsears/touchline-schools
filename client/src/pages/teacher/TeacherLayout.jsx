@@ -5,33 +5,12 @@ import { hodService, voiceObservationService } from '../../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
 import { useSchoolBranding } from '../../hooks/useSchoolBranding'
+import Sidebar from '../../components/Sidebar'
 import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  ClipboardCheck,
-  FileBarChart,
   GraduationCap,
-  Calendar,
-  Shield,
-  ShieldCheck,
-  Settings,
-  LogOut,
   Menu,
-  X,
-  ChevronRight,
-  Trophy,
-  Video,
-  Clapperboard,
-  Sparkles,
-  Target,
-  Swords,
-  MonitorPlay,
-  Building2,
-  BarChart3,
-  UserCog,
   Mic,
-  Link2,
+  X,
 } from 'lucide-react'
 
 const hodNav = [
@@ -90,6 +69,14 @@ const ROLE_DISPLAY = {
   admin: 'School Admin',
   coach: 'Teacher',
   parent: 'Parent',
+}
+
+function buildUserRoles(isHoD, schoolRole) {
+  const roles = []
+  if (['owner', 'school_admin', 'admin'].includes(schoolRole)) roles.push('schoolAdmin')
+  if (isHoD && !roles.includes('schoolAdmin')) roles.push('hod')
+  roles.push('teacherCurriculum', 'teacherExtraCurricular')
+  return roles
 }
 
 function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEnabled, schoolRole, schoolBranding }) {
@@ -234,6 +221,7 @@ export default function TeacherLayout() {
 
   const isOnHoDView = location.pathname === '/teacher/hod' || location.pathname.startsWith('/teacher/hod/')
   const isOnTeacherHome = location.pathname === '/teacher'
+  const roleDisplay = ROLE_DISPLAY[schoolRole] || ROLE_DISPLAY[user?.role] || user?.role
 
   const switchView = useCallback((view) => {
     localStorage.setItem('preferred_dashboard_view', view)
@@ -281,28 +269,22 @@ export default function TeacherLayout() {
       </AnimatePresence>
 
       {/* Sidebar */}
-      <aside
-        className={`
-          fixed inset-y-0 left-0 z-50 w-60 bg-subtle border-r border-border-default
-          flex flex-col transition-transform duration-300 ease-in-out
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0
-        `}
-      >
-        <SidebarContent
+      <div className={`
+        fixed inset-y-0 left-0 z-50
+        transition-transform duration-200 ease-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0
+      `}>
+        <Sidebar
+          roles={buildUserRoles(isHoD, schoolRole)}
+          school={{ name: schoolBranding?.schoolName, initials: schoolBranding?.schoolName?.split(' ').map(w => w[0]).join('').slice(0, 2) || 'MB', roleLabel: roleDisplay }}
           user={user}
-          logout={logout}
-          setSidebarOpen={setSidebarOpen}
-          pathname={location.pathname}
-          isHoD={isHoD}
-          voiceEnabled={voiceEnabled}
-          schoolRole={schoolRole}
-          schoolBranding={schoolBranding}
+          onLogout={logout}
         />
-      </aside>
+      </div>
 
       {/* Main content */}
-      <div className="lg:pl-60">
+      <div className="lg:pl-[248px]">
         {/* Mobile header */}
         <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-14 px-4 bg-brand-navy">
           <button
