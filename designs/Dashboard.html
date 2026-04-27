@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moonboots Sports — Dashboard</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    body { background: #f0eee9; }
+    .moonboots-note { font-family: var(--font-sans); color: var(--text-secondary); font-size: 13px; line-height: 1.55; }
+    .moonboots-note h2 { font-size: 17px; margin: 0 0 12px; color: var(--text-primary); letter-spacing: -0.01em; }
+    .moonboots-note h3 { font-size: 13px; margin: 14px 0 6px; color: var(--text-primary); letter-spacing: -0.005em; }
+    .moonboots-note p { margin: 0 0 8px; }
+    .moonboots-note ul, .moonboots-note ol { margin: 0 0 10px 18px; padding: 0; }
+    .moonboots-note li { margin-bottom: 3px; }
+    .moonboots-note code { font-family: var(--font-mono); font-size: 12px; background: var(--surface-sunken); padding: 1px 5px; border-radius: 3px; color: var(--text-primary); }
+    .moonboots-note strong { color: var(--text-primary); font-weight: 600; }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="icons.jsx"></script>
+  <script type="text/babel" src="primitives.jsx"></script>
+  <script type="text/babel" src="chrome.jsx"></script>
+  <script type="text/babel" src="screens.jsx"></script>
+  <script type="text/babel" src="dashboard.jsx"></script>
+  <script type="text/babel" src="dashboard-sections.jsx"></script>
+  <script type="text/babel" src="dashboard-screens.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+
+    const SCHOOLS = {
+      ashworth:    { theme: "moonboots", short: "Ashworth Park", initials: "AP", roleLabel: "Head of Department" },
+      ashworthAdm: { theme: "moonboots", short: "Ashworth Park", initials: "AP", roleLabel: "School Admin" },
+      ashworthHoD: { theme: "moonboots", short: "Ashworth Park", initials: "AP", roleLabel: "Head of Department" },
+      ashworthCur: { theme: "moonboots", short: "Ashworth Park", initials: "AP", roleLabel: "Curriculum PE" },
+      greenway:    { theme: "moonboots", short: "Greenway High",  initials: "GH", roleLabel: "Head of Department" },
+    };
+
+    function Page() {
+      return (
+        <DesignCanvas
+          docTitle="Dashboard · v2"
+          docSubtitle="Moonboots Sports — composition revised against feedback, April 2026"
+        >
+          <DCSection
+            id="brief"
+            title="01 · What changed in v2"
+            subtitle="Reading of the feedback, and what's been done about it"
+          >
+            <DCArtboard id="brief-card" label="Design notes" width={760} height={1080} background="#FFFFFF">
+              <div className="moonboots-note" style={{ padding: 28, height: "100%", overflowY: "auto" }}>
+                <h2>Dashboard, the morning page — v2</h2>
+                <p>Six pieces of feedback came back on v1. Each is addressed below; the page composition is otherwise unchanged.</p>
+
+                <h3>1 · Briefing is the primary card, not a dismiss banner</h3>
+                <p>The morning briefing has been promoted out of the page header into its own full-width card directly under the greeting. It carries an explicit "AI" badge, a "Refreshed 08:14" timestamp, and a <strong>Refresh</strong> action — never <em>Dismiss</em>. On quiet days the card stays present and reframes itself ("All quiet today. A good day to plan ahead…") rather than disappearing. The card is now where the priority action surfaces, not the action list.</p>
+
+                <h3>2 · Today framing is role-adaptive</h3>
+                <p>The Today hero header rewrites itself by role: <code>Today in your department</code> for HoD, <code>Today's schedule</code> for teachers, <code>Across the school today</code> for School Admin. The legend (HoD / Curriculum / Extra coloured dots) only appears when more than one role is in scope.</p>
+
+                <h3>3 · Moderation differentiates agreement vs disagreement</h3>
+                <p>The HoD moderation queue now treats the two cases differently. <strong>Agreement</strong> (system + teacher concur) gets an inline <em>Approve</em> button — these are routine confirmations that should stay friction-free. <strong>Disagreement</strong> drops the inline approve and offers <em>Review</em> only — approval requires evidence review first, the row is amber, and the gap ("1 grade higher than evidence supports") is named on the row.</p>
+
+                <h3>4 · School Admin / Teacher toggle in the top bar (global)</h3>
+                <p>Lifted out of the page into chrome. When a user holds both School Admin and a teacher role, the segmented pill appears top-right of the top bar — same place as the live app. Persists across pages.</p>
+
+                <h3>5 · Persistent voice-obs mic (global)</h3>
+                <p>Floating mic, bottom-right, z-index above all content. Always available. Single tap starts a voice observation; long-press will eventually open the picker for which class/pupil. Visible on every page, mobile and desktop.</p>
+
+                <h3>6 · Reporting Windows card (HoD)</h3>
+                <p>Added to the HoD section, right column, above School Pulse. Mirrors the live app: termly windows with progress bars (4/4 closed, 14/31 open, 0/12 not yet open) and due-date copy. Closes the gap that v1's "Awaiting moderation" metric only hinted at.</p>
+
+                <h3>7 · Curriculum PE reverted to live-app minimalism</h3>
+                <p>v1 had a Curriculum section with assessment-due rails and lesson cards. The live app shows just two tiles: <em>My Classes</em> and <em>My Teams</em>. v2 matches that. Today's lessons are already in the page-level Today hero; per-class drill-down belongs on the My Classes page, not the dashboard.</p>
+
+                <h3>8 · Header CTAs dropped, weather "Reschedule" dropped</h3>
+                <p>The page-header CTA strip is gone — those actions belong on per-feature pages (Schedule fixture on Fixtures, Plan a lesson on My Classes). Only <em>Customise</em> remains, and is honest about being a placeholder until we decide whether to ship it. The weather strip on Next Fixture no longer shows a Reschedule CTA — rescheduling lives on the fixture page.</p>
+
+                <h3>What's still deferred</h3>
+                <ul>
+                  <li>Customise, keep as placeholder until you decide whether dashboard rearrangement is a real feature.</li>
+                  <li>Voice mic long-press picker, recording start works on tap; the destination picker is a follow-on detail.</li>
+                  <li>Action list pagination rules, still showing top 5 + View all.</li>
+                </ul>
+
+                <h3>9 · Temporal chip vocabulary, locked</h3>
+                <p>The attention queue in v1 mixed five vocabularies (<code>48h</code>, <code>Today</code>, <code>Overdue</code>, <code>This week</code>, <code>By Wed</code>). v2 locks one rule, applied here and in every page that follows:</p>
+                <ul>
+                  <li><strong>Under 48h</strong>: hours, e.g. <code>36h</code>, <code>12h</code>.</li>
+                  <li><strong>Current week</strong>: day-of-week, e.g. <code>Tue</code>, <code>Fri</code>.</li>
+                  <li><strong>7–14 days out</strong>: <code>Next week</code>.</li>
+                  <li><strong>15+ days out</strong>: absolute date, e.g. <code>12 May</code>.</li>
+                  <li><strong>Overdue</strong> is a status chip that stacks with any of the above when something is past its window.</li>
+                </ul>
+                <p>Match Prep, Match Centre, Reporting, and any future surface with deadline chips inherits this rule. Drift is a build-time check.</p>
+
+                <h3>10 · Copy hygiene, locked</h3>
+                <p>Em dashes (<code>—</code>) replaced with commas, hyphens, or rephrasing throughout v2 strings. Same rule applies forward: build-time check on UI strings, no em dashes. (Design notes / prose blocks like this one still use them; the rule is for product copy that ends up in chips, sentences, banners and so on.)</p>
+              </div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection
+            id="desktop"
+            title="02 · Desktop — the canonical view"
+            subtitle="Triple-role HoD + Curriculum + Extra. The longest-page case, and the page Moonboots's strongest users land on."
+          >
+            <DCArtboard id="desktop-triple" label="Triple-role · weather is bad" width={1280} height={1180}>
+              <DashboardDesktop school={SCHOOLS.ashworth} roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]} weatherSeverity="high" />
+            </DCArtboard>
+            <DCArtboard id="desktop-triple-clear" label="Triple-role · weather is clear" width={1280} height={1180}>
+              <DashboardDesktop school={SCHOOLS.ashworth} roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]} weatherSeverity="low" />
+            </DCArtboard>
+
+            <DCPostIt x={20} y={1200}>
+              Both artboards run the same fixture card, two weather feeds. Note: no Reschedule CTA in either case — that action moved to the fixture page. The amber strip in the bad-weather variant is informational only.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="role-toggle"
+            title="03 · School Admin + Teacher (combined-role)"
+            subtitle="The global top-bar toggle in action. Same user, two views."
+          >
+            <DCArtboard id="desktop-admin-toggled-admin" label="Toggle = School Admin" width={1280} height={1180}>
+              <DashboardDesktop
+                school={SCHOOLS.ashworthAdm}
+                roles={["schoolAdmin", "hod", "teacherExtraCurricular"]}
+                showRoleToggle
+                roleToggleActive="schoolAdmin"
+              />
+            </DCArtboard>
+            <DCArtboard id="desktop-admin-toggled-teacher" label="Toggle = Teacher" width={1280} height={1180}>
+              <DashboardDesktop
+                school={SCHOOLS.ashworth}
+                roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]}
+                showRoleToggle
+                roleToggleActive="teacher"
+              />
+            </DCArtboard>
+
+            <DCPostIt x={20} y={1200}>
+              The toggle only renders when a user actually holds both. Single-role users never see it — there's nothing to switch between.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="single-role"
+            title="04 · Single-role views"
+            subtitle="Each role's dashboard, alone. No role labels, no stacking."
+          >
+            <DCArtboard id="desktop-hod-only" label="HoD only" width={1280} height={1000}>
+              <DashboardDesktop school={SCHOOLS.ashworthHoD} roles={["hod"]} />
+            </DCArtboard>
+            <DCArtboard id="desktop-curriculum-only" label="Curriculum PE only · live-app minimalism" width={1280} height={820}>
+              <DashboardDesktop school={SCHOOLS.ashworthCur} roles={["teacherCurriculum"]} />
+            </DCArtboard>
+            <DCArtboard id="desktop-extra-only" label="Extra-Curricular only" width={1280} height={920}>
+              <DashboardDesktop school={SCHOOLS.ashworth} roles={["teacherExtraCurricular"]} />
+            </DCArtboard>
+
+            <DCPostIt x={20} y={1020}>
+              Curriculum-only is short by design — Today hero + My Classes + My Teams. v1 had assessment rails and per-lesson cards here; v2 leaves those to dedicated pages, matching the live app.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="briefing-states"
+            title="05 · Briefing card states"
+            subtitle="Refresh, not dismiss. Quiet days are handled in-card."
+          >
+            <DCArtboard id="briefing-quiet" label="Quiet day" width={1280} height={820}>
+              <DashboardDesktop
+                school={SCHOOLS.ashworth}
+                roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]}
+                briefingState="quiet"
+              />
+            </DCArtboard>
+            <DCArtboard id="briefing-loading" label="Briefing is loading" width={1280} height={820}>
+              <DashboardDesktop
+                school={SCHOOLS.ashworth}
+                roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]}
+                briefingState="loading"
+              />
+            </DCArtboard>
+
+            <DCPostIt x={20} y={840}>
+              Quiet-day copy reframes the card as a planning prompt instead of an emptiness signal. The card is never absent.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="mobile"
+            title="06 · Mobile, 375pt"
+            subtitle="Same composition, single column. Calendar strip scrolls horizontally."
+          >
+            <DCArtboard id="mobile-triple" label="Triple-role" width={395} height={1500}>
+              <DashboardMobile school={SCHOOLS.ashworth} roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]} />
+            </DCArtboard>
+            <DCArtboard id="mobile-hod" label="HoD only" width={395} height={1200}>
+              <DashboardMobile school={SCHOOLS.ashworthHoD} roles={["hod"]} />
+            </DCArtboard>
+            <DCArtboard id="mobile-curriculum" label="Curriculum PE only" width={395} height={920}>
+              <DashboardMobile school={SCHOOLS.ashworthCur} roles={["teacherCurriculum"]} />
+            </DCArtboard>
+            <DCArtboard id="mobile-extra" label="Extra-Curricular only" width={395} height={1100}>
+              <DashboardMobile school={SCHOOLS.ashworth} roles={["teacherExtraCurricular"]} />
+            </DCArtboard>
+
+            <DCPostIt x={20} y={1520}>
+              The voice mic floats over content on mobile too. Bottom-right, 24pt margin from edges, above thumb-zone but within reach.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="loading-empty"
+            title="07 · Loading and empty states"
+            subtitle="Each section owns its own empty state, no central setup checklist."
+          >
+            <DCArtboard id="desktop-loading" label="Loading · all sections" width={1280} height={1000}>
+              <DashboardDesktop school={SCHOOLS.ashworth} roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]} state="loading" />
+            </DCArtboard>
+            <DCArtboard id="desktop-empty" label="Empty · brand-new school" width={1280} height={1000}>
+              <DashboardDesktop school={SCHOOLS.greenway} roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]} state="empty" newSchool />
+            </DCArtboard>
+
+            <DCPostIt x={20} y={1020}>
+              Empty-state dashboard for a brand-new school: briefing card runs the quiet copy; hero shows "Nothing scheduled today" with two prompts; Curriculum says "No classes assigned yet"; Extra says "No fixtures or training scheduled". No central checklist, no greying out.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="next"
+            title="08 · What's next"
+            subtitle="Open questions and recommended next moves"
+          >
+            <DCArtboard id="next-card" label="Next steps" width={760} height={460} background="#FFFFFF">
+              <div className="moonboots-note" style={{ padding: 28, height: "100%", overflowY: "auto" }}>
+                <h2>Decisions for you</h2>
+                <ol>
+                  <li><strong>Customise button.</strong> Drop or keep? If keep, this becomes a real feature — drag-to-reorder sections, hide a role you don't actively work in today, save as default per user.</li>
+                  <li><strong>Briefing refresh cadence.</strong> Manual only, or auto-refresh on a timer (e.g. every 30 minutes) plus manual? The "Refreshed 08:14" timestamp is the affordance for either.</li>
+                  <li><strong>Voice mic — long-press behaviour.</strong> Quick tap = start recording for the active class context. Long-press = picker. Confirm the picker scope (class / pupil / fixture / generic).</li>
+                  <li><strong>Action list pagination.</strong> Top 5 + View all. Right number?</li>
+                </ol>
+
+                <h2>Recommended next moves</h2>
+                <ol>
+                  <li><strong>Hand v2 to Claude Code</strong> as a build brief alongside the IA spec.</li>
+                  <li><strong>Match Centre / live match logging</strong> next. That's where the live-state Match Overview header earns its keep, and where Voice Observations get their first detail surface.</li>
+                  <li><strong>Defer theming validation</strong> on Dashboard for one more design batch. Match Centre's composition first, then theme both pages together.</li>
+                </ol>
+              </div>
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Page />);
+  </script>
+</body>
+</html>

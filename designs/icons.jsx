@@ -1,0 +1,80 @@
+/* global React */
+
+// Tiny inline icon set. Stroke 1.5, currentColor, 18px default.
+// Kept minimal and uniform; no decorative icons.
+const Icon = ({ name, size = 18, strokeWidth = 1.6, style }) => {
+  const paths = {
+    dashboard: <><rect x="3" y="3" width="7" height="7" rx="1" /><rect x="14" y="3" width="7" height="7" rx="1" /><rect x="3" y="14" width="7" height="7" rx="1" /><rect x="14" y="14" width="7" height="7" rx="1" /></>,
+    matches:   <><rect x="3" y="4" width="18" height="17" rx="2" /><path d="M3 9h18M8 2v4M16 2v4" /></>,
+    table:     <><path d="M4 6h16M4 12h16M4 18h16" /></>,
+    tactics:   <><circle cx="12" cy="12" r="9" /><path d="M12 3v18M3 12h18" /></>,
+    training:  <><path d="M4 12h2l2-6 4 12 4-9 2 3h2" /></>,
+    players:   <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.6-5.5 6.5-5.5s5.7 2 6.5 5.5" /><circle cx="17" cy="6" r="2.5" /><path d="M21.5 16c-.4-2.3-1.9-3.5-4-3.5" /></>,
+    development: <><path d="M3 17l5-5 4 4 8-8" /><path d="M14 8h6v6" /></>,
+    videos:    <><rect x="3" y="6" width="13" height="12" rx="2" /><path d="M16 10l5-3v10l-5-3" /></>,
+    film:      <><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M3 8h18M3 16h18M7 4v16M17 4v16" /></>,
+    lounge:    <><path d="M5 10h11a3 3 0 010 6H8a3 3 0 01-3-3v-3z" /><path d="M16 10v-2a2 2 0 00-2-2H7a2 2 0 00-2 2v2" /><path d="M5 19h11" /></>,
+    settings:  <><circle cx="12" cy="12" r="3" /><path d="M19.4 15a1.7 1.7 0 00.3 1.8l.1.1a2 2 0 11-2.8 2.8l-.1-.1a1.7 1.7 0 00-1.8-.3 1.7 1.7 0 00-1 1.5V21a2 2 0 11-4 0v-.1a1.7 1.7 0 00-1.1-1.5 1.7 1.7 0 00-1.8.3l-.1.1a2 2 0 11-2.8-2.8l.1-.1a1.7 1.7 0 00.3-1.8 1.7 1.7 0 00-1.5-1H3a2 2 0 110-4h.1a1.7 1.7 0 001.5-1.1 1.7 1.7 0 00-.3-1.8l-.1-.1a2 2 0 112.8-2.8l.1.1a1.7 1.7 0 001.8.3H9a1.7 1.7 0 001-1.5V3a2 2 0 114 0v.1a1.7 1.7 0 001 1.5 1.7 1.7 0 001.8-.3l.1-.1a2 2 0 112.8 2.8l-.1.1a1.7 1.7 0 00-.3 1.8V9a1.7 1.7 0 001.5 1H21a2 2 0 110 4h-.1a1.7 1.7 0 00-1.5 1z" /></>,
+    admin:     <><path d="M12 3l8 3v5c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-3z" /></>,
+    arrow:     <><path d="M5 12h14M13 6l6 6-6 6" /></>,
+    chevron:   <><path d="M9 6l6 6-6 6" /></>,
+    chevronDown: <><path d="M6 9l6 6 6-6" /></>,
+    plus:      <><path d="M12 5v14M5 12h14" /></>,
+    back:      <><path d="M19 12H5M11 18l-6-6 6-6" /></>,
+    edit:      <><path d="M16 3l5 5L8 21H3v-5L16 3z" /></>,
+    trash:     <><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2M6 6v14a2 2 0 002 2h8a2 2 0 002-2V6" /></>,
+    trophy:    <><path d="M8 4h8v5a4 4 0 01-8 0V4z" /><path d="M8 6H5v2a3 3 0 003 3M16 6h3v2a3 3 0 01-3 3M9 18h6M10 14v4M14 14v4" /></>,
+    calendar:  <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4" /></>,
+    clock:     <><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3.5 2" /></>,
+    pin:       <><path d="M12 22s7-7.5 7-13a7 7 0 10-14 0c0 5.5 7 13 7 13z" /><circle cx="12" cy="9" r="2.5" /></>,
+    cloud:     <><path d="M7 18a4 4 0 010-8 6 6 0 0111.5 2A3.5 3.5 0 0118 18H7z" /></>,
+    sun:       <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M5 19l1.5-1.5M17.5 6.5L19 5" /></>,
+    droplet:   <><path d="M12 2.5s6 7 6 11.5a6 6 0 11-12 0c0-4.5 6-11.5 6-11.5z" /></>,
+    wind:      <><path d="M3 8h12a3 3 0 100-6M3 14h17a3 3 0 110 6M3 11h8" /></>,
+    sparkle:   <><path d="M12 3v6M12 15v6M3 12h6M15 12h6M5.5 5.5l4 4M14.5 14.5l4 4M5.5 18.5l4-4M14.5 9.5l4-4" /></>,
+    chat:      <><path d="M21 12a8 8 0 11-3.2-6.4L21 4l-1 4a8 8 0 011 4z" /></>,
+    play:      <><circle cx="12" cy="12" r="9" /><path d="M10 8.5v7l6-3.5-6-3.5z" /></>,
+    check:     <><path d="M5 12l4 4 10-10" /></>,
+    dot:       <><circle cx="12" cy="12" r="3" fill="currentColor" /></>,
+    circle:    <><circle cx="12" cy="12" r="9" /></>,
+    users:     <><circle cx="9" cy="8" r="3.5" /><path d="M2.5 20c.8-3.5 3.6-5.5 6.5-5.5s5.7 2 6.5 5.5" /><circle cx="17" cy="6" r="2.5" /><path d="M21.5 16c-.4-2.3-1.9-3.5-4-3.5" /></>,
+    shirt:     <><path d="M6 4l3-1 3 2 3-2 3 1 3 4-3 2v10H6V10L3 8l3-4z" /></>,
+    formation: <><circle cx="12" cy="4.5" r="1.5" /><circle cx="6" cy="11" r="1.5" /><circle cx="12" cy="11" r="1.5" /><circle cx="18" cy="11" r="1.5" /><circle cx="9" cy="18" r="1.5" /><circle cx="15" cy="18" r="1.5" /></>,
+    flag:      <><path d="M5 21V4M5 4h12l-2 4 2 4H5" /></>,
+    bell:      <><path d="M6 8a6 6 0 1112 0c0 7 3 8 3 8H3s3-1 3-8z" /><path d="M10 21a2 2 0 004 0" /></>,
+    share:     <><circle cx="6" cy="12" r="2.5" /><circle cx="18" cy="6" r="2.5" /><circle cx="18" cy="18" r="2.5" /><path d="M8.5 11l7-3.5M8.5 13l7 3.5" /></>,
+    eye:       <><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" /><circle cx="12" cy="12" r="3" /></>,
+    schoolOverview: <><path d="M3 21V8l9-5 9 5v13" /><path d="M9 21v-7h6v7" /><path d="M3 21h18" /></>,
+    teachersAdmin: <><circle cx="9" cy="8" r="3" /><path d="M3 20c.6-3.4 3.2-5 6-5s5.4 1.6 6 5" /><circle cx="18" cy="6" r="2.2" /><path d="M21.5 13a2.5 2.5 0 00-2.5-2.5" /></>,
+    pupils:    <><circle cx="9" cy="9" r="3" /><path d="M3 20c.5-3 3-5 6-5s5.5 2 6 5" /><circle cx="17" cy="7" r="2" /></>,
+    teamsShield: <><path d="M12 3l8 3v5c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-3z" /><path d="M9 12l2 2 4-4" /></>,
+    classes:   <><path d="M2 8l10-5 10 5-10 5L2 8z" /><path d="M6 10v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5" /></>,
+    reports:   <><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M8 16v-3M12 16v-6M16 16v-9" /></>,
+    assessment: <><rect x="5" y="3" width="14" height="18" rx="2" /><path d="M9 3v3h6V3M9 11h6M9 15h4" /></>,
+    voiceObs:  <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0014 0M12 18v3M9 21h6" /><circle cx="18" cy="6" r="2.2" fill="currentColor" stroke="none" /></>,
+    voiceCfg:  <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0014 0M12 18v3M9 21h6" /><circle cx="18" cy="6" r="2.5" /><path d="M18 4v.5M18 7.5V8M16.2 6h-.5M20.3 6h.5" /></>,
+    consent:   <><path d="M12 3l8 3v5c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-3z" /><path d="M9 12l2 2 4-4" /></>,
+    privacy:   <><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 018 0v3" /></>,
+    key:       <><circle cx="8" cy="15" r="4" /><path d="M11 12l9-9M16 7l3 3M14 9l3 3" /></>,
+    aiAssist:  <><path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.5 5.5l2 2M16.5 16.5l2 2M5.5 18.5l2-2M16.5 7.5l2-2" /><circle cx="12" cy="12" r="3.5" /></>,
+    safeguard: <><path d="M12 3l8 3v5c0 5-3.5 9-8 10-4.5-1-8-5-8-10V6l8-3z" /><path d="M9 11l2 2 4-4" /></>,
+    fixtures:  <><path d="M8 4h8v5a4 4 0 01-8 0V4z" /><path d="M8 6H5v2a3 3 0 003 3M16 6h3v2a3 3 0 01-3 3M9 18h6M10 14v4M14 14v4" /></>,
+    sessions:  <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 10h18M8 3v4M16 3v4M8 14h3M8 17h6" /></>,
+    pupilDev:  <><circle cx="9" cy="8" r="3" /><path d="M3 20c.5-3 3-5 6-5" /><path d="M14 14l2 2 4-5" /></>,
+    tactics:   <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3v18" /></>,
+    target:    <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="5" /><circle cx="12" cy="12" r="1.5" fill="currentColor" stroke="none" /></>,
+    menu:      <><path d="M4 7h16M4 12h16M4 17h16" /></>,
+    close:     <><path d="M6 6l12 12M6 18L18 6" /></>,
+    search:    <><circle cx="11" cy="11" r="6" /><path d="M20 20l-4-4" /></>,
+    swap:      <><path d="M7 4l-3 3 3 3M4 7h12a4 4 0 014 4M17 20l3-3-3-3M20 17H8a4 4 0 01-4-4" /></>,
+    grip:      <><circle cx="9" cy="6" r="1.3" fill="currentColor" stroke="none" /><circle cx="15" cy="6" r="1.3" fill="currentColor" stroke="none" /><circle cx="9" cy="12" r="1.3" fill="currentColor" stroke="none" /><circle cx="15" cy="12" r="1.3" fill="currentColor" stroke="none" /><circle cx="9" cy="18" r="1.3" fill="currentColor" stroke="none" /><circle cx="15" cy="18" r="1.3" fill="currentColor" stroke="none" /></>,
+    pitch:     <><rect x="3" y="4" width="18" height="16" rx="1" /><path d="M3 12h18M12 4v16" /><circle cx="12" cy="12" r="2.5" /></>,
+  };
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={style}>
+      {paths[name] || null}
+    </svg>
+  );
+};
+
+window.Icon = Icon;

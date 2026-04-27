@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moonboots Sports — Match Overview redesign</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    body { background: #f0eee9; }
+    .moonboots-note {
+      font-family: var(--font-sans);
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .moonboots-note h3 {
+      font-size: 13px; margin: 0 0 8px;
+      color: var(--text-primary);
+      letter-spacing: -0.005em;
+    }
+    .moonboots-note p { margin: 0 0 8px; }
+    .moonboots-note ul { margin: 0 0 8px 16px; padding: 0; }
+    .moonboots-note code {
+      font-family: var(--font-mono); font-size: 12px;
+      background: var(--surface-sunken); padding: 1px 5px;
+      border-radius: 3px; color: var(--text-primary);
+    }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="icons.jsx"></script>
+  <script type="text/babel" src="primitives.jsx"></script>
+  <script type="text/babel" src="chrome.jsx"></script>
+  <script type="text/babel" src="match-header.jsx"></script>
+  <script type="text/babel" src="readiness.jsx"></script>
+  <script type="text/babel" src="match-overview.jsx"></script>
+  <script type="text/babel" src="screens.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard, DCPostIt } = window;
+
+    const SCHOOLS = {
+      moonboots:  { theme: "moonboots",  short: "Moonboots demo",      initials: "MB", role: "Manager", url: "app.moonbootssports.com" },
+      ashworth:   { theme: "moonboots",  short: "Ashworth Park",       initials: "AP", role: "Teacher", url: "ashworth.moonbootssports.com" },
+      lockwood:   { theme: "lockwood",   short: "Lockwood Grammar",    initials: "LG", role: "Teacher", url: "lockwood.moonbootssports.com" },
+      northgate:  { theme: "northgate",  short: "Northgate Academy",   initials: "NG", role: "Teacher", url: "northgate.moonbootssports.com" },
+      hartfield:  { theme: "hartfield",  short: "Hartfield Secondary", initials: "HS", role: "Teacher", url: "hartfield.moonbootssports.com" },
+      ashbourne:  { theme: "ashbourne",  short: "Ashbourne Prep",      initials: "AB", role: "Teacher", url: "ashbourne.moonbootssports.com" },
+    };
+
+    function Page() {
+      const ashworth = SCHOOLS.ashworth;
+      return (
+        <DesignCanvas
+          docTitle="Match Overview"
+          docSubtitle="Moonboots Sports — page composition + theming validation, April 2026"
+        >
+          <DCSection
+            id="brief"
+            title="01 · Reading of the brief"
+            subtitle="What I'm solving and what I'm not"
+          >
+            <DCArtboard id="brief-card" label="Design notes" width={760} height={520} background="#FFFFFF">
+              <div className="moonboots-note" style={{ padding: 28, height: "100%", overflowY: "auto" }}>
+                <h2 style={{ fontSize: 18, margin: "0 0 6px", color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+                  Match Overview, redesigned
+                </h2>
+                <p style={{ marginBottom: 16, color: "var(--text-secondary)" }}>
+                  Five themes, three lifecycle states, plus loading and empty. Working within the v1.10 token system, no parallel CSS. Mocked tokens live in <code>tokens.css</code> for diff against your real file.
+                </p>
+
+                <h3>The centrepiece problem</h3>
+                <p>The match header now carries opponent presence (crest + short name with typographic fallback for missing crests), kick-off countdown, venue, conditions, last-meeting result, and competition. Same component spans three states:</p>
+                <ul>
+                  <li><strong>Pre-match.</strong> Countdown, conditions forecast, last meeting.</li>
+                  <li><strong>Live.</strong> Elapsed time + score. Degrades gracefully if no events were logged: shows "Not yet logged" instead of a fake 0–0, with a "Log first event" CTA.</li>
+                  <li><strong>Post-match.</strong> Final score with W/L/D pill. If result wasn't recorded, the readiness panel collapses to a single "Result not recorded yet" prompt.</li>
+                </ul>
+
+                <h3>What replaced the broken stats grid</h3>
+                <p>The Home/Away, Kit, Formation, Goals For/Against tile grid is binned. In its place, a single readiness panel that re-roles across the lifecycle:</p>
+                <ul>
+                  <li><strong>Pre-match:</strong> a checklist with relative timestamps (squad confirmed, formation set, kit chosen, parents notified, briefing reviewed). The "what happens next" timeline I floated earlier was duplicate surface, withdrawn and folded in here.</li>
+                  <li><strong>Live:</strong> the match log, with empty-state guidance when no events have been entered.</li>
+                  <li><strong>Post-match:</strong> result summary with scorers, AI-drafted standout note, and links through to the Report tab.</li>
+                </ul>
+
+                <h3>The formation selector</h3>
+                <p>Removed from Overview. Belongs in Match Prep. The readiness panel still surfaces "Formation set" with a deep-link to where the choice is actually made.</p>
+
+                <h3>The AI shortcuts</h3>
+                <p>Kept on Overview but each card now carries a content preview, per the brief: a one-line summary of the tactical briefing, the last assistant snippet, the most recently uploaded clip. They earn their position through preview, not promise.</p>
+
+                <h3>British English, no em dashes, no "g" word</h3>
+                <p>Confirmed. All copy uses commas, semicolons, colons, full stops. Apologies in advance if a stray em dash slipped past, flag it and I'll catch it.</p>
+              </div>
+            </DCArtboard>
+            <DCPostIt x={780} y={20}>
+              The brief is the source of truth. If anything below contradicts it, the brief wins; tell me and I'll correct.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="desktop-states"
+            title="02 · Desktop, three lifecycle states"
+            subtitle="Same page, three states. 1280 × 900, Moonboots Navy/Gold default theme."
+          >
+            <DCArtboard id="desktop-pre" label="Pre-match · 3 days to kick-off" width={1280} height={900}>
+              <DesktopScreen state="pre" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="desktop-live" label="Live · events logged" width={1280} height={900}>
+              <DesktopScreen state="live" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="desktop-live-noevents" label="Live · no events logged (graceful degrade)" width={1280} height={900}>
+              <DesktopScreen state="live" variant="live-no-events" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="desktop-post" label="Post-match · result recorded" width={1280} height={900}>
+              <DesktopScreen state="post" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="desktop-post-noresult" label="Post-match · result not recorded" width={1280} height={900}>
+              <DesktopScreen state="post" variant="post-no-result" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCPostIt x={20} y={920}>
+              The "Live, no events" case is the one most likely to look broken in the real product. I leaned hardest on this one. The score doesn't fake a 0–0; it states "Not yet logged" with a CTA. The match log shows an honest empty state with two paths: log an event, or skip to entering the final result.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="mobile-states"
+            title="03 · Mobile, three lifecycle states"
+            subtitle="375 × 812 (iPhone 14 Pro emulation, the screenshot session target). Same data, mobile composition."
+          >
+            <DCArtboard id="mobile-pre" label="Pre-match" width={395} height={832}>
+              <MobileScreen state="pre" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="mobile-live" label="Live · events logged" width={395} height={832}>
+              <MobileScreen state="live" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="mobile-live-noevents" label="Live · no events" width={395} height={832}>
+              <MobileScreen state="live" variant="live-no-events" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="mobile-post" label="Post · result recorded" width={395} height={832}>
+              <MobileScreen state="post" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="mobile-post-noresult" label="Post · result not recorded" width={395} height={832}>
+              <MobileScreen state="post" variant="post-no-result" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCPostIt x={20} y={852}>
+              Mobile match-day usage means the header has to read at a glance. Crests sit above names, score is mono and tabular. The pitch-side teacher is the primary user here, not a desk teacher.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="loading-empty"
+            title="04 · Loading and empty states"
+            subtitle="First-class, not afterthoughts. Both desktop, mobile equivalents work the same way."
+          >
+            <DCArtboard id="loading" label="Loading · skeleton" width={1280} height={900}>
+              <DesktopScreen state="pre" variant="loading" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="empty" label="Empty · no fixture scheduled" width={1280} height={900}>
+              <DesktopScreen state="pre" variant="empty" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+            <DCArtboard id="empty-mobile" label="Empty · mobile" width={395} height={832}>
+              <MobileScreen state="pre" variant="empty" school={SCHOOLS.ashworth} />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection
+            id="ia-spec"
+            title="05 · Navigation IA specification"
+            subtitle="Pattern (a) with collapse rules, designed for triple-role first. Hand to Claude Code as build brief."
+          >
+            <DCArtboard id="ia-rules" label="Spec · rules" width={760} height={760} background="#FFFFFF">
+              <div className="moonboots-note" style={{ padding: 28, height: "100%", overflowY: "auto" }}>
+                <h2 style={{ fontSize: 17, margin: "0 0 12px", color: "var(--text-primary)" }}>
+                  Navigation specification
+                </h2>
+
+                <h3>Structure (top to bottom)</h3>
+                <ol style={{ margin: "0 0 12px 18px", padding: 0 }}>
+                  <li><strong>School identity header.</strong> Crest + school short-name + role label, fixed.</li>
+                  <li><strong>Cross-role top cluster, max 3 items.</strong> Today, AI Assistant, Search. Ungrouped, no label.</li>
+                  <li><strong>Role groups</strong> in fixed order: SCHOOL ADMIN, HEAD OF DEPARTMENT, CURRICULUM PE, EXTRA-CURRICULAR. Stacked, each with a small-caps gold label.</li>
+                  <li>Each role group has a <strong>daily cluster</strong> (5 to 7 items, used at least weekly) and a <strong>"More" toggle</strong> (collapsed by default; everything used less than weekly).</li>
+                  <li><strong>School settings group</strong> at the bottom, outside any role, collapsed by default. Applies across roles, does not repeat. Items: Parental Consent, Data &amp; Privacy, SSO Settings, Voice Settings.</li>
+                  <li><strong>User footer.</strong> Avatar, name, role label, sign-out.</li>
+                </ol>
+
+                <h3>Dedupe rule</h3>
+                <p>An item appearing in multiple roles renders once, in the highest-priority role. Priority: School Admin &gt; HoD &gt; Curriculum &gt; Extra. If a user holds <strong>School Admin</strong>, the HoD role group is hidden entirely; HoD is a subset of School Admin scope.</p>
+
+                <h3>Collapse rules</h3>
+                <ul>
+                  <li>"More" sub-group is collapsed by default. State persists per user.</li>
+                  <li>School settings collapsed by default. Expanded state does not persist (re-collapses on navigation away).</li>
+                  <li>Single-role users: the role label is hidden, daily cluster shown ungrouped. Same collapse rules for "More" and Settings.</li>
+                </ul>
+
+                <h3>Triple-role visible-item budget</h3>
+                <p>Maximum 18 items above the fold. Current design:</p>
+                <ul>
+                  <li>3 cross-role top items</li>
+                  <li>3 role labels</li>
+                  <li>5 + 5 + 5 = 15 daily items</li>
+                  <li>3 "More" toggles</li>
+                  <li>1 Settings toggle</li>
+                </ul>
+                <p>Total: 16 navigable items + 4 toggles. Within budget.</p>
+
+                <h3>Test Personas</h3>
+                <p>Removed from the rendered sidebar entirely. Accessed via <code>Cmd+Shift+K</code> behind <code>import.meta.env.DEV</code>. Cannot ship to production.</p>
+
+                <h3>Role tags for disambiguation</h3>
+                <p>Most items are unambiguous after dedupe. The two cases that may need a small role-tag pill:</p>
+                <ul>
+                  <li><strong>"Reports"</strong> in Curriculum vs. <strong>"Reporting"</strong> in HoD. The label difference handles it; no tag needed.</li>
+                  <li><strong>"My Teams"</strong> (Extra) vs. <strong>"All Teams"</strong> (HoD). Label difference handles it.</li>
+                </ul>
+                <p>No role-tag pills shipped in v1. Add only if support tickets indicate confusion.</p>
+
+                <h3>Mobile, sub-768px</h3>
+                <p>Sidebar collapses to a drawer triggered by a hamburger in the top bar. Drawer slides in from the left, full-height, 280px wide. Same content; same collapse rules. Tap-outside or swipe-left to dismiss.</p>
+
+                <h3>Brand-new school empty state</h3>
+                <p>Items that have no underlying data show a small grey "set up" hint to the right of the label (e.g. <em>Add teachers</em>, <em>Import pupils</em>, <em>Create first team</em>). The hint disappears once a single record exists. Daily-cluster items take precedence; "More" items don't show hints, since they're below the fold.</p>
+
+                <h3>Crest sizes (fixed tokens)</h3>
+                <ul>
+                  <li>Sidebar header: 32px</li>
+                  <li>Match cards: 24px</li>
+                  <li>Match Overview header: 56px desktop, 44px mobile</li>
+                  <li>PDF: full prominence, height-locked at 96px</li>
+                </ul>
+
+                <h3>Crest variants</h3>
+                <ul>
+                  <li><code>square</code> (default): width = height.</li>
+                  <li><code>wide</code>: height-locked, width auto, max 2.4 × height.</li>
+                  <li><code>text</code>: initials in tinted square. Used as fallback when no crest is uploaded; dashed border + "Add crest" tooltip.</li>
+                </ul>
+              </div>
+            </DCArtboard>
+
+            <DCArtboard id="ia-single-role" label="Single-role · Curriculum PE only" width={260} height={760}>
+              <SidebarOnly roles={["teacherCurriculum"]} school={SCHOOLS.ashworth} height={760} />
+            </DCArtboard>
+
+            <DCArtboard id="ia-dual-role" label="Dual-role · HoD + Curriculum" width={260} height={760}>
+              <SidebarOnly roles={["hod", "teacherCurriculum"]} school={SCHOOLS.ashworth} height={760} />
+            </DCArtboard>
+
+            <DCArtboard id="ia-triple-role" label="Triple-role · stress test" width={260} height={760}>
+              <SidebarOnly roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]} school={SCHOOLS.ashworth} height={760} />
+            </DCArtboard>
+
+            <DCArtboard id="ia-admin" label="School Admin (HoD folded in)" width={260} height={760}>
+              <SidebarOnly roles={["schoolAdmin", "hod"]} school={{ ...SCHOOLS.ashworth, roleLabel: "School Admin" }} height={760} />
+            </DCArtboard>
+
+            <DCArtboard id="ia-newschool" label="New school · empty hints" width={260} height={760}>
+              <SidebarOnly roles={["schoolAdmin", "teacherExtraCurricular"]} school={{ ...SCHOOLS.ashworth, short: "Greenway High", initials: "GH", roleLabel: "School Admin" }} height={760} newSchool />
+            </DCArtboard>
+
+            <DCArtboard id="ia-mobile-drawer" label="Mobile drawer · open" width={395} height={832}>
+              <MobileScreen state="pre" school={SCHOOLS.ashworth} drawerOpen roles={["hod", "teacherCurriculum", "teacherExtraCurricular"]} />
+            </DCArtboard>
+
+            <DCPostIt x={20} y={780}>
+              Triple-role is the stress test. The five-item daily clusters are deliberate: three roles × five items + three labels + three Mores + cross-role top stays under 18 navigable items. Anything more and the sidebar starts feeling like a filing cabinet rather than a workspace.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="theming"
+            title="06 · Multi-tenant theming validation"
+            subtitle="Same Match Overview, five school identities. Two tokens vary, the rest are fixed."
+          >
+            <DCArtboard id="theme-moonboots" label="Moonboots · Navy + Gold (system default)" width={1280} height={900}>
+              <DesktopScreen schoolTheme="moonboots" state="pre" school={SCHOOLS.moonboots} />
+            </DCArtboard>
+            <DCArtboard id="theme-lockwood" label="Lockwood Grammar · Maroon + Cream" width={1280} height={900}>
+              <DesktopScreen schoolTheme="lockwood" state="pre" school={SCHOOLS.lockwood} />
+            </DCArtboard>
+            <DCArtboard id="theme-northgate" label="Northgate Academy · Black + Electric Blue" width={1280} height={900}>
+              <DesktopScreen schoolTheme="northgate" state="pre" school={SCHOOLS.northgate} />
+            </DCArtboard>
+            <DCArtboard id="theme-hartfield" label="Hartfield Secondary · Green + White" width={1280} height={900}>
+              <DesktopScreen schoolTheme="hartfield" state="pre" school={SCHOOLS.hartfield} />
+            </DCArtboard>
+            <DCArtboard id="theme-ashbourne" label="Ashbourne Prep · Navy + Silver" width={1280} height={900}>
+              <DesktopScreen schoolTheme="ashbourne" state="pre" school={SCHOOLS.ashbourne} />
+            </DCArtboard>
+            <DCPostIt x={20} y={920}>
+              Ashbourne Prep is the one to watch. Silver as the accent exposes assumptions baked into the gold treatment, especially around the "AI" label colour and the achievement pill. See the constraints note below.
+            </DCPostIt>
+          </DCSection>
+
+          <DCSection
+            id="tokens-note"
+            title="07 · Token constraints + PDF crest flag"
+            subtitle="What schools customise, what holds, and the small adjacent task"
+          >
+            <DCArtboard id="tokens-customisable" label="Customisable per school" width={500} height={620} background="#FFFFFF">
+              <div className="moonboots-note" style={{ padding: 24, height: "100%", overflowY: "auto" }}>
+                <h2 style={{ fontSize: 16, margin: "0 0 14px", color: "var(--text-primary)" }}>School-customisable</h2>
+                <p>Two tokens, plus their derived variants. That is the entire surface a school can change.</p>
+                <ul>
+                  <li><code>--brand-primary</code></li>
+                  <li><code>--brand-primary-hover</code> (auto, +6% lightness)</li>
+                  <li><code>--brand-primary-tint</code> (auto, ~92% lightness, low chroma)</li>
+                  <li><code>--on-brand-primary</code> (auto, contrast-picked)</li>
+                  <li><code>--brand-accent</code></li>
+                  <li><code>--brand-accent-hover</code></li>
+                  <li><code>--brand-accent-tint</code></li>
+                  <li><code>--on-brand-accent</code></li>
+                </ul>
+                <p>Plus one non-colour identity lever: the school crest, applied at fixed sizes:</p>
+                <ul>
+                  <li>Sidebar: 28px square, replaces team-only chip</li>
+                  <li>Match cards: 24px square next to opponent name</li>
+                  <li>Match Overview header: 56px desktop, 44px mobile</li>
+                  <li>PDF documents and public site: full-prominence</li>
+                </ul>
+                <p>Wide and text-only crests use a <code>crest-variant</code> attribute that swaps to height-locked layout. Awkward crests can't break the grid.</p>
+              </div>
+            </DCArtboard>
+
+            <DCArtboard id="tokens-fixed" label="Fixed across all tenants" width={500} height={620} background="#FFFFFF">
+              <div className="moonboots-note" style={{ padding: 24, height: "100%", overflowY: "auto" }}>
+                <h2 style={{ fontSize: 16, margin: "0 0 14px", color: "var(--text-primary)" }}>Fixed (not school-customisable)</h2>
+                <ul>
+                  <li>Surfaces: page, card, sunken, raised, overlay</li>
+                  <li>Text: primary, secondary, tertiary, on-dark variants</li>
+                  <li>Borders: subtle, default, strong</li>
+                  <li>Status: success, warning, error, info, live (and tints)</li>
+                  <li>Achievement gold: <code>--achievement</code> stays Moonboots Gold across all tenants. Reserved for trophies, awards, premium CTAs.</li>
+                  <li>Type scale and font stack</li>
+                  <li>Spacing scale (1–10), radii, shadows</li>
+                  <li>Crest sizing tokens</li>
+                </ul>
+                <h3 style={{ marginTop: 16 }}>Accessibility floor</h3>
+                <p>If a school's <code>--brand-primary</code> fails AA against <code>--on-brand-primary</code>, the system snaps <code>--on-brand-primary</code> to the nearest passing variant rather than rendering illegibly. Same rule for accent.</p>
+
+                <h3 style={{ marginTop: 16 }}>What this means in practice</h3>
+                <ul>
+                  <li>A school with pale gold cannot break the body text or the success/warning/error semantics, because those are fixed.</li>
+                  <li>A school whose colours clash with Moonboots Gold doesn't displace the gold, because achievement is reserved.</li>
+                  <li>Schools have meaningful identity (header, sidebar header, primary CTAs, key surfaces) without owning the parts of the system that need to stay legible.</li>
+                </ul>
+              </div>
+            </DCArtboard>
+
+            <DCArtboard id="pdf-flag" label="Adjacent task: PDF crest resolution" width={500} height={620} background="#FFFFFF">
+              <div className="moonboots-note" style={{ padding: 24, height: "100%", overflowY: "auto" }}>
+                <h2 style={{ fontSize: 16, margin: "0 0 14px", color: "var(--text-primary)" }}>PDF crest rendering, flagged</h2>
+                <p>You asked whether the existing PDF service renders crests at A4 print resolution cleanly when schools supply low-resolution sources. I can't inspect the service from here, so this is a known unknown.</p>
+                <h3>Recommended mitigation, server-side</h3>
+                <ul>
+                  <li>On crest upload, store a 2× raster derived from the source, sized to the largest print placement (A4 letterhead at 300 DPI).</li>
+                  <li>Validate that uploaded raster crests are at least 600px on the long edge. Surface a warning at upload time, not at print time.</li>
+                  <li>Encourage SVG. If a school provides one, it's used everywhere. PDFs included.</li>
+                </ul>
+                <h3>Until that's resolved</h3>
+                <p>The on-screen crest fallback (initials in a tinted square) holds. This is a TODO state by design: dashed border, "Add crest" prompt, distinct from the steady state. It pushes schools to upload, which is the only real fix.</p>
+                <p style={{ marginTop: 16 }}>
+                  Treat this as a small adjacent backend task scoped alongside the Match Overview ship, not a follow-up. Worth one engineer-day, probably less.
+                </p>
+              </div>
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<Page />);
+  </script>
+</body>
+</html>
