@@ -90,7 +90,7 @@ const SeasonDevelopment = lazy(() => import('./pages/SeasonDevelopment'))
 
 // Teacher Hub pages
 const TeacherLayout = lazy(() => import('./pages/teacher/TeacherLayout'))
-const TeacherDashboard = lazy(() => import('./pages/teacher/TeacherDashboard'))
+const TeacherDashboard = lazy(() => import('./pages/teacher/DashboardV15'))
 const TeacherClasses = lazy(() => import('./pages/teacher/TeacherClasses'))
 const TeacherLessons = lazy(() => import('./pages/teacher/TeacherLessons'))
 const TeacherAssessment = lazy(() => import('./pages/teacher/TeacherAssessment'))
