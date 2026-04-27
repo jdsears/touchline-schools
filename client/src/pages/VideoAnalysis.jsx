@@ -639,7 +639,7 @@ export default function VideoAnalysis() {
 
   return (
     <div className="p-6 lg:p-8 max-w-7xl mx-auto">
-      <Link to={match ? `/matches/${match.id}` : '/videos'} className="inline-flex items-center gap-2 text-secondary hover:text-white mb-6">
+      <Link to={match ? `/teacher/match/${match.id}` : '/videos'} className="inline-flex items-center gap-2 text-secondary hover:text-white mb-6">
         <ArrowLeft className="w-4 h-4" /> {match ? 'Back to Match' : 'Back to Videos'}
       </Link>
 

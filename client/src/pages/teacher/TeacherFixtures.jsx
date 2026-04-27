@@ -20,7 +20,7 @@ function FixtureCard({ match, compact }) {
   const result = resultBadge(match)
   const d = match.date || match.match_date
   return (
-    <Link to={`/matches/${match.id}`} className={`block bg-card rounded-xl border border-border-default ${compact ? 'p-3' : 'p-4'} hover:border-border-strong transition-colors`}>
+    <Link to={`/teacher/match/${match.id}`} className={`block bg-card rounded-xl border border-border-default ${compact ? 'p-3' : 'p-4'} hover:border-border-strong transition-colors`}>
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-9 h-9 rounded-lg bg-subtle flex items-center justify-center text-base shrink-0">

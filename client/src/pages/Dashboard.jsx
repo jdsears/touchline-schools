@@ -287,7 +287,7 @@ export default function Dashboard() {
             {/* Next Match Countdown */}
             {nextMatch && getNextMatchCountdown() && (
               <Link
-                to={`/matches/${nextMatch.id}`}
+                to={`/teacher/match/${nextMatch.id}`}
                 className="flex items-center gap-3 px-4 py-2 rounded-xl bg-energy-500/10 border border-energy-500/30 hover:border-energy-500/50 transition-colors"
               >
                 <Clock className="w-5 h-5 text-energy-400" />
@@ -738,7 +738,7 @@ export default function Dashboard() {
             </h2>
 
             {nextMatch ? (
-              <Link to={`/matches/${nextMatch.id}`} className="block hover:opacity-80 transition-opacity">
+              <Link to={`/teacher/match/${nextMatch.id}`} className="block hover:opacity-80 transition-opacity">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <span className="text-secondary">Opponent</span>
@@ -807,7 +807,7 @@ export default function Dashboard() {
                 {recentResults.slice(0, resultsExpanded ? undefined : 3).map((match) => (
                   <Link
                     key={match.id}
-                    to={`/matches/${match.id}`}
+                    to={`/teacher/match/${match.id}`}
                     className="flex items-center justify-between p-4 hover:bg-subtle transition-colors"
                   >
                     <div>
@@ -857,7 +857,7 @@ export default function Dashboard() {
                 {upcomingMatches.slice(0, fixturesExpanded ? undefined : 3).map((match) => (
                   <Link
                     key={match.id}
-                    to={`/matches/${match.id}`}
+                    to={`/teacher/match/${match.id}`}
                     className="flex items-center justify-between p-4 hover:bg-subtle transition-colors"
                   >
                     <div>
