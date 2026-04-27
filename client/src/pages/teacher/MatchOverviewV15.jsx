@@ -3,6 +3,15 @@ import { useParams, Link } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { CheckCircle, Circle, AlertTriangle, ChevronRight, Sparkles, MessageSquare, Video, Loader2 } from 'lucide-react'
 import MatchHeader from '../../components/MatchHeader'
+import TabStrip from '../../components/TabStrip'
+
+const MATCH_TABS = [
+  { id: 'overview', label: 'Overview', href: '' },
+  { id: 'squad', label: 'Squad', href: '/squad' },
+  { id: 'prep', label: 'Match Prep', href: '/prep' },
+  { id: 'report', label: 'Report', href: '/report' },
+  { id: 'video', label: 'Video', href: '/video' },
+]
 
 function ReadinessRow({ state, title, meta, detail, actionLabel, actionHref }) {
   const tone = {
@@ -125,6 +134,9 @@ export default function MatchOverviewV15() {
   return (
     <div className="max-w-[1100px] mx-auto px-7 py-6">
       <MatchHeader match={match} team={team} />
+      <div className="mb-5 sticky top-0 z-10 py-2" style={{ background: 'var(--surface-page)' }}>
+        <TabStrip tabs={MATCH_TABS} basePath={`/teacher/match/${id}`} />
+      </div>
       <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-5">
         <div className="space-y-5">
           <ReadinessPanel match={match} />
