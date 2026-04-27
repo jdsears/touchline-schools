@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Moonboots Sports — Match Prep</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    body { background: #f0eee9; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes slideIn { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+    .moonboots-note {
+      font-family: var(--font-sans);
+      color: var(--text-secondary);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    .moonboots-note h3 {
+      font-size: 13px; margin: 0 0 8px;
+      color: var(--text-primary);
+      letter-spacing: -0.005em;
+    }
+    .moonboots-note p { margin: 0 0 8px; }
+    .moonboots-note ul { margin: 0 0 8px 18px; padding: 0; }
+    .moonboots-note li { margin-bottom: 4px; }
+    .moonboots-note code {
+      font-family: var(--font-mono); font-size: 12px;
+      background: var(--surface-sunken); padding: 1px 5px;
+      border-radius: 3px; color: var(--text-primary);
+    }
+    .moonboots-note strong { color: var(--text-primary); }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" src="design-canvas.jsx"></script>
+  <script type="text/babel" src="icons.jsx"></script>
+  <script type="text/babel" src="primitives.jsx"></script>
+  <script type="text/babel" src="chrome.jsx"></script>
+  <script type="text/babel" src="match-header.jsx"></script>
+  <script type="text/babel" src="match-prep-formation.jsx"></script>
+  <script type="text/babel" src="match-prep-sections.jsx"></script>
+  <script type="text/babel" src="match-prep.jsx"></script>
+
+  <script type="text/babel">
+    const { DesignCanvas, DCSection, DCArtboard, DCPostIt,
+            Sidebar, TopBar, TabStrip, MatchPrepPage, MobilePrepPage,
+            FormationPitch, RosterSheet, FOOTBALL_PRESETS, DEFAULT_ASSIGNMENT_4_3_3, DEMO_SQUAD,
+            BriefingPanel, Card, Icon } = window;
+
+    const ashworth = { theme: "moonboots", short: "Ashworth Park", initials: "AP", role: "Teacher", url: "ashworth.moonbootssports.com" };
+
+    const tabs = [
+      { id: "overview", icon: "matches", label: "Overview" },
+      { id: "squad", icon: "users", label: "Squad" },
+      { id: "prep", icon: "formation", label: "Match Prep" },
+      { id: "report", icon: "trophy", label: "Report" },
+      { id: "video", icon: "videos", label: "Video" },
+    ];
+
+    const Crumb = ({ items }) => (
+      <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13, color: "var(--text-secondary)", minWidth: 0 }}>
+        {items.map((it, i) => (
+          <React.Fragment key={i}>
+            {i > 0 && <Icon name="chevron" size={12} style={{ color: "var(--text-tertiary)" }} />}
+            <span style={{
+              fontWeight: i === items.length - 1 ? 600 : 500,
+              color: i === items.length - 1 ? "var(--text-primary)" : "var(--text-secondary)",
+              whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+            }}>{it}</span>
+          </React.Fragment>
+        ))}
+      </div>
+    );
+
+    // Desktop screen shell wrapping a Match Prep page.
+    function PrepDesktop({ briefingOpen = false, briefingGenerated = true, variant = "default", initialFocusSlot = null, width = 1280, height = 940 }) {
+      return (
+        <div data-theme="moonboots" style={{
+          background: "var(--surface-page)",
+          color: "var(--text-primary)",
+          width, height,
+          display: "flex", flexDirection: "row",
+          fontFamily: "var(--font-sans)",
+          overflow: "hidden",
+        }}>
+          <Sidebar roles={["teacherExtraCurricular"]} school={ashworth} activeId="fixtures" />
+          <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+            <TopBar url="ashworth.moonbootssports.com">
+              <Crumb items={["My Teams", "Year 9 Boys Football", "Fixtures", "Whitfield, 2 May", "Match Prep"]} />
+            </TopBar>
+            <div style={{ padding: "12px 28px 0", flexShrink: 0 }}>
+              <TabStrip tabs={tabs} active="prep" />
+            </div>
+            <MatchPrepPage
+              briefingOpen={briefingOpen}
+              briefingGenerated={briefingGenerated}
+              variant={variant}
+              initialFocusSlot={initialFocusSlot}
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // Mobile shell — reuse phone bezel inline (lightweight, since we don't need
+    // the full PhoneShell here)
+    function PrepMobile({ sheetOpen = false, focusedSlotInitial = null, height = 812 }) {
+      const tabsToRender = tabs;
+      return (
+        <div data-theme="moonboots" style={{
+          width: 375, height, borderRadius: 44,
+          background: "#0F1E3D",
+          padding: 10,
+          boxShadow: "0 24px 60px rgba(15,30,61,0.18), 0 4px 12px rgba(15,30,61,0.10)",
+        }}>
+          <div style={{
+            width: "100%", height: "100%",
+            borderRadius: 36, overflow: "hidden",
+            background: "var(--surface-page)",
+            position: "relative",
+            display: "flex", flexDirection: "column",
+            fontFamily: "var(--font-sans)",
+          }}>
+            <div style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "12px 24px 6px",
+              fontSize: 14, fontWeight: 600, color: "var(--text-primary)",
+              flexShrink: 0,
+            }}>
+              <span style={{ fontFamily: "var(--font-mono)" }}>13:18</span>
+              <div style={{ display: "flex", gap: 4, alignItems: "center", color: "var(--text-primary)" }}>
+                <span style={{ display: "inline-flex", gap: 1.5 }}>
+                  {[3,5,7,9].map(h => <span key={h} style={{ width: 3, height: h, background: "currentColor", borderRadius: 1 }} />)}
+                </span>
+                <svg width="22" height="11" viewBox="0 0 22 11" fill="none"><rect x=".5" y=".5" width="19" height="10" rx="2.5" stroke="currentColor"/><rect x="2" y="2" width="14" height="7" rx="1" fill="currentColor"/><rect x="20" y="4" width="1.5" height="3" rx=".75" fill="currentColor"/></svg>
+              </div>
+            </div>
+
+            <div style={{
+              display: "flex", alignItems: "center", gap: 10,
+              padding: "8px 16px 12px",
+              borderBottom: "1px solid var(--border-subtle)",
+              flexShrink: 0,
+            }}>
+              <button style={{
+                width: 32, height: 32, borderRadius: "var(--radius-md)",
+                background: "var(--surface-sunken)", border: "1px solid var(--border-subtle)",
+                display: "inline-flex", alignItems: "center", justifyContent: "center",
+                color: "var(--text-primary)",
+              }}><Icon name="back" size={16} /></button>
+              <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.15, flex: 1, minWidth: 0 }}>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>Match Prep</span>
+                <span style={{ fontSize: 11, color: "var(--text-tertiary)" }}>vs Whitfield · Sat 14:00</span>
+              </div>
+              <button style={{
+                width: 32, height: 32, borderRadius: "50%",
+                background: "var(--brand-primary)", color: "var(--brand-accent)",
+                border: "none", display: "inline-flex", alignItems: "center", justifyContent: "center",
+              }}><Icon name="sparkle" size={15} /></button>
+            </div>
+
+            <div style={{
+              display: "flex", gap: 16, overflowX: "auto",
+              padding: "10px 16px",
+              borderBottom: "1px solid var(--border-subtle)",
+              flexShrink: 0,
+            }}>
+              {tabsToRender.map(t => (
+                <div key={t.id} style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  fontSize: 13, fontWeight: 600,
+                  color: t.id === "prep" ? "var(--brand-primary)" : "var(--text-tertiary)",
+                  paddingBottom: 6,
+                  borderBottom: t.id === "prep" ? "2px solid var(--brand-accent)" : "2px solid transparent",
+                  whiteSpace: "nowrap",
+                  marginBottom: -11,
+                }}>
+                  <Icon name={t.icon} size={13} />
+                  {t.label}
+                </div>
+              ))}
+            </div>
+
+            <MobilePrepPage sheetOpen={sheetOpen} focusedSlotInitial={focusedSlotInitial} />
+          </div>
+        </div>
+      );
+    }
+
+    // Fullscreen briefing panel artboard (so we can show it standalone too)
+    function BriefingPanelArtboard({ generated = true, height = 940 }) {
+      return (
+        <div data-theme="moonboots" style={{
+          width: 380, height,
+          fontFamily: "var(--font-sans)",
+          display: "flex",
+        }}>
+          <BriefingPanel open generated={generated} />
+        </div>
+      );
+    }
+
+    // Formation focus — close-up of the editor card, no chrome.
+    function FormationFocus({ height = 720 }) {
+      const [assignment, setAssignment] = React.useState(DEFAULT_ASSIGNMENT_4_3_3);
+      const [focused, setFocused] = React.useState("lw");
+      const handlePick = (slotId, playerId) => {
+        setAssignment(prev => {
+          const next = { ...prev };
+          const existingSlot = Object.entries(next).find(([k, v]) => v === playerId)?.[0];
+          const displaced = next[slotId];
+          next[slotId] = playerId;
+          if (existingSlot && existingSlot !== slotId) next[existingSlot] = displaced ?? null;
+          return next;
+        });
+        setFocused(null);
+      };
+      const { FormationEditorCard } = window;
+      return (
+        <div data-theme="moonboots" style={{
+          background: "var(--surface-page)", padding: 24,
+          width: 920, height,
+          fontFamily: "var(--font-sans)",
+          display: "flex", flexDirection: "column", gap: 16,
+        }}>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.015em" }}>Starting XI editor — close-up</div>
+            <div style={{ fontSize: 12.5, color: "var(--text-secondary)" }}>Tap-to-assign roster sheet open on left wing slot.</div>
+          </div>
+          <FormationEditorCard
+            assignment={assignment}
+            focusedSlotId={focused}
+            onFocusSlot={setFocused}
+            onPick={handlePick}
+            onClear={(slotId) => setAssignment(prev => ({ ...prev, [slotId]: null }))}
+          />
+        </div>
+      );
+    }
+
+    function Page() {
+      return (
+        <DesignCanvas>
+          <DCSection id="brief" title="Brief & approach"
+            subtitle="Match Prep is a checklist the teacher walks before kick-off. Formation editor sits at the centre; AI is opt-in per block, plus a separate tactical briefing panel.">
+            <DCArtboard id="approach" label="A · How this is built" width={420} height={720}>
+              <div style={{
+                background: "var(--surface-card)", height: "100%",
+                padding: "22px 24px",
+                fontFamily: "var(--font-sans)",
+                color: "var(--text-secondary)",
+                fontSize: 13.5, lineHeight: 1.55,
+                overflowY: "auto",
+              }} className="moonboots-note">
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", color: "var(--brand-accent)", textTransform: "uppercase", marginBottom: 6 }}>
+                  Match Prep · v1
+                </div>
+                <h2 style={{ fontSize: 20, color: "var(--text-primary)", margin: "0 0 10px", letterSpacing: "-0.015em" }}>
+                  A pre-match checklist, not a tactics tool
+                </h2>
+                <p>
+                  Teachers don't want a Pep board. They want to walk a short list before kick-off and arrive at the touchline confident: <strong>who's playing, what we said in the changing room, what to watch for.</strong>
+                </p>
+
+                <h3>Layout</h3>
+                <p>
+                  Three columns on desktop: a <strong>sticky checklist rail</strong> (left, jump-links + status), the <strong>centre column</strong> with formation editor on top and prep blocks below, and an <strong>opt-in AI briefing panel</strong> (right, toggleable). Mobile drops the rail to a horizontal step-strip and the briefing panel becomes a full-screen modal.
+                </p>
+
+                <h3>Formation editor: preset-with-swaps</h3>
+                <p>
+                  Teacher picks a preset (4-3-3, 4-4-2…), tap any slot to open a roster sheet. Players sort by <strong>preferred role fit</strong>, with badges for <em>Best fit</em> / <em>Will swap</em>. Tap-to-assign is the dominant gesture — desktop has drag as a secondary, mobile is tap-only because cold-hand drag on a touchline phone is unreliable.
+                </p>
+                <p>
+                  Sport-aware: the squad shape, role vocabulary and size toggles (7v7 / 9v9 / 11v11) are driven by a <code>SPORT_DEFS</code> object so cricket and netball drop in cleanly. v1 ships football only; the abstraction proves it can extend.
+                </p>
+
+                <h3>AI as a deliberate tool</h3>
+                <p>
+                  Two surfaces, both opt-in:
+                </p>
+                <ul>
+                  <li><strong>Per-block "Suggest with AI"</strong> drops a draft inline (opposition notes, talking points). Teacher accepts/edits/discards. Source attribution is always visible.</li>
+                  <li><strong>Tactical briefing panel</strong> (right side, toggleable) synthesises last meetings + scouting + squad availability into a one-page brief with threats / opportunities / suggested approach. Empty state explains what it'll use.</li>
+                </ul>
+                <p>
+                  No autonomous behaviour. Drafts arrive in a <span style={{ color: "var(--brand-accent)", fontWeight: 600 }}>tinted container</span> with a clear "Keep / Discard" so it can never silently become the truth.
+                </p>
+
+                <h3>States covered</h3>
+                <ul>
+                  <li><strong>Default</strong> — Year 9 boys vs Whitfield, full prep done</li>
+                  <li><strong>Briefing open</strong> — right-side panel populated</li>
+                  <li><strong>Briefing empty</strong> — never generated, with explanation</li>
+                  <li><strong>Empty XI</strong> — no players placed yet</li>
+                  <li><strong>Slot focused</strong> — roster sheet open mid-swap</li>
+                  <li><strong>Mobile prep</strong> + <strong>mobile slot sheet</strong></li>
+                </ul>
+
+                <h3>Workflow note</h3>
+                <p style={{
+                  background: "var(--surface-sunken)",
+                  padding: "10px 12px", borderRadius: 8,
+                  borderLeft: "3px solid var(--brand-accent)",
+                }}>
+                  Designed and built decoupled: the formation engine is its own file (<code>match-prep-formation.jsx</code>) with sport-agnostic data shapes; the prep blocks are a second file (<code>match-prep-sections.jsx</code>); the page assembly is a third (<code>match-prep.jsx</code>). Adding cricket = new preset entries, no editor changes.
+                </p>
+              </div>
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="desktop" title="Desktop · Match Prep"
+            subtitle="Sticky rail · formation editor · AI-suggested talking points · briefing panel state">
+            <DCArtboard id="default" label="A · Default · all sections complete" width={1280} height={940}>
+              <PrepDesktop />
+            </DCArtboard>
+            <DCArtboard id="briefing" label="B · AI tactical briefing open" width={1280} height={940}>
+              <PrepDesktop briefingOpen briefingGenerated />
+            </DCArtboard>
+            <DCArtboard id="briefing-empty" label="C · Briefing never generated" width={1280} height={940}>
+              <PrepDesktop briefingOpen briefingGenerated={false} />
+            </DCArtboard>
+            <DCArtboard id="empty" label="D · Empty XI · just opened" width={1280} height={940}>
+              <PrepDesktop variant="empty" />
+            </DCArtboard>
+            <DCArtboard id="slot-focused" label="E · Slot focused — swap in progress" width={1280} height={940}>
+              <PrepDesktop initialFocusSlot="lw" />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="formation" title="Formation editor · close-up"
+            subtitle="The mechanical centre of the page. Roster sheet is open mid-swap.">
+            <DCArtboard id="focus" label="A · Editor card with sheet open" width={920} height={720}>
+              <FormationFocus />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="briefing-panel" title="AI tactical briefing · standalone"
+            subtitle="Right-side panel in isolation. Threats, opportunities and suggested approach with always-visible source attribution.">
+            <DCArtboard id="brief-generated" label="A · Generated briefing" width={380} height={940}>
+              <BriefingPanelArtboard generated />
+            </DCArtboard>
+            <DCArtboard id="brief-empty" label="B · Empty / not yet generated" width={380} height={940}>
+              <BriefingPanelArtboard generated={false} />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="mobile" title="Mobile · touchline-grade"
+            subtitle="Step-strip instead of rail. Bottom-sheet roster picker. Sticky kick-off action bar at the foot.">
+            <DCArtboard id="mob-default" label="A · Match prep · prep complete" width={395} height={832}>
+              <PrepMobile />
+            </DCArtboard>
+            <DCArtboard id="mob-sheet" label="B · Slot tapped · roster sheet" width={395} height={832}>
+              <PrepMobile sheetOpen />
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<Page />);
+  </script>
+</body>
+</html>
