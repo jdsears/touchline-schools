@@ -141,6 +141,8 @@ function TodaySection({ roles }) {
   )
 }
 
+import { HoDSection, CurriculumSection, ExtraCurricularSection } from '../../components/DashboardSections'
+
 export default function DashboardV15() {
   const { user } = useAuth()
   const [isHoD, setIsHoD] = useState(false)
@@ -177,6 +179,13 @@ export default function DashboardV15() {
 
       <BriefingCard />
       <TodaySection roles={roles} />
+
+      {/* Role sections in priority order */}
+      {(roles.includes('schoolAdmin') || roles.includes('hod')) && (
+        <HoDSection single={roles.length <= 2} />
+      )}
+      <CurriculumSection single={roles.length <= 2} />
+      <ExtraCurricularSection single={roles.length <= 2} />
     </div>
   )
 }
