@@ -5,33 +5,12 @@ import { hodService, voiceObservationService } from '../../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
 import { useSchoolBranding } from '../../hooks/useSchoolBranding'
+import Sidebar from '../../components/Sidebar'
 import {
-  LayoutDashboard,
-  Users,
-  BookOpen,
-  ClipboardCheck,
-  FileBarChart,
   GraduationCap,
-  Calendar,
-  Shield,
-  ShieldCheck,
-  Settings,
-  LogOut,
   Menu,
-  X,
-  ChevronRight,
-  Trophy,
-  Video,
-  Clapperboard,
-  Sparkles,
-  Target,
-  Swords,
-  MonitorPlay,
-  Building2,
-  BarChart3,
-  UserCog,
   Mic,
-  Link2,
+  X,
 } from 'lucide-react'
 
 const hodNav = [
@@ -90,6 +69,14 @@ const ROLE_DISPLAY = {
   admin: 'School Admin',
   coach: 'Teacher',
   parent: 'Parent',
+}
+
+function buildUserRoles(isHoD, schoolRole) {
+  const roles = []
+  if (['owner', 'school_admin', 'admin'].includes(schoolRole)) roles.push('schoolAdmin')
+  if (isHoD && !roles.includes('schoolAdmin')) roles.push('hod')
+  roles.push('teacherCurriculum', 'teacherExtraCurricular')
+  return roles
 }
 
 function SidebarContent({ user, logout, setSidebarOpen, pathname, isHoD, voiceEnabled, schoolRole, schoolBranding }) {
@@ -234,6 +221,7 @@ export default function TeacherLayout() {
 
   const isOnHoDView = location.pathname === '/teacher/hod' || location.pathname.startsWith('/teacher/hod/')
   const isOnTeacherHome = location.pathname === '/teacher'
+  const roleDisplay = ROLE_DISPLAY[schoolRole] || ROLE_DISPLAY[user?.role] || user?.role
 
   const switchView = useCallback((view) => {
     localStorage.setItem('preferred_dashboard_view', view)
@@ -265,8 +253,10 @@ export default function TeacherLayout() {
       })
   }, [location.pathname])
 
+  useEffect(() => { setSidebarOpen(false) }, [location.pathname])
+
   return (
-    <div className="min-h-screen bg-page">
+    <div className="min-h-screen" style={{ background: 'var(--surface-page)' }}>
       {/* Mobile backdrop */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -274,35 +264,31 @@ export default function TeacherLayout() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+            className="fixed inset-0 z-40 lg:hidden"
+            style={{ background: 'var(--surface-overlay, rgba(15,30,61,0.45))' }}
           />
         )}
       </AnimatePresence>
 
-      {/* Sidebar */}
-      <aside
-        className={`
-          fixed inset-y-0 left-0 z-50 w-60 bg-subtle border-r border-border-default
-          flex flex-col transition-transform duration-300 ease-in-out
-          ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0
-        `}
-      >
-        <SidebarContent
+      {/* Sidebar -- desktop: fixed, mobile: drawer */}
+      <div className={`
+        fixed inset-y-0 left-0 z-50 w-[280px] lg:w-[248px]
+        transition-transform duration-[180ms] ease-out
+        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
+        lg:translate-x-0
+      `}>
+        <Sidebar
+          roles={buildUserRoles(isHoD, schoolRole)}
+          school={{ name: schoolBranding?.schoolName, initials: schoolBranding?.schoolName?.split(' ').map(w => w[0]).join('').slice(0, 2) || 'MB', roleLabel: roleDisplay }}
           user={user}
-          logout={logout}
-          setSidebarOpen={setSidebarOpen}
-          pathname={location.pathname}
-          isHoD={isHoD}
-          voiceEnabled={voiceEnabled}
-          schoolRole={schoolRole}
-          schoolBranding={schoolBranding}
+          onLogout={logout}
         />
-      </aside>
+      </div>
 
       {/* Main content */}
-      <div className="lg:pl-60">
+      <div className="lg:pl-[248px]">
         {/* Mobile header */}
         <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-14 px-4 bg-brand-navy">
           <button
@@ -354,16 +340,23 @@ export default function TeacherLayout() {
         </main>
       </div>
 
-      {/* Voice Observation FAB (mobile-first, bottom-right) */}
+      {/* Voice Observation FAB -- v1.5 spec: 52px, bottom-right, z-40 */}
       {voiceEnabled && !showRecorder && (
         <button
           onClick={() => setShowRecorder(true)}
-          className="fixed bottom-6 right-6 z-30 w-14 h-14 rounded-full bg-pitch-600 hover:bg-pitch-700 shadow-lg shadow-pitch-600/30 flex items-center justify-center transition-all hover:scale-105"
-          title="Voice observation"
+          aria-label="Record voice observation"
+          className="fixed z-40 flex items-center justify-center"
+          style={{
+            right: 24, bottom: 24, width: 52, height: 52, borderRadius: '50%',
+            background: 'var(--status-success)', color: 'var(--on-brand-primary)',
+            border: 'none', cursor: 'pointer',
+            boxShadow: '0 8px 22px rgba(15,30,61,0.22), 0 2px 6px rgba(15,30,61,0.14)',
+          }}
         >
-          <Mic className="w-6 h-6 text-on-dark" />
+          <Mic className="w-[22px] h-[22px]" />
           {voicePendingCount > 0 && (
-            <span className="absolute -top-1 -right-1 w-5 h-5 bg-alert-600 rounded-full flex items-center justify-center text-[10px] font-bold text-on-dark">
+            <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+              style={{ background: 'var(--status-error)', color: 'var(--on-brand-primary)' }}>
               {voicePendingCount}
             </span>
           )}
