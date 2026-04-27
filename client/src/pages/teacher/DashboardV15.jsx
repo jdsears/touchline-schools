@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { teacherService, hodService } from '../../services/api'
 import { RefreshCw, Sparkles, ChevronRight, CheckCircle, Calendar, Clock, AlertTriangle, Settings } from 'lucide-react'
+import { CalendarStrip, AttentionQueue, ROLE_DOTS, ROLE_TAG } from '../../components/CalendarStrip'
 
 function greetingFor(hour) {
   if (hour < 12) return 'Good morning'
@@ -53,34 +54,66 @@ function BriefingCard() {
   )
 }
 
+function parseEventTime(ev) {
+  const t = ev.time || ev.session_time || ev.match_time || ''
+  const parts = t.match(/(\d+):(\d+)/)
+  if (!parts) return null
+  return parseInt(parts[1]) + parseInt(parts[2]) / 60
+}
+
 function TodaySection({ roles }) {
   const label = roles.includes('schoolAdmin') ? 'Across the school today'
     : roles.includes('hod') ? 'Today in your department' : "Today's schedule"
+  const emptyMsg = roles.includes('schoolAdmin') ? 'Nothing scheduled across the school today.' : 'Nothing scheduled today.'
 
-  const [events, setEvents] = useState([])
+  const [rawEvents, setRawEvents] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     teacherService.getDashboardToday()
-      .then(res => setEvents(res.data?.sessions || []))
+      .then(res => setRawEvents(res.data?.sessions || []))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
 
+  const calEvents = rawEvents.map((ev, i) => {
+    const startH = parseEventTime(ev) || 9
+    return {
+      start: startH, end: startH + 1, lane: i % 2,
+      label: ev.name || ev.team_name || 'Session',
+      role: ev.type === 'fixture' ? 'teacherExtraCurricular' : 'teacherCurriculum',
+    }
+  })
+
+  const attentionActions = [
+    { role: 'teacherExtraCurricular', verb: 'Confirm squad', subject: 'vs Whitfield Grove, Thu 14:30', deadline: 'Tomorrow', urgency: 'medium' },
+  ]
+
+  const visibleRoles = roles.filter(r => ROLE_DOTS[r])
+  const showLegend = visibleRoles.length > 1
+
   return (
-    <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-[var(--shadow-sm)] mb-6">
+    <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-[var(--shadow-sm)] mb-6 overflow-hidden">
       <div className="px-5 pt-4 pb-3 flex items-center justify-between">
         <span className="text-[10px] font-bold tracking-[0.1em] uppercase" style={{ color: 'var(--brand-accent)' }}>
           {label}
         </span>
+        {showLegend && (
+          <div className="flex items-center gap-3">
+            {visibleRoles.map(r => (
+              <span key={r} className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.06em] uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                <span className="w-2 h-2 rounded-full" style={{ background: ROLE_DOTS[r] }} />
+                {ROLE_TAG[r]}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
 
-      {events.length === 0 && !loading ? (
+      {calEvents.length === 0 && !loading ? (
         <div className="px-5 pb-5 text-center">
           <Calendar size={24} className="mx-auto mb-2" style={{ color: 'var(--text-tertiary)' }} />
-          <p className="text-[13px] italic" style={{ color: 'var(--text-tertiary)' }}>
-            {roles.includes('schoolAdmin') ? 'Nothing scheduled across the school today.' : 'Nothing scheduled today.'}
-          </p>
+          <p className="text-[13px] italic" style={{ color: 'var(--text-tertiary)' }}>{emptyMsg}</p>
           <div className="flex gap-2 justify-center mt-3">
             <Link to="/teacher/fixtures" className="inline-flex items-center gap-1.5 px-3 py-[6px] rounded-[var(--radius-md)] text-[13px] font-semibold"
               style={{ background: 'var(--brand-primary)', color: 'var(--on-brand-primary)' }}>Schedule a fixture</Link>
@@ -89,25 +122,21 @@ function TodaySection({ roles }) {
           </div>
         </div>
       ) : (
-        <div className="px-5 pb-4 space-y-2">
-          {events.slice(0, 5).map((ev, i) => (
-            <div key={i} className="flex items-center gap-3 py-2 px-3 rounded-[var(--radius-md)]"
-              style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)' }}>
-              <span className="text-[12px] font-mono tabular-nums shrink-0" style={{ color: 'var(--text-tertiary)' }}>
-                {ev.time || ev.session_time || '--:--'}
-              </span>
-              <div className="flex-1 min-w-0">
-                <span className="text-[13px] font-medium truncate block" style={{ color: 'var(--text-primary)' }}>
-                  {ev.name || ev.team_name || 'Session'}
-                </span>
-                <span className="text-[11px] truncate block" style={{ color: 'var(--text-tertiary)' }}>
-                  {ev.focus || ev.location || ''}
-                </span>
-              </div>
-            </div>
-          ))}
+        <div className="px-5 pb-2">
+          <CalendarStrip events={calEvents} />
         </div>
       )}
+
+      {/* Attention queue */}
+      <div style={{ background: 'var(--surface-sunken)' }}>
+        <div className="px-5 py-[10px] flex items-center justify-between">
+          <span className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>
+            Needs your attention · {attentionActions.length}
+          </span>
+          <button className="text-[12px] font-semibold" style={{ color: 'var(--brand-primary)' }}>View all</button>
+        </div>
+        <AttentionQueue actions={attentionActions} />
+      </div>
     </div>
   )
 }
