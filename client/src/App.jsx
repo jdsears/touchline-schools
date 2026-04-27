@@ -100,6 +100,7 @@ const TeacherTeams = lazy(() => import('./pages/teacher/TeacherTeams'))
 const TeacherTeamDetail = lazy(() => import('./pages/teacher/TeacherTeamDetail'))
 const TeacherFixtures = lazy(() => import('./pages/teacher/TeacherFixtures'))
 const BlockFixtureCreation = lazy(() => import('./pages/teacher/BlockFixtureCreation'))
+const MatchOverviewV15 = lazy(() => import('./pages/teacher/MatchOverviewV15'))
 const TeacherSessions = lazy(() => import('./pages/teacher/TeacherSessions'))
 const TeacherDevelopment = lazy(() => import('./pages/teacher/TeacherDevelopment'))
 const TeacherClassDetail = lazy(() => import('./pages/teacher/TeacherClassDetail'))
@@ -326,6 +327,7 @@ export default function App() {
           <Route path="teams/:teamId" element={<TeacherTeamDetail />} />
           <Route path="teams/:teamId/tactics" element={<TacticsLoader />} />
           <Route path="teams/:teamId/fixtures/block" element={<BlockFixtureCreation />} />
+          <Route path="match/:id" element={<MatchOverviewV15 />} />
           <Route path="fixtures" element={<TeacherFixtures />} />
           <Route path="sessions" element={<TeacherSessions />} />
           <Route path="development" element={<TeacherDevelopment />} />
