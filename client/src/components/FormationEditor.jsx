@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { Plus, X, AlertTriangle, Check, Sparkles } from 'lucide-react'
-import { FOOTBALL_PRESETS, DEFAULT_PRESETS, getPresetsForFormat, validateFormation, transferAssignment } from '../lib/formationPresets'
+import { getSportDef, getPresetsForFormat, getDefaultPreset } from '../lib/sports'
+import { validateFormation, transferAssignment } from '../lib/formationPresets'
 
 const DEMO_SQUAD = [
   { id: 'p1', name: 'Reuben Asante', first: 'R.', last: 'Asante', number: 9, preferred: ['ST', 'LW'], status: 'ready' },
@@ -157,25 +158,26 @@ function useFormationPersistence(fixtureId) {
   return { data, persist, saveState }
 }
 
-export default function FormationEditor({ format: initFormat = '11v11', squad = DEMO_SQUAD, fixtureId, onMobileSheet }) {
+export default function FormationEditor({ sport: sportId = 'football', format: initFormat = '11v11', squad = DEMO_SQUAD, fixtureId, onMobileSheet }) {
   const { data, persist, saveState } = useFormationPersistence(fixtureId)
   const [activeTab, setActiveTab] = useState('primary')
   const [format] = useState(initFormat)
+  const sportDef = useMemo(() => getSportDef(sportId), [sportId])
 
   const tabData = activeTab === 'primary' ? data.primary : data.backup
-  const [presetId, setPresetId] = useState(tabData?.presetId || DEFAULT_PRESETS[format])
+  const [presetId, setPresetId] = useState(tabData?.presetId || getDefaultPreset(sportId, format))
   const [assignment, setAssignment] = useState(tabData?.assignment || {})
   const [focusedSlotId, setFocusedSlotId] = useState(null)
 
   useEffect(() => {
     const td = activeTab === 'primary' ? data.primary : data.backup
-    setPresetId(td?.presetId || DEFAULT_PRESETS[format])
+    setPresetId(td?.presetId || getDefaultPreset(sportId, format))
     setAssignment(td?.assignment || {})
     setFocusedSlotId(null)
   }, [activeTab])
 
-  const presets = useMemo(() => getPresetsForFormat(format), [format])
-  const preset = FOOTBALL_PRESETS[format]?.[presetId]
+  const presets = useMemo(() => getPresetsForFormat(sportId, format), [sportId, format])
+  const preset = sportDef.formats[format]?.presets?.[presetId]
   const slots = preset?.slots || []
   const squadMap = useMemo(() => new Map(squad.map(p => [p.id, p])), [squad])
   const filledCount = Object.values(assignment).filter(Boolean).length
@@ -215,8 +217,8 @@ export default function FormationEditor({ format: initFormat = '11v11', squad = 
   }
 
   function handlePresetChange(newId) {
-    const oldPreset = FOOTBALL_PRESETS[format]?.[presetId]
-    const newPreset = FOOTBALL_PRESETS[format]?.[newId]
+    const oldPreset = sportDef.formats[format]?.presets?.[presetId]
+    const newPreset = sportDef.formats[format]?.presets?.[newId]
     if (!newPreset) return
     const { assignment: kept } = transferAssignment(oldPreset, newPreset, assignment)
     setPresetId(newId)
@@ -272,8 +274,8 @@ export default function FormationEditor({ format: initFormat = '11v11', squad = 
       </div>
 
       <div className="flex">
-        <div className="relative flex-1" style={{ aspectRatio: '2/3', background: 'linear-gradient(180deg, #1a5e35 0%, #2a8b4e 30%, #1e6e3a 70%, #1a5e35 100%)', minHeight: 380 }}>
-          <FootballPitchLines />
+        <div className="relative flex-1" style={{ aspectRatio: '2/3', background: sportDef.pitchGradient || 'linear-gradient(180deg, #1a5e35 0%, #2a8b4e 30%, #1e6e3a 70%, #1a5e35 100%)', minHeight: 380 }}>
+          {sportDef.PitchLines && <sportDef.PitchLines />}
           {slots.map(slot => (
             <PitchSlot key={slot.id} slot={slot}
               player={assignment[slot.id] ? squadMap.get(assignment[slot.id]) : null}
