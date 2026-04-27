@@ -1011,7 +1011,7 @@ export default function Matches() {
               Request All
             </button>
             <Link
-              to={`/matches/${selectedMatch.id}?tab=squad`}
+              to={`/teacher/match/${selectedMatch.id}`}
               className="btn-primary flex-1 text-sm"
             >
               <UserCheck className="w-4 h-4" />
@@ -1079,7 +1079,7 @@ export default function Matches() {
 
         {/* View Full Match Button */}
         <Link
-          to={`/matches/${selectedMatch.id}`}
+          to={`/teacher/match/${selectedMatch.id}`}
           className="btn-secondary w-full mt-4"
         >
           View Match Details

@@ -249,7 +249,7 @@ function WeeklyFixtures({ fixtures }) {
       {fixtures.length === 0 ? <p className="text-tertiary text-xs">No fixtures this week</p> : (
         <div className="space-y-2">
           {fixtures.map(f => (
-            <Link key={f.id} to={`/matches/${f.id}`} className="block p-2.5 rounded-lg bg-subtle hover:bg-subtle transition-colors">
+            <Link key={f.id} to={`/teacher/match/${f.id}`} className="block p-2.5 rounded-lg bg-subtle hover:bg-subtle transition-colors">
               <div className="flex items-center justify-between mb-0.5">
                 <span className="text-sm text-primary">{f.team_name} vs {f.opponent}</span>
                 {resultPill(f.score_for, f.score_against)}

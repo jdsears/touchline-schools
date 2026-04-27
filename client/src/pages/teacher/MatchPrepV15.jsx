@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { CheckCircle, Circle, AlertTriangle, Sparkles, ChevronRight, Loader2, X, FileText, Users, Shirt } from 'lucide-react'
 import MatchHeader from '../../components/MatchHeader'
+import FormationEditor from '../../components/FormationEditor'
 
 const SECTIONS = [
   { id: 'formation', label: 'Formation', icon: '⚽' },
@@ -125,13 +126,9 @@ export default function MatchPrepV15() {
         <PrepRail activeId={activeSection} onSelect={setActiveSection} />
 
         <div>
-          <ContentBlock id="formation" title="Formation">
-            <div className="rounded-[var(--radius-lg)] p-8 text-center" style={{ background: 'var(--surface-sunken)' }}>
-              <p className="text-[13px] italic" style={{ color: 'var(--text-tertiary)' }}>
-                Formation editor -- uses the existing pitch component. Tap a slot to assign a player from the squad.
-              </p>
-            </div>
-          </ContentBlock>
+          <div id="prep-formation" className="mb-4">
+            <FormationEditor format={team?.team_format ? `${team.team_format}v${team.team_format}` : '11v11'} />
+          </div>
 
           <ContentBlock id="opposition" title="Opposition notes" showAI>
             <textarea rows={4} placeholder="Notes about the opposition..."
