@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useSchoolBranding } from '../hooks/useSchoolBranding'
-import { Search, Bell, ChevronRight, ChevronDown, Menu, Command } from 'lucide-react'
+import { Search, ChevronRight, ChevronDown, Menu, Command } from 'lucide-react'
 import AvatarMenu from './topbar/AvatarMenu'
+import NotificationsPopover from './topbar/NotificationsPopover'
 
 function Breadcrumbs({ pathname }) {
   const segments = buildCrumbs(pathname)
@@ -141,10 +142,7 @@ export default function TopBar({ onMenuClick, isHoD, isAdmin, roleMode, onRoleCh
       </span>
 
       {/* Notifications */}
-      <button className="w-[34px] h-[34px] rounded-[var(--radius-md)] inline-flex items-center justify-center shrink-0 relative"
-        style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
-        <Bell size={15} />
-      </button>
+      <NotificationsPopover isAdmin={isAdmin} isHoD={isHoD} />
 
       {/* Profile */}
       <AvatarMenu
