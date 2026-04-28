@@ -202,7 +202,7 @@ export function transferAssignment(oldPreset, newPreset, oldAssignment) {
   return { assignment: kept, keptCount, totalSlots: newPreset.slots.length }
 }
 
-export function validateFormation(preset, assignment, squad) {
+export function validateFormation(preset, assignment, squad, formatDef) {
   const issues = []
   const filledCount = Object.values(assignment).filter(Boolean).length
   const totalSlots = preset.slots.length
@@ -212,9 +212,17 @@ export function validateFormation(preset, assignment, squad) {
     issues.push({ severity: 'error', message: `${totalSlots - filledCount} slots empty (${empty.join(', ')})`, slots: preset.slots.filter(s => !assignment[s.id]).map(s => s.id) })
   }
 
-  const gkSlot = preset.slots.find(s => s.role === 'GK')
-  if (gkSlot && !assignment[gkSlot.id]) {
-    issues.push({ severity: 'error', message: 'No goalkeeper placed', slots: [gkSlot.id] })
+  const gkRule = formatDef?.goalkeeper
+  if (gkRule === 'forbidden') {
+    const gkSlot = preset.slots.find(s => s.role === 'GK')
+    if (gkSlot && assignment[gkSlot.id]) {
+      issues.push({ severity: 'error', message: 'This format does not use a goalkeeper', slots: [gkSlot.id] })
+    }
+  } else {
+    const gkSlot = preset.slots.find(s => s.role === 'GK')
+    if (gkSlot && !assignment[gkSlot.id]) {
+      issues.push({ severity: 'error', message: 'No goalkeeper placed', slots: [gkSlot.id] })
+    }
   }
 
   const squadMap = new Map(squad.map(p => [p.id, p]))
