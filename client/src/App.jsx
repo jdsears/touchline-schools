@@ -104,6 +104,7 @@ const MatchOverviewV15 = lazy(() => import('./pages/teacher/MatchOverviewV15'))
 const MatchPrepV15 = lazy(() => import('./pages/teacher/MatchPrepV15'))
 const MatchSquadV15 = lazy(() => import('./pages/teacher/MatchSquadV15'))
 const MatchVideoV15 = lazy(() => import('./pages/teacher/MatchVideoV15'))
+const MatchReportV15 = lazy(() => import('./pages/teacher/MatchReportV15'))
 const TeacherSessions = lazy(() => import('./pages/teacher/TeacherSessions'))
 const TeacherDevelopment = lazy(() => import('./pages/teacher/TeacherDevelopment'))
 const TeacherClassDetail = lazy(() => import('./pages/teacher/TeacherClassDetail'))
@@ -334,6 +335,7 @@ export default function App() {
           <Route path="match/:id/prep" element={<MatchPrepV15 />} />
           <Route path="match/:id/squad" element={<MatchSquadV15 />} />
           <Route path="match/:id/video" element={<MatchVideoV15 />} />
+          <Route path="match/:id/report" element={<MatchReportV15 />} />
           <Route path="fixtures" element={<TeacherFixtures />} />
           <Route path="sessions" element={<TeacherSessions />} />
           <Route path="development" element={<TeacherDevelopment />} />
