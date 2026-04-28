@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { CheckCircle, Circle, AlertTriangle, ChevronRight, Sparkles, MessageSquare, Video, Loader2 } from 'lucide-react'
 import MatchHeader from '../../components/MatchHeader'
@@ -43,12 +43,12 @@ function ReadinessRow({ state, title, meta, detail, actionLabel, actionHref }) {
   )
 }
 
-function ReadinessPanel({ match }) {
+function ReadinessPanel({ match, matchId }) {
   const checklist = [
-    { state: 'done', title: 'Squad confirmed', meta: 'Tue', actionLabel: 'Open Squad' },
-    { state: 'done', title: 'Formation set', detail: 'Primary formation locked from Match Prep', meta: 'Wed', actionLabel: 'Open Match Prep' },
-    { state: match?.kit_type ? 'done' : 'blocked', title: match?.kit_type ? `Kit: ${match.kit_type}` : 'Kit not yet chosen', meta: match?.kit_type ? '' : 'Overdue', actionLabel: 'Choose kit' },
-    { state: 'pending', title: 'Tactical briefing', detail: 'Not yet reviewed', actionLabel: 'Open briefing' },
+    { state: match?.squad_announced ? 'done' : 'pending', title: match?.squad_announced ? 'Squad confirmed' : 'Squad not confirmed', actionLabel: 'Open Squad', actionHref: `/teacher/match/${matchId}/squad` },
+    { state: 'pending', title: 'Formation', detail: 'Set your starting formation', actionLabel: 'Open Match Prep', actionHref: `/teacher/match/${matchId}/prep` },
+    { state: match?.kit_type ? 'done' : 'blocked', title: match?.kit_type ? `Kit: ${match.kit_type}` : 'Kit not yet chosen', meta: match?.kit_type ? '' : '', actionLabel: 'Choose kit', actionHref: '#kit' },
+    { state: 'pending', title: 'Tactical briefing', detail: 'Not yet reviewed', actionLabel: 'Open briefing', actionHref: `/teacher/match/${matchId}/prep?briefing=open` },
   ]
   const done = checklist.filter(c => c.state === 'done').length
 
@@ -88,21 +88,21 @@ function OppositionCard({ match }) {
   )
 }
 
-function AIShortcuts() {
+function AIShortcuts({ matchId }) {
   const cards = [
-    { icon: Sparkles, title: 'AI tactical briefing', desc: 'Review AI-generated tactical analysis', cta: 'Open briefing' },
-    { icon: MessageSquare, title: 'Chat about this match', desc: 'Ask questions about the fixture', cta: 'Ask a question' },
-    { icon: Video, title: 'Add video', desc: 'No clips uploaded yet', cta: 'Upload' },
+    { icon: Sparkles, title: 'AI tactical briefing', desc: 'Review AI-generated tactical analysis', cta: 'Open briefing', href: `/teacher/match/${matchId}/prep?briefing=open` },
+    { icon: MessageSquare, title: 'Chat about this match', desc: 'Ask questions about the fixture', cta: 'Ask a question', href: '/teacher/assistant' },
+    { icon: Video, title: 'Add video', desc: 'No clips uploaded yet', cta: 'Upload', href: `/teacher/match/${matchId}/video` },
   ]
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
       {cards.map(c => (
-        <div key={c.title} className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-[var(--shadow-sm)] p-4 relative">
+        <Link key={c.title} to={c.href} className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-[var(--shadow-sm)] p-4 relative block transition-shadow hover:shadow-[var(--shadow-md)]">
           <c.icon size={12} className="absolute top-4 right-4" style={{ color: 'var(--brand-accent)' }} />
           <h3 className="text-[14px] font-semibold mb-1" style={{ color: 'var(--text-primary)' }}>{c.title}</h3>
           <p className="text-[12.5px] mb-3" style={{ color: 'var(--text-secondary)' }}>{c.desc}</p>
-          <button className="text-[12px] font-semibold" style={{ color: 'var(--brand-primary)' }}>{c.cta} &rarr;</button>
-        </div>
+          <span className="text-[12px] font-semibold" style={{ color: 'var(--brand-primary)' }}>{c.cta} &rarr;</span>
+        </Link>
       ))}
     </div>
   )
@@ -139,8 +139,8 @@ export default function MatchOverviewV15() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-5">
         <div className="space-y-5">
-          <ReadinessPanel match={match} />
-          <AIShortcuts />
+          <ReadinessPanel match={match} matchId={id} />
+          <AIShortcuts matchId={id} />
         </div>
         <div className="space-y-5">
           <OppositionCard match={match} />
