@@ -1,7 +1,9 @@
 import { FOOTBALL_DEF } from './football'
+import { RUGBY_DEF } from './rugby'
 
 const SPORT_REGISTRY = {
   football: FOOTBALL_DEF,
+  rugby: RUGBY_DEF,
 }
 
 export function getSportDef(sportId) {
