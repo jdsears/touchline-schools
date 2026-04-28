@@ -182,6 +182,29 @@ export function useTopBarNotifications({ isAdmin = false, isHoD = false } = {}) 
     setRows(rs => rs.map(r => ({ ...r, unread: false })))
   }, [rows, dismissed])
 
+  // Auto mark-on-open clears visual noise (heads-up / flagged-FYI / system)
+  // but leaves Class A "action required" alone — Class A's red rail is the
+  // only persistent cue that a deadline / disagreement / consent expiry is
+  // still pending. Spec §8.4 reads "gives the eye time to register" — the
+  // eye registers Class A; auto-clearing it would defeat the signal.
+  // Use the explicit Mark-all-read button for full clear (user-initiated).
+  const markPassiveRead = useCallback(async () => {
+    const targets = rows.filter(r => r.unread && r.klass !== NOTIF_CLASS.A)
+    if (targets.length === 0) return
+    // Per-id calls; notificationService doesn't expose a bulk-by-id endpoint
+    // and we can't use markAllAsRead because it would flip Class A on the
+    // server too.
+    await Promise.all(targets
+      .filter(r => r.source === 'table')
+      .map(r => notificationService.markAsRead(r.id).catch(() => {}))
+    )
+    const next = new Set(dismissed)
+    for (const r of targets) if (r.source !== 'table') next.add(r.id)
+    setDismissed(next); writeDismissed(next)
+    const targetIds = new Set(targets.map(r => r.id))
+    setRows(rs => rs.map(r => targetIds.has(r.id) ? { ...r, unread: false } : r))
+  }, [rows, dismissed])
+
   // Counts by class — used to power filter chips and the bell badge
   const counts = rows.reduce((acc, r) => {
     if (!r.unread) return acc
@@ -190,5 +213,5 @@ export function useTopBarNotifications({ isAdmin = false, isHoD = false } = {}) 
     return acc
   }, { A: 0, B: 0, C: 0, D: 0, total: 0 })
 
-  return { rows, loading, error, counts, reload: load, dismiss, markRead, markAllRead }
+  return { rows, loading, error, counts, reload: load, dismiss, markRead, markAllRead, markPassiveRead }
 }

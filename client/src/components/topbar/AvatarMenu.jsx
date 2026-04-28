@@ -97,7 +97,14 @@ export default function AvatarMenu({
   const [myClubs, setMyClubs] = useState(null) // null = not loaded; [] = loaded empty
   const { user, logout } = useAuth()
 
-  // Lazy-load clubs only when the menu first opens.
+  // OPEN PRODUCT QUESTION (raise with John before deeper integration):
+  // v2.0 currently models "school" as a club via clubService. Top Bar Spec §9
+  // lists "Switch school" as a real concept, and multi-academy trusts (MATs)
+  // are a known customer segment where one user genuinely spans several
+  // schools. Two possibilities: (a) club-as-school is the long-term model and
+  // MAT is just multi-club, or (b) club-as-school is a v1.5 simplification
+  // and a separate `school` entity will land. This menu ships under (a) — if
+  // (b) is the answer, swap the data source here without changing the UI.
   useEffect(() => {
     if (!open || myClubs !== null) return
     clubService.getMyClubs()

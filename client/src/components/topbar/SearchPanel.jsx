@@ -159,6 +159,11 @@ export default function SearchPanel({ openExternal, onClose: onCloseProp, isAdmi
         <SearchIcon size={15} />
       </button>
 
+      {/* TODO(v1.5-mobile-pass): spec §5.5 requires a full-screen panel with
+          a back arrow on mobile, auto-focus + immediate keyboard. This 420px
+          popover is the desktop pattern — acceptable for now, must convert
+          to full-screen for the touch-keyboard search use case (teacher
+          looking up a pupil on a phone in a corridor). */}
       <Popover open={open} onClose={close} anchorRef={triggerRef} width={420} align="right">
         <form onSubmit={handleSubmit} style={{ borderBottom: '1px solid var(--border-subtle)' }}>
           <div className="flex items-center gap-2 px-3 py-2.5">

@@ -43,10 +43,17 @@ function NotifRow({ row, onDismiss, onMarkRead }) {
     : ''
   const isAction = row.klass === NOTIF_CLASS.A
 
+  // Hover-mark exempts Class A so passive engagement doesn't clear the only
+  // persistent cue that an action is still pending — same rationale as the
+  // 500ms passive read in useTopBarNotifications.markPassiveRead.
+  const handleHover = () => {
+    if (row.unread && row.klass !== NOTIF_CLASS.A) onMarkRead(row)
+  }
+
   return (
     <div className="relative group flex gap-2.5 px-3 py-2.5 transition-colors hover:bg-[var(--surface-sunken)]"
       style={{ borderTop: '1px solid var(--border-subtle)' }}
-      onMouseEnter={() => row.unread && onMarkRead(row)}
+      onMouseEnter={handleHover}
     >
       {/* Unread rail (3px brand-accent), spec §8.4 */}
       {row.unread && (
@@ -70,6 +77,10 @@ function NotifRow({ row, onDismiss, onMarkRead }) {
         </div>
         {isAction && row.actionLabel && row.actionHref && (
           <Link to={row.actionHref}
+            // Click on the action button is definitive engagement — mark this
+            // Class A row read so the badge and rail clear once the user is
+            // committed to handling it. (Auto / hover do NOT clear Class A.)
+            onClick={() => row.unread && onMarkRead(row)}
             className="inline-flex items-center mt-1.5 px-2 py-[3px] rounded-[var(--radius-sm)] text-[11.5px] font-semibold transition-colors"
             style={{ background: 'var(--brand-primary)', color: 'var(--on-brand-primary)' }}>
             {row.actionLabel}
@@ -121,14 +132,15 @@ export default function NotificationsPopover({ isAdmin = false, isHoD = false, i
   const triggerRef = useRef(null)
   const [open, setOpen] = useState(false)
   const [filter, setFilter] = useState('all')
-  const { rows, loading, error, counts, reload, dismiss, markRead, markAllRead } = useTopBarNotifications({ isAdmin, isHoD })
+  const { rows, loading, error, counts, reload, dismiss, markRead, markAllRead, markPassiveRead } = useTopBarNotifications({ isAdmin, isHoD })
 
-  // Mark all as read 500ms after open, per spec §8.4 — gives the eye time to register first.
+  // Auto-clear visual noise 500ms after open, per spec §8.4. Class A is exempt
+  // — see useTopBarNotifications.markPassiveRead for the rationale.
   useEffect(() => {
     if (!open) return
-    const t = setTimeout(() => { markAllRead() }, 500)
+    const t = setTimeout(() => { markPassiveRead() }, 500)
     return () => clearTimeout(t)
-  }, [open, markAllRead])
+  }, [open, markPassiveRead])
 
   const filterFn = FILTERS.find(f => f.id === filter)?.match || (() => true)
   const filtered = useMemo(() => rows.filter(filterFn), [rows, filter])
@@ -149,8 +161,10 @@ export default function NotificationsPopover({ isAdmin = false, isHoD = false, i
   const badgeColor = counts.A > 0 ? 'var(--status-error)' : counts.B > 0 ? 'var(--status-warning)' : null
   const badgeCount = counts.A > 0 ? counts.A : null
 
-  // On mobile, the popover becomes a full-screen panel. We override Popover's
-  // positioning by passing width: full-viewport-minus-padding and align="left".
+  // TODO(v1.5-mobile-pass): spec §8.5 requires a true full-screen takeover on
+  // mobile (back-arrow, full-width rows). This is currently a viewport-clamped
+  // popover — acceptable for desktop QA, broken pattern on phone in a corridor.
+  // Same class of issue as the formation-editor mobile bottom sheet.
   const mobileWidth = typeof window !== 'undefined' ? Math.min(window.innerWidth - 16, 380) : 380
 
   return (
