@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { useSchoolBranding } from '../hooks/useSchoolBranding'
 import { Search, Bell, ChevronRight, ChevronDown, Menu, Command } from 'lucide-react'
+import AvatarMenu from './topbar/AvatarMenu'
 
 function Breadcrumbs({ pathname }) {
   const segments = buildCrumbs(pathname)
@@ -84,21 +86,9 @@ function RoleToggle({ active, onChange }) {
   )
 }
 
-function Avatar({ initials = 'JS', size = 32 }) {
-  return (
-    <span className="rounded-full inline-flex items-center justify-center font-bold shrink-0"
-      style={{
-        width: size, height: size, fontSize: Math.round(size * 0.42),
-        background: 'var(--brand-primary-tint)', color: 'var(--brand-primary)',
-        border: '1px solid var(--border-subtle)',
-      }}>
-      {initials}
-    </span>
-  )
-}
-
 export default function TopBar({ onMenuClick, isHoD, isAdmin, roleMode, onRoleChange }) {
   const { user } = useAuth()
+  const branding = useSchoolBranding()
   const location = useLocation()
   const showRoleToggle = isAdmin && isHoD
   const initials = (user?.name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?'
@@ -157,7 +147,15 @@ export default function TopBar({ onMenuClick, isHoD, isAdmin, roleMode, onRoleCh
       </button>
 
       {/* Profile */}
-      <Avatar initials={initials} size={32} />
+      <AvatarMenu
+        initials={initials}
+        size={32}
+        isAdmin={isAdmin}
+        isHoD={isHoD}
+        roleMode={roleMode}
+        onRoleChange={onRoleChange}
+        schoolName={branding?.schoolName}
+      />
     </div>
   )
 }
