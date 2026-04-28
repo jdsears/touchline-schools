@@ -1,7 +1,8 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback, lazy, Suspense } from 'react'
 import { Plus, X, AlertTriangle, Check, Sparkles } from 'lucide-react'
 import { getSportDef, getPresetsForFormat, getDefaultPreset } from '../lib/sports'
 import { validateFormation, transferAssignment } from '../lib/formationPresets'
+import BattingOrderEditorDefault, { BattingPairsEditor } from './BattingOrderEditor'
 
 const DEMO_SQUAD = [
   { id: 'p1', name: 'Reuben Asante', first: 'R.', last: 'Asante', number: 9, preferred: ['ST', 'LW'], status: 'ready' },
@@ -229,6 +230,16 @@ export default function FormationEditor({ sport: sportId = 'football', format: i
   function switchTab(tab) {
     saveTab()
     setActiveTab(tab)
+  }
+
+  const formatDef = sportDef.formats[format]
+  const assignmentModel = formatDef?.assignmentModel || sportDef.assignmentModel || 'starting-xi'
+
+  if (assignmentModel === 'batting-order') {
+    return <BattingOrderEditorDefault squad={squad} format={formatDef} />
+  }
+  if (assignmentModel === 'batting-pairs') {
+    return <BattingPairsEditor squad={squad} format={formatDef} />
   }
 
   return (
