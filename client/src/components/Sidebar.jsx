@@ -1,7 +1,22 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import { ChevronDown, LogOut } from 'lucide-react'
 import { CROSS_ROLE_TOP, SETTINGS_GROUP, buildVisibleRoles, getIcon } from '../lib/navIA'
+
+const MORE_STORAGE_PREFIX = 'nav.more.'
+
+function readMoreStateFromStorage(roleIds) {
+  if (typeof window === 'undefined') return {}
+  const next = {}
+  for (const id of roleIds) {
+    try {
+      next[id] = window.localStorage.getItem(`${MORE_STORAGE_PREFIX}${id}`) === '1'
+    } catch {
+      next[id] = false
+    }
+  }
+  return next
+}
 
 function SidebarItem({ item, basePath, active, newSchool }) {
   const Icon = getIcon(item.icon)
@@ -53,10 +68,18 @@ function MoreToggle({ count, expanded, onClick }) {
 export default function Sidebar({ roles = [], school = {}, user = {}, onLogout, newSchool = false, basePath = '/teacher' }) {
   const visible = buildVisibleRoles(roles)
   const isMulti = visible.length > 1
-  const [moreState, setMoreState] = useState({})
+  const location = useLocation()
+  const [moreState, setMoreState] = useState(() => readMoreStateFromStorage(visible.map(r => r.id)))
   const [settingsOpen, setSettingsOpen] = useState(false)
 
-  const toggleMore = (id) => setMoreState(s => ({ ...s, [id]: !s[id] }))
+  // Re-collapse School settings whenever the route changes (per spec: not persisted).
+  useEffect(() => { setSettingsOpen(false) }, [location.pathname])
+
+  const toggleMore = (id) => setMoreState(s => {
+    const next = { ...s, [id]: !s[id] }
+    try { window.localStorage.setItem(`${MORE_STORAGE_PREFIX}${id}`, next[id] ? '1' : '0') } catch { /* storage blocked */ }
+    return next
+  })
 
   return (
     <aside className="w-[248px] shrink-0 flex flex-col h-full" style={{ background: 'var(--surface-sunken)', borderRight: '1px solid var(--border-subtle)' }}>
@@ -103,7 +126,7 @@ export default function Sidebar({ roles = [], school = {}, user = {}, onLogout, 
       {/* User footer */}
       <div className="px-[14px] py-[10px] flex items-center gap-[10px]" style={{ borderTop: '1px solid var(--border-subtle)' }}>
         <span className="w-7 h-7 rounded-full inline-flex items-center justify-center text-[11.5px] font-bold shrink-0"
-          style={{ background: 'var(--brand-primary-tint)', color: 'var(--brand-primary)' }}>
+          style={{ background: 'var(--brand-accent-tint)', color: 'var(--text-on-tint)' }}>
           {(user.name || '??').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase()}
         </span>
         <div className="flex flex-col leading-[1.15] flex-1 min-w-0">

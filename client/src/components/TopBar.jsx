@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { Search, Bell, ChevronRight, ChevronDown, Menu, Command } from 'lucide-react'
+import { useSchoolBranding } from '../hooks/useSchoolBranding'
+import { ChevronRight, ChevronDown, Menu, Command } from 'lucide-react'
+import AvatarMenu from './topbar/AvatarMenu'
+import NotificationsPopover from './topbar/NotificationsPopover'
+import SearchPanel from './topbar/SearchPanel'
+import CommandPalette from './topbar/CommandPalette'
 
 function Breadcrumbs({ pathname }) {
   const segments = buildCrumbs(pathname)
@@ -84,26 +89,31 @@ function RoleToggle({ active, onChange }) {
   )
 }
 
-function Avatar({ initials = 'JS', size = 32 }) {
-  return (
-    <span className="rounded-full inline-flex items-center justify-center font-bold shrink-0"
-      style={{
-        width: size, height: size, fontSize: Math.round(size * 0.42),
-        background: 'var(--brand-primary-tint)', color: 'var(--brand-primary)',
-        border: '1px solid var(--border-subtle)',
-      }}>
-      {initials}
-    </span>
-  )
-}
-
 export default function TopBar({ onMenuClick, isHoD, isAdmin, roleMode, onRoleChange }) {
   const { user } = useAuth()
+  const branding = useSchoolBranding()
   const location = useLocation()
   const showRoleToggle = isAdmin && isHoD
   const initials = (user?.name || '').split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || '?'
 
   const urlHint = location.pathname.replace('/teacher/', '').replace(/\//g, ' / ')
+
+  // ⌘K opens the command palette per spec §6.1 (deliberate split from search,
+  // which uses click / "/" shortcut). Skip when typing in an input.
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  useEffect(() => {
+    function onKey(e) {
+      const tag = e.target?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || e.target?.isContentEditable) return
+      const isMod = e.metaKey || e.ctrlKey
+      if (isMod && (e.key === 'k' || e.key === 'K')) {
+        e.preventDefault()
+        setPaletteOpen(o => !o)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   return (
     <div className="flex items-center gap-3 h-[56px] z-20" style={{
@@ -139,25 +149,39 @@ export default function TopBar({ onMenuClick, isHoD, isAdmin, roleMode, onRoleCh
       )}
 
       {/* Search */}
-      <button className="w-[34px] h-[34px] rounded-[var(--radius-md)] inline-flex items-center justify-center shrink-0"
-        style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
-        <Search size={15} />
-      </button>
+      <SearchPanel isAdmin={isAdmin} isHoD={isHoD} />
 
-      {/* Command palette trigger */}
-      <span className="hidden lg:inline-flex items-center px-1.5 py-[2px] rounded-[4px] text-[10.5px] font-semibold font-mono shrink-0"
-        style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)', color: 'var(--text-tertiary)' }}>
+      {/* Command palette trigger — clickable hint */}
+      <button
+        onClick={() => setPaletteOpen(true)}
+        aria-label="Open command palette"
+        className="hidden lg:inline-flex items-center px-1.5 py-[2px] rounded-[4px] text-[10.5px] font-semibold font-mono shrink-0 transition-colors"
+        style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)', color: 'var(--text-tertiary)', cursor: 'pointer' }}>
         <Command size={10} className="mr-0.5" />K
-      </span>
+      </button>
 
       {/* Notifications */}
-      <button className="w-[34px] h-[34px] rounded-[var(--radius-md)] inline-flex items-center justify-center shrink-0 relative"
-        style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)' }}>
-        <Bell size={15} />
-      </button>
+      <NotificationsPopover isAdmin={isAdmin} isHoD={isHoD} />
 
       {/* Profile */}
-      <Avatar initials={initials} size={32} />
+      <AvatarMenu
+        initials={initials}
+        size={32}
+        isAdmin={isAdmin}
+        isHoD={isHoD}
+        roleMode={roleMode}
+        onRoleChange={onRoleChange}
+        schoolName={branding?.schoolName}
+      />
+
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        isAdmin={isAdmin}
+        isHoD={isHoD}
+        roleMode={roleMode}
+        onRoleChange={onRoleChange}
+      />
     </div>
   )
 }

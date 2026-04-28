@@ -130,6 +130,7 @@ const HoDTestPersonas = lazy(() => import('./pages/teacher/HoDTestPersonas'))
 const HoDAssessmentOverview = lazy(() => import('./pages/teacher/HoDAssessmentOverview'))
 const HoDConsent = lazy(() => import('./pages/teacher/HoDConsent'))
 const TeacherSettings = lazy(() => import('./pages/teacher/TeacherSettings'))
+const TeacherSearch = lazy(() => import('./pages/teacher/Search'))
 
 // Pupil Portal pages (legacy sidebar layout)
 const PupilLayout = lazy(() => import('./pages/pupil/PupilLayout'))
@@ -366,6 +367,8 @@ export default function App() {
           {/* Three-tier settings */}
           <Route path="settings" element={<Navigate to="/teacher/settings/profile" replace />} />
           <Route path="settings/:tab" element={<TeacherSettings />} />
+          {/* Global search (Top Bar Spec §5) */}
+          <Route path="search" element={<TeacherSearch />} />
         </Route>
 
         {/* Old Pupil Portal redirects to Sports Lounge */}
