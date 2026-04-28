@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import ErrorBoundary from '../../components/common/ErrorBoundary'
 import { useSchoolBranding } from '../../hooks/useSchoolBranding'
 import Sidebar from '../../components/Sidebar'
+import TopBar from '../../components/TopBar'
 import {
   GraduationCap,
   Menu,
@@ -118,48 +119,14 @@ export default function TeacherLayout() {
 
       {/* Main content */}
       <div className="lg:pl-[248px]">
-        {/* Mobile header */}
-        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-14 px-4 bg-brand-navy">
-          <button
-            onClick={() => setSidebarOpen(true)}
-            className="p-2 text-on-dark/60 hover:text-on-dark"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-          <div className="flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-brand-gold" />
-            <span className="text-sm font-semibold text-on-dark">Teacher Hub</span>
-          </div>
-          <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-            <span className="text-xs font-medium text-on-dark">
-              {user?.name?.charAt(0)?.toUpperCase() || '?'}
-            </span>
-          </div>
-        </header>
-
-        {/* Role switcher for dual-role HoD+Teacher users */}
-        {isHoD && (isOnHoDView || isOnTeacherHome) && (
-          <div className="flex items-center justify-end px-4 md:px-6 pt-4 pb-0">
-            <div className="inline-flex rounded-lg bg-card border border-border-default p-0.5">
-              <button
-                onClick={() => switchView('hod')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  isOnHoDView ? 'bg-brand-navy text-on-dark' : 'text-secondary hover:text-link'
-                }`}
-              >
-                School Admin
-              </button>
-              <button
-                onClick={() => switchView('teacher')}
-                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
-                  isOnTeacherHome ? 'bg-brand-navy text-on-dark' : 'text-secondary hover:text-link'
-                }`}
-              >
-                Teacher
-              </button>
-            </div>
-          </div>
-        )}
+        {/* Top bar */}
+        <TopBar
+          onMenuClick={() => setSidebarOpen(true)}
+          isHoD={isHoD}
+          isAdmin={['owner', 'school_admin', 'admin'].includes(schoolRole)}
+          roleMode={isOnHoDView ? 'admin' : 'teacher'}
+          onRoleChange={(mode) => switchView(mode === 'admin' ? 'hod' : 'teacher')}
+        />
 
         {/* Page content */}
         <main className="min-h-[calc(100vh-4rem)] lg:min-h-screen">
