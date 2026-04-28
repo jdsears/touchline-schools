@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { teamService } from '../../services/api'
-import { CheckCircle, Circle, AlertTriangle, ChevronRight, Sparkles, MessageSquare, Video, Loader2 } from 'lucide-react'
+import { CheckCircle, Circle, AlertTriangle, ChevronRight, Sparkles, MessageSquare, Video, Loader2, X, Shirt } from 'lucide-react'
+import toast from 'react-hot-toast'
 import MatchHeader from '../../components/MatchHeader'
 import TabStrip from '../../components/TabStrip'
 
@@ -13,7 +14,7 @@ const MATCH_TABS = [
   { id: 'video', label: 'Video', href: '/video' },
 ]
 
-function ReadinessRow({ state, title, meta, detail, actionLabel, actionHref }) {
+function ReadinessRow({ state, title, meta, detail, actionLabel, actionHref, onAction }) {
   const tone = {
     done: { bg: 'var(--status-success-tint)', fg: 'var(--status-success)', Icon: CheckCircle },
     pending: { bg: 'var(--surface-sunken)', fg: 'var(--text-tertiary)', Icon: Circle },
@@ -34,10 +35,17 @@ function ReadinessRow({ state, title, meta, detail, actionLabel, actionHref }) {
         {detail && <span className="text-[12.5px]" style={{ color: 'var(--text-secondary)' }}>{detail}</span>}
       </div>
       {actionLabel && (
-        <Link to={actionHref || '#'} className="inline-flex items-center gap-1 px-[10px] py-[5px] rounded-[var(--radius-md)] text-[12px] font-semibold"
-          style={{ background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border-default)' }}>
-          {actionLabel} <ChevronRight size={12} />
-        </Link>
+        onAction ? (
+          <button onClick={onAction} className="inline-flex items-center gap-1 px-[10px] py-[5px] rounded-[var(--radius-md)] text-[12px] font-semibold"
+            style={{ background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border-default)' }}>
+            {actionLabel} <ChevronRight size={12} />
+          </button>
+        ) : (
+          <Link to={actionHref || '#'} className="inline-flex items-center gap-1 px-[10px] py-[5px] rounded-[var(--radius-md)] text-[12px] font-semibold"
+            style={{ background: 'transparent', color: 'var(--text-secondary)', border: '1px solid var(--border-default)' }}>
+            {actionLabel} <ChevronRight size={12} />
+          </Link>
+        )
       )}
     </div>
   )
@@ -47,7 +55,7 @@ function ReadinessPanel({ match, matchId }) {
   const checklist = [
     { state: match?.squad_announced ? 'done' : 'pending', title: match?.squad_announced ? 'Squad confirmed' : 'Squad not confirmed', actionLabel: 'Open Squad', actionHref: `/teacher/match/${matchId}/squad` },
     { state: 'pending', title: 'Formation', detail: 'Set your starting formation', actionLabel: 'Open Match Prep', actionHref: `/teacher/match/${matchId}/prep` },
-    { state: match?.kit_type ? 'done' : 'blocked', title: match?.kit_type ? `Kit: ${match.kit_type}` : 'Kit not yet chosen', meta: match?.kit_type ? '' : '', actionLabel: 'Choose kit', actionHref: '#kit' },
+    { state: match?.kit_type ? 'done' : 'blocked', title: match?.kit_type ? `Kit: ${match.kit_type}` : 'Kit not yet chosen', actionLabel: 'Choose kit', actionHref: '#kit', onAction: () => { setKitChoice(match?.kit_type || 'home'); setShowKitModal(true) } },
     { state: 'pending', title: 'Tactical briefing', detail: 'Not yet reviewed', actionLabel: 'Open briefing', actionHref: `/teacher/match/${matchId}/prep?briefing=open` },
   ]
   const done = checklist.filter(c => c.state === 'done').length
@@ -113,6 +121,21 @@ export default function MatchOverviewV15() {
   const [match, setMatch] = useState(null)
   const [team, setTeam] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showKitModal, setShowKitModal] = useState(false)
+  const [kitChoice, setKitChoice] = useState(null)
+  const [savingKit, setSavingKit] = useState(false)
+
+  async function handleKitSave() {
+    if (!kitChoice) return
+    setSavingKit(true)
+    try {
+      await teamService.updateMatch(id, { kitType: kitChoice })
+      setMatch(prev => ({ ...prev, kit_type: kitChoice }))
+      setShowKitModal(false)
+      toast.success(`Kit set to ${kitChoice}`)
+    } catch { toast.error('Failed to save kit') }
+    finally { setSavingKit(false) }
+  }
 
   useEffect(() => {
     if (!id) return
@@ -146,6 +169,36 @@ export default function MatchOverviewV15() {
           <OppositionCard match={match} />
         </div>
       </div>
+
+      {showKitModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'var(--surface-overlay, rgba(15,30,61,0.45))' }} onClick={() => setShowKitModal(false)}>
+          <div className="rounded-[var(--radius-xl)] p-6 w-full max-w-sm" style={{ background: 'var(--surface-card)' }} onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-[15px] font-semibold" style={{ color: 'var(--text-primary)' }}>Choose kit</h3>
+              <button onClick={() => setShowKitModal(false)} style={{ color: 'var(--text-tertiary)' }}><X size={18} /></button>
+            </div>
+            <div className="space-y-2 mb-4">
+              {['home', 'away', 'third'].map(k => (
+                <button key={k} onClick={() => setKitChoice(k)}
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-[var(--radius-md)] text-left text-[14px] font-medium transition-colors"
+                  style={{
+                    background: kitChoice === k ? 'var(--brand-accent-tint)' : 'var(--surface-sunken)',
+                    border: kitChoice === k ? '1.5px solid var(--brand-accent)' : '1.5px solid transparent',
+                    color: 'var(--text-primary)',
+                  }}>
+                  <Shirt size={16} style={{ color: kitChoice === k ? 'var(--brand-accent)' : 'var(--text-tertiary)' }} />
+                  {k === 'home' ? 'Home strip' : k === 'away' ? 'Away strip' : 'Third strip'}
+                </button>
+              ))}
+            </div>
+            <button onClick={handleKitSave} disabled={savingKit || !kitChoice}
+              className="w-full py-[10px] rounded-[var(--radius-md)] text-[13px] font-semibold"
+              style={{ background: 'var(--brand-primary)', color: 'var(--on-brand-primary)', opacity: !kitChoice ? 0.5 : 1 }}>
+              {savingKit ? 'Saving...' : 'Confirm kit'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
