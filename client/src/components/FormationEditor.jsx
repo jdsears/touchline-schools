@@ -1,6 +1,8 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef, useCallback, lazy, Suspense } from 'react'
 import { Plus, X, AlertTriangle, Check, Sparkles } from 'lucide-react'
-import { FOOTBALL_PRESETS, DEFAULT_PRESETS, getPresetsForFormat, validateFormation } from '../lib/formationPresets'
+import { getSportDef, getPresetsForFormat, getDefaultPreset } from '../lib/sports'
+import { validateFormation, transferAssignment } from '../lib/formationPresets'
+import BattingOrderEditorDefault, { BattingPairsEditor } from './BattingOrderEditor'
 
 const DEMO_SQUAD = [
   { id: 'p1', name: 'Reuben Asante', first: 'R.', last: 'Asante', number: 9, preferred: ['ST', 'LW'], status: 'ready' },
@@ -80,7 +82,7 @@ function PitchSlot({ slot, player, focused, dim, onClick }) {
   )
 }
 
-function RosterSheet({ slot, squad, assignment, onPick, onClear }) {
+function RosterSheet({ slot, squad, assignment, onPick, onClear, numberFirst }) {
   if (!slot) return null
   const currentPlayerId = assignment[slot.id]
   const placedIds = new Set(Object.values(assignment).filter(Boolean))
@@ -109,8 +111,8 @@ function RosterSheet({ slot, squad, assignment, onPick, onClear }) {
               background: isCurrent ? 'var(--brand-accent-tint)' : 'transparent',
               cursor: isCurrent ? 'default' : 'pointer',
             }}>
-            <span className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0"
-              style={{ background: 'var(--brand-primary-tint)', color: 'var(--brand-primary)' }}>
+            <span className={`rounded-full flex items-center justify-center font-bold shrink-0 ${numberFirst ? 'w-9 h-9 text-[14px]' : 'w-7 h-7 text-[10px]'}`}
+              style={{ background: 'var(--brand-primary-tint)', color: 'var(--brand-primary)', fontFamily: numberFirst ? 'var(--font-mono)' : undefined }}>
               {p.number || '·'}
             </span>
             <div className="flex-1 min-w-0">
@@ -132,18 +134,65 @@ function RosterSheet({ slot, squad, assignment, onPick, onClear }) {
   )
 }
 
-export default function FormationEditor({ format = '11v11', squad = DEMO_SQUAD }) {
-  const [presetId, setPresetId] = useState(DEFAULT_PRESETS[format])
-  const [assignment, setAssignment] = useState({})
+function useFormationPersistence(fixtureId) {
+  const key = `formation-${fixtureId || 'demo'}`
+  const [data, setData] = useState(() => {
+    try {
+      const saved = localStorage.getItem(key)
+      return saved ? JSON.parse(saved) : { primary: null, backup: null, format: '11v11' }
+    } catch { return { primary: null, backup: null, format: '11v11' } }
+  })
+  const saveTimer = useRef(null)
+  const [saveState, setSaveState] = useState('idle')
+
+  const persist = useCallback((next) => {
+    setData(next)
+    setSaveState('saving')
+    clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      try { localStorage.setItem(key, JSON.stringify(next)) } catch {}
+      setSaveState('saved')
+      setTimeout(() => setSaveState('idle'), 1500)
+    }, 500)
+  }, [key])
+
+  return { data, persist, saveState }
+}
+
+export default function FormationEditor({ sport: sportId = 'football', format: initFormat = '11v11', squad = DEMO_SQUAD, fixtureId, onMobileSheet }) {
+  const { data, persist, saveState } = useFormationPersistence(fixtureId)
+  const [activeTab, setActiveTab] = useState('primary')
+  const [format] = useState(initFormat)
+  const sportDef = useMemo(() => getSportDef(sportId), [sportId])
+
+  const tabData = activeTab === 'primary' ? data.primary : data.backup
+  const [presetId, setPresetId] = useState(tabData?.presetId || getDefaultPreset(sportId, format))
+  const [assignment, setAssignment] = useState(tabData?.assignment || {})
   const [focusedSlotId, setFocusedSlotId] = useState(null)
 
-  const presets = useMemo(() => getPresetsForFormat(format), [format])
-  const preset = FOOTBALL_PRESETS[format]?.[presetId]
+  useEffect(() => {
+    const td = activeTab === 'primary' ? data.primary : data.backup
+    setPresetId(td?.presetId || getDefaultPreset(sportId, format))
+    setAssignment(td?.assignment || {})
+    setFocusedSlotId(null)
+  }, [activeTab])
+
+  const presets = useMemo(() => getPresetsForFormat(sportId, format), [sportId, format])
+  const preset = sportDef.formats[format]?.presets?.[presetId]
   const slots = preset?.slots || []
   const squadMap = useMemo(() => new Map(squad.map(p => [p.id, p])), [squad])
   const filledCount = Object.values(assignment).filter(Boolean).length
   const focusedSlot = focusedSlotId ? slots.find(s => s.id === focusedSlotId) : null
   const issues = useMemo(() => validateFormation({ slots }, assignment, squad), [slots, assignment, squad])
+
+  function saveTab(newAssignment, newPresetId) {
+    const tabState = { presetId: newPresetId || presetId, assignment: newAssignment || assignment }
+    persist({
+      ...data,
+      format,
+      [activeTab]: tabState,
+    })
+  }
 
   function handlePick(slotId, playerId) {
     setAssignment(prev => {
@@ -153,14 +202,44 @@ export default function FormationEditor({ format = '11v11', squad = DEMO_SQUAD }
         next[existingSlot] = next[slotId] || null
       }
       next[slotId] = playerId
+      saveTab(next)
       return next
     })
     setFocusedSlotId(null)
   }
 
   function handleClear(slotId) {
-    setAssignment(prev => { const n = { ...prev }; delete n[slotId]; return n })
+    setAssignment(prev => {
+      const n = { ...prev }; delete n[slotId]
+      saveTab(n)
+      return n
+    })
     setFocusedSlotId(null)
+  }
+
+  function handlePresetChange(newId) {
+    const oldPreset = sportDef.formats[format]?.presets?.[presetId]
+    const newPreset = sportDef.formats[format]?.presets?.[newId]
+    if (!newPreset) return
+    const { assignment: kept } = transferAssignment(oldPreset, newPreset, assignment)
+    setPresetId(newId)
+    setAssignment(kept)
+    saveTab(kept, newId)
+  }
+
+  function switchTab(tab) {
+    saveTab()
+    setActiveTab(tab)
+  }
+
+  const formatDef = sportDef.formats[format]
+  const assignmentModel = formatDef?.assignmentModel || sportDef.assignmentModel || 'starting-xi'
+
+  if (assignmentModel === 'batting-order') {
+    return <BattingOrderEditorDefault squad={squad} format={formatDef} />
+  }
+  if (assignmentModel === 'batting-pairs') {
+    return <BattingPairsEditor squad={squad} format={formatDef} />
   }
 
   return (
@@ -173,27 +252,43 @@ export default function FormationEditor({ format = '11v11', squad = DEMO_SQUAD }
           </span>
           <div>
             <div className="text-[14.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>Starting XI</div>
-            <div className="text-[11.5px]" style={{ color: 'var(--text-tertiary)' }}>{filledCount}/{slots.length} placed</div>
+            <div className="text-[11.5px]" style={{ color: 'var(--text-tertiary)' }}>
+              {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : `${filledCount}/${slots.length} placed`}
+            </div>
           </div>
         </div>
+        {/* Primary / Backup toggle */}
         <div className="flex items-center gap-1.5 p-[2px] rounded-[var(--radius-sm)]" style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)' }}>
-          {presets.map(p => (
-            <button key={p.id} onClick={() => setPresetId(p.id)}
-              className="px-[10px] py-[4px] rounded-[var(--radius-sm)] text-[12px] font-semibold transition-colors"
-              style={{
-                background: presetId === p.id ? 'var(--surface-card)' : 'transparent',
-                color: presetId === p.id ? 'var(--text-primary)' : 'var(--text-tertiary)',
-                boxShadow: presetId === p.id ? 'var(--shadow-sm)' : 'none',
-              }}>
-              {p.label}
-            </button>
-          ))}
+          <button onClick={() => switchTab('primary')} className="px-[10px] py-[4px] rounded-[var(--radius-sm)] text-[12px] font-semibold flex items-center gap-1"
+            style={{ background: activeTab === 'primary' ? 'var(--surface-card)' : 'transparent', color: activeTab === 'primary' ? 'var(--text-primary)' : 'var(--text-tertiary)', boxShadow: activeTab === 'primary' ? 'var(--shadow-sm)' : 'none' }}>
+            Primary {data.primary && <Check size={10} />}
+          </button>
+          <button onClick={() => switchTab('backup')} className="px-[10px] py-[4px] rounded-[var(--radius-sm)] text-[12px] font-semibold flex items-center gap-1"
+            style={{ background: activeTab === 'backup' ? 'var(--surface-card)' : 'transparent', color: activeTab === 'backup' ? 'var(--text-primary)' : 'var(--text-tertiary)', boxShadow: activeTab === 'backup' ? 'var(--shadow-sm)' : 'none' }}>
+            {data.backup ? 'Backup' : '+ Backup'}
+          </button>
         </div>
+        {/* Preset selector (hidden when only one preset, e.g. rugby canonical positions) */}
+        {presets.length > 1 && (
+          <div className="flex items-center gap-1.5 p-[2px] rounded-[var(--radius-sm)]" style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)' }}>
+            {presets.map(p => (
+              <button key={p.id} onClick={() => handlePresetChange(p.id)}
+                className="px-[10px] py-[4px] rounded-[var(--radius-sm)] text-[12px] font-semibold transition-colors"
+                style={{
+                  background: presetId === p.id ? 'var(--surface-card)' : 'transparent',
+                  color: presetId === p.id ? 'var(--text-primary)' : 'var(--text-tertiary)',
+                  boxShadow: presetId === p.id ? 'var(--shadow-sm)' : 'none',
+                }}>
+                {p.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="flex">
-        <div className="relative flex-1" style={{ aspectRatio: '2/3', background: 'linear-gradient(180deg, #1a5e35 0%, #2a8b4e 30%, #1e6e3a 70%, #1a5e35 100%)', minHeight: 380 }}>
-          <FootballPitchLines />
+        <div className="relative flex-1" style={{ aspectRatio: '2/3', background: sportDef.pitchGradient || 'linear-gradient(180deg, #1a5e35 0%, #2a8b4e 30%, #1e6e3a 70%, #1a5e35 100%)', minHeight: 380 }}>
+          {sportDef.PitchLines && <sportDef.PitchLines />}
           {slots.map(slot => (
             <PitchSlot key={slot.id} slot={slot}
               player={assignment[slot.id] ? squadMap.get(assignment[slot.id]) : null}
@@ -204,9 +299,10 @@ export default function FormationEditor({ format = '11v11', squad = DEMO_SQUAD }
           ))}
         </div>
 
+        {/* Desktop right column: picker or bench */}
         <div className="w-[240px] shrink-0 hidden lg:block" style={{ borderLeft: '1px solid var(--border-subtle)' }}>
           {focusedSlot ? (
-            <RosterSheet slot={focusedSlot} squad={squad} assignment={assignment} onPick={handlePick} onClear={handleClear} />
+            <RosterSheet slot={focusedSlot} squad={squad} assignment={assignment} onPick={handlePick} onClear={handleClear} numberFirst={sportDef.pickerNumberFirst} />
           ) : (
             <div className="p-3">
               <div className="text-[11px] font-bold tracking-[0.06em] uppercase mb-2" style={{ color: 'var(--text-tertiary)' }}>Bench</div>
@@ -220,6 +316,27 @@ export default function FormationEditor({ format = '11v11', squad = DEMO_SQUAD }
           )}
         </div>
       </div>
+
+      {/* Mobile bottom sheet */}
+      {focusedSlot && (
+        <div className="lg:hidden fixed inset-0 z-50">
+          <div className="absolute inset-0" style={{ background: 'rgba(15,30,61,0.32)' }} onClick={() => setFocusedSlotId(null)} />
+          <div className="absolute bottom-0 left-0 right-0 rounded-t-[var(--radius-xl)] overflow-hidden"
+            className="animate-sheet-up"
+            style={{ background: 'var(--surface-card)', maxHeight: '65vh' }}>
+            <div className="flex justify-center pt-2 pb-1">
+              <div className="w-8 h-1 rounded-full" style={{ background: 'var(--border-default)' }} />
+            </div>
+            <div className="px-4 pb-1 flex items-center justify-between">
+              <span className="text-[13px] font-semibold" style={{ color: 'var(--text-primary)' }}>Pick for {focusedSlot.role}</span>
+              <button onClick={() => setFocusedSlotId(null)} className="p-1" style={{ color: 'var(--text-tertiary)' }}><X size={18} /></button>
+            </div>
+            <div className="overflow-y-auto" style={{ maxHeight: 'calc(65vh - 52px)' }}>
+              <RosterSheet slot={focusedSlot} squad={squad} assignment={assignment} onPick={handlePick} onClear={handleClear} numberFirst={sportDef.pickerNumberFirst} />
+            </div>
+          </div>
+        </div>
+      )}
 
       {issues.filter(i => i.severity !== 'info').length > 0 && (
         <div className="px-4 py-3" style={{ background: 'var(--status-warning-tint)', borderTop: '1px solid var(--border-subtle)' }}>

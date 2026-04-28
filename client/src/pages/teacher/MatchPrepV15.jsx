@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useState, useEffect, useRef } from 'react'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { teamService } from '../../services/api'
+import api, { SERVER_URL } from '../../services/api'
 import { CheckCircle, Circle, AlertTriangle, Sparkles, ChevronRight, Loader2, X, FileText, Users, Shirt } from 'lucide-react'
+import toast from 'react-hot-toast'
 import MatchHeader from '../../components/MatchHeader'
 import FormationEditor from '../../components/FormationEditor'
 
@@ -81,11 +83,16 @@ function ReadOnlyBlock({ icon: Icon, title, summary, linkLabel, linkHref }) {
 
 export default function MatchPrepV15() {
   const { id } = useParams()
+  const [searchParams] = useSearchParams()
   const [match, setMatch] = useState(null)
   const [team, setTeam] = useState(null)
   const [loading, setLoading] = useState(true)
   const [activeSection, setActiveSection] = useState('formation')
-  const [briefingOpen, setBriefingOpen] = useState(false)
+  const [briefingOpen, setBriefingOpen] = useState(searchParams.get('briefing') === 'open')
+  const [briefingText, setBriefingText] = useState('')
+  const [briefingLoading, setBriefingLoading] = useState(false)
+  const [notes, setNotes] = useState({ opposition: '', setPieces: '', talkingPoints: '' })
+  const saveTimer = useRef(null)
 
   useEffect(() => {
     if (!id) return
@@ -100,6 +107,57 @@ export default function MatchPrepV15() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [id])
+
+  useEffect(() => {
+    if (match?.prep_notes) {
+      try {
+        const parsed = typeof match.prep_notes === 'string' ? JSON.parse(match.prep_notes) : match.prep_notes
+        setNotes({ opposition: parsed.opposition || '', setPieces: parsed.setPieces || '', talkingPoints: parsed.talkingPoints || '' })
+      } catch { setNotes({ opposition: match.prep_notes || '', setPieces: '', talkingPoints: '' }) }
+    }
+  }, [match?.prep_notes])
+
+  function handleNoteChange(field, value) {
+    const updated = { ...notes, [field]: value }
+    setNotes(updated)
+    clearTimeout(saveTimer.current)
+    saveTimer.current = setTimeout(() => {
+      teamService.updateMatch(id, { notes: JSON.stringify(updated) }).catch(() => {})
+    }, 800)
+  }
+
+  async function generateBriefing() {
+    setBriefingLoading(true)
+    setBriefingOpen(true)
+    setBriefingText('')
+    try {
+      const token = localStorage.getItem('token')
+      const res = await fetch(`${window.location.origin}/api/matches/${id}/prep/generate`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+      })
+      if (!res.ok) throw new Error('Generation failed')
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let text = ''
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        const chunk = decoder.decode(value)
+        const lines = chunk.split('\n').filter(l => l.startsWith('data: '))
+        for (const line of lines) {
+          const data = line.slice(6)
+          if (data === '[DONE]') break
+          try {
+            const parsed = JSON.parse(data)
+            if (parsed.text) { text += parsed.text; setBriefingText(text) }
+          } catch {}
+        }
+      }
+      toast.success('Tactical briefing generated')
+    } catch (err) { toast.error(err.message || 'Failed to generate briefing') }
+    finally { setBriefingLoading(false) }
+  }
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--text-tertiary)' }} /></div>
   if (!match) return <div className="text-center py-20 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Match not found</div>
@@ -131,24 +189,27 @@ export default function MatchPrepV15() {
           </div>
 
           <ContentBlock id="opposition" title="Opposition notes" showAI>
-            <textarea rows={4} placeholder="Notes about the opposition..."
+            <textarea rows={4} value={notes.opposition} onChange={e => handleNoteChange('opposition', e.target.value)}
+              placeholder="Notes about the opposition..."
               className="w-full rounded-[var(--radius-md)] border border-[var(--border-default)] p-3 text-[14px] resize-none"
               style={{ background: 'var(--surface-card)', color: 'var(--text-primary)' }} />
           </ContentBlock>
 
           <ContentBlock id="set-pieces" title="Set pieces" showAI>
-            <textarea rows={3} placeholder="Corners, free kicks, penalties..."
+            <textarea rows={3} value={notes.setPieces} onChange={e => handleNoteChange('setPieces', e.target.value)}
+              placeholder="Corners, free kicks, penalties..."
               className="w-full rounded-[var(--radius-md)] border border-[var(--border-default)] p-3 text-[14px] resize-none"
               style={{ background: 'var(--surface-card)', color: 'var(--text-primary)' }} />
           </ContentBlock>
 
           <ContentBlock id="talking-pts" title="Pre-match talking points" showAI>
-            <textarea rows={3} placeholder="Key messages for the team..."
+            <textarea rows={3} value={notes.talkingPoints} onChange={e => handleNoteChange('talkingPoints', e.target.value)}
+              placeholder="Key messages for the team..."
               className="w-full rounded-[var(--radius-md)] border border-[var(--border-default)] p-3 text-[14px] resize-none"
               style={{ background: 'var(--surface-card)', color: 'var(--text-primary)' }} />
           </ContentBlock>
 
-          <ReadOnlyBlock icon={Users} title="Squad" summary="Read from Squad tab" linkLabel="Edit on Squad" linkHref="#" />
+          <ReadOnlyBlock icon={Users} title="Squad" summary="Read from Squad tab" linkLabel="Edit on Squad" linkHref={`/teacher/match/${id}/squad`} />
           <ReadOnlyBlock icon={Shirt} title="Kit" summary={match.kit_type || 'Not chosen'} linkLabel="Edit on Overview" linkHref="#" />
 
           <div className="sticky bottom-0 py-4" style={{ background: 'var(--surface-page)' }}>
@@ -173,16 +234,24 @@ export default function MatchPrepV15() {
               <p className="text-[11px] mb-4" style={{ color: 'var(--text-tertiary)' }}>
                 Synthesised from last meetings, scouting notes, and squad availability.
               </p>
-              <div className="text-center py-8">
-                <Sparkles size={24} className="mx-auto mb-2" style={{ color: 'var(--text-tertiary)' }} />
-                <p className="text-[13px] italic" style={{ color: 'var(--text-tertiary)' }}>
-                  Tactical briefing not yet generated.
-                </p>
-                <button className="mt-3 px-4 py-2 rounded-[var(--radius-md)] text-[13px] font-semibold"
-                  style={{ background: 'var(--brand-primary)', color: 'var(--on-brand-primary)' }}>
-                  Generate briefing
-                </button>
-              </div>
+              {briefingText ? (
+                <div className="text-[14px] leading-[1.6] whitespace-pre-line" style={{ color: 'var(--text-primary)' }}>
+                  {briefingText}
+                  {briefingLoading && <span className="animate-pulse">...</span>}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Sparkles size={24} className="mx-auto mb-2" style={{ color: 'var(--text-tertiary)' }} />
+                  <p className="text-[13px] italic" style={{ color: 'var(--text-tertiary)' }}>
+                    Tactical briefing not yet generated.
+                  </p>
+                  <button onClick={generateBriefing} disabled={briefingLoading}
+                    className="mt-3 px-4 py-2 rounded-[var(--radius-md)] text-[13px] font-semibold"
+                    style={{ background: 'var(--brand-primary)', color: 'var(--on-brand-primary)' }}>
+                    {briefingLoading ? 'Generating...' : 'Generate briefing'}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
