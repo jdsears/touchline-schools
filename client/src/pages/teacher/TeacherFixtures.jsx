@@ -94,7 +94,7 @@ function CalendarView({ fixtures, month, setMonth, selectedDate, onSelectDate })
               key={key}
               onClick={() => onSelectDate(df.length > 0 ? day : null)}
               className={`relative p-1.5 min-h-[44px] rounded-lg text-center text-xs transition-colors ${
-                !inMonth ? 'text-navy-700' : isWe ? 'bg-subtle text-secondary' : 'text-secondary hover:bg-subtle'
+                !inMonth ? 'text-primary' : isWe ? 'bg-subtle text-secondary' : 'text-secondary hover:bg-subtle'
               } ${isSel ? 'ring-1 ring-brand-primary' : ''}`}
             >
               <span className={isT ? 'w-6 h-6 inline-flex items-center justify-center rounded-full ring-2 ring-brand-accent text-brand-accent font-bold' : ''}>

@@ -89,7 +89,7 @@ export default function CookieConsent() {
                       <div className="flex flex-wrap gap-3">
                         <button
                           onClick={handleAcceptAll}
-                          className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-navy-950 font-medium rounded-lg transition-colors"
+                          className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-primary font-medium rounded-lg transition-colors"
                         >
                           Accept All
                         </button>
@@ -143,7 +143,7 @@ export default function CookieConsent() {
                         </p>
                       </div>
                       <div className="flex items-center justify-center w-10 h-6 bg-brand-primary rounded-full">
-                        <Check className="w-4 h-4 text-navy-950" />
+                        <Check className="w-4 h-4 text-primary" />
                       </div>
                     </div>
 
@@ -173,7 +173,7 @@ export default function CookieConsent() {
                   <div className="flex flex-wrap gap-3">
                     <button
                       onClick={handleSavePreferences}
-                      className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-navy-950 font-medium rounded-lg transition-colors"
+                      className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-primary font-medium rounded-lg transition-colors"
                     >
                       Save Preferences
                     </button>

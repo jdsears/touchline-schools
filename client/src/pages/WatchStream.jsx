@@ -177,7 +177,7 @@ export default function WatchStream() {
         <div className="max-w-4xl mx-auto flex items-center gap-3">
           <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
             stream?.status === 'active'
-              ? 'bg-gradient-to-br from-alert-500 to-energy-500 animate-pulse'
+              ? 'bg-gradient-to-br from-alert-500 to-brand-accent-hover animate-pulse'
               : 'bg-border-default'
           }`}>
             <Radio className="w-5 h-5 text-white" />

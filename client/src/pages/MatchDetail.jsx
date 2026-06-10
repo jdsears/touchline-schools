@@ -1754,7 +1754,7 @@ export default function MatchDetail() {
                 </div>
 
                 {match.player_of_match_id ? (
-                  <div className="bg-gradient-to-r from-energy-500/10 to-caution-500/10 border border-brand-accent rounded-xl p-4">
+                  <div className="bg-gradient-to-r from-brand-accent to-caution-500/10 border border-brand-accent rounded-xl p-4">
                     <div className="flex items-center gap-4">
                       <div className="w-14 h-14 rounded-full bg-brand-accent-tint flex items-center justify-center">
                         <Star className="w-7 h-7 text-brand-accent" />

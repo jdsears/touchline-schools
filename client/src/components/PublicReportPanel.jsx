@@ -44,7 +44,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
   if (status === 'none' && !text) {
     return (
       <button onClick={generate} disabled={generating}
-        className="w-full py-3 border border-dashed border-border-strong rounded-xl text-sm text-secondary hover:text-primary hover:border-navy-500 transition-colors flex items-center justify-center gap-2">
+        className="w-full py-3 border border-dashed border-border-strong rounded-xl text-sm text-secondary hover:text-primary hover:border-border-strong transition-colors flex items-center justify-center gap-2">
         {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
         {generating ? 'Drafting match report...' : 'Generate AI Match Report'}
       </button>

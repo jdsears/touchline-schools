@@ -37,7 +37,7 @@ function EventPill({ event, onTap }) {
           <span className={`text-xs font-medium ${style.text} truncate`}>{label}</span>
         </div>
         {time && (
-          <span className="text-[10px] text-navy-500">{time}</span>
+          <span className="text-[10px] text-secondary">{time}</span>
         )}
       </div>
     </button>
@@ -61,7 +61,7 @@ function DayCard({ date, events, onEventTap }) {
           <span className={`text-sm font-bold ${today ? 'text-gold-400' : 'text-white'}`}>
             {dayName}
           </span>
-          <span className="text-xs text-navy-500">{dayNum} {monthShort}</span>
+          <span className="text-xs text-secondary">{dayNum} {monthShort}</span>
         </div>
         {today && (
           <span className="text-[9px] bg-gold-500/20 text-gold-400 px-1.5 py-0.5 rounded-full font-semibold">
@@ -75,7 +75,7 @@ function DayCard({ date, events, onEventTap }) {
           {events.map(e => <EventPill key={e.id} event={e} onTap={onEventTap} />)}
         </div>
       ) : (
-        <p className="text-[10px] text-navy-600 italic">Rest day</p>
+        <p className="text-[10px] text-secondary italic">Rest day</p>
       )}
     </div>
   )
@@ -114,7 +114,7 @@ export default function SchedulePage() {
       <div className="flex items-center justify-between mb-4">
         <button
           onClick={() => setWeekStart(s => subWeeks(s, 1))}
-          className="p-2 text-navy-400 hover:text-white transition-colors"
+          className="p-2 text-secondary hover:text-white transition-colors"
           aria-label="Previous week"
         >
           <ChevronLeft size={20} />
@@ -136,7 +136,7 @@ export default function SchedulePage() {
 
         <button
           onClick={() => setWeekStart(s => addWeeks(s, 1))}
-          className="p-2 text-navy-400 hover:text-white transition-colors"
+          className="p-2 text-secondary hover:text-white transition-colors"
           aria-label="Next week"
         >
           <ChevronRight size={20} />

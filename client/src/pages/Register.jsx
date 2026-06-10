@@ -725,7 +725,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
                         ${agreedToTerms
                           ? 'bg-brand-primary border-brand-primary'
-                          : 'border-border-strong hover:border-navy-500'
+                          : 'border-border-strong hover:border-border-strong'
                         }
                       `}
                     >
@@ -1105,7 +1105,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                           mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
                           ${dpaAccepted
                             ? 'bg-brand-accent border-brand-accent'
-                            : 'border-border-strong hover:border-navy-500'
+                            : 'border-border-strong hover:border-border-strong'
                           }
                         `}
                       >
@@ -1156,7 +1156,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
         </motion.div>
       </div>
 
-      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-navy-900 via-navy-900 to-pitch-950/30 border-l border-border-default relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-navy-900 via-navy-900 to-brand-primary-hover border-l border-border-default relative overflow-hidden">
         {/* Background glow effects */}
         <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-brand-primary-tint rounded-full blur-3xl" />
         <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-brand-accent-tint rounded-full blur-3xl" />

@@ -234,7 +234,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 bg-brand-primary text-primary rounded-lg hover:bg-brand-primary transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               {editingCode ? 'Update' : 'Create'}
@@ -594,7 +594,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <button
                     onClick={handleExtendTrial}
                     disabled={actionLoading === 'trial' || trialDays < 1}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-brand-primary text-navy-950 rounded-lg text-sm hover:bg-brand-primary transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-brand-primary text-primary rounded-lg text-sm hover:bg-brand-primary transition-colors disabled:opacity-50"
                   >
                     {actionLoading === 'trial' ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1400,7 +1400,7 @@ export default function Admin() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-brand-primary text-navy-950'
+                ? 'bg-brand-primary text-primary'
                 : 'text-secondary hover:text-white hover:bg-subtle'
             }`}
           >
@@ -1824,7 +1824,7 @@ export default function Admin() {
                 setEditingCode(null)
                 setShowModal(true)
               }}
-              className="flex items-center gap-2 px-3 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-brand-primary text-primary rounded-lg hover:bg-brand-primary transition-colors"
             >
               <Plus className="w-4 h-4" />
               Create Code
@@ -2061,7 +2061,7 @@ export default function Admin() {
                   <button
                     onClick={handleSavePost}
                     disabled={savingPost}
-                    className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-primary rounded-lg hover:bg-brand-primary transition-colors disabled:opacity-50"
                   >
                     {savingPost ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Save
@@ -2287,7 +2287,7 @@ export default function Admin() {
                 </div>
                 <button
                   onClick={handleNewPost}
-                  className="flex items-center gap-2 px-3 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors whitespace-nowrap"
+                  className="flex items-center gap-2 px-3 py-2 bg-brand-primary text-primary rounded-lg hover:bg-brand-primary transition-colors whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4" />
                   New Post
@@ -2404,7 +2404,7 @@ export default function Admin() {
                           ) : (
                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                               <label className="cursor-pointer p-2 bg-brand-primary rounded-lg hover:bg-brand-primary transition-colors">
-                                <Upload className="w-4 h-4 text-navy-950" />
+                                <Upload className="w-4 h-4 text-primary" />
                                 <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && handleScreenshotUpload(feature.slug, slot, e.target.files[0])} />
                               </label>
                               <button onClick={() => handleScreenshotDelete(feature.slug, slot)} className="p-2 bg-status-error rounded-lg hover:bg-status-error transition-colors">

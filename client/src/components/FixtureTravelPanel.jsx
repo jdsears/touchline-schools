@@ -93,7 +93,7 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
   if (!editing && !travel && isAway) {
     return (
       <button onClick={() => setEditing(true)}
-        className="w-full py-3 border border-dashed border-border-strong rounded-xl text-sm text-secondary hover:text-primary hover:border-navy-500 transition-colors flex items-center justify-center gap-2">
+        className="w-full py-3 border border-dashed border-border-strong rounded-xl text-sm text-secondary hover:text-primary hover:border-border-strong transition-colors flex items-center justify-center gap-2">
         <Bus className="w-4 h-4" /> Add travel arrangements
       </button>
     )

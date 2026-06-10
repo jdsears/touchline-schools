@@ -21,7 +21,7 @@ function SchoolHeader() {
       </div>
       {pupil && (
         <div className="w-7 h-7 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-          <span className="text-navy-900 text-[10px] font-bold">
+          <span className="text-primary text-[10px] font-bold">
             {(pupil.name || '').split(' ').map(w => w[0]).join('').slice(0, 2)}
           </span>
         </div>

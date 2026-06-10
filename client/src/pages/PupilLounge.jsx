@@ -975,7 +975,7 @@ export default function PupilLounge() {
           {/* Pupil Info Row */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pitch-500 to-pitch-700 flex items-center justify-center text-lg font-bold text-white">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-hover flex items-center justify-center text-lg font-bold text-white">
                 {pupil?.squad_number || pupil?.name?.charAt(0) || '?'}
               </div>
               <div>
@@ -1024,7 +1024,7 @@ export default function PupilLounge() {
               className="space-y-6"
             >
               {/* Daily Motivation */}
-              <div className="card p-3 bg-gradient-to-br from-energy-900/30 via-pitch-900/20 to-navy-900 border-brand-accent">
+              <div className="card p-3 bg-gradient-to-br from-brand-accent via-brand-primary to-navy-900 border-brand-accent">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-brand-accent-tint flex items-center justify-center shrink-0">
                     <Star className="w-4 h-4 text-brand-accent" />
@@ -1079,10 +1079,10 @@ export default function PupilLounge() {
                     setShowChatModal(true)
                     if (chatMessages.length === 0) loadChatHistory()
                   }}
-                  className="card p-5 w-full text-left hover:scale-[1.02] transition-all duration-200 bg-gradient-to-r from-pitch-900/60 via-energy-900/40 to-pitch-900/60 border-brand-primary hover:border-brand-primary"
+                  className="card p-5 w-full text-left hover:scale-[1.02] transition-all duration-200 bg-gradient-to-r from-brand-primary via-brand-accent to-brand-primary-hover border-brand-primary hover:border-brand-primary"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pitch-500 to-energy-500 flex items-center justify-center shadow-lg shadow-pitch-500/30">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent-hover flex items-center justify-center shadow-lg shadow-pitch-500/30">
                       <Sparkles className="w-8 h-8 text-white" />
                     </div>
                     <div className="flex-1">
@@ -1127,7 +1127,7 @@ export default function PupilLounge() {
 
               {/* Pupil of the Match Award Banner */}
               {potmAwards?.length > 0 && (
-                <div className="card p-4 bg-gradient-to-r from-energy-900/40 via-caution-900/30 to-energy-900/40 border-brand-accent">
+                <div className="card p-4 bg-gradient-to-r from-brand-accent via-caution-900/30 to-brand-accent-hover border-brand-accent">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-full bg-brand-accent-tint flex items-center justify-center">
                       <Award className="w-6 h-6 text-brand-accent" />
@@ -1151,7 +1151,7 @@ export default function PupilLounge() {
                   {/* Clickable Header */}
                   <button
                     onClick={() => setSelectedMatch(upcomingMatches[0])}
-                    className="w-full p-4 bg-gradient-to-r from-energy-900/30 to-navy-900 border-b border-border-default text-left hover:from-energy-900/40 transition-colors"
+                    className="w-full p-4 bg-gradient-to-r from-brand-accent to-navy-900 border-b border-border-default text-left hover:from-brand-accent transition-colors"
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="font-display font-semibold text-white flex items-center gap-2">
@@ -1262,7 +1262,7 @@ export default function PupilLounge() {
                           <button
                             onClick={() => handleGetPepTalk(upcomingMatches[0].id)}
                             disabled={loadingPepTalk}
-                            className="w-full btn-primary bg-gradient-to-r from-energy-600 to-alert-600 hover:from-energy-500 hover:to-alert-500 py-3"
+                            className="w-full btn-primary bg-gradient-to-r from-brand-accent to-alert-600 hover:from-brand-accent hover:to-alert-500 py-3"
                           >
                             {loadingPepTalk ? (
                               <Loader2 className="w-5 h-5 animate-spin" />
@@ -1296,7 +1296,7 @@ export default function PupilLounge() {
                     {/* Match Day POTM Voting */}
                     {nextMatchVoteData && nextMatchSquad.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-border-default">
-                        <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-brand-accent">
+                        <div className="p-4 bg-gradient-to-br from-brand-accent to-navy-800/50 rounded-xl border border-brand-accent">
                           <div className="flex items-center gap-2 mb-3">
                             <Heart className="w-5 h-5 text-brand-accent" />
                             <h4 className="font-display font-semibold text-white">Parents' Pupil of the Match</h4>
@@ -1340,7 +1340,7 @@ export default function PupilLounge() {
                               <button
                                 onClick={() => nextMatchVotingPlayerId && handleNextMatchPotmVote(upcomingMatches[0].id, nextMatchVotingPlayerId)}
                                 disabled={!nextMatchVotingPlayerId || nextMatchSubmittingVote}
-                                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-navy-950 rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
+                                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-primary rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
                               >
                                 {nextMatchSubmittingVote ? (
                                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1707,12 +1707,12 @@ export default function PupilLounge() {
               className="space-y-4"
             >
               {/* Live Stream Header */}
-              <div className="card p-4 bg-gradient-to-r from-alert-900/50 via-energy-900/30 to-navy-900">
+              <div className="card p-4 bg-gradient-to-r from-alert-900/50 via-brand-accent to-navy-900">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg ${
                       streamCredentials?.status === 'active'
-                        ? 'bg-gradient-to-br from-alert-500 to-energy-500 shadow-alert-500/20 animate-pulse'
+                        ? 'bg-gradient-to-br from-alert-500 to-brand-accent-hover shadow-alert-500/20 animate-pulse'
                         : 'bg-gradient-to-br from-navy-600 to-navy-700'
                     }`}>
                       <Radio className="w-6 h-6 text-white" />
@@ -1975,9 +1975,9 @@ export default function PupilLounge() {
               className="space-y-4"
             >
               {/* League Header */}
-              <div className="card p-4 bg-gradient-to-r from-pitch-900/50 via-energy-900/30 to-navy-900">
+              <div className="card p-4 bg-gradient-to-r from-brand-primary via-brand-accent to-navy-900">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pitch-500 to-energy-500 flex items-center justify-center shadow-lg shadow-pitch-500/20">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-brand-primary to-brand-accent-hover flex items-center justify-center shadow-lg shadow-pitch-500/20">
                     <Trophy className="w-6 h-6 text-white" />
                   </div>
                   <div>
@@ -2284,7 +2284,7 @@ export default function PupilLounge() {
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto bg-gradient-to-br from-energy-900/50 via-navy-900 to-alert-900/30"
+            className="card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto bg-gradient-to-br from-brand-accent via-navy-900 to-alert-900/30"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-xl text-white flex items-center gap-2">
@@ -2301,7 +2301,7 @@ export default function PupilLounge() {
             <div className="mt-6 flex justify-center">
               <button
                 onClick={() => setShowPepTalk(false)}
-                className="btn-primary bg-gradient-to-r from-energy-600 to-pitch-600"
+                className="btn-primary bg-gradient-to-r from-brand-accent to-brand-primary-hover"
               >
                 💪 Let's Go!
               </button>
@@ -2339,7 +2339,7 @@ export default function PupilLounge() {
                 {/* Next Match Focus - highlighted section */}
                 {upcomingMatches?.[0] && (
                   <div className="mb-3">
-                    <div className="p-3 rounded-lg bg-gradient-to-r from-energy-500/10 to-pitch-500/10 border border-brand-accent">
+                    <div className="p-3 rounded-lg bg-gradient-to-r from-brand-accent to-brand-primary-hover border border-brand-accent">
                       <div className="flex items-center gap-2 mb-2">
                         <Zap className="w-4 h-4 text-brand-accent" />
                         <span className="text-xs font-semibold text-brand-accent uppercase tracking-wide">Next Match</span>
@@ -2834,7 +2834,7 @@ export default function PupilLounge() {
                       <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : matchSquad.length > 0 && (
-                    <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-brand-primary">
+                    <div className="p-4 bg-gradient-to-br from-brand-primary to-navy-800/50 rounded-xl border border-brand-primary">
                       <div className="flex items-center gap-2 mb-3">
                         <Users className="w-5 h-5 text-brand-primary" />
                         <h4 className="font-display font-semibold text-white">Match Squad</h4>
@@ -2899,7 +2899,7 @@ export default function PupilLounge() {
 
                   {/* Parent POTM Voting */}
                   {teamSquad.length > 0 && (
-                    <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-brand-accent">
+                    <div className="p-4 bg-gradient-to-br from-brand-accent to-navy-800/50 rounded-xl border border-brand-accent">
                       <div className="flex items-center gap-2 mb-3">
                         <Heart className="w-5 h-5 text-brand-accent" />
                         <h4 className="font-display font-semibold text-white">Parents' Pupil of the Match</h4>
@@ -2943,7 +2943,7 @@ export default function PupilLounge() {
                           <button
                             onClick={() => votingPlayerId && handleParentPotmVote(selectedMatch.id, votingPlayerId)}
                             disabled={!votingPlayerId || submittingVote}
-                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-navy-950 rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-primary rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
                           >
                             {submittingVote ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -3069,7 +3069,7 @@ export default function PupilLounge() {
                       <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : matchSquad.length > 0 && (
-                    <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-brand-primary">
+                    <div className="p-4 bg-gradient-to-br from-brand-primary to-navy-800/50 rounded-xl border border-brand-primary">
                       <div className="flex items-center gap-2 mb-3">
                         <Users className="w-5 h-5 text-brand-primary" />
                         <h4 className="font-display font-semibold text-white">Match Squad</h4>
@@ -3208,7 +3208,7 @@ export default function PupilLounge() {
 
                   {/* POTM Voting (match day) */}
                   {teamSquad.length > 0 && parentVoteData && (
-                    <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-brand-accent">
+                    <div className="p-4 bg-gradient-to-br from-brand-accent to-navy-800/50 rounded-xl border border-brand-accent">
                       <div className="flex items-center gap-2 mb-3">
                         <Heart className="w-5 h-5 text-brand-accent" />
                         <h4 className="font-display font-semibold text-white">Parents' Pupil of the Match</h4>
@@ -3252,7 +3252,7 @@ export default function PupilLounge() {
                           <button
                             onClick={() => votingPlayerId && handleParentPotmVote(selectedMatch.id, votingPlayerId)}
                             disabled={!votingPlayerId || submittingVote}
-                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-navy-950 rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-primary rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
                           >
                             {submittingVote ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -3273,7 +3273,7 @@ export default function PupilLounge() {
                       setSelectedMatch(null)
                     }}
                     disabled={loadingPepTalk}
-                    className="w-full btn-primary bg-gradient-to-r from-energy-600 to-alert-600 hover:from-energy-500 hover:to-alert-500 py-3"
+                    className="w-full btn-primary bg-gradient-to-r from-brand-accent to-alert-600 hover:from-brand-accent hover:to-alert-500 py-3"
                   >
                     {loadingPepTalk ? (
                       <Loader2 className="w-5 h-5 animate-spin" />
@@ -3576,7 +3576,7 @@ export default function PupilLounge() {
             <div className="space-y-4">
               {/* Stats Summary */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gradient-to-br from-energy-900/40 to-navy-900 rounded-xl p-4 text-center border border-brand-accent">
+                <div className="bg-gradient-to-br from-brand-accent to-navy-900 rounded-xl p-4 text-center border border-brand-accent">
                   <div className="text-3xl font-bold text-brand-accent">{(achievements?.length || 0) + (potmAwards?.length || 0)}</div>
                   <div className="text-xs text-secondary mt-1">Total Awards</div>
                 </div>
@@ -3599,7 +3599,7 @@ export default function PupilLounge() {
                     {potmAwards.map((award, i) => (
                       <div
                         key={i}
-                        className="bg-gradient-to-r from-energy-900/30 to-navy-900 rounded-lg p-3 border border-brand-accent"
+                        className="bg-gradient-to-r from-brand-accent to-navy-900 rounded-lg p-3 border border-brand-accent"
                       >
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-full bg-brand-accent-tint flex items-center justify-center text-xl">
@@ -3683,10 +3683,10 @@ export default function PupilLounge() {
               onClick={e => e.stopPropagation()}
             >
               {/* Chat Header */}
-              <div className="p-4 border-b border-border-default bg-gradient-to-r from-pitch-900/50 via-energy-900/30 to-navy-900 rounded-t-xl">
+              <div className="p-4 border-b border-border-default bg-gradient-to-r from-brand-primary via-brand-accent to-navy-900 rounded-t-xl">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pitch-500 to-energy-500 flex items-center justify-center shadow-lg shadow-pitch-500/20">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-primary to-brand-accent-hover flex items-center justify-center shadow-lg shadow-pitch-500/20">
                       <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <div>
@@ -3714,7 +3714,7 @@ export default function PupilLounge() {
                   </div>
                 ) : chatMessages.length === 0 ? (
                   <div className="text-center py-8">
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pitch-500/20 to-energy-500/20 flex items-center justify-center mx-auto mb-3">
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent-hover flex items-center justify-center mx-auto mb-3">
                       <Sparkles className="w-8 h-8 text-brand-primary" />
                     </div>
                     <h3 className="font-display font-semibold text-white mb-2">Ask the Gaffer!</h3>

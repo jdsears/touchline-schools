@@ -517,7 +517,7 @@ export default function FormationPitch({
               className={`
                 ${dotSizes[size]} rounded-full
                 flex items-center justify-center font-bold
-                bg-card text-navy-900 shadow-md
+                bg-card text-primary shadow-md
               `}
             >
               {showLabels ? pos.label : ''}

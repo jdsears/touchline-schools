@@ -128,7 +128,7 @@ export default function HoDConsent() {
         </div>
       ) : (
         <div className="bg-card border border-border-default rounded-xl p-12 text-center">
-          <ShieldCheck className="w-12 h-12 text-navy-700 mx-auto mb-3" />
+          <ShieldCheck className="w-12 h-12 text-primary mx-auto mb-3" />
           <p className="text-secondary">No consent types configured yet.</p>
           <p className="text-sm text-tertiary mt-1">Click "Set up default consent types" to get started with standard UK school sport consents.</p>
         </div>

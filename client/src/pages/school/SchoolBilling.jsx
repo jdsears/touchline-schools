@@ -211,7 +211,7 @@ export default function ClubBilling() {
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-primary text-navy-950">
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-primary text-primary">
                     Most Popular
                   </span>
                 </div>

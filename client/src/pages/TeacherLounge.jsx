@@ -712,7 +712,7 @@ export default function TeacherLounge() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="w-full p-6 border-2 border-dashed border-border-strong rounded-lg hover:border-navy-500 transition-colors text-center"
+                    className="w-full p-6 border-2 border-dashed border-border-strong rounded-lg hover:border-border-strong transition-colors text-center"
                   >
                     <Upload className="w-8 h-8 text-tertiary mx-auto mb-2" />
                     <p className="text-sm text-secondary">Click to select a file</p>

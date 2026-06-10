@@ -1483,7 +1483,7 @@ export default function Settings() {
               className={`w-8 h-8 rounded-lg border-2 transition-all ${
                 value.toUpperCase() === preset.color.toUpperCase()
                   ? 'border-white scale-110'
-                  : 'border-border-strong hover:border-navy-500'
+                  : 'border-border-strong hover:border-border-strong'
               }`}
               style={{ backgroundColor: preset.color }}
               title={preset.name}

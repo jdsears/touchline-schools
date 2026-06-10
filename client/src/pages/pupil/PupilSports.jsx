@@ -17,11 +17,11 @@ const SPORT_EMOJI = {
 
 const SPORT_GRADIENT = {
   football: 'from-green-700 to-emerald-900',
-  rugby: 'from-amber-700 to-orange-900',
+  rugby: 'from-brand-accent to-orange-900',
   cricket: 'from-sky-700 to-blue-900',
   hockey: 'from-purple-700 to-violet-900',
   netball: 'from-pink-700 to-rose-900',
-  athletics: 'from-yellow-700 to-amber-900',
+  athletics: 'from-yellow-700 to-brand-accent-hover',
   swimming: 'from-cyan-700 to-teal-900',
   tennis: 'from-lime-700 to-green-900',
   basketball: 'from-orange-700 to-red-900',
@@ -58,16 +58,16 @@ export default function PupilSports() {
     <div className="p-6 max-w-5xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-white">My Sports</h1>
-        <p className="text-navy-400 mt-1">Everything you play, all in one place</p>
+        <p className="text-secondary mt-1">Everything you play, all in one place</p>
       </div>
 
       {sports.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
+        <div className="bg-navy-900 rounded-xl border border-border-strong p-12 text-center">
           <div className="w-16 h-16 rounded-full bg-navy-800 flex items-center justify-center mx-auto mb-4">
-            <Home className="w-8 h-8 text-navy-500" />
+            <Home className="w-8 h-8 text-secondary" />
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">Welcome to your portal</h3>
-          <p className="text-navy-400 text-sm max-w-md mx-auto">
+          <p className="text-secondary text-sm max-w-md mx-auto">
             Once your teachers add you to classes and teams, you will see each sport you play here.
             Tap a sport to see your schedule, assessments, and development for that activity.
           </p>
@@ -94,15 +94,15 @@ export default function PupilSports() {
 
           {teachingGroups.length > 0 && (
             <div>
-              <h2 className="text-white font-semibold mb-3 text-sm uppercase tracking-wide text-navy-400">My Classes</h2>
+              <h2 className="text-white font-semibold mb-3 text-sm uppercase tracking-wide text-secondary">My Classes</h2>
               <div className="space-y-2">
                 {teachingGroups.map(g => (
                   <div
                     key={g.id}
-                    className="bg-navy-900 border border-navy-800 rounded-lg px-4 py-3 flex items-center justify-between"
+                    className="bg-navy-900 border border-border-strong rounded-lg px-4 py-3 flex items-center justify-between"
                   >
                     <span className="text-white text-sm">{g.name}</span>
-                    <span className="text-navy-500 text-xs">{g.key_stage}</span>
+                    <span className="text-secondary text-xs">{g.key_stage}</span>
                   </div>
                 ))}
               </div>

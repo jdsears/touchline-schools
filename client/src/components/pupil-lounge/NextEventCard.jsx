@@ -4,7 +4,7 @@ import { format, formatDistanceToNow } from 'date-fns'
 import api from '../../services/api'
 
 const TYPE_STYLE = {
-  fixture: { label: 'Match', gradient: 'from-gold-600 to-amber-700' },
+  fixture: { label: 'Match', gradient: 'from-gold-600 to-brand-accent-hover' },
   training: { label: 'Training', gradient: 'from-navy-700 to-navy-800' },
   lesson: { label: 'PE Lesson', gradient: 'from-emerald-700 to-green-800' },
 }
