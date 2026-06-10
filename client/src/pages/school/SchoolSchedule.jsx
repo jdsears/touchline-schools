@@ -13,7 +13,7 @@ const SESSION_TYPES = [
   { value: 'training', label: 'Training', icon: Dumbbell, color: 'bg-status-success-tint text-status-success' },
   { value: 'match', label: 'Match', icon: Swords, color: 'bg-status-error-tint text-status-error' },
   { value: 'friendly', label: 'Friendly', icon: HeartHandshake, color: 'bg-status-info-tint text-status-info' },
-  { value: 'cup', label: 'Cup Match', icon: Trophy, color: 'bg-amber-600/20 text-amber-400' },
+  { value: 'cup', label: 'Cup Match', icon: Trophy, color: 'bg-brand-accent-tint text-brand-accent' },
   { value: 'other', label: 'Other', icon: Calendar, color: 'bg-border-default text-secondary' },
 ]
 
@@ -21,9 +21,9 @@ const DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 const DAYS_FULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 const AVAILABILITY_COLORS = {
-  available: 'bg-pitch-500',
+  available: 'bg-brand-primary',
   unavailable: 'bg-status-error',
-  maybe: 'bg-amber-500',
+  maybe: 'bg-brand-accent',
   pending: 'bg-navy-600',
 }
 
@@ -268,7 +268,7 @@ export default function ClubSchedule() {
                 setAvailability({})
                 setExpandedSession(null)
               }}
-              className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
             >
               {teams.map(team => (
                 <option key={team.id} value={team.id}>{team.name}</option>
@@ -281,7 +281,7 @@ export default function ClubSchedule() {
                 if (showCreate) resetForm()
                 else setShowCreate(true)
               }}
-              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
             >
               {showCreate ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
               {showCreate ? 'Cancel' : 'Add Session'}
@@ -303,7 +303,7 @@ export default function ClubSchedule() {
       {showCreate && selectedTeamId && (
         <form onSubmit={handleSubmit} className="bg-card border border-border-default rounded-xl p-5 space-y-5">
           <h3 className="font-semibold text-primary flex items-center gap-2">
-            <Calendar className="w-5 h-5 text-pitch-400" />
+            <Calendar className="w-5 h-5 text-brand-primary" />
             {editingSession ? 'Edit Session' : 'New Session'}
           </h3>
 
@@ -336,7 +336,7 @@ export default function ClubSchedule() {
                 required
                 value={form.date}
                 onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -346,7 +346,7 @@ export default function ClubSchedule() {
                 required
                 value={form.start_time}
                 onChange={(e) => setForm(f => ({ ...f, start_time: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -355,7 +355,7 @@ export default function ClubSchedule() {
                 type="time"
                 value={form.end_time}
                 onChange={(e) => setForm(f => ({ ...f, end_time: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -368,7 +368,7 @@ export default function ClubSchedule() {
                 type="text"
                 value={form.venue}
                 onChange={(e) => setForm(f => ({ ...f, venue: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. Main Pitch, Sports Hall"
               />
             </div>
@@ -379,7 +379,7 @@ export default function ClubSchedule() {
                   type="text"
                   value={form.opponent}
                   onChange={(e) => setForm(f => ({ ...f, opponent: e.target.value }))}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="Opponent team name"
                 />
               </div>
@@ -393,7 +393,7 @@ export default function ClubSchedule() {
               value={form.notes}
               rows={2}
               onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
               placeholder="Any additional notes..."
             />
           </div>
@@ -406,7 +406,7 @@ export default function ClubSchedule() {
                   type="checkbox"
                   checked={form.is_recurring}
                   onChange={(e) => setForm(f => ({ ...f, is_recurring: e.target.checked }))}
-                  className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
+                  className="rounded bg-subtle border-border-strong text-brand-primary focus:ring-brand-primary"
                 />
                 <Repeat className="w-4 h-4" />
                 Make recurring
@@ -424,7 +424,7 @@ export default function ClubSchedule() {
                           onClick={() => toggleRecurringDay(idx)}
                           className={`w-10 h-10 rounded-lg text-xs font-medium transition-colors ${
                             form.recurring_days.includes(idx)
-                              ? 'bg-pitch-600 text-on-dark'
+                              ? 'bg-brand-primary text-on-dark'
                               : 'bg-subtle text-secondary hover:text-primary hover:bg-border-default'
                           }`}
                         >
@@ -439,7 +439,7 @@ export default function ClubSchedule() {
                       type="date"
                       value={form.recurring_until}
                       onChange={(e) => setForm(f => ({ ...f, recurring_until: e.target.value }))}
-                      className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                      className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                     />
                   </div>
                 </div>
@@ -452,7 +452,7 @@ export default function ClubSchedule() {
             <button type="button" onClick={resetForm} className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors">
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors">
               {saving ? 'Saving...' : editingSession ? 'Update Session' : 'Create Session'}
             </button>
           </div>
@@ -473,7 +473,7 @@ export default function ClubSchedule() {
             {weekOffset !== 0 && (
               <button
                 onClick={() => setWeekOffset(0)}
-                className="text-xs text-pitch-400 hover:text-pitch-300 transition-colors"
+                className="text-xs text-brand-primary hover:text-brand-primary transition-colors"
               >
                 Go to this week
               </button>
@@ -497,17 +497,17 @@ export default function ClubSchedule() {
               <div key={day.dateStr} className="bg-card border border-border-default rounded-xl overflow-hidden">
                 {/* Day header */}
                 <div className={`px-4 py-2.5 flex items-center gap-3 border-b border-border-subtle ${
-                  day.isToday ? 'bg-pitch-600/10' : ''
+                  day.isToday ? 'bg-brand-primary-tint' : ''
                 }`}>
                   <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold ${
                     day.isToday
-                      ? 'bg-pitch-600 text-on-dark'
+                      ? 'bg-brand-primary text-on-dark'
                       : 'bg-subtle text-secondary'
                   }`}>
                     {day.date.getDate()}
                   </div>
                   <div>
-                    <p className={`text-sm font-medium ${day.isToday ? 'text-pitch-400' : 'text-primary'}`}>
+                    <p className={`text-sm font-medium ${day.isToday ? 'text-brand-primary' : 'text-primary'}`}>
                       {day.fullLabel}
                     </p>
                     <p className="text-xs text-tertiary">
@@ -677,10 +677,10 @@ function SessionCard({
 
           {/* Availability summary badges */}
           <div className="flex flex-wrap gap-2">
-            <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-pitch-600/20 text-pitch-400">
+            <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-brand-primary-tint text-brand-primary">
               <Check className="w-3 h-3" /> {summary.available} available
             </span>
-            <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400">
+            <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-brand-accent-tint text-brand-accent">
               <AlertCircle className="w-3 h-3" /> {summary.maybe} maybe
             </span>
             <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-status-error-tint text-status-error">
@@ -720,8 +720,8 @@ function SessionCard({
                               onClick={() => onAttendanceToggle(a.pupil_id, 'present')}
                               className={`p-1 rounded transition-colors ${
                                 a.attendance === 'present'
-                                  ? 'bg-pitch-600/20 text-pitch-400'
-                                  : 'text-tertiary hover:text-pitch-400'
+                                  ? 'bg-brand-primary-tint text-brand-primary'
+                                  : 'text-tertiary hover:text-brand-primary'
                               }`}
                               title="Present"
                             >
@@ -773,9 +773,9 @@ function SessionCard({
 
 function ResponseBadge({ response }) {
   const styles = {
-    available: { className: 'bg-pitch-600/20 text-pitch-400', icon: Check, label: 'Available' },
+    available: { className: 'bg-brand-primary-tint text-brand-primary', icon: Check, label: 'Available' },
     unavailable: { className: 'bg-status-error-tint text-status-error', icon: X, label: 'Unavailable' },
-    maybe: { className: 'bg-amber-500/20 text-amber-400', icon: AlertCircle, label: 'Maybe' },
+    maybe: { className: 'bg-brand-accent-tint text-brand-accent', icon: AlertCircle, label: 'Maybe' },
     pending: { className: 'bg-border-default text-secondary', icon: Minus, label: 'Pending' },
   }
   const config = styles[response] || styles.pending

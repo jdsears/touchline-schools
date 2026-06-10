@@ -229,7 +229,7 @@ export default function Dashboard() {
   function getResultClass(result) {
     if (!result) return ''
     const [home, away] = result.split('-').map(Number)
-    if (home > away) return 'text-pitch-400'
+    if (home > away) return 'text-brand-primary'
     if (home < away) return 'text-status-error'
     return 'text-status-warning'
   }
@@ -265,7 +265,7 @@ export default function Dashboard() {
             {user?.role === 'manager' && (
               <button
                 onClick={() => setShowQuickStart(true)}
-                className="p-2 rounded-xl bg-subtle border border-border-strong text-secondary hover:text-pitch-400 hover:border-pitch-500/30 transition-colors"
+                className="p-2 rounded-xl bg-subtle border border-border-strong text-secondary hover:text-brand-primary hover:border-brand-primary transition-colors"
                 title="Quick Start Guide"
               >
                 <HelpCircle className="w-5 h-5" />
@@ -273,7 +273,7 @@ export default function Dashboard() {
             )}
             {/* Current Date & Time */}
             <div className="flex items-center gap-3 px-4 py-2 rounded-xl bg-subtle border border-border-strong">
-              <CalendarDays className="w-5 h-5 text-pitch-400" />
+              <CalendarDays className="w-5 h-5 text-brand-primary" />
               <div>
                 <p className="text-white font-medium">
                   {format(currentTime, 'EEEE, d MMMM yyyy')}
@@ -288,11 +288,11 @@ export default function Dashboard() {
             {nextMatch && getNextMatchCountdown() && (
               <Link
                 to={`/teacher/match/${nextMatch.id}`}
-                className="flex items-center gap-3 px-4 py-2 rounded-xl bg-energy-500/10 border border-energy-500/30 hover:border-energy-500/50 transition-colors"
+                className="flex items-center gap-3 px-4 py-2 rounded-xl bg-brand-accent-tint border border-brand-accent hover:border-brand-accent transition-colors"
               >
-                <Clock className="w-5 h-5 text-energy-400" />
+                <Clock className="w-5 h-5 text-brand-accent" />
                 <div>
-                  <p className="text-energy-400 font-bold">{getNextMatchCountdown()}</p>
+                  <p className="text-brand-accent font-bold">{getNextMatchCountdown()}</p>
                   <p className="text-sm text-secondary">until {nextMatch.opponent}</p>
                 </div>
               </Link>
@@ -319,8 +319,8 @@ export default function Dashboard() {
           >
             <div className={`
               w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
-              ${action.color === 'pitch' ? 'bg-pitch-500/10 text-pitch-400' : ''}
-              ${action.color === 'energy' ? 'bg-energy-500/10 text-energy-400' : ''}
+              ${action.color === 'pitch' ? 'bg-brand-primary-tint text-brand-primary' : ''}
+              ${action.color === 'energy' ? 'bg-brand-accent-tint text-brand-accent' : ''}
               ${action.color === 'blue' ? 'bg-status-info-tint text-status-info' : ''}
               ${action.color === 'caution' ? 'bg-status-warning-tint text-status-warning' : ''}
             `}>
@@ -345,8 +345,8 @@ export default function Dashboard() {
           <div className="card overflow-hidden h-full">
             <div className="p-4 border-b border-border-default flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-pitch-400" />
+                <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-brand-primary" />
                 </div>
                 <div>
                   <h2 className="font-display font-semibold text-white">Pep</h2>
@@ -477,7 +477,7 @@ export default function Dashboard() {
                         type="checkbox"
                         checked={newAnnouncement.send_email}
                         onChange={e => setNewAnnouncement(prev => ({ ...prev, send_email: e.target.checked }))}
-                        className="w-4 h-4 rounded border-border-strong bg-border-default text-pitch-500 focus:ring-pitch-500"
+                        className="w-4 h-4 rounded border-border-strong bg-border-default text-brand-primary focus:ring-brand-primary"
                       />
                       <Mail className="w-4 h-4" />
                       Also send via email
@@ -507,7 +507,7 @@ export default function Dashboard() {
                                       setNewAnnouncement(prev => ({ ...prev, selected_pupil_ids: prev.selected_pupil_ids.filter(id => id !== pupil.id) }))
                                     }
                                   }}
-                                  className="w-3 h-3 rounded border-border-strong bg-border-default text-pitch-500"
+                                  className="w-3 h-3 rounded border-border-strong bg-border-default text-brand-primary"
                                 />
                                 {pupil.name}
                               </label>
@@ -537,7 +537,7 @@ export default function Dashboard() {
                     onClick={() => openAnnouncementView(announcement)}
                   >
                     <div className="flex items-start gap-2">
-                      {announcement.is_pinned && <Pin className="w-3 h-3 text-pitch-400 shrink-0 mt-1" />}
+                      {announcement.is_pinned && <Pin className="w-3 h-3 text-brand-primary shrink-0 mt-1" />}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
                           <span className="font-medium text-white text-sm">{announcement.title}</span>
@@ -556,7 +556,7 @@ export default function Dashboard() {
                       <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
                         <button
                           onClick={() => startEditAnnouncement(announcement)}
-                          className="text-tertiary hover:text-pitch-400 p-1"
+                          className="text-tertiary hover:text-brand-primary p-1"
                           title="Edit"
                         >
                           <Edit2 className="w-4 h-4" />
@@ -637,7 +637,7 @@ export default function Dashboard() {
                               type="checkbox"
                               checked={editingAnnouncement.is_pinned || false}
                               onChange={e => setEditingAnnouncement(prev => ({ ...prev, is_pinned: e.target.checked }))}
-                              className="w-4 h-4 rounded border-border-strong bg-border-default text-pitch-500"
+                              className="w-4 h-4 rounded border-border-strong bg-border-default text-brand-primary"
                             />
                             <span className="text-sm text-secondary">Pin to top</span>
                           </label>
@@ -655,7 +655,7 @@ export default function Dashboard() {
                   ) : viewingAnnouncement && (
                     <div className="p-4">
                       <div className="flex items-center gap-2 mb-2">
-                        {viewingAnnouncement.is_pinned && <Pin className="w-4 h-4 text-pitch-400" />}
+                        {viewingAnnouncement.is_pinned && <Pin className="w-4 h-4 text-brand-primary" />}
                         <h4 className="text-lg font-semibold text-white">{viewingAnnouncement.title}</h4>
                         {viewingAnnouncement.priority === 'high' && (
                           <span className="badge-alert text-xs">High</span>
@@ -704,7 +704,7 @@ export default function Dashboard() {
         >
           <div className="card p-4 h-full">
             <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-pitch-400" />
+              <TrendingUp className="w-5 h-5 text-brand-primary" />
               Team Overview
             </h2>
 
@@ -733,7 +733,7 @@ export default function Dashboard() {
         >
           <div className="card p-4 h-full">
             <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-energy-400" />
+              <Clock className="w-5 h-5 text-brand-accent" />
               Next Match
             </h2>
 
@@ -746,7 +746,7 @@ export default function Dashboard() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-secondary">Date</span>
-                    <span className="font-semibold text-energy-400">{formatMatchDate(nextMatch.date)}</span>
+                    <span className="font-semibold text-brand-accent">{formatMatchDate(nextMatch.date)}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-secondary">Kick-off</span>
@@ -757,7 +757,7 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <span className="text-secondary">Venue</span>
                     <span className="font-semibold text-white flex items-center gap-1">
-                      {nextMatch.is_home ? <Home className="w-4 h-4 text-pitch-400" /> : <Plane className="w-4 h-4 text-energy-400" />}
+                      {nextMatch.is_home ? <Home className="w-4 h-4 text-brand-primary" /> : <Plane className="w-4 h-4 text-brand-accent" />}
                       {nextMatch.is_home ? 'Home' : 'Away'}
                     </span>
                   </div>
@@ -838,7 +838,7 @@ export default function Dashboard() {
           <div className="card">
             <div className="p-4 border-b border-border-default flex items-center justify-between">
               <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-energy-400" />
+                <Calendar className="w-5 h-5 text-brand-accent" />
                 Upcoming Fixtures
               </h2>
               {upcomingMatches.length > 3 && (
@@ -868,7 +868,7 @@ export default function Dashboard() {
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-energy-400">{formatMatchDate(match.date)}</p>
+                      <p className="font-medium text-brand-accent">{formatMatchDate(match.date)}</p>
                       <p className="text-sm text-secondary">
                         {match.time || format(parseISO(match.date), 'h:mm a')}
                       </p>

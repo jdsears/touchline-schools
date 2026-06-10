@@ -20,7 +20,7 @@ function Toggle({ checked, onChange, disabled }) {
       type="button"
       onClick={() => !disabled && onChange(!checked)}
       className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${
-        checked ? 'bg-pitch-600' : 'bg-border-default'
+        checked ? 'bg-brand-primary' : 'bg-border-default'
       } ${disabled ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
     >
       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-card transition-transform ${
@@ -89,7 +89,7 @@ export default function NotificationsTab() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
       >
         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
         Save Preferences

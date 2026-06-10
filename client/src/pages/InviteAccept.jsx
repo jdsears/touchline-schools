@@ -61,7 +61,7 @@ export default function InviteAccept() {
   if (loading) {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -89,8 +89,8 @@ export default function InviteAccept() {
         className="card p-8 max-w-md w-full"
       >
         <div className="text-center mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-pitch-500/10 flex items-center justify-center mx-auto mb-4">
-            <Sparkles className="w-8 h-8 text-pitch-400" />
+          <div className="w-16 h-16 rounded-2xl bg-brand-primary-tint flex items-center justify-center mx-auto mb-4">
+            <Sparkles className="w-8 h-8 text-brand-primary" />
           </div>
           <h1 className="font-display text-2xl font-bold text-white mb-2">
             You've Been Invited!

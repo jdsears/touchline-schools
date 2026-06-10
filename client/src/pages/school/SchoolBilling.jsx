@@ -149,11 +149,11 @@ export default function ClubBilling() {
 
       {/* Current plan status */}
       {isSubscribed && currentPlan ? (
-        <section className="bg-card border border-pitch-500/30 rounded-xl p-5">
+        <section className="bg-card border border-brand-primary rounded-xl p-5">
           <div className="flex items-start justify-between flex-wrap gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-pitch-500/20 flex items-center justify-center">
-                <Crown className="w-5 h-5 text-pitch-400" />
+              <div className="w-10 h-10 rounded-lg bg-brand-primary-tint flex items-center justify-center">
+                <Crown className="w-5 h-5 text-brand-primary" />
               </div>
               <div>
                 <p className="text-primary font-semibold">{currentPlan.name}</p>
@@ -163,7 +163,7 @@ export default function ClubBilling() {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <span className="px-3 py-1 rounded-full text-xs font-medium bg-pitch-500/20 text-pitch-400 capitalize">
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-brand-primary-tint text-brand-primary capitalize">
                 {subscription.status}
               </span>
               <button
@@ -182,9 +182,9 @@ export default function ClubBilling() {
           </div>
         </section>
       ) : (
-        <section className="bg-card border border-amber-500/30 rounded-xl p-5">
+        <section className="bg-card border border-brand-accent rounded-xl p-5">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-amber-400 mt-0.5 flex-shrink-0" />
+            <AlertCircle className="w-5 h-5 text-brand-accent mt-0.5 flex-shrink-0" />
             <div>
               <p className="text-primary font-semibold">No active subscription</p>
               <p className="text-sm text-secondary mt-1">
@@ -205,13 +205,13 @@ export default function ClubBilling() {
               key={plan.id}
               className={`relative bg-card border rounded-xl p-5 flex flex-col ${
                 plan.popular
-                  ? 'border-pitch-500/50 ring-1 ring-pitch-500/20'
+                  ? 'border-brand-primary ring-1 ring-brand-primary'
                   : 'border-border-default'
               }`}
             >
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-pitch-500 text-navy-950">
+                  <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand-primary text-navy-950">
                     Most Popular
                   </span>
                 </div>
@@ -229,7 +229,7 @@ export default function ClubBilling() {
               <ul className="space-y-2.5 mb-6 flex-1">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-2 text-sm text-secondary">
-                    <Check className="w-4 h-4 text-pitch-400 mt-0.5 flex-shrink-0" />
+                    <Check className="w-4 h-4 text-brand-primary mt-0.5 flex-shrink-0" />
                     <span>{feature}</span>
                   </li>
                 ))}
@@ -248,7 +248,7 @@ export default function ClubBilling() {
                   disabled={checkoutLoading !== null}
                   className={`w-full py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
                     plan.popular
-                      ? 'bg-pitch-600 hover:bg-pitch-500 text-on-dark'
+                      ? 'bg-brand-primary hover:bg-brand-primary text-on-dark'
                       : 'bg-subtle hover:bg-border-default text-primary border border-border-strong'
                   } disabled:opacity-50`}
                 >

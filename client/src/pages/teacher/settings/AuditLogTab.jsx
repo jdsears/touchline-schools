@@ -46,7 +46,7 @@ export default function AuditLogTab() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Filter by user or action..."
-          className="w-full pl-9 pr-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+          className="w-full pl-9 pr-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
         />
       </div>
 

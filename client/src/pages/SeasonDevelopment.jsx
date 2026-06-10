@@ -9,10 +9,10 @@ import toast from 'react-hot-toast'
 const EFFORT_LABELS = ['', 'Low', 'Fair', 'Good', 'High', 'Outstanding']
 
 function ratingToColor(score) {
-  if (score >= 30) return 'text-pitch-400'
-  if (score >= 10) return 'text-pitch-500'
+  if (score >= 30) return 'text-brand-primary'
+  if (score >= 10) return 'text-brand-primary'
   if (score > -10) return 'text-secondary'
-  if (score > -30) return 'text-energy-400'
+  if (score > -30) return 'text-brand-accent'
   return 'text-status-error'
 }
 
@@ -35,7 +35,7 @@ function EffortStars({ rating, size = 'sm' }) {
   return (
     <div className="flex gap-0.5" title={`${rating.toFixed(1)} avg effort`}>
       {[1,2,3,4,5].map(i => (
-        <span key={i} className={i <= stars ? 'text-energy-400' : 'text-navy-700'}>
+        <span key={i} className={i <= stars ? 'text-brand-accent' : 'text-navy-700'}>
           <Flame className={sz} />
         </span>
       ))}
@@ -43,7 +43,7 @@ function EffortStars({ rating, size = 'sm' }) {
   )
 }
 
-function StatCard({ icon: Icon, label, value, sub, color = 'text-pitch-400' }) {
+function StatCard({ icon: Icon, label, value, sub, color = 'text-brand-primary' }) {
   return (
     <div className="bg-card border border-border-default rounded-xl p-4">
       <div className="flex items-center gap-2 mb-2">
@@ -150,7 +150,7 @@ export default function SeasonDevelopment() {
     return (
       <button
         onClick={() => toggleSort(col)}
-        className={`flex items-center gap-1 text-xs font-medium transition ${active ? 'text-pitch-400' : 'text-secondary hover:text-secondary'} ${className}`}
+        className={`flex items-center gap-1 text-xs font-medium transition ${active ? 'text-brand-primary' : 'text-secondary hover:text-secondary'} ${className}`}
       >
         {children}
         {active && (sortDir === 'desc' ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />)}
@@ -187,7 +187,7 @@ export default function SeasonDevelopment() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-pitch-600/10 text-pitch-400">
+          <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-brand-primary-tint text-brand-primary">
             <TrendingUp className="w-5 h-5" />
           </div>
           <div>
@@ -221,14 +221,14 @@ export default function SeasonDevelopment() {
           label="Avg Attendance"
           value={summary.avg_attendance_rate ? `${Math.round(summary.avg_attendance_rate)}%` : '-'}
           sub={`${summary.total_sessions || 0} sessions this season`}
-          color="text-energy-400"
+          color="text-brand-accent"
         />
         <StatCard
           icon={Flame}
           label="Avg Effort"
           value={summary.avg_effort ? Number(summary.avg_effort).toFixed(1) : '-'}
           sub={summary.avg_effort ? EFFORT_LABELS[Math.round(Number(summary.avg_effort))] : 'No ratings yet'}
-          color="text-energy-400"
+          color="text-brand-accent"
         />
         <StatCard
           icon={Trophy}
@@ -246,25 +246,25 @@ export default function SeasonDevelopment() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="bg-gradient-to-br from-navy-900 to-navy-900/80 border border-pitch-600/30 rounded-xl p-5"
+            className="bg-gradient-to-br from-navy-900 to-navy-900/80 border border-brand-primary rounded-xl p-5"
           >
             <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-pitch-400" />
+              <Sparkles className="w-5 h-5 text-brand-primary" />
               <h2 className="text-lg font-semibold text-white">AI Season Review</h2>
               {aiReview.squad_development_score && (
-                <span className="ml-auto text-sm bg-pitch-600/20 text-pitch-400 px-2 py-0.5 rounded-full">
+                <span className="ml-auto text-sm bg-brand-primary-tint text-brand-primary px-2 py-0.5 rounded-full">
                   Squad Score: {aiReview.squad_development_score}/100
                 </span>
               )}
             </div>
 
             {aiReview.most_improved && (
-              <ReviewSection icon={TrendingUp} title="Most Improved" color="text-pitch-400">
+              <ReviewSection icon={TrendingUp} title="Most Improved" color="text-brand-primary">
                 {aiReview.most_improved}
               </ReviewSection>
             )}
             {aiReview.hardest_trainers && (
-              <ReviewSection icon={Flame} title="Hardest Trainers" color="text-energy-400">
+              <ReviewSection icon={Flame} title="Hardest Trainers" color="text-brand-accent">
                 {aiReview.hardest_trainers}
               </ReviewSection>
             )}
@@ -360,8 +360,8 @@ function PlayerRow({ pupil, expanded, onToggle }) {
         <td className="px-3 py-3 text-center">
           {training.attendance_rate != null ? (
             <span className={`text-sm font-medium ${
-              training.attendance_rate >= 80 ? 'text-pitch-400' :
-              training.attendance_rate >= 60 ? 'text-energy-400' : 'text-status-error'
+              training.attendance_rate >= 80 ? 'text-brand-primary' :
+              training.attendance_rate >= 60 ? 'text-brand-accent' : 'text-status-error'
             }`}>
               {Math.round(training.attendance_rate)}%
             </span>
@@ -385,7 +385,7 @@ function PlayerRow({ pupil, expanded, onToggle }) {
               </span>
             )}
             {(pupil.achievements?.list?.length > 0) && (
-              <span className="text-xs bg-pitch-600/20 text-pitch-400 px-1.5 py-0.5 rounded">
+              <span className="text-xs bg-brand-primary-tint text-brand-primary px-1.5 py-0.5 rounded">
                 {pupil.achievements.list.length}
               </span>
             )}

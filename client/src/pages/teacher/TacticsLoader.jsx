@@ -125,7 +125,7 @@ export default function TacticsLoader() {
           <span className="text-xs text-tertiary font-medium uppercase tracking-wider">Team:</span>
           <button
             onClick={() => setSelectorOpen(o => !o)}
-            className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-pitch-400 transition-colors"
+            className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-brand-primary transition-colors"
           >
             {team?.name || 'Select team'}
             <ChevronDown className={`w-4 h-4 text-secondary transition-transform ${selectorOpen ? 'rotate-180' : ''}`} />
@@ -141,7 +141,7 @@ export default function TacticsLoader() {
                     onClick={() => switchTeam(t.id)}
                     className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                       t.id === parseInt(teamId)
-                        ? 'bg-pitch-600/20 text-pitch-400'
+                        ? 'bg-brand-primary-tint text-brand-primary'
                         : 'text-secondary hover:bg-border-default hover:text-link'
                     }`}
                   >

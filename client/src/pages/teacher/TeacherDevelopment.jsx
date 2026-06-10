@@ -16,7 +16,7 @@ export default function TeacherDevelopment() {
         <input
           type="text"
           placeholder="Search pupils..."
-          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
         />
       </div>
 

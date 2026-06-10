@@ -48,7 +48,7 @@ export default function SportsConfigTab({ access }) {
         <h2 className="text-xl font-semibold text-primary">Sports Configuration</h2>
         <p className="text-sm text-secondary mt-1">
           Select which sports your school offers. Active sports are available for teams, curriculum units, and NGB framework alignment.
-          {!canEdit && <span className="ml-2 text-amber-400">View only.</span>}
+          {!canEdit && <span className="ml-2 text-brand-accent">View only.</span>}
         </p>
       </div>
 
@@ -67,12 +67,12 @@ export default function SportsConfigTab({ access }) {
               disabled={!canEdit}
               className={`flex items-center gap-3 p-3 rounded-lg border text-left transition-all ${
                 sport.active
-                  ? 'border-pitch-600/50 bg-pitch-600/10'
+                  ? 'border-brand-primary bg-brand-primary-tint'
                   : 'border-border-strong bg-subtle opacity-60'
-              } ${canEdit ? 'cursor-pointer hover:border-pitch-500' : 'cursor-default'}`}
+              } ${canEdit ? 'cursor-pointer hover:border-brand-primary' : 'cursor-default'}`}
             >
               <div className={`w-5 h-5 rounded flex items-center justify-center flex-shrink-0 ${
-                sport.active ? 'bg-pitch-600' : 'bg-border-default'
+                sport.active ? 'bg-brand-primary' : 'bg-border-default'
               }`}>
                 {sport.active && <Check className="w-3 h-3 text-primary" />}
               </div>
@@ -91,7 +91,7 @@ export default function SportsConfigTab({ access }) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save Sports Configuration

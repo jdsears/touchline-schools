@@ -632,7 +632,7 @@ export default function VideoAnalysis() {
   if (loading) {
     return (
       <div className="p-6 lg:p-8 flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -668,7 +668,7 @@ export default function VideoAnalysis() {
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-              activeTab === tab.key ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
+              activeTab === tab.key ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:text-white'
             }`}
           >
             <tab.icon className="w-4 h-4" /> {tab.label}
@@ -690,7 +690,7 @@ export default function VideoAnalysis() {
                     <button
                       onClick={() => setVideoMode('upload')}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
-                        videoMode === 'upload' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
+                        videoMode === 'upload' ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:text-white'
                       }`}
                     >
                       <Upload className="w-4 h-4" /> Upload Video
@@ -698,7 +698,7 @@ export default function VideoAnalysis() {
                     <button
                       onClick={() => setVideoMode('link')}
                       className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg font-medium transition-colors ${
-                        videoMode === 'link' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
+                        videoMode === 'link' ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:text-white'
                       }`}
                     >
                       <LinkIcon className="w-4 h-4" /> Video Link
@@ -784,8 +784,8 @@ export default function VideoAnalysis() {
             <div className="space-y-4">
               <div className="card p-4">
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-                    <Sparkles className="w-5 h-5 text-pitch-400" />
+                  <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-brand-primary" />
                   </div>
                   <div>
                     <h2 className="font-display font-semibold text-white">AI Analysis</h2>
@@ -801,7 +801,7 @@ export default function VideoAnalysis() {
                         onClick={() => setTeamColour(colour)}
                         className={`px-2.5 py-1 rounded-full text-xs font-medium transition-all ${
                           teamColour === colour
-                            ? 'bg-pitch-500 text-white ring-2 ring-pitch-400 ring-offset-1 ring-offset-navy-900'
+                            ? 'bg-brand-primary text-white ring-2 ring-brand-primary ring-offset-1 ring-offset-navy-900'
                             : 'bg-border-default text-secondary hover:bg-navy-600'
                         }`}
                       >
@@ -810,7 +810,7 @@ export default function VideoAnalysis() {
                     ))}
                   </div>
                   {teamColour && (
-                    <p className="text-xs text-pitch-400 mt-1.5">AI will focus on the <strong>{teamColour}</strong> team</p>
+                    <p className="text-xs text-brand-primary mt-1.5">AI will focus on the <strong>{teamColour}</strong> team</p>
                   )}
                 </div>
 
@@ -831,13 +831,13 @@ export default function VideoAnalysis() {
                           key={pack.id}
                           onClick={() => handlePurchaseCredits(pack.id)}
                           disabled={purchasingCredits}
-                          className="w-full flex items-center justify-between p-3 rounded-lg border border-border-strong hover:border-pitch-500 bg-subtle hover:bg-subtle transition-colors text-left"
+                          className="w-full flex items-center justify-between p-3 rounded-lg border border-border-strong hover:border-brand-primary bg-subtle hover:bg-subtle transition-colors text-left"
                         >
                           <div>
                             <span className="text-white font-medium">{pack.credits} analysis credits</span>
-                            {pack.badge && <span className="ml-2 text-xs px-1.5 py-0.5 bg-pitch-500/20 text-pitch-400 rounded">{pack.badge}</span>}
+                            {pack.badge && <span className="ml-2 text-xs px-1.5 py-0.5 bg-brand-primary-tint text-brand-primary rounded">{pack.badge}</span>}
                           </div>
-                          <span className="text-energy-400 font-semibold">{pack.price}</span>
+                          <span className="text-brand-accent font-semibold">{pack.price}</span>
                         </button>
                       ))}
                     </div>
@@ -846,8 +846,8 @@ export default function VideoAnalysis() {
                     </button>
                   </div>
                 ) : showUpgradePrompt ? (
-                  <div className="rounded-xl border border-energy-500/30 bg-energy-500/5 p-4 text-center">
-                    <Crown className="w-8 h-8 text-energy-400 mx-auto mb-2" />
+                  <div className="rounded-xl border border-brand-accent bg-brand-accent-tint p-4 text-center">
+                    <Crown className="w-8 h-8 text-brand-accent mx-auto mb-2" />
                     <h3 className="font-display font-semibold text-white mb-1">Pro Feature</h3>
                     <p className="text-sm text-secondary mb-4">AI video analysis is available on the Grassroots Pro plan. Upgrade to get tactical breakdowns, individual pupil feedback, and training recommendations from your match footage.</p>
                     <Link to="/settings" className="btn-primary w-full inline-flex items-center justify-center gap-2">
@@ -864,7 +864,7 @@ export default function VideoAnalysis() {
                           onClick={() => setAnalysisDepth('standard')}
                           className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                             analysisDepth === 'standard'
-                              ? 'bg-pitch-500 text-white'
+                              ? 'bg-brand-primary text-white'
                               : 'text-secondary hover:text-primary'
                           }`}
                         >
@@ -874,7 +874,7 @@ export default function VideoAnalysis() {
                           onClick={() => setAnalysisDepth('deep')}
                           className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-colors flex items-center justify-center gap-1 ${
                             analysisDepth === 'deep'
-                              ? 'bg-energy-500 text-white'
+                              ? 'bg-brand-accent text-white'
                               : 'text-secondary hover:text-primary'
                           }`}
                         >
@@ -919,8 +919,8 @@ export default function VideoAnalysis() {
               {video?.mux_playback_id && (
                 <div className="card p-4">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-energy-500/10 flex items-center justify-center">
-                      <Scissors className="w-5 h-5 text-energy-400" />
+                    <div className="w-10 h-10 rounded-xl bg-brand-accent-tint flex items-center justify-center">
+                      <Scissors className="w-5 h-5 text-brand-accent" />
                     </div>
                     <div>
                       <h2 className="font-display font-semibold text-white">Create Clip</h2>
@@ -936,8 +936,8 @@ export default function VideoAnalysis() {
               <div className="card p-4">
                 <h3 className="font-display font-semibold text-white mb-3">What AI Analyses</h3>
                 <ul className="space-y-2 text-sm text-secondary">
-                  <li className="flex items-start gap-2"><Target className="w-4 h-4 text-pitch-400 mt-0.5 shrink-0" /> Team shape and formation</li>
-                  <li className="flex items-start gap-2"><Zap className="w-4 h-4 text-energy-400 mt-0.5 shrink-0" /> Key tactical moments</li>
+                  <li className="flex items-start gap-2"><Target className="w-4 h-4 text-brand-primary mt-0.5 shrink-0" /> Team shape and formation</li>
+                  <li className="flex items-start gap-2"><Zap className="w-4 h-4 text-brand-accent mt-0.5 shrink-0" /> Key tactical moments</li>
                   <li className="flex items-start gap-2"><Users className="w-4 h-4 text-status-info mt-0.5 shrink-0" /> Individual contributions</li>
                   <li className="flex items-start gap-2"><AlertCircle className="w-4 h-4 text-status-warning mt-0.5 shrink-0" /> Areas for improvement</li>
                   <li className="flex items-start gap-2"><FileText className="w-4 h-4 text-status-error mt-0.5 shrink-0" /> Training recommendations</li>
@@ -955,7 +955,7 @@ export default function VideoAnalysis() {
                 <div className="lg:col-span-2">
                   <div className="card p-6">
                     <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border-default">
-                      <CheckCircle className="w-6 h-6 text-pitch-400" />
+                      <CheckCircle className="w-6 h-6 text-brand-primary" />
                       <div className="flex-1">
                         <h2 className="font-display text-lg font-semibold text-white">The Gaffer's Analysis</h2>
                         <p className="text-sm text-secondary">
@@ -981,9 +981,9 @@ export default function VideoAnalysis() {
                     </div>
 
                     {editing && (
-                      <div className="p-3 rounded-lg bg-energy-500/10 border border-energy-500/30 mb-6 flex items-center gap-2">
-                        <Pencil className="w-4 h-4 text-energy-400 shrink-0" />
-                        <p className="text-sm text-energy-300">Editing mode - adjust the AI analysis, then save your changes before approving.</p>
+                      <div className="p-3 rounded-lg bg-brand-accent-tint border border-brand-accent mb-6 flex items-center gap-2">
+                        <Pencil className="w-4 h-4 text-brand-accent shrink-0" />
+                        <p className="text-sm text-brand-accent">Editing mode - adjust the AI analysis, then save your changes before approving.</p>
                       </div>
                     )}
 
@@ -999,7 +999,7 @@ export default function VideoAnalysis() {
                         />
                       </div>
                     ) : latestAnalysis.summary && (
-                      <div className="p-4 rounded-lg bg-pitch-500/10 border border-pitch-500/30 mb-6">
+                      <div className="p-4 rounded-lg bg-brand-primary-tint border border-brand-primary mb-6">
                         <p className="text-white">{latestAnalysis.summary}</p>
                       </div>
                     )}
@@ -1008,7 +1008,7 @@ export default function VideoAnalysis() {
                     {editing ? (
                       <div className="mb-6">
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <Target className="w-4 h-4 text-pitch-400" /> Observations
+                          <Target className="w-4 h-4 text-brand-primary" /> Observations
                         </h3>
                         <div className="space-y-3">
                           {editData.observations.map((obs, i) => (
@@ -1040,7 +1040,7 @@ export default function VideoAnalysis() {
                     ) : latestAnalysis.observations?.length > 0 && (
                       <div className="mb-6">
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <Target className="w-4 h-4 text-pitch-400" /> Observations
+                          <Target className="w-4 h-4 text-brand-primary" /> Observations
                         </h3>
                         <div className="space-y-2">
                           {latestAnalysis.observations.map((obs, i) => (
@@ -1060,11 +1060,11 @@ export default function VideoAnalysis() {
                     {editing ? (
                       <div className="mb-6">
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-energy-400" /> Training Recommendations
+                          <FileText className="w-4 h-4 text-brand-accent" /> Training Recommendations
                         </h3>
                         <div className="space-y-3">
                           {editData.recommendations.map((rec, i) => (
-                            <div key={i} className="p-3 bg-energy-500/10 rounded-lg border border-energy-500/20 space-y-2">
+                            <div key={i} className="p-3 bg-brand-accent-tint rounded-lg border border-brand-accent space-y-2">
                               <div className="flex items-center gap-2">
                                 <input
                                   type="text"
@@ -1098,11 +1098,11 @@ export default function VideoAnalysis() {
                     ) : latestAnalysis.recommendations?.length > 0 && (
                       <div className="mb-6">
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <FileText className="w-4 h-4 text-energy-400" /> Training Recommendations
+                          <FileText className="w-4 h-4 text-brand-accent" /> Training Recommendations
                         </h3>
                         <div className="space-y-2">
                           {latestAnalysis.recommendations.map((rec, i) => (
-                            <div key={i} className="p-3 bg-energy-500/10 rounded-lg border border-energy-500/20">
+                            <div key={i} className="p-3 bg-brand-accent-tint rounded-lg border border-brand-accent">
                               <div className="flex justify-between mb-1">
                                 <p className="font-medium text-sm text-white">{rec.focus}</p>
                                 {rec.duration && <span className="text-xs text-secondary">{rec.duration}</span>}
@@ -1125,7 +1125,7 @@ export default function VideoAnalysis() {
                             <div key={i} className="p-3 bg-subtle rounded-lg border border-border-strong space-y-2">
                               <div className="flex items-center gap-2">
                                 {pf.squad_number && (
-                                  <span className="w-6 h-6 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center shrink-0">
+                                  <span className="w-6 h-6 rounded-full bg-brand-primary-tint text-brand-primary text-xs font-bold flex items-center justify-center shrink-0">
                                     {pf.squad_number}
                                   </span>
                                 )}
@@ -1166,13 +1166,13 @@ export default function VideoAnalysis() {
                             <div key={i} className="p-3 bg-subtle rounded-lg">
                               <div className="flex items-center gap-2 mb-1">
                                 {pf.squad_number && (
-                                  <span className="w-6 h-6 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center">
+                                  <span className="w-6 h-6 rounded-full bg-brand-primary-tint text-brand-primary text-xs font-bold flex items-center justify-center">
                                     {pf.squad_number}
                                   </span>
                                 )}
                                 <p className="font-medium text-sm text-white">{pf.name || pf.description}</p>
                                 {pf.rating && (
-                                  <span className="ml-auto px-2 py-0.5 bg-energy-500/20 text-energy-400 text-xs rounded-full">{pf.rating}/10</span>
+                                  <span className="ml-auto px-2 py-0.5 bg-brand-accent-tint text-brand-accent text-xs rounded-full">{pf.rating}/10</span>
                                 )}
                               </div>
                               <p className="text-sm text-secondary">{pf.feedback}</p>
@@ -1186,7 +1186,7 @@ export default function VideoAnalysis() {
                     {!editing && latestAnalysis.player_feedback?.length > 0 && (
                       <div className="mt-4 p-3 rounded-lg border border-border-strong bg-subtle">
                         {latestAnalysis.approved ? (
-                          <div className="flex items-center gap-2 text-pitch-400">
+                          <div className="flex items-center gap-2 text-brand-primary">
                             <CheckCircle className="w-4 h-4" />
                             <span className="text-sm font-medium">Approved - pupil notes saved to profiles</span>
                           </div>
@@ -1198,7 +1198,7 @@ export default function VideoAnalysis() {
                                 type="checkbox"
                                 checked={includeRatings}
                                 onChange={(e) => setIncludeRatings(e.target.checked)}
-                                className="rounded border-border-strong bg-border-default text-pitch-500 focus:ring-pitch-500"
+                                className="rounded border-border-strong bg-border-default text-brand-primary focus:ring-brand-primary"
                               />
                               <div>
                                 <p className="text-sm text-white font-medium">Include pupil ratings</p>
@@ -1263,8 +1263,8 @@ export default function VideoAnalysis() {
                     )}
                   </div>
                   <Link to={`/chat?q=Based on our match against ${match?.opponent}, what training sessions should we focus on?`} className="card-hover p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-pitch-400" />
+                    <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+                      <Sparkles className="w-5 h-5 text-brand-primary" />
                     </div>
                     <div className="flex-1">
                       <p className="font-medium text-white">Discuss with AI</p>
@@ -1430,7 +1430,7 @@ export default function VideoAnalysis() {
                       {pupils.slice(0, 20).map(pupil => (
                         <button key={pupil.id} type="button" onClick={() => togglePlayer(pupil.id)}
                           className={`px-2 py-1 rounded-lg text-xs font-medium transition-colors ${
-                            newClip.pupils.includes(pupil.id) ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
+                            newClip.pupils.includes(pupil.id) ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
                           {pupil.name}

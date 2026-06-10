@@ -47,11 +47,11 @@ export default function VoiceSafeguardingReview() {
       </div>
 
       {/* Guidance */}
-      <div className="bg-card rounded-xl border border-amber-400/30 p-5 mb-6">
+      <div className="bg-card rounded-xl border border-brand-accent p-5 mb-6">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-brand-accent shrink-0 mt-0.5" />
           <div className="text-xs text-secondary space-y-1">
-            <p className="font-medium text-amber-400 text-sm">DSL Review Required</p>
+            <p className="font-medium text-brand-accent text-sm">DSL Review Required</p>
             <p>These observations were flagged during AI extraction from voice observations. The AI detected language that may indicate a safeguarding concern (injury, distress, disclosure, or behaviour beyond routine).</p>
             <p>For each item, you can <strong className="text-primary">dismiss</strong> (files as a routine observation) or <strong className="text-primary">escalate</strong> (keeps it flagged; create a formal safeguarding incident through the incident system).</p>
           </div>
@@ -66,7 +66,7 @@ export default function VoiceSafeguardingReview() {
         </div>
       ) : (
         <div className="bg-card rounded-xl border border-border-default p-12 text-center">
-          <Check className="w-8 h-8 text-pitch-400 mx-auto mb-4" />
+          <Check className="w-8 h-8 text-brand-primary mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-primary mb-2">No flagged observations</h3>
           <p className="text-secondary text-sm">
             No voice observations have been flagged for safeguarding review in the last 30 days.
@@ -155,7 +155,7 @@ function FlaggedCard({ item, onReview }) {
           onChange={e => setNotes(e.target.value)}
           placeholder="DSL review notes (optional)"
           rows={2}
-          className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-xs placeholder:text-tertiary focus:outline-none focus:border-pitch-500 resize-none"
+          className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-xs placeholder:text-tertiary focus:outline-none focus:border-brand-primary resize-none"
         />
       </div>
 

@@ -56,7 +56,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-primary flex items-center gap-2">
           <FileText className="w-4 h-4 text-purple-400" /> Public Match Report
-          {status === 'draft' && <span className="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded">Draft</span>}
+          {status === 'draft' && <span className="text-[10px] bg-brand-accent-tint text-brand-accent px-1.5 py-0.5 rounded">Draft</span>}
           {status === 'published' && <span className="text-[10px] bg-status-success-tint text-status-success px-1.5 py-0.5 rounded">Published</span>}
         </h3>
         <div className="flex gap-1.5">
@@ -67,7 +67,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
                 {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               </button>
               <button onClick={togglePublish}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${status === 'published' ? 'bg-status-success-tint text-status-success' : 'bg-pitch-600 text-on-dark hover:bg-pitch-500'}`}>
+                className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${status === 'published' ? 'bg-status-success-tint text-status-success' : 'bg-brand-primary text-on-dark hover:bg-brand-primary'}`}>
                 {status === 'published' ? <><X className="w-3 h-3" /> Unpublish</> : <><Send className="w-3 h-3" /> Publish</>}
               </button>
             </>
@@ -82,7 +82,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
           <div className="flex justify-end gap-2">
             <button onClick={() => setEditing(false)} className="px-3 py-1.5 text-xs text-secondary">Cancel</button>
             <button onClick={saveEdit} disabled={saving}
-              className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs">
+              className="flex items-center gap-1 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-xs">
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />} Save
             </button>
           </div>

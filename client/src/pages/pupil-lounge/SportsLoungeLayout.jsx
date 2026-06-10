@@ -37,7 +37,7 @@ function ImpersonationBanner() {
   if (!impersonating) return null
 
   return (
-    <div className="bg-amber-600 text-white text-[10px] font-medium flex items-center justify-between px-3 py-1">
+    <div className="bg-brand-accent text-white text-[10px] font-medium flex items-center justify-between px-3 py-1">
       <span>Viewing as: {impersonating}</span>
       <button
         onClick={() => { endImpersonation(); navigate('/teacher/hod/test-personas') }}

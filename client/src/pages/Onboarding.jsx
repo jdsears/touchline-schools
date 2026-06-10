@@ -155,14 +155,14 @@ export default function Onboarding() {
             <div key={s.id} className="flex items-center gap-2">
               <div className={`
                 w-10 h-10 rounded-full flex items-center justify-center transition-colors
-                ${i < step ? 'bg-pitch-600 text-white' :
-                  i === step ? 'bg-pitch-600/20 text-pitch-400 ring-2 ring-pitch-600' :
+                ${i < step ? 'bg-brand-primary text-white' :
+                  i === step ? 'bg-brand-primary-tint text-brand-primary ring-2 ring-brand-primary' :
                   'bg-subtle text-tertiary'}
               `}>
                 {i < step ? <Check className="w-5 h-5" /> : <s.icon className="w-5 h-5" />}
               </div>
               {i < STEPS.length - 1 && (
-                <div className={`w-8 h-0.5 ${i < step ? 'bg-pitch-600' : 'bg-subtle'}`} />
+                <div className={`w-8 h-0.5 ${i < step ? 'bg-brand-primary' : 'bg-subtle'}`} />
               )}
             </div>
           ))}
@@ -183,7 +183,7 @@ export default function Onboarding() {
                     placeholder="e.g., Langley Prep School"
                     value={school.name}
                     onChange={e => setSchool({ ...school, name: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     autoFocus
                   />
                 </div>
@@ -193,7 +193,7 @@ export default function Onboarding() {
                     <select
                       value={school.school_type}
                       onChange={e => setSchool({ ...school, school_type: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-brand-primary"
                     >
                       {SCHOOL_TYPES.map(t => (
                         <option key={t.value} value={t.value}>{t.label}</option>
@@ -207,7 +207,7 @@ export default function Onboarding() {
                       placeholder="Unique Reference Number"
                       value={school.urn}
                       onChange={e => setSchool({ ...school, urn: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     />
                   </div>
                 </div>
@@ -219,7 +219,7 @@ export default function Onboarding() {
                       placeholder="pe@school.ac.uk"
                       value={school.contact_email}
                       onChange={e => setSchool({ ...school, contact_email: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     />
                   </div>
                   <div>
@@ -228,7 +228,7 @@ export default function Onboarding() {
                       type="tel"
                       value={school.contact_phone}
                       onChange={e => setSchool({ ...school, contact_phone: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     />
                   </div>
                 </div>
@@ -239,19 +239,19 @@ export default function Onboarding() {
                     placeholder="Street address"
                     value={school.address_line1}
                     onChange={e => setSchool({ ...school, address_line1: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                   />
                 </div>
                 <div className="grid grid-cols-3 gap-4">
                   <input type="text" placeholder="City" value={school.city}
                     onChange={e => setSchool({ ...school, city: e.target.value })}
-                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
+                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary" />
                   <input type="text" placeholder="County" value={school.county}
                     onChange={e => setSchool({ ...school, county: e.target.value })}
-                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
+                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary" />
                   <input type="text" placeholder="Postcode" value={school.postcode}
                     onChange={e => setSchool({ ...school, postcode: e.target.value })}
-                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
+                    className="px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary" />
                 </div>
 
                 {/* School colours */}
@@ -282,7 +282,7 @@ export default function Onboarding() {
                 <button
                   onClick={handleCreateSchool}
                   disabled={saving}
-                  className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                   Continue
@@ -306,19 +306,19 @@ export default function Onboarding() {
                       placeholder="Name"
                       value={t.name}
                       onChange={e => updateTeacher(i, 'name', e.target.value)}
-                      className="flex-1 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                      className="flex-1 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     />
                     <input
                       type="email"
                       placeholder="Email"
                       value={t.email}
                       onChange={e => updateTeacher(i, 'email', e.target.value)}
-                      className="flex-1 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                      className="flex-1 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     />
                     <select
                       value={t.role}
                       onChange={e => updateTeacher(i, 'role', e.target.value)}
-                      className="w-32 px-2 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                      className="w-32 px-2 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-brand-primary"
                     >
                       <option value="admin">Head of PE</option>
                       <option value="coach">Teacher</option>
@@ -331,7 +331,7 @@ export default function Onboarding() {
                   </div>
                 ))}
               </div>
-              <button onClick={addTeacherRow} className="flex items-center gap-1.5 text-sm text-pitch-400 hover:text-pitch-300 mb-8">
+              <button onClick={addTeacherRow} className="flex items-center gap-1.5 text-sm text-brand-primary hover:text-brand-primary mb-8">
                 <Plus className="w-4 h-4" />
                 Add another teacher
               </button>
@@ -348,7 +348,7 @@ export default function Onboarding() {
                   <button
                     onClick={handleInviteTeachers}
                     disabled={saving}
-                    className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                     Invite & Continue
@@ -384,11 +384,11 @@ export default function Onboarding() {
                 <label className="block w-full cursor-pointer">
                   <div className={`
                     border-2 border-dashed rounded-xl p-8 text-center transition-colors
-                    ${csvFile ? 'border-pitch-600 bg-pitch-600/10' : 'border-border-strong hover:border-navy-500'}
+                    ${csvFile ? 'border-brand-primary bg-brand-primary-tint' : 'border-border-strong hover:border-navy-500'}
                   `}>
                     {csvFile ? (
                       <div className="flex items-center justify-center gap-3">
-                        <Check className="w-6 h-6 text-pitch-400" />
+                        <Check className="w-6 h-6 text-brand-primary" />
                         <div>
                           <p className="text-sm font-medium text-white">{csvFile.name}</p>
                           <p className="text-xs text-secondary">{(csvFile.size / 1024).toFixed(1)} KB</p>
@@ -421,8 +421,8 @@ export default function Onboarding() {
               </div>
 
               {importResult && (
-                <div className="bg-pitch-600/10 border border-pitch-600/30 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-pitch-400 font-medium">
+                <div className="bg-brand-primary-tint border border-brand-primary rounded-lg p-4 mb-6">
+                  <p className="text-sm text-brand-primary font-medium">
                     Import complete: {importResult.created} pupils created
                     {importResult.skipped > 0 && `, ${importResult.skipped} skipped`}
                   </p>
@@ -441,7 +441,7 @@ export default function Onboarding() {
                   <button
                     onClick={handleImportPupils}
                     disabled={saving || !csvFile}
-                    className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                     Import & Continue
@@ -466,7 +466,7 @@ export default function Onboarding() {
                     placeholder="e.g., U13 Boys Football"
                     value={team.name}
                     onChange={e => setTeam({ ...team, name: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                   />
                 </div>
 
@@ -480,7 +480,7 @@ export default function Onboarding() {
                         className={`
                           flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm transition-colors
                           ${team.sport === s.value
-                            ? 'bg-pitch-600/20 text-pitch-400 ring-1 ring-pitch-600'
+                            ? 'bg-brand-primary-tint text-brand-primary ring-1 ring-brand-primary'
                             : 'bg-subtle text-secondary hover:text-white'}
                         `}
                       >
@@ -499,7 +499,7 @@ export default function Onboarding() {
                       placeholder="e.g., U13, 1st XI"
                       value={team.age_group}
                       onChange={e => setTeam({ ...team, age_group: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     />
                   </div>
                   <div>
@@ -507,7 +507,7 @@ export default function Onboarding() {
                     <select
                       value={team.gender}
                       onChange={e => setTeam({ ...team, gender: e.target.value })}
-                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-pitch-500"
+                      className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-brand-primary"
                     >
                       <option value="boys">Boys</option>
                       <option value="girls">Girls</option>
@@ -529,7 +529,7 @@ export default function Onboarding() {
                   <button
                     onClick={handleCreateTeam}
                     disabled={saving}
-                    className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-white rounded-lg font-medium transition-colors disabled:opacity-50"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
                     Create Team & Finish

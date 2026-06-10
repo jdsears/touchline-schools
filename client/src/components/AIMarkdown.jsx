@@ -20,7 +20,7 @@ export default function AIMarkdown({ children, variant = 'content' }) {
             li: ({ children }) => <li className="text-primary leading-relaxed">{children}</li>,
             strong: ({ children }) => <strong className="font-semibold text-primary">{children}</strong>,
             a: ({ href, children }) => (
-              <a href={href} target="_blank" rel="noopener noreferrer" className="text-pitch-400 hover:text-pitch-300 underline">
+              <a href={href} target="_blank" rel="noopener noreferrer" className="text-brand-primary hover:text-brand-primary underline">
                 {children}
               </a>
             ),
@@ -45,10 +45,10 @@ export default function AIMarkdown({ children, variant = 'content' }) {
             ol: ({ children }) => <ol className="list-decimal list-outside ml-4 mb-3 space-y-1.5">{children}</ol>,
             li: ({ children }) => <li className="text-primary leading-relaxed">{children}</li>,
             strong: ({ children }) => <strong className="font-semibold text-primary">{children}</strong>,
-            em: ({ children }) => <em className="italic text-pitch-300">{children}</em>,
-            code: ({ children }) => <code className="bg-border-default px-1.5 py-0.5 rounded text-pitch-300 text-sm">{children}</code>,
+            em: ({ children }) => <em className="italic text-brand-primary">{children}</em>,
+            code: ({ children }) => <code className="bg-border-default px-1.5 py-0.5 rounded text-brand-primary text-sm">{children}</code>,
             pre: ({ children }) => <pre className="bg-card p-3 rounded-lg mb-3 overflow-x-auto">{children}</pre>,
-            blockquote: ({ children }) => <blockquote className="border-l-4 border-pitch-500 pl-4 my-3 italic text-secondary">{children}</blockquote>,
+            blockquote: ({ children }) => <blockquote className="border-l-4 border-brand-primary pl-4 my-3 italic text-secondary">{children}</blockquote>,
             hr: () => <hr className="border-border-strong my-4" />,
           }}
         >
@@ -78,10 +78,10 @@ export default function AIMarkdown({ children, variant = 'content' }) {
           ol: ({ children }) => <ol className="list-decimal list-outside ml-5 my-4 space-y-2">{children}</ol>,
           li: ({ children }) => <li className="text-base text-primary leading-relaxed">{children}</li>,
           strong: ({ children }) => <strong className="font-bold text-primary">{children}</strong>,
-          em: ({ children }) => <em className="italic text-pitch-300">{children}</em>,
-          code: ({ children }) => <code className="bg-subtle px-1.5 py-0.5 rounded text-pitch-300 text-sm">{children}</code>,
+          em: ({ children }) => <em className="italic text-brand-primary">{children}</em>,
+          code: ({ children }) => <code className="bg-subtle px-1.5 py-0.5 rounded text-brand-primary text-sm">{children}</code>,
           pre: ({ children }) => <pre className="bg-card p-4 rounded-lg my-4 overflow-x-auto font-mono text-sm text-primary">{children}</pre>,
-          blockquote: ({ children }) => <blockquote className="border-l-4 border-pitch-500 pl-4 my-3 italic text-secondary">{children}</blockquote>,
+          blockquote: ({ children }) => <blockquote className="border-l-4 border-brand-primary pl-4 my-3 italic text-secondary">{children}</blockquote>,
           hr: () => <hr className="border-border-strong my-6" />,
         }}
       >

@@ -1221,7 +1221,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               <RotateCcw className="w-4 h-4" />
               Reset
             </button>
-            <button onClick={handleSave} disabled={saving} className={`btn-primary ${hasUnsavedChanges ? 'ring-2 ring-energy-400 ring-offset-2 ring-offset-navy-900' : ''}`}>
+            <button onClick={handleSave} disabled={saving} className={`btn-primary ${hasUnsavedChanges ? 'ring-2 ring-brand-accent ring-offset-2 ring-offset-navy-900' : ''}`}>
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               {hasUnsavedChanges ? 'Save*' : 'Save'}
             </button>
@@ -1248,7 +1248,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           }}
                           className={`px-2 py-0.5 rounded text-xs font-medium transition-all ${
                             activeFormat === size
-                              ? 'bg-pitch-500 text-white'
+                              ? 'bg-brand-primary text-white'
                               : 'bg-border-default text-secondary hover:bg-navy-600'
                           }`}
                         >
@@ -1314,8 +1314,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   onClick={() => setTacticalPhase(PHASES.IN_POSSESSION)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                     tacticalPhase === PHASES.IN_POSSESSION
-                      ? 'bg-pitch-500 text-white'
-                      : 'bg-subtle text-secondary hover:bg-pitch-500/20'
+                      ? 'bg-brand-primary text-white'
+                      : 'bg-subtle text-secondary hover:bg-brand-primary-tint'
                   }`}
                 >
                   <Swords className="w-3.5 h-3.5" />
@@ -1336,8 +1336,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   onClick={() => setTacticalPhase(PHASES.TRANSITION)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                     tacticalPhase === PHASES.TRANSITION
-                      ? 'bg-energy-500 text-white'
-                      : 'bg-subtle text-secondary hover:bg-energy-500/20'
+                      ? 'bg-brand-accent text-white'
+                      : 'bg-subtle text-secondary hover:bg-brand-accent-tint'
                   }`}
                 >
                   <Zap className="w-3.5 h-3.5" />
@@ -1351,7 +1351,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       onClick={() => setTacticalSettings(s => ({ ...s, showMovements: !s.showMovements }))}
                       className={`p-2 rounded-lg transition-all ${
                         tacticalSettings.showMovements
-                          ? 'bg-energy-500/20 text-energy-400'
+                          ? 'bg-brand-accent-tint text-brand-accent'
                           : 'bg-subtle text-tertiary hover:text-secondary'
                       }`}
                     >
@@ -1387,7 +1387,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       onClick={() => setTacticalSettings(s => ({ ...s, showThirds: !s.showThirds }))}
                       className={`p-2 rounded-lg transition-all ${
                         tacticalSettings.showThirds
-                          ? 'bg-pitch-500/20 text-pitch-400'
+                          ? 'bg-brand-primary-tint text-brand-primary'
                           : 'bg-subtle text-tertiary hover:text-secondary'
                       }`}
                     >
@@ -1460,7 +1460,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             zone.color === 'purple'
                               ? 'bg-purple-500/10 border-purple-400/30'
                               : zone.color === 'green'
-                              ? 'bg-pitch-500/8 border-pitch-400/20'
+                              ? 'bg-brand-primary-tint border-brand-primary'
                               : 'bg-status-info-tint border-status-info'
                           }`}
                           style={{
@@ -1472,7 +1472,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             zone.color === 'purple'
                               ? 'text-purple-300/70'
                               : zone.color === 'green'
-                              ? 'text-pitch-300/60'
+                              ? 'text-brand-primary'
                               : 'text-status-info'
                           }`}>
                             {zone.label}
@@ -1502,8 +1502,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             zone.id === 'attacking'
                               ? 'bg-status-error-tint border-status-error'
                               : zone.id === 'defensive'
-                              ? 'bg-pitch-500/8 border-pitch-400/20'
-                              : 'bg-energy-500/5 border-energy-400/15'
+                              ? 'bg-brand-primary-tint border-brand-primary'
+                              : 'bg-brand-accent-tint border-brand-accent'
                           }`}
                           style={{
                             top: `${zone.y}%`,
@@ -1514,8 +1514,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             zone.id === 'attacking'
                               ? 'text-status-error'
                               : zone.id === 'defensive'
-                              ? 'text-pitch-300/60'
-                              : 'text-energy-300/50'
+                              ? 'text-brand-primary'
+                              : 'text-brand-accent'
                           }`}>
                             {zone.label}
                           </span>
@@ -1563,7 +1563,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         transition={{ duration: 0.2, delay: 0.05 }}
                         className={`absolute left-[4%] right-[4%] border-2 border-dashed rounded pointer-events-none ${
                           tacticalSettings.pressingTriggerZone === 'mid'
-                            ? 'bg-energy-500/15 border-energy-400/80'
+                            ? 'bg-brand-accent-tint border-brand-accent'
                             : 'bg-transparent border-white/10'
                         }`}
                         style={{ top: '32%', height: '32%' }}
@@ -1572,7 +1572,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           <motion.span
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="absolute top-2 left-3 text-[10px] font-semibold text-energy-300 uppercase tracking-wider"
+                            className="absolute top-2 left-3 text-[10px] font-semibold text-brand-accent uppercase tracking-wider"
                           >
                             Press Zone
                           </motion.span>
@@ -1586,7 +1586,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         transition={{ duration: 0.2, delay: 0.1 }}
                         className={`absolute left-[4%] right-[4%] border-2 border-dashed rounded pointer-events-none ${
                           tacticalSettings.pressingTriggerZone === 'low'
-                            ? 'bg-pitch-500/15 border-pitch-400/80'
+                            ? 'bg-brand-primary-tint border-brand-primary'
                             : 'bg-transparent border-white/10'
                         }`}
                         style={{ top: '64%', height: '32%' }}
@@ -1595,7 +1595,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           <motion.span
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="absolute top-2 left-3 text-[10px] font-semibold text-pitch-300 uppercase tracking-wider"
+                            className="absolute top-2 left-3 text-[10px] font-semibold text-brand-primary uppercase tracking-wider"
                           >
                             Press Zone
                           </motion.span>
@@ -1779,7 +1779,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           ${isSelected
                             ? 'ring-4 ring-status-warning'
                             : isSwapTarget && assignedPlayer
-                              ? 'ring-2 ring-energy-400/60 hover:ring-energy-400'
+                              ? 'ring-2 ring-brand-accent hover:ring-brand-accent'
                               : ''
                           }
                           ${assignedPlayer
@@ -1828,7 +1828,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             {/* Squad */}
             <div className="card p-4">
               <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                <Users className="w-5 h-5 text-pitch-400" />
+                <Users className="w-5 h-5 text-brand-primary" />
                 Available Players
               </h2>
 
@@ -1845,18 +1845,18 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       className={`
                         flex items-center gap-3 p-2 rounded-lg text-sm transition-all
                         ${isAssigned
-                          ? 'bg-pitch-500/20 border border-pitch-500/30'
+                          ? 'bg-brand-primary-tint border border-brand-primary'
                           : isBench
-                            ? 'bg-energy-500/10 border border-energy-500/30'
+                            ? 'bg-brand-accent-tint border border-brand-accent'
                             : selectedPosition
-                              ? 'bg-subtle cursor-pointer hover:bg-border-default/50 border border-transparent hover:border-pitch-500/50'
+                              ? 'bg-subtle cursor-pointer hover:bg-border-default/50 border border-transparent hover:border-brand-primary'
                               : 'bg-subtle border border-transparent'
                         }
                       `}
                     >
                       <div className={`
                         w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
-                        ${isAssigned ? 'bg-pitch-500 text-white' : isBench ? 'bg-energy-500 text-white' : 'bg-border-default text-secondary'}
+                        ${isAssigned ? 'bg-brand-primary text-white' : isBench ? 'bg-brand-accent text-white' : 'bg-border-default text-secondary'}
                       `}>
                         {pupil.squad_number || '-'}
                       </div>
@@ -1865,12 +1865,12 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           {pupil.name}
                         </span>
                         {isAssigned && assignedPosition && (
-                          <span className="ml-2 text-xs text-pitch-400">
+                          <span className="ml-2 text-xs text-brand-primary">
                             ({assignedPosition.label})
                           </span>
                         )}
                         {isBench && !isAssigned && (
-                          <span className="ml-2 text-xs text-energy-400">
+                          <span className="ml-2 text-xs text-brand-accent">
                             (Sub)
                           </span>
                         )}
@@ -1892,7 +1892,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             e.stopPropagation()
                             toggleBenchPlayer(pupil.id)
                           }}
-                          className={`p-1 transition-colors ${isBench ? 'text-energy-400 hover:text-energy-300' : 'text-tertiary hover:text-energy-400'}`}
+                          className={`p-1 transition-colors ${isBench ? 'text-brand-accent hover:text-brand-accent' : 'text-tertiary hover:text-brand-accent'}`}
                           title={isBench ? 'Remove from bench' : 'Add to bench'}
                         >
                           <ArrowRightLeft className="w-4 h-4" />
@@ -1920,7 +1920,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             {/* Substitution Planner */}
             <div className="card p-4">
               <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                <ArrowRightLeft className="w-5 h-5 text-energy-400" />
+                <ArrowRightLeft className="w-5 h-5 text-brand-accent" />
                 Substitutions
               </h2>
 
@@ -1931,11 +1931,11 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     const playerOn = getPlayerById(sub.playerOnId)
                     return (
                       <div key={sub.id} className="flex items-center gap-2 p-2 bg-subtle rounded-lg text-sm">
-                        <span className="text-energy-400 font-medium w-10">{sub.minute}'</span>
+                        <span className="text-brand-accent font-medium w-10">{sub.minute}'</span>
                         <div className="flex-1 flex items-center gap-1">
                           <span className="text-status-error">{playerOff?.squad_number || '?'}</span>
                           <ArrowRightLeft className="w-3 h-3 text-tertiary" />
-                          <span className="text-pitch-400">{playerOn?.squad_number || '?'}</span>
+                          <span className="text-brand-primary">{playerOn?.squad_number || '?'}</span>
                           <span className="text-secondary text-xs ml-1 truncate">
                             {formatPlayerName(playerOff?.name)} / {formatPlayerName(playerOn?.name)}
                           </span>
@@ -1966,7 +1966,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             {/* Set Piece Takers */}
             <div className="card p-4">
               <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                <Swords className="w-5 h-5 text-energy-400" />
+                <Swords className="w-5 h-5 text-brand-accent" />
                 Set Piece Takers
               </h2>
               <div className="space-y-3">
@@ -2102,8 +2102,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${
                           tacticalSettings.pressingTriggerZone === zone
                             ? zone === 'high' ? 'bg-status-error text-white' :
-                              zone === 'mid' ? 'bg-energy-500 text-white' :
-                              'bg-pitch-500 text-white'
+                              zone === 'mid' ? 'bg-brand-accent text-white' :
+                              'bg-brand-primary text-white'
                             : 'bg-subtle text-secondary hover:bg-border-default/50'
                         }`}
                       >
@@ -2122,7 +2122,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             {/* Game Model Summary */}
             <div className="card p-4">
               <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                <Target className="w-5 h-5 text-energy-400" />
+                <Target className="w-5 h-5 text-brand-accent" />
                 Game Model
               </h2>
 
@@ -2414,8 +2414,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         const playerOn = getPlayerById(sub.playerOnId)
                         return (
                           <div key={sub.id} className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
-                            <div className="w-12 h-12 bg-energy-500/20 rounded-lg flex items-center justify-center">
-                              <span className="text-energy-400 font-bold text-lg">{sub.minute}'</span>
+                            <div className="w-12 h-12 bg-brand-accent-tint rounded-lg flex items-center justify-center">
+                              <span className="text-brand-accent font-bold text-lg">{sub.minute}'</span>
                             </div>
 
                             <div className="flex-1">
@@ -2424,7 +2424,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                                   {playerOff?.squad_number} {playerOff?.name}
                                 </span>
                                 <ArrowRightLeft className="w-4 h-4 text-tertiary" />
-                                <span className="text-pitch-400 font-medium">
+                                <span className="text-brand-primary font-medium">
                                   {playerOn?.squad_number} {playerOn?.name}
                                 </span>
                               </div>
@@ -2451,7 +2451,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   <h3 className="text-sm font-semibold text-white">Bench</h3>
                   <div className="flex flex-wrap gap-2">
                     {getBenchPlayers().length > 0 ? getBenchPlayers().map(pupil => (
-                      <span key={pupil.id} className="px-2 py-1 bg-energy-500/20 text-energy-400 rounded text-xs">
+                      <span key={pupil.id} className="px-2 py-1 bg-brand-accent-tint text-brand-accent rounded text-xs">
                         {pupil.squad_number} {formatPlayerName(pupil.name)}
                       </span>
                     )) : (
@@ -2501,7 +2501,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             >
               <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
-                  <Bookmark className="w-5 h-5 text-energy-400" />
+                  <Bookmark className="w-5 h-5 text-brand-accent" />
                   Save Custom Formation
                 </h2>
                 <button

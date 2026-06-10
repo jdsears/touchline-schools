@@ -23,7 +23,7 @@ export default function CricketField({ size = 'medium', className = '', children
         <div className="absolute inset-[22%] border-2 border-dashed border-white/30 rounded-full pointer-events-none" />
 
         {/* Pitch strip (centre) */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[6%] h-[28%] bg-amber-700/60 border border-amber-600/40 rounded-sm pointer-events-none">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[6%] h-[28%] bg-brand-accent-tint border border-brand-accent rounded-sm pointer-events-none">
           {/* Crease lines */}
           {/* Popping crease (batting end) */}
           <div className="absolute bottom-[15%] left-[-40%] right-[-40%] border-t border-white/60" />

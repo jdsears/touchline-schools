@@ -8,7 +8,7 @@ function Toggle({ checked, onChange }) {
     <button
       type="button"
       onClick={() => onChange(!checked)}
-      className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${checked ? 'bg-pitch-600' : 'bg-border-default'}`}
+      className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${checked ? 'bg-brand-primary' : 'bg-border-default'}`}
     >
       <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-card transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
     </button>
@@ -62,7 +62,7 @@ export default function AccessibilityTab() {
                 onClick={() => setPrefs(p => ({ ...p, font_size: size }))}
                 className={`px-4 py-2 rounded-lg text-sm capitalize border transition-colors ${
                   prefs.font_size === size
-                    ? 'border-pitch-600 bg-pitch-600/20 text-pitch-400'
+                    ? 'border-brand-primary bg-brand-primary-tint text-brand-primary'
                     : 'border-border-strong text-secondary hover:text-link'
                 }`}
               >
@@ -93,7 +93,7 @@ export default function AccessibilityTab() {
       <button
         onClick={handleSave}
         disabled={saving}
-        className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+        className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
       >
         {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
         Save Settings

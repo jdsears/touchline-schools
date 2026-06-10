@@ -54,13 +54,13 @@ export default function HoDConsent() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold text-primary flex items-center gap-2">
-            <ShieldCheck className="w-6 h-6 text-amber-400" /> Parental Consent
+            <ShieldCheck className="w-6 h-6 text-brand-accent" /> Parental Consent
           </h1>
           <p className="text-sm text-secondary mt-0.5">{totalPupils} pupils across the school</p>
         </div>
         {(!types || types.length === 0) && (
           <button onClick={seedDefaults} disabled={seeding}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm">
             {seeding ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
             Set up default consent types
           </button>
@@ -70,7 +70,7 @@ export default function HoDConsent() {
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <SummaryCard label="Active Consents" value={totalGranted} icon={CheckCircle} color="text-status-success bg-status-success-tint" />
-        <SummaryCard label="Pending" value={totalPending} icon={Clock} color="text-amber-400 bg-amber-500/10" />
+        <SummaryCard label="Pending" value={totalPending} icon={Clock} color="text-brand-accent bg-brand-accent-tint" />
         <SummaryCard label="Expiring (30 days)" value={totalExpiring} icon={AlertTriangle} color="text-orange-400 bg-orange-500/10" />
         <SummaryCard label="Expired" value={totalExpired} icon={XCircle} color="text-status-error bg-status-error-tint" />
       </div>
@@ -98,7 +98,7 @@ export default function HoDConsent() {
                   <tr key={row.consent_type_id} className="border-b border-border-subtle hover:bg-subtle">
                     <td className="px-4 py-3 text-primary font-medium">{row.name}</td>
                     <td className="px-4 py-3 text-center text-status-success">{row.granted || 0}</td>
-                    <td className="px-4 py-3 text-center text-amber-400">{row.pending || 0}</td>
+                    <td className="px-4 py-3 text-center text-brand-accent">{row.pending || 0}</td>
                     <td className="px-4 py-3 text-center text-status-error">{row.refused || 0}</td>
                     <td className="px-4 py-3 text-center">
                       {parseInt(row.expiring_soon || 0) > 0
@@ -113,9 +113,9 @@ export default function HoDConsent() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="w-16 h-1.5 bg-border-default rounded-full overflow-hidden">
-                          <div className="h-full bg-pitch-500 rounded-full" style={{ width: `${coverage}%` }} />
+                          <div className="h-full bg-brand-primary rounded-full" style={{ width: `${coverage}%` }} />
                         </div>
-                        <span className={`text-xs ${coverage >= 80 ? 'text-status-success' : coverage >= 50 ? 'text-amber-400' : 'text-status-error'}`}>
+                        <span className={`text-xs ${coverage >= 80 ? 'text-status-success' : coverage >= 50 ? 'text-brand-accent' : 'text-status-error'}`}>
                           {coverage}%
                         </span>
                       </div>
@@ -142,7 +142,7 @@ export default function HoDConsent() {
             <p className="text-xs text-secondary mt-0.5">Expire all annual consents and require fresh parent confirmation for the new year.</p>
           </div>
           <button onClick={() => setShowResetConfirm(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-on-dark rounded-lg text-sm shrink-0">
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-accent hover:bg-brand-accent text-on-dark rounded-lg text-sm shrink-0">
             <RefreshCw className="w-3.5 h-3.5" /> Start of Year Reset
           </button>
         </div>
@@ -160,7 +160,7 @@ export default function HoDConsent() {
             <div className="flex justify-end gap-2">
               <button onClick={() => setShowResetConfirm(false)} className="px-4 py-2 text-sm text-secondary hover:text-link">Cancel</button>
               <button onClick={bulkReset} disabled={resetting}
-                className="px-4 py-2 bg-amber-600 hover:bg-amber-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+                className="px-4 py-2 bg-brand-accent hover:bg-brand-accent disabled:opacity-50 text-on-dark rounded-lg text-sm">
                 {resetting ? 'Resetting...' : 'Confirm Reset'}
               </button>
             </div>

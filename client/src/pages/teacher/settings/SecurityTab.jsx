@@ -62,7 +62,7 @@ export default function SecurityTab({ user }) {
                   value={pwForm[f.key]}
                   onChange={e => setPwForm(p => ({ ...p, [f.key]: e.target.value }))}
                   placeholder={f.placeholder}
-                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                 />
               </div>
             ))}
@@ -77,7 +77,7 @@ export default function SecurityTab({ user }) {
               <button
                 type="submit"
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Lock className="w-4 h-4" />}
                 Update password
@@ -111,9 +111,9 @@ export default function SecurityTab({ user }) {
           <span className="text-sm font-medium text-primary">Active Sessions</span>
         </div>
         <div className="flex items-center gap-3 py-2 border border-border-default rounded-lg px-3 mt-2">
-          <Monitor className="w-4 h-4 text-pitch-400 flex-shrink-0" />
+          <Monitor className="w-4 h-4 text-brand-primary flex-shrink-0" />
           <div className="flex-1 text-xs text-secondary">Current session</div>
-          <span className="text-xs text-pitch-400">Active now</span>
+          <span className="text-xs text-brand-primary">Active now</span>
         </div>
       </div>
     </div>

@@ -195,7 +195,7 @@ export default function PupilAssistant() {
   if (loadingPlayer) {
     return (
       <div className="h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -228,7 +228,7 @@ export default function PupilAssistant() {
             </div>
             <div>
               <h1 className="font-display font-semibold text-white flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-pitch-400" />
+                <Sparkles className="w-4 h-4 text-brand-primary" />
                 My Coach AI
               </h1>
               <p className="text-sm text-secondary">
@@ -258,7 +258,7 @@ export default function PupilAssistant() {
             >
               <div className="text-center mb-8">
                 <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pitch-500/20 to-energy-500/20 flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-10 h-10 text-pitch-400" />
+                  <Sparkles className="w-10 h-10 text-brand-primary" />
                 </div>
                 <h2 className="font-display text-2xl font-bold text-white mb-2">
                   Hey {pupil.name?.split(' ')[0]}! 👋
@@ -272,12 +272,12 @@ export default function PupilAssistant() {
               {/* Quick stats */}
               <div className="grid grid-cols-3 gap-4 mb-8">
                 <div className="card p-4 text-center">
-                  <Star className="w-6 h-6 text-energy-400 mx-auto mb-2" />
+                  <Star className="w-6 h-6 text-brand-accent mx-auto mb-2" />
                   <p className="text-xs text-secondary">Position</p>
                   <p className="font-semibold text-white">{pupil.positions?.join(', ') || 'Any'}</p>
                 </div>
                 <div className="card p-4 text-center">
-                  <Dumbbell className="w-6 h-6 text-pitch-400 mx-auto mb-2" />
+                  <Dumbbell className="w-6 h-6 text-brand-primary mx-auto mb-2" />
                   <p className="text-xs text-secondary">Squad #</p>
                   <p className="font-semibold text-white">{pupil.squad_number || '-'}</p>
                 </div>
@@ -292,7 +292,7 @@ export default function PupilAssistant() {
                 {suggestedPrompts.map((category) => (
                   <div key={category.category} className="card p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <category.icon className="w-4 h-4 text-pitch-400" />
+                      <category.icon className="w-4 h-4 text-brand-primary" />
                       <span className="text-sm font-medium text-secondary">{category.category}</span>
                     </div>
                     <div className="space-y-2">
@@ -322,19 +322,19 @@ export default function PupilAssistant() {
               <div className={`flex gap-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
                 <div className={`
                   w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center
-                  ${message.role === 'user' ? 'bg-pitch-600' : 'bg-border-default'}
+                  ${message.role === 'user' ? 'bg-brand-primary' : 'bg-border-default'}
                 `}>
                   {message.role === 'user' ? (
                     <User className="w-4 h-4 text-white" />
                   ) : (
-                    <Sparkles className="w-4 h-4 text-pitch-400" />
+                    <Sparkles className="w-4 h-4 text-brand-primary" />
                   )}
                 </div>
 
                 <div className={`
                   rounded-2xl p-4
                   ${message.role === 'user'
-                    ? 'bg-pitch-600 text-white rounded-br-md'
+                    ? 'bg-brand-primary text-white rounded-br-md'
                     : 'bg-subtle text-primary rounded-bl-md'
                   }
                 `}>
@@ -356,11 +356,11 @@ export default function PupilAssistant() {
             >
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-lg bg-border-default flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-pitch-400" />
+                  <Sparkles className="w-4 h-4 text-brand-primary" />
                 </div>
                 <div className="bg-subtle rounded-2xl rounded-bl-md p-4">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-pitch-400" />
+                    <Loader2 className="w-4 h-4 animate-spin text-brand-primary" />
                     <span className="text-secondary">Thinking...</span>
                   </div>
                 </div>
@@ -394,7 +394,7 @@ export default function PupilAssistant() {
               <button
                 onClick={() => handleSend()}
                 disabled={!input.trim() || loading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-pitch-600 text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pitch-500 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-brand-primary text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-primary transition-colors"
               >
                 <Send className="w-4 h-4" />
               </button>

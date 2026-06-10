@@ -59,7 +59,7 @@ export default function TeacherTeamDetail() {
     return (
       <div className="p-6 text-center">
         <p className="text-secondary">Team not found</p>
-        <Link to="/teacher/teams" className="text-pitch-400 hover:underline mt-2 inline-block">
+        <Link to="/teacher/teams" className="text-brand-primary hover:underline mt-2 inline-block">
           Back to teams
         </Link>
       </div>
@@ -121,7 +121,7 @@ export default function TeacherTeamDetail() {
         <div className="bg-card rounded-xl border border-border-default p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-              <Users className="w-5 h-5 text-pitch-400" />
+              <Users className="w-5 h-5 text-brand-primary" />
               Squad ({pupils.length})
             </h2>
           </div>
@@ -131,7 +131,7 @@ export default function TeacherTeamDetail() {
                 <Link key={p.id} to={`/teacher/hod/pupils/${p.id}`}
                   className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-subtle transition-colors">
                   <div>
-                    <span className="text-sm text-primary hover:text-pitch-400 transition-colors">{p.name || `${p.first_name || ''} ${p.last_name || ''}`.trim()}</span>
+                    <span className="text-sm text-primary hover:text-brand-primary transition-colors">{p.name || `${p.first_name || ''} ${p.last_name || ''}`.trim()}</span>
                     {p.position && <span className="text-xs text-tertiary ml-2">{p.position}</span>}
                   </div>
                   {p.jersey_number && (
@@ -149,11 +149,11 @@ export default function TeacherTeamDetail() {
         <div className="bg-card rounded-xl border border-border-default p-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-amber-400" />
+              <Trophy className="w-5 h-5 text-brand-accent" />
               Fixtures ({matches.length})
             </h2>
             <Link to={`/teacher/teams/${teamId}/fixtures/block`}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg">
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg">
               <Plus className="w-3.5 h-3.5" /> Add in bulk
             </Link>
           </div>
@@ -203,7 +203,7 @@ function MatchRow({ match, showResult }) {
   return (
     <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-subtle">
       <div className="flex items-center gap-3">
-        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${isHome ? 'bg-pitch-600/20 text-pitch-400' : 'bg-border-default text-secondary'}`}>
+        <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${isHome ? 'bg-brand-primary-tint text-brand-primary' : 'bg-border-default text-secondary'}`}>
           {isHome ? 'H' : 'A'}
         </span>
         <div>

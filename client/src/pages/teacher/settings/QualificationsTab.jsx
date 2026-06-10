@@ -86,7 +86,7 @@ export default function QualificationsTab() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           Add
@@ -102,7 +102,7 @@ export default function QualificationsTab() {
               <select
                 value={form.qualification_type}
                 onChange={e => setForm(f => ({ ...f, qualification_type: e.target.value }))}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
               >
                 {QUAL_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
               </select>
@@ -113,27 +113,27 @@ export default function QualificationsTab() {
                 value={form.qualification_name}
                 onChange={e => setForm(f => ({ ...f, qualification_name: e.target.value }))}
                 placeholder="e.g. FA UEFA C Licence"
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
               />
             </div>
             <div>
               <label className="block text-xs text-secondary mb-1">Issue Date</label>
               <input type="date" value={form.issue_date}
                 onChange={e => setForm(f => ({ ...f, issue_date: e.target.value }))}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500" />
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary" />
             </div>
             <div>
               <label className="block text-xs text-secondary mb-1">Expiry Date (if applicable)</label>
               <input type="date" value={form.expiry_date}
                 onChange={e => setForm(f => ({ ...f, expiry_date: e.target.value }))}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500" />
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary" />
             </div>
           </div>
           <div>
             <label className="block text-xs text-secondary mb-1">Reference Number (optional)</label>
             <input value={form.reference_number}
               onChange={e => setForm(f => ({ ...f, reference_number: e.target.value }))}
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500" />
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary" />
           </div>
           <div className="flex gap-3">
             <button type="button" onClick={() => setShowForm(false)}
@@ -141,7 +141,7 @@ export default function QualificationsTab() {
               Cancel
             </button>
             <button type="submit" disabled={saving}
-              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50">
+              className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50">
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
               Save
             </button>
@@ -165,7 +165,7 @@ export default function QualificationsTab() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-primary">{q.qualification_name}</span>
                   {(expired || expiring) && (
-                    <span className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${expired ? 'bg-status-error-tint text-status-error' : 'bg-amber-400/20 text-amber-400'}`}>
+                    <span className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${expired ? 'bg-status-error-tint text-status-error' : 'bg-brand-accent-tint text-brand-accent'}`}>
                       <AlertTriangle className="w-2.5 h-2.5" />
                       {expired ? 'Expired' : `${days}d left`}
                     </span>

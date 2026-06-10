@@ -96,12 +96,12 @@ export default function MISIntegrationTab() {
         </div>
         <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
           <input type="checkbox" checked={form.isTestMode} onChange={e => setForm(f => ({ ...f, isTestMode: e.target.checked }))}
-            className="rounded border-border-strong bg-subtle text-pitch-500" />
+            className="rounded border-border-strong bg-subtle text-brand-primary" />
           Test mode (dry-run by default, no data changes)
         </label>
         <div className="flex justify-end gap-2 pt-2">
           <button onClick={handleSave} disabled={saving}
-            className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+            className="px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm">
             {saving ? 'Saving...' : 'Save Configuration'}
           </button>
         </div>
@@ -117,7 +117,7 @@ export default function MISIntegrationTab() {
               {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Eye className="w-4 h-4" />} Dry Run
             </button>
             <button onClick={() => handleSync(false)} disabled={syncing}
-              className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+              className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm">
               {syncing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />} Sync Now
             </button>
           </div>

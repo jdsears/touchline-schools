@@ -21,13 +21,13 @@ function gradeColor(average, keyStage) {
   if (average === null || average === undefined) return 'bg-subtle text-tertiary'
   if (keyStage === 'KS4') {
     if (average >= 7) return 'bg-status-info-tint text-status-info border border-status-info'
-    if (average >= 5.5) return 'bg-pitch-600/25 text-pitch-300 border border-pitch-600/30'
-    if (average >= 4.5) return 'bg-amber-400/25 text-amber-300 border border-amber-400/30'
+    if (average >= 5.5) return 'bg-brand-primary-tint text-brand-primary border border-brand-primary'
+    if (average >= 4.5) return 'bg-brand-accent-tint text-brand-accent border border-brand-accent'
     return 'bg-status-error-tint text-status-error border border-status-error'
   }
   if (average >= 3.5) return 'bg-status-info-tint text-status-info border border-status-info'
-  if (average >= 2.5) return 'bg-pitch-600/25 text-pitch-300 border border-pitch-600/30'
-  if (average >= 1.5) return 'bg-amber-400/25 text-amber-300 border border-amber-400/30'
+  if (average >= 2.5) return 'bg-brand-primary-tint text-brand-primary border border-brand-primary'
+  if (average >= 1.5) return 'bg-brand-accent-tint text-brand-accent border border-brand-accent'
   return 'bg-status-error-tint text-status-error border border-status-error'
 }
 
@@ -52,8 +52,8 @@ function GradeDistributionBar({ grades, keyStage }) {
   if (total === 0) return null
 
   const colors = keyStage === 'KS4'
-    ? { D: 'bg-status-error', C: 'bg-amber-400', B: 'bg-pitch-500', A: 'bg-status-info', 'A*': 'bg-status-info' }
-    : { Beg: 'bg-status-error', Dev: 'bg-amber-400', Sec: 'bg-pitch-500', Exc: 'bg-status-info' }
+    ? { D: 'bg-status-error', C: 'bg-brand-accent', B: 'bg-brand-primary', A: 'bg-status-info', 'A*': 'bg-status-info' }
+    : { Beg: 'bg-status-error', Dev: 'bg-brand-accent', Sec: 'bg-brand-primary', Exc: 'bg-status-info' }
 
   return (
     <div className="flex rounded-full overflow-hidden h-2 w-full">
@@ -130,7 +130,7 @@ export default function HoDAssessmentOverview() {
           <select
             value={term}
             onChange={e => setTerm(e.target.value)}
-            className="px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+            className="px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
           >
             {TERMS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
           </select>
@@ -154,7 +154,7 @@ export default function HoDAssessmentOverview() {
                 {c?.assessed_pupils || 0} / {c?.total_pupils || 0} pupils
               </div>
               <div className="mt-2 h-1.5 bg-subtle rounded-full overflow-hidden">
-                <div className="h-full bg-pitch-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                <div className="h-full bg-brand-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
               </div>
             </div>
           )
@@ -165,7 +165,7 @@ export default function HoDAssessmentOverview() {
       <div className="bg-card rounded-xl border border-border-default overflow-hidden">
         <div className="p-5 border-b border-border-default">
           <h2 className="text-base font-semibold text-primary flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-pitch-400" />
+            <TrendingUp className="w-4 h-4 text-brand-primary" />
             Grade Distribution by Year Group and Strand
           </h2>
         </div>
@@ -225,8 +225,8 @@ export default function HoDAssessmentOverview() {
           <div className="flex items-center gap-3">
             {[
               { label: 'Beginning', color: 'bg-status-error' },
-              { label: 'Developing', color: 'bg-amber-400' },
-              { label: 'Secure', color: 'bg-pitch-500' },
+              { label: 'Developing', color: 'bg-brand-accent' },
+              { label: 'Secure', color: 'bg-brand-primary' },
               { label: 'Exceeding', color: 'bg-status-info' },
             ].map(g => (
               <div key={g.label} className="flex items-center gap-1.5">
@@ -239,8 +239,8 @@ export default function HoDAssessmentOverview() {
           <div className="flex items-center gap-3">
             {[
               { label: 'D', color: 'bg-status-error' },
-              { label: 'C', color: 'bg-amber-400' },
-              { label: 'B', color: 'bg-pitch-500' },
+              { label: 'C', color: 'bg-brand-accent' },
+              { label: 'B', color: 'bg-brand-primary' },
               { label: 'A', color: 'bg-status-info' },
               { label: 'A*', color: 'bg-status-info' },
             ].map(g => (

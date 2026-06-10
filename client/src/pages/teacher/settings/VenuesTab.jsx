@@ -69,7 +69,7 @@ export default function VenuesTab() {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold text-primary">Venues</h2>
-        <button onClick={openNew} className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm">
+        <button onClick={openNew} className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm">
           <Plus className="w-4 h-4" /> Add Venue
         </button>
       </div>
@@ -79,20 +79,20 @@ export default function VenuesTab() {
         {venues.length === 0 && <p className="text-secondary text-sm py-8 text-center">No venues yet. Add your school grounds and common away venues.</p>}
         {venues.map(v => (
           <div key={v.id} className="bg-card border border-border-default rounded-xl p-4 flex items-start gap-3">
-            <div className={`p-2 rounded-lg ${v.is_school_venue ? 'bg-pitch-500/20 text-pitch-400' : 'bg-subtle text-secondary'}`}>
+            <div className={`p-2 rounded-lg ${v.is_school_venue ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary'}`}>
               {v.is_school_venue ? <Home className="w-5 h-5" /> : <MapPin className="w-5 h-5" />}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2">
                 <h3 className="font-medium text-primary">{v.name}</h3>
-                {v.is_school_venue && <span className="text-[10px] bg-pitch-600/20 text-pitch-400 px-1.5 py-0.5 rounded">Home</span>}
+                {v.is_school_venue && <span className="text-[10px] bg-brand-primary-tint text-brand-primary px-1.5 py-0.5 rounded">Home</span>}
               </div>
               {v.address && <p className="text-sm text-secondary mt-0.5">{v.address}{v.postcode ? `, ${v.postcode}` : ''}</p>}
               {v.contact_name && <p className="text-xs text-tertiary mt-1">{v.contact_name}{v.contact_phone ? ` - ${v.contact_phone}` : ''}</p>}
               <p className="text-xs text-tertiary mt-0.5">{v.fixture_count || 0} fixture{v.fixture_count !== 1 ? 's' : ''}</p>
             </div>
             <div className="flex gap-1 shrink-0">
-              <button onClick={() => setViewing(v)} title="View" className="p-1.5 text-tertiary hover:text-pitch-400"><Eye className="w-4 h-4" /></button>
+              <button onClick={() => setViewing(v)} title="View" className="p-1.5 text-tertiary hover:text-brand-primary"><Eye className="w-4 h-4" /></button>
               <button onClick={() => openEdit(v)} title="Edit" className="p-1.5 text-tertiary hover:text-link"><Edit2 className="w-4 h-4" /></button>
               <button onClick={() => handleArchive(v.id)} title="Archive" className="p-1.5 text-tertiary hover:text-status-error"><Archive className="w-4 h-4" /></button>
             </div>
@@ -146,14 +146,14 @@ export default function VenuesTab() {
               <Field label="Accessibility Notes" value={form.accessibilityNotes} onChange={v => setForm(f => ({ ...f, accessibilityNotes: v }))} multi />
               <label className="flex items-center gap-2 text-sm text-secondary cursor-pointer">
                 <input type="checkbox" checked={form.isSchoolVenue} onChange={e => setForm(f => ({ ...f, isSchoolVenue: e.target.checked }))}
-                  className="rounded border-border-strong bg-subtle text-pitch-500" />
+                  className="rounded border-border-strong bg-subtle text-brand-primary" />
                 This is our school's home venue
               </label>
             </div>
             <div className="flex justify-end gap-2 mt-5">
               <button onClick={() => setEditing(null)} className="px-4 py-2 text-sm text-secondary hover:text-link">Cancel</button>
               <button onClick={handleSave} disabled={saving}
-                className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+                className="px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm">
                 {saving ? 'Saving...' : editing === 'new' ? 'Add Venue' : 'Save Changes'}
               </button>
             </div>
@@ -174,7 +174,7 @@ function Detail({ label, text }) {
 }
 
 function Field({ label, value, onChange, multi }) {
-  const cls = "w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-sm text-primary placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+  const cls = "w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-sm text-primary placeholder-navy-500 focus:border-brand-primary focus:outline-none"
   return (
     <label className="block text-xs text-secondary">
       {label}

@@ -67,7 +67,7 @@ export default function HoDVoiceSettings() {
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
-          <Mic className="w-7 h-7 text-pitch-400" />
+          <Mic className="w-7 h-7 text-brand-primary" />
           Voice Observations Settings
         </h1>
         <p className="text-secondary mt-1">Configure voice observations for your school</p>
@@ -88,7 +88,7 @@ export default function HoDVoiceSettings() {
               onClick={() => setSettings({ ...settings, voice_observations_enabled: !settings.voice_observations_enabled })}
               className={`
                 relative w-14 h-7 rounded-full transition-colors
-                ${settings.voice_observations_enabled ? 'bg-pitch-600' : 'bg-border-default'}
+                ${settings.voice_observations_enabled ? 'bg-brand-primary' : 'bg-border-default'}
               `}
             >
               <div className={`
@@ -102,7 +102,7 @@ export default function HoDVoiceSettings() {
         {/* Retention settings */}
         <div className="bg-card rounded-xl border border-border-default p-6">
           <h3 className="text-base font-semibold text-primary mb-1 flex items-center gap-2">
-            <Clock className="w-5 h-5 text-amber-400" />
+            <Clock className="w-5 h-5 text-brand-accent" />
             Retention Policy
           </h3>
           <p className="text-sm text-secondary mb-4">
@@ -120,7 +120,7 @@ export default function HoDVoiceSettings() {
                   max={30}
                   value={settings.audio_retention_days}
                   onChange={e => setSettings({ ...settings, audio_retention_days: Math.min(30, Math.max(1, parseInt(e.target.value) || 7)) })}
-                  className="w-24 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-24 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 />
                 <span className="text-xs text-tertiary">1-30 days (default 7)</span>
               </div>
@@ -134,7 +134,7 @@ export default function HoDVoiceSettings() {
                   max={90}
                   value={settings.transcript_retention_days}
                   onChange={e => setSettings({ ...settings, transcript_retention_days: Math.min(90, Math.max(7, parseInt(e.target.value) || 30)) })}
-                  className="w-24 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-24 px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 />
                 <span className="text-xs text-tertiary">7-90 days (default 30)</span>
               </div>
@@ -160,7 +160,7 @@ export default function HoDVoiceSettings() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Settings

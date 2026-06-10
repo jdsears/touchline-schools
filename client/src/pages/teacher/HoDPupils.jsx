@@ -106,7 +106,7 @@ export default function HoDPupils() {
           </Link>
           <button
             onClick={() => setShowAdd(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Pupil
@@ -120,7 +120,7 @@ export default function HoDPupils() {
           <button
             onClick={() => { setYearFilter(''); setPage(0) }}
             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              !yearFilter ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+              !yearFilter ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
             }`}
           >
             All ({stats.total})
@@ -130,7 +130,7 @@ export default function HoDPupils() {
               key={yg.year_group}
               onClick={() => { setYearFilter(String(yg.year_group)); setPage(0) }}
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                yearFilter === String(yg.year_group) ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+                yearFilter === String(yg.year_group) ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
               }`}
             >
               Year {yg.year_group} ({yg.count})
@@ -144,7 +144,7 @@ export default function HoDPupils() {
                   key={h.house}
                   onClick={() => { setHouseFilter(houseFilter === h.house ? '' : h.house); setPage(0) }}
                   className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                    houseFilter === h.house ? 'bg-amber-400/20 text-amber-400' : 'bg-subtle text-secondary hover:text-link'
+                    houseFilter === h.house ? 'bg-brand-accent-tint text-brand-accent' : 'bg-subtle text-secondary hover:text-link'
                   }`}
                 >
                   {h.house} ({h.count})
@@ -163,7 +163,7 @@ export default function HoDPupils() {
           placeholder="Search by name..."
           value={searchInput}
           onChange={e => setSearchInput(e.target.value)}
-          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
         />
       </div>
 
@@ -190,7 +190,7 @@ export default function HoDPupils() {
                 {pupils.map((pupil, i) => (
                   <tr key={pupil.id} className={`border-b border-border-subtle hover:bg-subtle ${i % 2 === 0 ? '' : 'bg-subtle/10'}`}>
                     <td className="px-5 py-3">
-                      <Link to={`/teacher/hod/pupils/${pupil.id}`} className="text-sm font-medium text-primary hover:text-pitch-400 transition-colors">
+                      <Link to={`/teacher/hod/pupils/${pupil.id}`} className="text-sm font-medium text-primary hover:text-brand-primary transition-colors">
                         {pupil.last_name}, {pupil.first_name}
                       </Link>
                     </td>
@@ -203,7 +203,7 @@ export default function HoDPupils() {
                     </td>
                     <td className="px-4 py-3">
                       {pupil.house ? (
-                        <span className="px-2 py-0.5 bg-amber-400/20 text-amber-400 rounded text-xs">{pupil.house}</span>
+                        <span className="px-2 py-0.5 bg-brand-accent-tint text-brand-accent rounded text-xs">{pupil.house}</span>
                       ) : (
                         <span className="text-xs text-tertiary">--</span>
                       )}
@@ -286,20 +286,20 @@ export default function HoDPupils() {
                 <div>
                   <label className="block text-sm text-secondary mb-1">First Name *</label>
                   <input type="text" value={addForm.first_name} onChange={e => setAddForm({ ...addForm, first_name: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                     autoFocus />
                 </div>
                 <div>
                   <label className="block text-sm text-secondary mb-1">Last Name</label>
                   <input type="text" value={addForm.last_name} onChange={e => setAddForm({ ...addForm, last_name: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-secondary mb-1">Year Group</label>
                   <select value={addForm.year_group} onChange={e => setAddForm({ ...addForm, year_group: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500">
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary">
                     <option value="">--</option>
                     {[2,3,4,5,6,7,8,9,10,11,12,13].map(y => (
                       <option key={y} value={y}>Year {y}</option>
@@ -309,14 +309,14 @@ export default function HoDPupils() {
                 <div>
                   <label className="block text-sm text-secondary mb-1">House</label>
                   <input type="text" placeholder="e.g., Tudor" value={addForm.house} onChange={e => setAddForm({ ...addForm, house: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" />
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary" />
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setShowAdd(false)}
                   className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">Cancel</button>
                 <button type="submit" disabled={adding}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+                  className="flex-1 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
                   {adding ? 'Adding...' : 'Add Pupil'}
                 </button>
               </div>

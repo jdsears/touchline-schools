@@ -86,7 +86,7 @@ export default function ClubSubscriptions() {
         {canManage && (
           <button
             onClick={() => setShowAssign(!showAssign)}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
           >
             <Users className="w-4 h-4" />
             Assign Players
@@ -102,7 +102,7 @@ export default function ClubSubscriptions() {
             onClick={() => setStatusFilter(s)}
             className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors ${
               statusFilter === s
-                ? 'bg-pitch-600 text-on-dark'
+                ? 'bg-brand-primary text-on-dark'
                 : 'bg-subtle text-secondary hover:text-primary'
             }`}
           >
@@ -133,7 +133,7 @@ export default function ClubSubscriptions() {
               <select
                 value={assignForm.payment_plan_id}
                 onChange={(e) => setAssignForm(f => ({ ...f, payment_plan_id: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 required
               >
                 <option value="">Select plan...</option>
@@ -158,7 +158,7 @@ export default function ClubSubscriptions() {
                           : assignForm.pupil_ids.filter(id => id !== p.id)
                         setAssignForm(f => ({ ...f, pupil_ids: ids }))
                       }}
-                      className="rounded bg-border-default border-border-strong text-pitch-600 focus:ring-pitch-600"
+                      className="rounded bg-border-default border-border-strong text-brand-primary focus:ring-brand-primary"
                     />
                     {p.name}
                     {p.team_name && <span className="text-xs text-tertiary">({p.team_name})</span>}
@@ -169,7 +169,7 @@ export default function ClubSubscriptions() {
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowAssign(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" disabled={assigning} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+            <button type="submit" disabled={assigning} className="px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm">
               {assigning ? 'Assigning...' : 'Assign'}
             </button>
           </div>
@@ -207,8 +207,8 @@ const statusIcons = {
 }
 
 const statusColors = {
-  active: 'text-pitch-400',
-  pending: 'text-amber-400',
+  active: 'text-brand-primary',
+  pending: 'text-brand-accent',
   past_due: 'text-status-error',
   overdue: 'text-status-error',
   cancelled: 'text-tertiary',

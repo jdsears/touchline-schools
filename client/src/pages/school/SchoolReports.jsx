@@ -37,7 +37,7 @@ export default function ClubReports() {
     <div className="p-4 sm:p-6 max-w-5xl mx-auto space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-pitch-600/10 text-pitch-400">
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-brand-primary-tint text-brand-primary">
           <FileBarChart className="w-5 h-5" />
         </div>
         <div>
@@ -144,7 +144,7 @@ function SeasonSummarySection({ schoolId }) {
           <button
             onClick={handleGenerate}
             disabled={generating}
-            className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
           >
             {generating ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -310,7 +310,7 @@ function GrantHelperSection({ schoolId }) {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
         >
           <Sparkles className="w-4 h-4" />
           New Draft
@@ -326,7 +326,7 @@ function GrantHelperSection({ schoolId }) {
               <select
                 value={form.grant_type}
                 onChange={e => setForm(f => ({ ...f, grant_type: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 {GRANT_TYPES.map(gt => (
                   <option key={gt.value} value={gt.value}>{gt.label}</option>
@@ -339,7 +339,7 @@ function GrantHelperSection({ schoolId }) {
                 value={form.description}
                 onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
                 rows={3}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
                 placeholder="e.g. We need to resurface our main training pitch which is used by 8 youth teams..."
                 required
               />
@@ -352,7 +352,7 @@ function GrantHelperSection({ schoolId }) {
                   type="number"
                   value={form.estimated_cost}
                   onChange={e => setForm(f => ({ ...f, estimated_cost: e.target.value }))}
-                  className="w-full bg-subtle border border-border-strong rounded-lg pl-8 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg pl-8 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="0.00"
                   min="0"
                   step="0.01"
@@ -370,7 +370,7 @@ function GrantHelperSection({ schoolId }) {
               <button
                 type="submit"
                 disabled={generating}
-                className="flex items-center gap-1.5 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
+                className="flex items-center gap-1.5 px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
               >
                 {generating ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -439,7 +439,7 @@ function GrantHelperSection({ schoolId }) {
                             value={editContent}
                             onChange={e => setEditContent(e.target.value)}
                             rows={12}
-                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-y font-mono"
+                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-y font-mono"
                           />
                           <div className="flex gap-2 justify-end">
                             <button
@@ -452,7 +452,7 @@ function GrantHelperSection({ schoolId }) {
                             <button
                               onClick={() => handleSaveEdit(draft.id)}
                               disabled={savingEdit}
-                              className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs transition-colors"
+                              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-xs transition-colors"
                             >
                               {savingEdit ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                               {savingEdit ? 'Saving...' : 'Save'}
@@ -539,7 +539,7 @@ function ComplianceAnalysisSection({ schoolId }) {
     <div className="bg-card border border-border-default rounded-xl overflow-hidden">
       <div className="px-5 py-4 border-b border-border-default flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-amber-600/10 text-amber-400">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-brand-accent-tint text-brand-accent">
             <ShieldCheck className="w-4.5 h-4.5" />
           </div>
           <div>
@@ -550,7 +550,7 @@ function ComplianceAnalysisSection({ schoolId }) {
         <button
           onClick={handleRun}
           disabled={running}
-          className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
+          className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
         >
           {running ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -581,8 +581,8 @@ function ComplianceAnalysisSection({ schoolId }) {
             {analysis.score !== undefined && (
               <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
                 <div className={`text-2xl font-bold ${
-                  analysis.score >= 80 ? 'text-pitch-400' :
-                  analysis.score >= 50 ? 'text-amber-400' : 'text-status-error'
+                  analysis.score >= 80 ? 'text-brand-primary' :
+                  analysis.score >= 50 ? 'text-brand-accent' : 'text-status-error'
                 }`}>
                   {analysis.score}%
                 </div>
@@ -610,7 +610,7 @@ function ComplianceAnalysisSection({ schoolId }) {
                 {analysis.content.length > 300 && (
                   <button
                     onClick={() => setExpanded(!expanded)}
-                    className="text-pitch-400 hover:text-pitch-300 text-xs ml-1"
+                    className="text-brand-primary hover:text-brand-primary text-xs ml-1"
                   >
                     {expanded ? 'Show less' : 'Read more'}
                   </button>
@@ -641,8 +641,8 @@ function ComplianceAnalysisSection({ schoolId }) {
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-primary">Recommendations</h3>
                 {recommendations.map((rec, i) => (
-                  <div key={i} className="flex items-start gap-2 p-3 bg-pitch-600/5 border border-pitch-500/20 rounded-lg">
-                    <Check className="w-4 h-4 text-pitch-400 mt-0.5 shrink-0" />
+                  <div key={i} className="flex items-start gap-2 p-3 bg-brand-primary-tint border border-brand-primary rounded-lg">
+                    <Check className="w-4 h-4 text-brand-primary mt-0.5 shrink-0" />
                     <p className="text-sm text-secondary">{rec.text || rec}</p>
                   </div>
                 ))}
@@ -715,7 +715,7 @@ function CoachDevelopmentSection({ schoolId, members }) {
           <select
             value={selectedCoach}
             onChange={e => handleLoadSuggestions(e.target.value)}
-            className="w-full sm:w-72 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+            className="w-full sm:w-72 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
           >
             <option value="">Choose a coach...</option>
             {members.map(m => (
@@ -755,7 +755,7 @@ function CoachDevelopmentSection({ schoolId, members }) {
                         <p className="text-xs text-secondary mt-1">{s.description}</p>
                       )}
                       {s.resource && (
-                        <p className="text-xs text-pitch-400 mt-1">{s.resource}</p>
+                        <p className="text-xs text-brand-primary mt-1">{s.resource}</p>
                       )}
                     </div>
                   </div>

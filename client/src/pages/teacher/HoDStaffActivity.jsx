@@ -72,7 +72,7 @@ export default function HoDStaffActivity() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-xl md:text-2xl font-bold text-primary flex items-center gap-3">
-            <UserCog className="w-6 h-6 text-amber-400" />
+            <UserCog className="w-6 h-6 text-brand-accent" />
             Staff Activity Report
           </h1>
           {data && (
@@ -86,7 +86,7 @@ export default function HoDStaffActivity() {
                 key={p.value}
                 onClick={() => setPeriod(p.value)}
                 className={`px-3 py-1.5 text-xs transition-colors ${
-                  period === p.value ? 'bg-pitch-600 text-on-dark' : 'bg-subtle hover:bg-border-default text-secondary'
+                  period === p.value ? 'bg-brand-primary text-on-dark' : 'bg-subtle hover:bg-border-default text-secondary'
                 }`}
               >
                 {p.label}
@@ -105,13 +105,13 @@ export default function HoDStaffActivity() {
 
       {loading && (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-pitch-400 animate-spin" />
+          <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
         </div>
       )}
 
       {error && !loading && (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <AlertTriangle className="w-8 h-8 text-amber-400 mb-3" />
+          <AlertTriangle className="w-8 h-8 text-brand-accent mb-3" />
           <p className="text-secondary text-sm">{error}</p>
         </div>
       )}
@@ -145,8 +145,8 @@ export default function HoDStaffActivity() {
                     <tr key={s.id} className="border-t border-border-default hover:bg-subtle transition-colors">
                       <td className="px-4 py-3 text-primary">{s.name}<div className="text-xs text-tertiary">{s.email}</div></td>
                       <td className="px-4 py-3 text-secondary text-xs">{ROLE_LABELS[s.role] || s.role}</td>
-                      <td className={`px-4 py-3 text-right font-mono ${s.observations_logged > 0 ? 'text-pitch-400' : 'text-tertiary'}`}>{s.observations_logged}</td>
-                      <td className={`px-4 py-3 text-right font-mono ${s.reports_updated > 0 ? 'text-pitch-400' : 'text-tertiary'}`}>{s.reports_updated}</td>
+                      <td className={`px-4 py-3 text-right font-mono ${s.observations_logged > 0 ? 'text-brand-primary' : 'text-tertiary'}`}>{s.observations_logged}</td>
+                      <td className={`px-4 py-3 text-right font-mono ${s.reports_updated > 0 ? 'text-brand-primary' : 'text-tertiary'}`}>{s.reports_updated}</td>
                       <td className="px-4 py-3 text-right font-mono text-secondary">{s.classes_taught}</td>
                       <td className="px-4 py-3 text-xs text-secondary capitalize">{(s.sports || []).join(', ') || '—'}</td>
                     </tr>

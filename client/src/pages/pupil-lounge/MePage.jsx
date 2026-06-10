@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { usePupilProfile } from '../../hooks/usePupilProfile'
 
 const HOUSE_COLOURS = {
-  elm: 'bg-status-success', oak: 'bg-amber-600', maple: 'bg-status-error',
+  elm: 'bg-status-success', oak: 'bg-brand-accent', maple: 'bg-status-error',
   birch: 'bg-sky-600', willow: 'bg-purple-600', ash: 'bg-slate-600',
 }
 

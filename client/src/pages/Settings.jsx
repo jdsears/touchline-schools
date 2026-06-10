@@ -177,7 +177,7 @@ function KnowledgeBaseTab({ teamId }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-pitch-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -245,7 +245,7 @@ function KnowledgeBaseTab({ teamId }) {
               onClick={() => setAddMode('text')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 addMode === 'text'
-                  ? 'bg-pitch-500/20 text-pitch-400 border border-pitch-500/30'
+                  ? 'bg-brand-primary-tint text-brand-primary border border-brand-primary'
                   : 'bg-subtle text-secondary border border-border-strong hover:text-white'
               }`}
             >
@@ -256,7 +256,7 @@ function KnowledgeBaseTab({ teamId }) {
               onClick={() => setAddMode('file')}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                 addMode === 'file'
-                  ? 'bg-pitch-500/20 text-pitch-400 border border-pitch-500/30'
+                  ? 'bg-brand-primary-tint text-brand-primary border border-brand-primary'
                   : 'bg-subtle text-secondary border border-border-strong hover:text-white'
               }`}
             >
@@ -356,7 +356,7 @@ function KnowledgeBaseTab({ teamId }) {
                     <Upload className="w-8 h-8 text-secondary mx-auto mb-2" />
                     <p className="text-sm text-secondary">
                       {selectedFile ? (
-                        <span className="text-pitch-400">{selectedFile.name}</span>
+                        <span className="text-brand-primary">{selectedFile.name}</span>
                       ) : (
                         <>Click to upload a <span className="text-white">text, CSV, or markdown</span> file</>
                       )}
@@ -418,19 +418,19 @@ function KnowledgeBaseTab({ teamId }) {
               >
                 <div className="flex items-start gap-3 flex-1 min-w-0">
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                    doc.status === 'ready' ? 'bg-pitch-500/20' : 'bg-amber-500/20'
+                    doc.status === 'ready' ? 'bg-brand-primary-tint' : 'bg-brand-accent-tint'
                   }`}>
                     {doc.source_type === 'file' ? (
-                      <FileText className={`w-5 h-5 ${doc.status === 'ready' ? 'text-pitch-400' : 'text-amber-400'}`} />
+                      <FileText className={`w-5 h-5 ${doc.status === 'ready' ? 'text-brand-primary' : 'text-brand-accent'}`} />
                     ) : (
-                      <BookOpen className={`w-5 h-5 ${doc.status === 'ready' ? 'text-pitch-400' : 'text-amber-400'}`} />
+                      <BookOpen className={`w-5 h-5 ${doc.status === 'ready' ? 'text-brand-primary' : 'text-brand-accent'}`} />
                     )}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <p className="font-medium text-white truncate">{doc.title}</p>
                       {doc.source_type === 'fa_guidelines' && (
-                        <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded font-medium flex-shrink-0">
+                        <span className="px-2 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded font-medium flex-shrink-0">
                           Auto
                         </span>
                       )}
@@ -451,7 +451,7 @@ function KnowledgeBaseTab({ teamId }) {
                         {doc.chunk_count} chunk{doc.chunk_count !== 1 ? 's' : ''}
                       </span>
                       {doc.status !== 'ready' && (
-                        <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded flex items-center gap-1">
+                        <span className="px-2 py-0.5 bg-brand-accent-tint text-brand-accent text-xs rounded flex items-center gap-1">
                           <Loader2 className="w-3 h-3 animate-spin" />
                           Processing
                         </span>
@@ -480,24 +480,24 @@ function KnowledgeBaseTab({ teamId }) {
       {/* Tips */}
       <div className="card p-6 bg-subtle border-border-strong">
         <h4 className="font-medium text-white mb-3 flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-pitch-400" />
+          <BookOpen className="w-4 h-4 text-brand-primary" />
           What to add to your Knowledge Base
         </h4>
         <ul className="space-y-2 text-sm text-secondary">
           <li className="flex items-start gap-2">
-            <span className="text-pitch-400 mt-0.5">•</span>
-            <span><strong className="text-secondary">FA development guidelines</strong> are automatically added for your age group (marked <span className="px-1.5 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded">Auto</span>). They update when you change age group.</span>
+            <span className="text-brand-primary mt-0.5">•</span>
+            <span><strong className="text-secondary">FA development guidelines</strong> are automatically added for your age group (marked <span className="px-1.5 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded">Auto</span>). They update when you change age group.</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-pitch-400 mt-0.5">•</span>
+            <span className="text-brand-primary mt-0.5">•</span>
             <span><strong className="text-secondary">Session plan libraries</strong> and drill collections you use</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-pitch-400 mt-0.5">•</span>
+            <span className="text-brand-primary mt-0.5">•</span>
             <span><strong className="text-secondary">Your own coaching notes</strong> and observations from training and matches</span>
           </li>
           <li className="flex items-start gap-2">
-            <span className="text-pitch-400 mt-0.5">•</span>
+            <span className="text-brand-primary mt-0.5">•</span>
             <span><strong className="text-secondary">Team-specific methodology</strong> and principles of play</span>
           </li>
         </ul>
@@ -604,7 +604,7 @@ function BillingTab({ teamId, userEmail }) {
         animate={{ opacity: 1 }}
         className="card p-6 flex items-center justify-center"
       >
-        <Loader2 className="w-6 h-6 animate-spin text-pitch-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
       </motion.div>
     )
   }
@@ -626,11 +626,11 @@ function BillingTab({ teamId, userEmail }) {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-lg flex items-center gap-3"
+          className="p-4 bg-brand-primary-tint border border-brand-primary rounded-lg flex items-center gap-3"
         >
-          <CheckCircle className="w-5 h-5 text-pitch-400 flex-shrink-0" />
+          <CheckCircle className="w-5 h-5 text-brand-primary flex-shrink-0" />
           <div>
-            <p className="text-pitch-400 font-medium">Payment successful!</p>
+            <p className="text-brand-primary font-medium">Payment successful!</p>
             <p className="text-sm text-secondary">Your subscription is now active. Thank you for subscribing!</p>
           </div>
           <button
@@ -647,15 +647,15 @@ function BillingTab({ teamId, userEmail }) {
         <h2 className="font-display text-xl font-semibold text-white mb-6">Current Plan</h2>
 
         {entitlements?.billingExempt ? (
-          <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-            <p className="text-amber-400 font-medium">Billing Exempt (Internal)</p>
+          <div className="p-4 bg-brand-accent-tint border border-brand-accent rounded-lg">
+            <p className="text-brand-accent font-medium">Billing Exempt (Internal)</p>
             <p className="text-sm text-secondary">Full access to all features</p>
           </div>
         ) : entitlements?.isTrial ? (
-          <div className="p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-lg">
+          <div className="p-4 bg-brand-primary-tint border border-brand-primary rounded-lg">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-pitch-400 font-medium">Free Trial</p>
+                <p className="text-brand-primary font-medium">Free Trial</p>
                 <p className="text-sm text-secondary">{daysRemaining} days remaining</p>
               </div>
               <div className="text-right">
@@ -677,8 +677,8 @@ function BillingTab({ teamId, userEmail }) {
               </div>
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 subscription.subscription?.status === 'active'
-                  ? 'bg-pitch-500/20 text-pitch-400'
-                  : 'bg-amber-500/20 text-amber-400'
+                  ? 'bg-brand-primary-tint text-brand-primary'
+                  : 'bg-brand-accent-tint text-brand-accent'
               }`}>
                 {subscription.subscription?.status || 'Unknown'}
               </div>
@@ -762,7 +762,7 @@ function BillingTab({ teamId, userEmail }) {
             <p className="text-sm font-medium text-white mb-3">Features Included</p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(entitlements.flags).filter(([_, enabled]) => enabled).map(([flag]) => (
-                <span key={flag} className="px-2 py-1 bg-pitch-500/10 text-pitch-400 rounded text-xs">
+                <span key={flag} className="px-2 py-1 bg-brand-primary-tint text-brand-primary rounded text-xs">
                   {flag.replace(/([A-Z])/g, ' $1').trim()}
                 </span>
               ))}
@@ -788,7 +788,7 @@ function UsageBar({ label, current, limit, billingExempt }) {
       <div className="flex items-center justify-between mb-1">
         <span className="text-sm text-secondary">{label}</span>
         <span className={`text-sm font-medium ${
-          isAtLimit ? 'text-status-error' : isNearLimit ? 'text-amber-400' : 'text-white'
+          isAtLimit ? 'text-status-error' : isNearLimit ? 'text-brand-accent' : 'text-white'
         }`}>
           {current} / {billingExempt || limit === Infinity ? '∞' : limit}
         </span>
@@ -796,7 +796,7 @@ function UsageBar({ label, current, limit, billingExempt }) {
       <div className="h-2 bg-subtle rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${
-            isAtLimit ? 'bg-status-error' : isNearLimit ? 'bg-amber-500' : 'bg-pitch-500'
+            isAtLimit ? 'bg-status-error' : isNearLimit ? 'bg-brand-accent' : 'bg-brand-primary'
           }`}
           style={{ width: `${percentage}%` }}
         />
@@ -939,7 +939,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
         animate={{ opacity: 1 }}
         className="card p-6 flex items-center justify-center"
       >
-        <Loader2 className="w-6 h-6 animate-spin text-pitch-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
       </motion.div>
     )
   }
@@ -967,8 +967,8 @@ function StreamingTab({ teamId, userRole, teamName }) {
       {/* Header */}
       <div className="card p-6">
         <div className="flex items-start gap-4">
-          <div className="w-12 h-12 rounded-lg bg-pitch-500/20 flex items-center justify-center flex-shrink-0">
-            <Video className="w-6 h-6 text-pitch-400" />
+          <div className="w-12 h-12 rounded-lg bg-brand-primary-tint flex items-center justify-center flex-shrink-0">
+            <Video className="w-6 h-6 text-brand-primary" />
           </div>
           <div>
             <h2 className="font-display text-xl font-semibold text-white mb-1">Live Streaming</h2>
@@ -992,19 +992,19 @@ function StreamingTab({ teamId, userRole, teamName }) {
             <h4 className="font-medium text-white mb-2">How it works:</h4>
             <ol className="space-y-2 text-sm text-secondary">
               <li className="flex items-start gap-2">
-                <span className="text-pitch-400 font-medium">1.</span>
+                <span className="text-brand-primary font-medium">1.</span>
                 Click "Generate Credentials" below
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-pitch-400 font-medium">2.</span>
+                <span className="text-brand-primary font-medium">2.</span>
                 Copy the RTMP URL and Stream Key
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-pitch-400 font-medium">3.</span>
+                <span className="text-brand-primary font-medium">3.</span>
                 In your camera app, go to Stream Settings → Add streaming destination
               </li>
               <li className="flex items-start gap-2">
-                <span className="text-pitch-400 font-medium">4.</span>
+                <span className="text-brand-primary font-medium">4.</span>
                 Paste the URL and Key into the streaming form
               </li>
             </ol>
@@ -1031,7 +1031,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
               <h3 className="font-medium text-white">Your Streaming Credentials</h3>
               <div className={`px-3 py-1 rounded-full text-xs font-medium ${
                 credentials?.status === 'active'
-                  ? 'bg-pitch-500/20 text-pitch-400'
+                  ? 'bg-brand-primary-tint text-brand-primary'
                   : 'bg-border-default text-secondary'
               }`}>
                 {credentials?.status === 'active' ? 'Streaming' : 'Idle'}
@@ -1141,7 +1141,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
             ) : (
               <button
                 onClick={() => setShowRegenerateConfirm(true)}
-                className="btn-ghost text-amber-400 hover:bg-amber-500/10"
+                className="btn-ghost text-brand-accent hover:bg-brand-accent-tint"
               >
                 <RefreshCw className="w-4 h-4" />
                 Regenerate Stream Key
@@ -1703,7 +1703,7 @@ export default function Settings() {
                       {teamFormations.map((formation, index) => (
                         <div
                           key={index}
-                          className="flex items-center gap-2 px-3 py-2 bg-pitch-500/20 border border-pitch-500/30 rounded-lg"
+                          className="flex items-center gap-2 px-3 py-2 bg-brand-primary-tint border border-brand-primary rounded-lg"
                         >
                           <span className="text-white font-medium">{formation}</span>
                           <button
@@ -1882,9 +1882,9 @@ export default function Settings() {
 
                 {coachInviteSuccess ? (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-lg">
-                      <Check className="w-5 h-5 text-pitch-400" />
-                      <p className="text-pitch-400">
+                    <div className="flex items-center gap-3 p-4 bg-brand-primary-tint border border-brand-primary rounded-lg">
+                      <Check className="w-5 h-5 text-brand-primary" />
+                      <p className="text-brand-primary">
                         Invite link generated for {coachInviteSuccess.invite?.email}
                       </p>
                     </div>
@@ -2084,33 +2084,33 @@ export default function Settings() {
 
               {loadingGafferStatus ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-pitch-400" />
+                  <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
                 </div>
               ) : (
                 <div className="space-y-6">
                   {/* Gaffer status card */}
                   <div className={`p-4 rounded-lg border ${
                     !gafferDisabled
-                      ? 'bg-pitch-500/10 border-pitch-500/30'
+                      ? 'bg-brand-primary-tint border-brand-primary'
                       : 'bg-subtle border-border-strong'
                   }`}>
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                          !gafferDisabled ? 'bg-pitch-500/20' : 'bg-border-default'
+                          !gafferDisabled ? 'bg-brand-primary-tint' : 'bg-border-default'
                         }`}>
-                          <Shield className={`w-5 h-5 ${!gafferDisabled ? 'text-pitch-400' : 'text-secondary'}`} />
+                          <Shield className={`w-5 h-5 ${!gafferDisabled ? 'text-brand-primary' : 'text-secondary'}`} />
                         </div>
                         <div>
                           <p className="font-medium text-white">The Gaffer AI</p>
-                          <p className={`text-sm ${!gafferDisabled ? 'text-pitch-400' : 'text-secondary'}`}>
+                          <p className={`text-sm ${!gafferDisabled ? 'text-brand-primary' : 'text-secondary'}`}>
                             {!gafferDisabled ? 'Enabled - Your child can chat with The Gaffer' : 'Disabled - AI chat is turned off'}
                           </p>
                         </div>
                       </div>
                       <div className={`px-3 py-1 rounded-full text-sm font-medium ${
                         !gafferDisabled
-                          ? 'bg-pitch-500/20 text-pitch-400'
+                          ? 'bg-brand-primary-tint text-brand-primary'
                           : 'bg-border-default text-secondary'
                       }`}>
                         {!gafferDisabled ? 'ON' : 'OFF'}
@@ -2148,15 +2148,15 @@ export default function Settings() {
                     </p>
                     <ul className="space-y-2 text-sm text-secondary">
                       <li className="flex items-start gap-2">
-                        <span className="text-pitch-400">•</span>
+                        <span className="text-brand-primary">•</span>
                         Answers questions about training and development
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-pitch-400">•</span>
+                        <span className="text-brand-primary">•</span>
                         Provides pre-match motivation and tips
                       </li>
                       <li className="flex items-start gap-2">
-                        <span className="text-pitch-400">•</span>
+                        <span className="text-brand-primary">•</span>
                         Explains coach observations in a positive way
                       </li>
                     </ul>

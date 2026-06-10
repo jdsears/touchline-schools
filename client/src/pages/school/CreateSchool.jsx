@@ -40,7 +40,7 @@ export default function CreateClub() {
     <div className="p-4 sm:p-6 max-w-2xl mx-auto">
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-2">
-          <Building2 className="w-8 h-8 text-pitch-400" />
+          <Building2 className="w-8 h-8 text-brand-primary" />
           <h1 className="text-2xl font-bold text-primary">Create Your School</h1>
         </div>
         <p className="text-secondary text-sm">
@@ -55,7 +55,7 @@ export default function CreateClub() {
             <input
               type="text" required value={form.name}
               onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               placeholder="e.g. Morley FC"
             />
           </div>
@@ -65,7 +65,7 @@ export default function CreateClub() {
               <input
                 type="email" value={form.contact_email}
                 onChange={(e) => setForm(f => ({ ...f, contact_email: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -73,7 +73,7 @@ export default function CreateClub() {
               <input
                 type="text" value={form.league}
                 onChange={(e) => setForm(f => ({ ...f, league: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. Norfolk Youth League"
               />
             </div>
@@ -90,7 +90,7 @@ export default function CreateClub() {
                 <input
                   type="text" value={form.primary_color}
                   onChange={(e) => setForm(f => ({ ...f, primary_color: e.target.value }))}
-                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -105,7 +105,7 @@ export default function CreateClub() {
                 <input
                   type="text" value={form.secondary_color}
                   onChange={(e) => setForm(f => ({ ...f, secondary_color: e.target.value }))}
-                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -115,7 +115,7 @@ export default function CreateClub() {
         {/* Data Processing Agreement */}
         <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
           <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-amber-400" />
+            <Shield className="w-5 h-5 text-brand-accent" />
             <h2 className="text-lg font-semibold text-primary">Data Processing Agreement</h2>
           </div>
 
@@ -179,10 +179,10 @@ export default function CreateClub() {
               type="checkbox"
               checked={dpaAccepted}
               onChange={(e) => setDpaAccepted(e.target.checked)}
-              className="mt-1 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
+              className="mt-1 rounded border-border-strong bg-subtle text-brand-primary focus:ring-brand-primary"
             />
             <span className="text-sm text-secondary">
-              I confirm that I am authorised to act on behalf of this school and I accept the <button type="button" onClick={() => setShowDpa(true)} className="text-amber-400 hover:text-amber-300 underline">Data Processing Agreement</button>. I understand that the school is the Data Controller and is responsible for ensuring lawful basis for processing personal data. *
+              I confirm that I am authorised to act on behalf of this school and I accept the <button type="button" onClick={() => setShowDpa(true)} className="text-brand-accent hover:text-brand-accent underline">Data Processing Agreement</button>. I understand that the school is the Data Controller and is responsible for ensuring lawful basis for processing personal data. *
             </span>
           </label>
         </section>
@@ -190,7 +190,7 @@ export default function CreateClub() {
         <button
           type="submit"
           disabled={saving || !dpaAccepted}
-          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-xl text-sm font-medium transition-colors"
+          className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-xl text-sm font-medium transition-colors"
         >
           <Building2 className="w-5 h-5" />
           {saving ? 'Creating...' : 'Create School'}

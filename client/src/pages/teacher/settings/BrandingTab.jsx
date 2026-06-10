@@ -99,13 +99,13 @@ export default function BrandingTab() {
       </div>
 
       {/* Managed-by notice */}
-      <div className="bg-amber-400/10 border border-amber-400/30 rounded-xl p-4 flex items-start gap-3">
-        <Mail className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+      <div className="bg-brand-accent-tint border border-brand-accent rounded-xl p-4 flex items-start gap-3">
+        <Mail className="w-4 h-4 text-brand-accent mt-0.5 flex-shrink-0" />
         <div className="text-sm">
-          <span className="text-amber-400 font-medium">Branding is managed by MoonBoots.</span>
+          <span className="text-brand-accent font-medium">Branding is managed by MoonBoots.</span>
           <span className="text-secondary ml-1">
             To request changes to your logo or colours, email{' '}
-            <a href="mailto:hello@moonbootssports.com" className="underline text-amber-400 hover:text-amber-300">
+            <a href="mailto:hello@moonbootssports.com" className="underline text-brand-accent hover:text-brand-accent">
               hello@moonbootssports.com
             </a>
           </span>

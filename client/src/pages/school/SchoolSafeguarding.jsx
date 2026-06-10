@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 
 const SEVERITY_STYLES = {
   critical: 'bg-status-error-tint text-status-error border-status-error',
-  warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+  warning: 'bg-brand-accent-tint text-brand-accent border-brand-accent',
   info: 'bg-status-info-tint text-status-info border-status-info',
 }
 
@@ -21,8 +21,8 @@ const SEVERITY_ICONS = {
 }
 
 const DBS_STATUS_DISPLAY = {
-  valid: { icon: Check, color: 'text-pitch-400', bg: 'bg-pitch-600/20' },
-  expiring: { icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/20' },
+  valid: { icon: Check, color: 'text-brand-primary', bg: 'bg-brand-primary-tint' },
+  expiring: { icon: Clock, color: 'text-brand-accent', bg: 'bg-brand-accent-tint' },
   expired: { icon: X, color: 'text-status-error', bg: 'bg-status-error-tint' },
   pending: { icon: Minus, color: 'text-secondary', bg: 'bg-border-default' },
   none: { icon: Minus, color: 'text-tertiary', bg: 'bg-subtle' },
@@ -131,7 +131,7 @@ export default function ClubSafeguarding() {
             }}
             className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab.id
-                ? 'bg-pitch-600/20 text-pitch-400'
+                ? 'bg-brand-primary-tint text-brand-primary'
                 : 'text-secondary hover:text-primary hover:bg-subtle'
             }`}
           >
@@ -145,7 +145,7 @@ export default function ClubSafeguarding() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="bg-card border border-border-default rounded-xl p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-pitch-600/10 text-pitch-400">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-brand-primary-tint text-brand-primary">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
@@ -157,7 +157,7 @@ export default function ClubSafeguarding() {
           <div className="bg-card border border-border-default rounded-xl p-4">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                (overview.dbs_expiring || 0) > 0 ? 'bg-amber-600/10 text-amber-400' : 'bg-subtle text-secondary'
+                (overview.dbs_expiring || 0) > 0 ? 'bg-brand-accent-tint text-brand-accent' : 'bg-subtle text-secondary'
               }`}>
                 <ShieldAlert className="w-5 h-5" />
               </div>
@@ -183,7 +183,7 @@ export default function ClubSafeguarding() {
           <div className="bg-card border border-border-default rounded-xl p-4">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                overview.welfare_officer ? 'bg-pitch-600/10 text-pitch-400' : 'bg-status-error-tint text-status-error'
+                overview.welfare_officer ? 'bg-brand-primary-tint text-brand-primary' : 'bg-status-error-tint text-status-error'
               }`}>
                 <UserCheck className="w-5 h-5" />
               </div>
@@ -233,7 +233,7 @@ export default function ClubSafeguarding() {
             onClick={() => navigate(basePath + '/people')}
             className="flex items-center gap-3 p-4 bg-card border border-border-default rounded-xl hover:bg-subtle/70 transition-colors text-left"
           >
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-pitch-600/10 text-pitch-400">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-brand-primary-tint text-brand-primary">
               <Plus className="w-5 h-5" />
             </div>
             <div>
@@ -257,7 +257,7 @@ export default function ClubSafeguarding() {
             onClick={() => navigate(basePath + '/incidents')}
             className="flex items-center gap-3 p-4 bg-card border border-border-default rounded-xl hover:bg-subtle/70 transition-colors text-left"
           >
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-amber-600/10 text-amber-400">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-brand-accent-tint text-brand-accent">
               <FileWarning className="w-5 h-5" />
             </div>
             <div>
@@ -291,7 +291,7 @@ export default function ClubSafeguarding() {
           {canManage && (
             <button
               onClick={() => navigate(basePath + '/people')}
-              className="flex items-center gap-1 text-sm text-pitch-400 hover:text-pitch-300 transition-colors"
+              className="flex items-center gap-1 text-sm text-brand-primary hover:text-brand-primary transition-colors"
             >
               Manage <ChevronRight className="w-4 h-4" />
             </button>
@@ -344,7 +344,7 @@ export default function ClubSafeguarding() {
                       </td>
                       <td className="px-4 py-3">
                         {r.first_aid_valid ? (
-                          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-pitch-600/20 text-pitch-400">
+                          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-brand-primary-tint text-brand-primary">
                             <Check className="w-3 h-3" /> Valid
                           </span>
                         ) : (
@@ -355,7 +355,7 @@ export default function ClubSafeguarding() {
                       </td>
                       <td className="px-4 py-3">
                         {r.safeguarding_training_valid ? (
-                          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-pitch-600/20 text-pitch-400">
+                          <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-brand-primary-tint text-brand-primary">
                             <Check className="w-3 h-3" /> Valid
                           </span>
                         ) : (

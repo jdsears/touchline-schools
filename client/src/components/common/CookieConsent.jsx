@@ -71,7 +71,7 @@ export default function CookieConsent() {
                 // Main Banner
                 <div className="p-4 md:p-6">
                   <div className="flex items-start gap-4">
-                    <div className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-pitch-500/20 text-pitch-400 flex-shrink-0">
+                    <div className="hidden md:flex items-center justify-center w-12 h-12 rounded-full bg-brand-primary-tint text-brand-primary flex-shrink-0">
                       <Cookie className="w-6 h-6" />
                     </div>
                     <div className="flex-1">
@@ -82,14 +82,14 @@ export default function CookieConsent() {
                         We use essential cookies to make MoonBoots Sports work and anonymised analytics to improve it.
                         We don't use advertising, marketing, or third-party tracking cookies.
                         Learn more in our{' '}
-                        <Link to="/terms" className="text-pitch-400 hover:underline">
+                        <Link to="/terms" className="text-brand-primary hover:underline">
                           Cookie Policy
                         </Link>.
                       </p>
                       <div className="flex flex-wrap gap-3">
                         <button
                           onClick={handleAcceptAll}
-                          className="px-4 py-2 bg-pitch-500 hover:bg-pitch-600 text-navy-950 font-medium rounded-lg transition-colors"
+                          className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-navy-950 font-medium rounded-lg transition-colors"
                         >
                           Accept All
                         </button>
@@ -142,7 +142,7 @@ export default function CookieConsent() {
                           Required for the platform to function (session token, CSRF protection, display preferences). These cannot be disabled.
                         </p>
                       </div>
-                      <div className="flex items-center justify-center w-10 h-6 bg-pitch-500 rounded-full">
+                      <div className="flex items-center justify-center w-10 h-6 bg-brand-primary rounded-full">
                         <Check className="w-4 h-4 text-navy-950" />
                       </div>
                     </div>
@@ -158,7 +158,7 @@ export default function CookieConsent() {
                       <button
                         onClick={() => setPreferences(p => ({ ...p, analytics: !p.analytics }))}
                         className={`relative w-10 h-6 rounded-full transition-colors ${
-                          preferences.analytics ? 'bg-pitch-500' : 'bg-navy-600'
+                          preferences.analytics ? 'bg-brand-primary' : 'bg-navy-600'
                         }`}
                       >
                         <span
@@ -173,7 +173,7 @@ export default function CookieConsent() {
                   <div className="flex flex-wrap gap-3">
                     <button
                       onClick={handleSavePreferences}
-                      className="px-4 py-2 bg-pitch-500 hover:bg-pitch-600 text-navy-950 font-medium rounded-lg transition-colors"
+                      className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-navy-950 font-medium rounded-lg transition-colors"
                     >
                       Save Preferences
                     </button>

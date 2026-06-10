@@ -53,7 +53,7 @@ export default function LicenceTab() {
       </div>
 
       {daysToRenewal !== null && daysToRenewal < 60 && (
-        <div className="bg-amber-400/10 border border-amber-400/30 rounded-xl p-4 text-sm text-amber-400">
+        <div className="bg-brand-accent-tint border border-brand-accent rounded-xl p-4 text-sm text-brand-accent">
           <strong>Renewal approaching:</strong> Your licence renews on {renewalDate} ({daysToRenewal} days).
         </div>
       )}

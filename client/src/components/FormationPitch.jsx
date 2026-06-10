@@ -528,7 +528,7 @@ export default function FormationPitch({
 
       {/* Formation label */}
       <div className="mt-2 text-center">
-        <span className="text-sm font-medium text-pitch-400">{formation}</span>
+        <span className="text-sm font-medium text-brand-primary">{formation}</span>
         {secondaryFormation && (
           <span className="text-sm text-secondary">
             {' '} → {secondaryFormation}

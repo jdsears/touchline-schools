@@ -886,7 +886,7 @@ export default function PupilLounge() {
   if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-page flex flex-col items-center justify-center gap-4">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
         <p className="text-secondary text-sm">Loading your Pupil Zone...</p>
       </div>
     )
@@ -906,7 +906,7 @@ export default function PupilLounge() {
             <p className="text-secondary text-sm mb-2">{errorObj.details}</p>
           )}
           {errorObj.suggestion && (
-            <p className="text-pitch-400 text-sm mb-4">{errorObj.suggestion}</p>
+            <p className="text-brand-primary text-sm mb-4">{errorObj.suggestion}</p>
           )}
           <div className="flex gap-2 justify-center">
             <button onClick={() => window.location.reload()} className="btn-primary">
@@ -948,7 +948,7 @@ export default function PupilLounge() {
         style={{ opacity: 0, transform: 'translateY(0px)', transition: pullRefreshing ? 'transform 0.3s ease, opacity 0.3s ease' : 'none' }}
       >
         <div className="bg-subtle rounded-full px-4 py-2 flex items-center gap-2 shadow-lg border border-border-strong">
-          <Loader2 className={`w-4 h-4 text-pitch-400 ${pullRefreshing ? 'animate-spin' : ''}`} />
+          <Loader2 className={`w-4 h-4 text-brand-primary ${pullRefreshing ? 'animate-spin' : ''}`} />
           <span className="text-sm text-secondary">{pullRefreshing ? 'Refreshing...' : 'Pull to refresh'}</span>
         </div>
       </div>
@@ -959,14 +959,14 @@ export default function PupilLounge() {
           {/* Date & Time Row */}
           <div className="flex items-center justify-between mb-3 pb-3 border-b border-border-subtle">
             <div className="flex items-center gap-2">
-              <CalendarDays className="w-4 h-4 text-pitch-400" />
+              <CalendarDays className="w-4 h-4 text-brand-primary" />
               <span className="text-sm text-white font-medium">
                 {format(currentTime, 'EEEE, d MMMM')}
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-energy-400" />
-              <span className="text-sm text-energy-400 font-bold">
+              <Clock className="w-4 h-4 text-brand-accent" />
+              <span className="text-sm text-brand-accent font-bold">
                 {format(currentTime, 'HH:mm')}
               </span>
             </div>
@@ -991,7 +991,7 @@ export default function PupilLounge() {
               >
                 <Bell className="w-5 h-5" />
                 {(upcomingMatches?.length > 0 || announcements?.length > 0 || unreadNotificationCount > 0) && (
-                  <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${unreadNotificationCount > 0 ? 'bg-energy-500 animate-pulse' : 'bg-pitch-500'}`} />
+                  <span className={`absolute top-1 right-1 w-2 h-2 rounded-full ${unreadNotificationCount > 0 ? 'bg-brand-accent animate-pulse' : 'bg-brand-primary'}`} />
                 )}
               </button>
               {user?.role === 'parent' && (
@@ -1024,13 +1024,13 @@ export default function PupilLounge() {
               className="space-y-6"
             >
               {/* Daily Motivation */}
-              <div className="card p-3 bg-gradient-to-br from-energy-900/30 via-pitch-900/20 to-navy-900 border-energy-500/20">
+              <div className="card p-3 bg-gradient-to-br from-energy-900/30 via-pitch-900/20 to-navy-900 border-brand-accent">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-energy-500/20 flex items-center justify-center shrink-0">
-                    <Star className="w-4 h-4 text-energy-400" />
+                  <div className="w-8 h-8 rounded-lg bg-brand-accent-tint flex items-center justify-center shrink-0">
+                    <Star className="w-4 h-4 text-brand-accent" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs text-energy-400 font-medium">💪 Daily Motivation</p>
+                    <p className="text-xs text-brand-accent font-medium">💪 Daily Motivation</p>
                     <p className="text-white text-sm font-medium italic">"{dailyQuote.quote}"</p>
                     <p className="text-secondary text-xs">- {dailyQuote.author}</p>
                   </div>
@@ -1055,7 +1055,7 @@ export default function PupilLounge() {
                         }`}
                       >
                         <div className="flex items-start gap-2">
-                          {announcement.is_pinned && <Pin className="w-3 h-3 text-pitch-400 shrink-0 mt-1" />}
+                          {announcement.is_pinned && <Pin className="w-3 h-3 text-brand-primary shrink-0 mt-1" />}
                           <div className="flex-1 min-w-0">
                             <p className="font-medium text-white text-sm">{announcement.title}</p>
                             <p className="text-secondary text-sm mt-1 line-clamp-2">{announcement.content}</p>
@@ -1079,7 +1079,7 @@ export default function PupilLounge() {
                     setShowChatModal(true)
                     if (chatMessages.length === 0) loadChatHistory()
                   }}
-                  className="card p-5 w-full text-left hover:scale-[1.02] transition-all duration-200 bg-gradient-to-r from-pitch-900/60 via-energy-900/40 to-pitch-900/60 border-pitch-500/30 hover:border-pitch-500/50"
+                  className="card p-5 w-full text-left hover:scale-[1.02] transition-all duration-200 bg-gradient-to-r from-pitch-900/60 via-energy-900/40 to-pitch-900/60 border-brand-primary hover:border-brand-primary"
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pitch-500 to-energy-500 flex items-center justify-center shadow-lg shadow-pitch-500/30">
@@ -1088,15 +1088,15 @@ export default function PupilLounge() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <h3 className="font-display text-lg font-bold text-white">Ask the Gaffer</h3>
-                        <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded-full font-medium">AI</span>
+                        <span className="px-2 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded-full font-medium">AI</span>
                       </div>
                       <p className="text-sm text-secondary mt-1">Get tips, ask questions, and level up your game</p>
                       <div className="flex items-center gap-2 mt-2">
-                        <span className="text-xs text-pitch-400 flex items-center gap-1">
+                        <span className="text-xs text-brand-primary flex items-center gap-1">
                           <MessageSquare className="w-3 h-3" />
                           Chat now
                         </span>
-                        <ChevronRight className="w-4 h-4 text-pitch-400" />
+                        <ChevronRight className="w-4 h-4 text-brand-primary" />
                       </div>
                     </div>
                   </div>
@@ -1106,7 +1106,7 @@ export default function PupilLounge() {
               {/* Quick Stats Row */}
               <div className="grid grid-cols-4 gap-2">
                 <div className="card p-3 text-center">
-                  <div className="text-xl font-bold text-pitch-400">{pupil?.squad_number || '-'}</div>
+                  <div className="text-xl font-bold text-brand-primary">{pupil?.squad_number || '-'}</div>
                   <div className="text-xs text-secondary">Squad #</div>
                 </div>
                 <div className="card p-3 text-center">
@@ -1114,7 +1114,7 @@ export default function PupilLounge() {
                   <div className="text-xs text-secondary">Position</div>
                 </div>
                 <div className="card p-3 text-center">
-                  <div className="text-xl font-bold text-energy-400">{potmAwards?.length || 0}</div>
+                  <div className="text-xl font-bold text-brand-accent">{potmAwards?.length || 0}</div>
                   <div className="text-xs text-secondary flex items-center justify-center gap-1">
                     <Award className="w-3 h-3" /> POTM
                   </div>
@@ -1127,10 +1127,10 @@ export default function PupilLounge() {
 
               {/* Pupil of the Match Award Banner */}
               {potmAwards?.length > 0 && (
-                <div className="card p-4 bg-gradient-to-r from-energy-900/40 via-caution-900/30 to-energy-900/40 border-energy-500/30">
+                <div className="card p-4 bg-gradient-to-r from-energy-900/40 via-caution-900/30 to-energy-900/40 border-brand-accent">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-energy-500/20 flex items-center justify-center">
-                      <Award className="w-6 h-6 text-energy-400" />
+                    <div className="w-12 h-12 rounded-full bg-brand-accent-tint flex items-center justify-center">
+                      <Award className="w-6 h-6 text-brand-accent" />
                     </div>
                     <div className="flex-1">
                       <p className="font-display font-bold text-white">
@@ -1155,7 +1155,7 @@ export default function PupilLounge() {
                   >
                     <div className="flex items-center justify-between">
                       <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                        <Trophy className="w-5 h-5 text-energy-400" />
+                        <Trophy className="w-5 h-5 text-brand-accent" />
                         Next Match
                       </h3>
                       <div className="flex items-center gap-2">
@@ -1169,7 +1169,7 @@ export default function PupilLounge() {
                       <div className="flex-1">
                         <button
                           onClick={() => setSelectedMatch(upcomingMatches[0])}
-                          className="font-bold text-lg text-white hover:text-pitch-400 transition-colors text-left"
+                          className="font-bold text-lg text-white hover:text-brand-primary transition-colors text-left"
                         >
                           V {upcomingMatches[0].opponent}
                         </button>
@@ -1187,7 +1187,7 @@ export default function PupilLounge() {
                           {upcomingMatches[0].is_home !== undefined && (
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               upcomingMatches[0].is_home
-                                ? 'bg-pitch-500/20 text-pitch-400'
+                                ? 'bg-brand-primary-tint text-brand-primary'
                                 : 'bg-status-info-tint text-status-info'
                             }`}>
                               {upcomingMatches[0].is_home ? '🏠 HOME KIT' : '👕 AWAY KIT'}
@@ -1200,7 +1200,7 @@ export default function PupilLounge() {
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="flex items-center gap-1 text-sm text-pitch-400 hover:text-pitch-300 mt-2"
+                            className="flex items-center gap-1 text-sm text-brand-primary hover:text-brand-primary mt-2"
                           >
                             <MapPin className="w-4 h-4" />
                             {upcomingMatches[0].location}
@@ -1223,13 +1223,13 @@ export default function PupilLounge() {
                         onClick={() => setSelectedMatch(upcomingMatches[0])}
                         className="w-full mt-4 pt-4 border-t border-border-default text-left"
                       >
-                        <div className="p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-xl hover:bg-pitch-500/15 transition-colors">
+                        <div className="p-4 bg-brand-primary-tint border border-brand-primary rounded-xl hover:bg-brand-primary-tint transition-colors">
                           <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                              <FileText className="w-5 h-5 text-pitch-400" />
-                              <h4 className="font-display font-semibold text-pitch-400">Match Prep & Tactics</h4>
+                              <FileText className="w-5 h-5 text-brand-primary" />
+                              <h4 className="font-display font-semibold text-brand-primary">Match Prep & Tactics</h4>
                             </div>
-                            <span className="text-xs text-pitch-400 flex items-center gap-1">
+                            <span className="text-xs text-brand-primary flex items-center gap-1">
                               Tap to view full prep
                               <ChevronRight className="w-4 h-4" />
                             </span>
@@ -1278,14 +1278,14 @@ export default function PupilLounge() {
                       <div className="flex items-center justify-between gap-2 flex-wrap">
                         <button
                           onClick={() => exportMatchToCalendar(upcomingMatches[0], team?.name)}
-                          className="btn-ghost btn-sm text-energy-400"
+                          className="btn-ghost btn-sm text-brand-accent"
                         >
                           <Download className="w-4 h-4" />
                           Add to Calendar
                         </button>
                         <button
                           onClick={() => setShowMediaUpload(upcomingMatches[0].id)}
-                          className="btn-ghost btn-sm text-pitch-400"
+                          className="btn-ghost btn-sm text-brand-primary"
                         >
                           <Camera className="w-4 h-4" />
                           Add Media
@@ -1296,15 +1296,15 @@ export default function PupilLounge() {
                     {/* Match Day POTM Voting */}
                     {nextMatchVoteData && nextMatchSquad.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-border-default">
-                        <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-energy-500/20">
+                        <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-brand-accent">
                           <div className="flex items-center gap-2 mb-3">
-                            <Heart className="w-5 h-5 text-energy-400" />
+                            <Heart className="w-5 h-5 text-brand-accent" />
                             <h4 className="font-display font-semibold text-white">Parents' Pupil of the Match</h4>
                           </div>
                           {nextMatchVoteData.my_vote ? (
                             <div className="space-y-3">
                               <p className="text-sm text-secondary">
-                                You voted for <span className="text-energy-400 font-medium">
+                                You voted for <span className="text-brand-accent font-medium">
                                   {nextMatchSquad.find(p => p.id === nextMatchVoteData.my_vote)?.name || 'a pupil'}
                                 </span>
                               </p>
@@ -1314,7 +1314,7 @@ export default function PupilLounge() {
                                   setNextMatchVoteData(prev => prev ? { ...prev, my_vote: null } : null)
                                   setNextMatchVotingPlayerId(null)
                                 }}
-                                className="text-xs text-secondary hover:text-energy-400 transition-colors"
+                                className="text-xs text-secondary hover:text-brand-accent transition-colors"
                               >
                                 Change vote
                               </button>
@@ -1325,7 +1325,7 @@ export default function PupilLounge() {
                               <select
                                 value={nextMatchVotingPlayerId || ''}
                                 onChange={(e) => setNextMatchVotingPlayerId(e.target.value)}
-                                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
+                                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-accent focus:outline-none"
                               >
                                 <option value="">Select a pupil...</option>
                                 {nextMatchSquad
@@ -1340,7 +1340,7 @@ export default function PupilLounge() {
                               <button
                                 onClick={() => nextMatchVotingPlayerId && handleNextMatchPotmVote(upcomingMatches[0].id, nextMatchVotingPlayerId)}
                                 disabled={!nextMatchVotingPlayerId || nextMatchSubmittingVote}
-                                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-energy-500 text-navy-950 rounded-lg text-sm font-medium hover:bg-energy-600 transition-colors disabled:opacity-50"
+                                className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-navy-950 rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
                               >
                                 {nextMatchSubmittingVote ? (
                                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -1363,12 +1363,12 @@ export default function PupilLounge() {
                 <div className="card p-4">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                      <Star className="w-5 h-5 text-energy-400" />
+                      <Star className="w-5 h-5 text-brand-accent" />
                       My Badges
                     </h3>
                     <button
                       onClick={() => setShowBadgesModal(true)}
-                      className="text-sm text-pitch-400 hover:text-pitch-300 flex items-center gap-1"
+                      className="text-sm text-brand-primary hover:text-brand-primary flex items-center gap-1"
                     >
                       View All
                       <ChevronRight className="w-4 h-4" />
@@ -1379,7 +1379,7 @@ export default function PupilLounge() {
                       <button
                         key={achievement.id}
                         onClick={() => setShowBadgesModal(true)}
-                        className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-3 text-center border border-border-strong hover:border-energy-500/30 transition-all"
+                        className="bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-3 text-center border border-border-strong hover:border-brand-accent transition-all"
                       >
                         <div className="text-2xl mb-1">{achievement.icon}</div>
                         <p className="text-xs font-medium text-white truncate">{achievement.title}</p>
@@ -1427,7 +1427,7 @@ export default function PupilLounge() {
               {upcomingTraining?.length > 0 && (
                 <div className="card p-4">
                   <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-pitch-400" />
+                    <Target className="w-5 h-5 text-brand-primary" />
                     Upcoming Sessions
                   </h3>
                   <div className="space-y-3">
@@ -1441,8 +1441,8 @@ export default function PupilLounge() {
                           onClick={() => setSelectedSession(session)}
                           className="w-full flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle/70 transition-colors text-left cursor-pointer"
                         >
-                          <div className={`w-10 h-10 rounded-lg ${isSC ? 'bg-energy-500/10' : 'bg-pitch-500/10'} flex items-center justify-center shrink-0`}>
-                            <SessionIcon className={`w-5 h-5 ${isSC ? 'text-energy-400' : 'text-pitch-400'}`} />
+                          <div className={`w-10 h-10 rounded-lg ${isSC ? 'bg-brand-accent-tint' : 'bg-brand-primary-tint'} flex items-center justify-center shrink-0`}>
+                            <SessionIcon className={`w-5 h-5 ${isSC ? 'text-brand-accent' : 'text-brand-primary'}`} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
@@ -1451,7 +1451,7 @@ export default function PupilLounge() {
                               </span>
                               {isSC && <span className="badge-energy text-xs">S&C</span>}
                               {hasPlan && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-pitch-500/20 text-pitch-300 rounded text-xs">
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-brand-primary-tint text-brand-primary rounded text-xs">
                                   <FileText className="w-3 h-3" />
                                   Plan
                                 </span>
@@ -1619,17 +1619,17 @@ export default function PupilLounge() {
                           <div
                             key={session.id}
                             onClick={() => setSelectedSession(session)}
-                            className="card p-4 w-full text-left hover:border-pitch-500/30 transition-colors cursor-pointer"
+                            className="card p-4 w-full text-left hover:border-brand-primary transition-colors cursor-pointer"
                           >
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
-                                <SessionIcon className={`w-5 h-5 ${isSC ? 'text-energy-400' : 'text-pitch-400'}`} />
+                                <SessionIcon className={`w-5 h-5 ${isSC ? 'text-brand-accent' : 'text-brand-primary'}`} />
                                 <span className="font-medium text-white">
                                   {isSC ? 'S&C Session' : (session.focus_areas?.length > 0 ? session.focus_areas.join(', ') : 'Training')}
                                 </span>
                                 {isSC && <span className="badge-energy text-xs">S&C</span>}
                                 {hasPlan && (
-                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-pitch-500/20 text-pitch-300 rounded text-xs">
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-brand-primary-tint text-brand-primary rounded text-xs">
                                     <FileText className="w-3 h-3" />
                                     Plan
                                   </span>
@@ -1735,7 +1735,7 @@ export default function PupilLounge() {
                     {streamCredentials?.shareCode && (
                       <button
                         onClick={handleShare}
-                        className="btn-primary btn-sm bg-pitch-500 hover:bg-pitch-600"
+                        className="btn-primary btn-sm bg-brand-primary hover:bg-brand-primary"
                       >
                         <Share2 className="w-4 h-4" />
                         Share
@@ -1756,7 +1756,7 @@ export default function PupilLounge() {
               {/* Stream Content */}
               {loadingStream ? (
                 <div className="card p-12 text-center">
-                  <Loader2 className="w-10 h-10 animate-spin text-pitch-400 mx-auto" />
+                  <Loader2 className="w-10 h-10 animate-spin text-brand-primary mx-auto" />
                   <p className="text-secondary mt-3">Checking stream status...</p>
                 </div>
               ) : !streamCredentials ? (
@@ -1789,7 +1789,7 @@ export default function PupilLounge() {
                       {streamCredentials.shareCode && (
                         <button
                           onClick={handleShare}
-                          className="btn-primary btn-sm bg-pitch-500 hover:bg-pitch-600"
+                          className="btn-primary btn-sm bg-brand-primary hover:bg-brand-primary"
                         >
                           <Share2 className="w-4 h-4" />
                           Share
@@ -1817,7 +1817,7 @@ export default function PupilLounge() {
               {pupil?.id && (
                 <div className="card p-6">
                   <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                    <Scissors className="w-5 h-5 text-pitch-400" />
+                    <Scissors className="w-5 h-5 text-brand-primary" />
                     My Clips
                   </h3>
                   <PupilClips pupilId={pupil.id} />
@@ -1828,7 +1828,7 @@ export default function PupilLounge() {
               {recentMatches && recentMatches.filter(m => m.veo_link || m.video_url).length > 0 && (
                 <div className="card p-6">
                   <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                    <Video className="w-5 h-5 text-energy-400" />
+                    <Video className="w-5 h-5 text-brand-accent" />
                     Match Videos
                   </h3>
                   <div className="space-y-2">
@@ -1844,8 +1844,8 @@ export default function PupilLounge() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors mb-1"
                           >
-                            <div className="w-10 h-10 bg-pitch-500/20 rounded-lg flex items-center justify-center">
-                              <Play className="w-5 h-5 text-pitch-400" />
+                            <div className="w-10 h-10 bg-brand-primary-tint rounded-lg flex items-center justify-center">
+                              <Play className="w-5 h-5 text-brand-primary" />
                             </div>
                             <div className="flex-1">
                               <p className="text-white font-medium text-sm">Match Video</p>
@@ -1861,8 +1861,8 @@ export default function PupilLounge() {
                             rel="noopener noreferrer"
                             className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                           >
-                            <div className="w-10 h-10 bg-energy-500/20 rounded-lg flex items-center justify-center">
-                              <Video className="w-5 h-5 text-energy-400" />
+                            <div className="w-10 h-10 bg-brand-accent-tint rounded-lg flex items-center justify-center">
+                              <Video className="w-5 h-5 text-brand-accent" />
                             </div>
                             <div className="flex-1">
                               <p className="text-white font-medium text-sm">Match Video</p>
@@ -1994,7 +1994,7 @@ export default function PupilLounge() {
               {/* League Table */}
               {loadingLeague ? (
                 <div className="card p-8 text-center">
-                  <Loader2 className="w-8 h-8 animate-spin text-pitch-400 mx-auto" />
+                  <Loader2 className="w-8 h-8 animate-spin text-brand-primary mx-auto" />
                   <p className="text-secondary mt-2">Loading league table...</p>
                 </div>
               ) : leagueTable.length === 0 ? (
@@ -2036,7 +2036,7 @@ export default function PupilLounge() {
                               key={team.id}
                               className={`border-t border-border-default ${
                                 team.is_own_team
-                                  ? 'bg-pitch-500/10 font-medium'
+                                  ? 'bg-brand-primary-tint font-medium'
                                   : index % 2 === 0 ? 'bg-card/30' : ''
                               }`}
                             >
@@ -2044,22 +2044,22 @@ export default function PupilLounge() {
                               <td className="px-3 py-3">
                                 <div className="flex items-center gap-2">
                                   {team.is_own_team && (
-                                    <div className="w-2 h-2 rounded-full bg-pitch-500" />
+                                    <div className="w-2 h-2 rounded-full bg-brand-primary" />
                                   )}
-                                  <span className={team.is_own_team ? 'text-pitch-300' : 'text-white'}>
+                                  <span className={team.is_own_team ? 'text-brand-primary' : 'text-white'}>
                                     {team.team_name}
                                   </span>
                                 </div>
                               </td>
                               <td className="px-3 py-3 text-center text-secondary">{team.played}</td>
-                              <td className="px-3 py-3 text-center text-pitch-400">{team.won}</td>
+                              <td className="px-3 py-3 text-center text-brand-primary">{team.won}</td>
                               <td className="px-3 py-3 text-center text-secondary">{team.drawn}</td>
                               <td className="px-3 py-3 text-center text-status-error">{team.lost}</td>
                               <td className="px-3 py-3 text-center text-secondary hidden sm:table-cell">{team.goals_for}</td>
                               <td className="px-3 py-3 text-center text-secondary hidden sm:table-cell">{team.goals_against}</td>
                               <td className="px-3 py-3 text-center">
                                 <span className={
-                                  team.goal_difference > 0 ? 'text-pitch-400' :
+                                  team.goal_difference > 0 ? 'text-brand-primary' :
                                   team.goal_difference < 0 ? 'text-status-error' : 'text-secondary'
                                 }>
                                   {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
@@ -2075,7 +2075,7 @@ export default function PupilLounge() {
                   {/* Legend */}
                   <div className="px-4 py-3 bg-subtle border-t border-border-default text-xs text-tertiary">
                     <span className="inline-flex items-center gap-1.5">
-                      <div className="w-2 h-2 rounded-full bg-pitch-500" />
+                      <div className="w-2 h-2 rounded-full bg-brand-primary" />
                       Your team
                     </span>
                     <span className="ml-4">P: Played | W: Won | D: Drawn | L: Lost | GD: Goal Difference | Pts: Points</span>
@@ -2100,7 +2100,7 @@ export default function PupilLounge() {
               {developmentPlan ? (
                 <div className="card p-5">
                   <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                    <Target className="w-5 h-5 text-pitch-400" />
+                    <Target className="w-5 h-5 text-brand-primary" />
                     My Development Plan
                   </h3>
                   {developmentPlan.generated_content || developmentPlan.notes ? (
@@ -2109,13 +2109,13 @@ export default function PupilLounge() {
                     <div className="space-y-4">
                       {developmentPlan.strengths?.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium text-pitch-400 mb-2 flex items-center gap-1">
+                          <h4 className="text-sm font-medium text-brand-primary mb-2 flex items-center gap-1">
                             <Star className="w-4 h-4" /> My Strengths
                           </h4>
                           <ul className="space-y-1">
                             {developmentPlan.strengths.map((s, i) => (
                               <li key={i} className="text-sm text-secondary flex items-start gap-2">
-                                <CheckCircle className="w-4 h-4 text-pitch-500 shrink-0 mt-0.5" />
+                                <CheckCircle className="w-4 h-4 text-brand-primary shrink-0 mt-0.5" />
                                 {s}
                               </li>
                             ))}
@@ -2124,13 +2124,13 @@ export default function PupilLounge() {
                       )}
                       {developmentPlan.areas_to_improve?.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium text-energy-400 mb-2 flex items-center gap-1">
+                          <h4 className="text-sm font-medium text-brand-accent mb-2 flex items-center gap-1">
                             <TrendingUp className="w-4 h-4" /> Areas to Work On
                           </h4>
                           <ul className="space-y-1">
                             {developmentPlan.areas_to_improve.map((a, i) => (
                               <li key={i} className="text-sm text-secondary flex items-start gap-2">
-                                <Target className="w-4 h-4 text-energy-500 shrink-0 mt-0.5" />
+                                <Target className="w-4 h-4 text-brand-accent shrink-0 mt-0.5" />
                                 {a}
                               </li>
                             ))}
@@ -2225,10 +2225,10 @@ export default function PupilLounge() {
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex flex-col items-center gap-1 py-2 px-4 rounded-lg transition-colors ${
-                    isActive ? 'text-pitch-400' : 'text-tertiary hover:text-secondary'
+                    isActive ? 'text-brand-primary' : 'text-tertiary hover:text-secondary'
                   }`}
                 >
-                  <Icon className={`w-5 h-5 ${isActive ? 'text-pitch-400' : ''}`} />
+                  <Icon className={`w-5 h-5 ${isActive ? 'text-brand-primary' : ''}`} />
                   <span className="text-xs font-medium">{tab.label}</span>
                 </button>
               )
@@ -2288,7 +2288,7 @@ export default function PupilLounge() {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-xl text-white flex items-center gap-2">
-                <Flame className="w-6 h-6 text-energy-400" />
+                <Flame className="w-6 h-6 text-brand-accent" />
                 Pre-Match Pep Talk
               </h3>
               <button onClick={() => setShowPepTalk(false)} className="text-secondary hover:text-white">
@@ -2331,7 +2331,7 @@ export default function PupilLounge() {
             >
               <div className="p-4 border-b border-border-default">
                 <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-pitch-400" />
+                  <Bell className="w-4 h-4 text-brand-primary" />
                   Notifications
                 </h3>
               </div>
@@ -2339,10 +2339,10 @@ export default function PupilLounge() {
                 {/* Next Match Focus - highlighted section */}
                 {upcomingMatches?.[0] && (
                   <div className="mb-3">
-                    <div className="p-3 rounded-lg bg-gradient-to-r from-energy-500/10 to-pitch-500/10 border border-energy-500/20">
+                    <div className="p-3 rounded-lg bg-gradient-to-r from-energy-500/10 to-pitch-500/10 border border-brand-accent">
                       <div className="flex items-center gap-2 mb-2">
-                        <Zap className="w-4 h-4 text-energy-400" />
-                        <span className="text-xs font-semibold text-energy-400 uppercase tracking-wide">Next Match</span>
+                        <Zap className="w-4 h-4 text-brand-accent" />
+                        <span className="text-xs font-semibold text-brand-accent uppercase tracking-wide">Next Match</span>
                       </div>
                       <button
                         onClick={() => {
@@ -2376,7 +2376,7 @@ export default function PupilLounge() {
                       {/* Match Prep Notes */}
                       {upcomingMatches[0].prep_notes && (
                         <div className="mt-3 pt-3 border-t border-border-strong/50">
-                          <p className="text-xs font-medium text-pitch-400 mb-1 flex items-center gap-1">
+                          <p className="text-xs font-medium text-brand-primary mb-1 flex items-center gap-1">
                             <FileText className="w-3 h-3" />
                             Match Prep
                           </p>
@@ -2386,7 +2386,7 @@ export default function PupilLounge() {
                       {/* Team Notes */}
                       {upcomingMatches[0].team_notes && (
                         <div className="mt-2 pt-2 border-t border-border-strong/50">
-                          <p className="text-xs font-medium text-energy-400 mb-1 flex items-center gap-1">
+                          <p className="text-xs font-medium text-brand-accent mb-1 flex items-center gap-1">
                             <MessageSquare className="w-3 h-3" />
                             Team Notes
                           </p>
@@ -2400,7 +2400,7 @@ export default function PupilLounge() {
                 {/* Achievement & POTM Notifications */}
                 {squadNotifications?.filter(n => n.type === 'achievement' || n.type === 'potm').length > 0 && (
                   <div className="mb-3">
-                    <p className="text-xs text-energy-400 px-2 py-1 font-semibold flex items-center gap-1">
+                    <p className="text-xs text-brand-accent px-2 py-1 font-semibold flex items-center gap-1">
                       <Award className="w-3 h-3" />
                       ACHIEVEMENTS
                     </p>
@@ -2414,24 +2414,24 @@ export default function PupilLounge() {
                           className={`p-3 rounded-lg mb-2 cursor-pointer transition-colors ${
                             notification.is_read
                               ? 'bg-subtle hover:bg-subtle'
-                              : 'bg-energy-500/10 border border-energy-500/20 hover:bg-energy-500/20'
+                              : 'bg-brand-accent-tint border border-brand-accent hover:bg-brand-accent-tint'
                           }`}
                         >
                           <div className="flex items-start gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-energy-500/20 flex items-center justify-center flex-shrink-0">
+                            <div className="w-8 h-8 rounded-lg bg-brand-accent-tint flex items-center justify-center flex-shrink-0">
                               {data.icon ? (
                                 <span className="text-lg">{data.icon}</span>
                               ) : isPotm ? (
-                                <Award className="w-4 h-4 text-energy-400" />
+                                <Award className="w-4 h-4 text-brand-accent" />
                               ) : (
-                                <Star className="w-4 h-4 text-energy-400" />
+                                <Star className="w-4 h-4 text-brand-accent" />
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <p className="text-sm text-white font-medium">{notification.title}</p>
                                 {!notification.is_read && (
-                                  <span className="w-2 h-2 rounded-full bg-energy-400 flex-shrink-0" />
+                                  <span className="w-2 h-2 rounded-full bg-brand-accent flex-shrink-0" />
                                 )}
                               </div>
                               <p className="text-xs text-secondary mt-0.5">{notification.message}</p>
@@ -2449,7 +2449,7 @@ export default function PupilLounge() {
                 {/* Squad Selection Announcements */}
                 {squadNotifications?.filter(n => n.type === 'squad_announcement').length > 0 && (
                   <div className="mb-3">
-                    <p className="text-xs text-pitch-400 px-2 py-1 font-semibold flex items-center gap-1">
+                    <p className="text-xs text-brand-primary px-2 py-1 font-semibold flex items-center gap-1">
                       <Users className="w-3 h-3" />
                       SQUAD SELECTION
                     </p>
@@ -2463,25 +2463,25 @@ export default function PupilLounge() {
                           className={`p-3 rounded-lg mb-2 cursor-pointer transition-colors ${
                             notification.is_read
                               ? 'bg-subtle hover:bg-subtle'
-                              : 'bg-pitch-500/10 border border-pitch-500/20 hover:bg-pitch-500/20'
+                              : 'bg-brand-primary-tint border border-brand-primary hover:bg-brand-primary-tint'
                           }`}
                         >
                           <div className="flex items-start gap-3">
                             <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                              isStarting ? 'bg-pitch-500/20' : 'bg-energy-500/20'
+                              isStarting ? 'bg-brand-primary-tint' : 'bg-brand-accent-tint'
                             }`}>
-                              <Users className={`w-4 h-4 ${isStarting ? 'text-pitch-400' : 'text-energy-400'}`} />
+                              <Users className={`w-4 h-4 ${isStarting ? 'text-brand-primary' : 'text-brand-accent'}`} />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
                                 <p className="text-sm text-white font-medium">{notification.title}</p>
                                 {!notification.is_read && (
-                                  <span className="w-2 h-2 rounded-full bg-pitch-400 flex-shrink-0" />
+                                  <span className="w-2 h-2 rounded-full bg-brand-primary flex-shrink-0" />
                                 )}
                               </div>
                               <p className="text-xs text-secondary mt-0.5">{notification.message}</p>
                               {data.meetup_time && (
-                                <p className="text-xs text-energy-400 mt-1 flex items-center gap-1">
+                                <p className="text-xs text-brand-accent mt-1 flex items-center gap-1">
                                   <Clock className="w-3 h-3" />
                                   Meet: {new Date(data.meetup_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                   {data.meetup_location && ` at ${data.meetup_location}`}
@@ -2548,8 +2548,8 @@ export default function PupilLounge() {
                           className="w-full p-3 rounded-lg hover:bg-subtle text-left transition-colors"
                         >
                           <div className="flex items-center gap-3">
-                            <div className={`w-8 h-8 rounded-lg ${isSC ? 'bg-energy-500/20' : 'bg-pitch-500/20'} flex items-center justify-center`}>
-                              <SessionIcon className={`w-4 h-4 ${isSC ? 'text-energy-400' : 'text-pitch-400'}`} />
+                            <div className={`w-8 h-8 rounded-lg ${isSC ? 'bg-brand-accent-tint' : 'bg-brand-primary-tint'} flex items-center justify-center`}>
+                              <SessionIcon className={`w-4 h-4 ${isSC ? 'text-brand-accent' : 'text-brand-primary'}`} />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
@@ -2557,7 +2557,7 @@ export default function PupilLounge() {
                                   {isSC ? 'S&C Session' : (session.focus_areas?.join(', ') || 'Training')}
                                 </p>
                                 {hasPlan && (
-                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-pitch-500/20 text-pitch-300 rounded text-xs">
+                                  <span className="inline-flex items-center gap-1 px-1.5 py-0.5 bg-brand-primary-tint text-brand-primary rounded text-xs">
                                     <FileText className="w-3 h-3" />
                                   </span>
                                 )}
@@ -2599,8 +2599,8 @@ export default function PupilLounge() {
                         className="w-full p-3 rounded-lg hover:bg-subtle text-left transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-energy-500/20 flex items-center justify-center">
-                            <Trophy className="w-4 h-4 text-energy-400" />
+                          <div className="w-8 h-8 rounded-lg bg-brand-accent-tint flex items-center justify-center">
+                            <Trophy className="w-4 h-4 text-brand-accent" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-white font-medium truncate">
@@ -2628,8 +2628,8 @@ export default function PupilLounge() {
                         className="p-3 rounded-lg hover:bg-subtle transition-colors"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-pitch-500/20 flex items-center justify-center flex-shrink-0">
-                            <Megaphone className="w-4 h-4 text-pitch-400" />
+                          <div className="w-8 h-8 rounded-lg bg-brand-primary-tint flex items-center justify-center flex-shrink-0">
+                            <Megaphone className="w-4 h-4 text-brand-primary" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-white font-medium">{announcement.title}</p>
@@ -2685,7 +2685,7 @@ export default function PupilLounge() {
                 <>
                   {/* Result Header */}
                   <div className={`text-center p-4 rounded-xl ${
-                    selectedMatch.goals_for > selectedMatch.goals_against ? 'bg-pitch-500/20 border border-pitch-500/30' :
+                    selectedMatch.goals_for > selectedMatch.goals_against ? 'bg-brand-primary-tint border border-brand-primary' :
                     selectedMatch.goals_for < selectedMatch.goals_against ? 'bg-status-error-tint border border-status-error' :
                     'bg-status-warning-tint border border-status-warning'
                   }`}>
@@ -2705,7 +2705,7 @@ export default function PupilLounge() {
                       </span>
                     </div>
                     <p className={`text-sm font-semibold ${
-                      selectedMatch.goals_for > selectedMatch.goals_against ? 'text-pitch-400' :
+                      selectedMatch.goals_for > selectedMatch.goals_against ? 'text-brand-primary' :
                       selectedMatch.goals_for < selectedMatch.goals_against ? 'text-status-error' : 'text-status-warning'
                     }`}>
                       {selectedMatch.goals_for > selectedMatch.goals_against ? '🏆 Victory!' :
@@ -2727,8 +2727,8 @@ export default function PupilLounge() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                         >
-                          <div className="w-10 h-10 bg-pitch-500/20 rounded-lg flex items-center justify-center">
-                            <Play className="w-5 h-5 text-pitch-400" />
+                          <div className="w-10 h-10 bg-brand-primary-tint rounded-lg flex items-center justify-center">
+                            <Play className="w-5 h-5 text-brand-primary" />
                           </div>
                           <div className="flex-1">
                             <p className="text-white font-medium">Match Video</p>
@@ -2744,8 +2744,8 @@ export default function PupilLounge() {
                           rel="noopener noreferrer"
                           className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                         >
-                          <div className="w-10 h-10 bg-energy-500/20 rounded-lg flex items-center justify-center">
-                            <Video className="w-5 h-5 text-energy-400" />
+                          <div className="w-10 h-10 bg-brand-accent-tint rounded-lg flex items-center justify-center">
+                            <Video className="w-5 h-5 text-brand-accent" />
                           </div>
                           <div className="flex-1">
                             <p className="text-white font-medium">Match Video</p>
@@ -2771,7 +2771,7 @@ export default function PupilLounge() {
                         </p>
                         <button
                           onClick={() => handleShareMedia(selectedMatchMedia, selectedMatch.opponent)}
-                          className="text-xs text-pitch-400 hover:text-pitch-300 flex items-center gap-1"
+                          className="text-xs text-brand-primary hover:text-brand-primary flex items-center gap-1"
                         >
                           <Share2 className="w-3.5 h-3.5" />
                           Share
@@ -2834,21 +2834,21 @@ export default function PupilLounge() {
                       <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : matchSquad.length > 0 && (
-                    <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-pitch-500/20">
+                    <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-brand-primary">
                       <div className="flex items-center gap-2 mb-3">
-                        <Users className="w-5 h-5 text-pitch-400" />
+                        <Users className="w-5 h-5 text-brand-primary" />
                         <h4 className="font-display font-semibold text-white">Match Squad</h4>
                       </div>
 
                       {/* Starting XI */}
                       {matchSquad.filter(p => p.is_starting).length > 0 && (
                         <div className="mb-3">
-                          <p className="text-xs font-semibold text-pitch-400 uppercase tracking-wider mb-2">Starting XI</p>
+                          <p className="text-xs font-semibold text-brand-primary uppercase tracking-wider mb-2">Starting XI</p>
                           <div className="space-y-1">
                             {matchSquad.filter(p => p.is_starting).map(p => (
                               <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-subtle/40 rounded-lg">
                                 {p.squad_number && (
-                                  <span className="w-6 h-6 flex items-center justify-center bg-pitch-500/20 text-pitch-400 text-xs font-bold rounded-full">
+                                  <span className="w-6 h-6 flex items-center justify-center bg-brand-primary-tint text-brand-primary text-xs font-bold rounded-full">
                                     {p.squad_number}
                                   </span>
                                 )}
@@ -2890,7 +2890,7 @@ export default function PupilLounge() {
                   {selectedMatch.report?.generated && selectedMatch.report?.published && (
                     <div className="p-5 bg-subtle rounded-xl">
                       <div className="flex items-center gap-2 mb-4">
-                        <FileText className="w-6 h-6 text-pitch-400" />
+                        <FileText className="w-6 h-6 text-brand-primary" />
                         <p className="font-display font-bold text-lg text-white">Match Report</p>
                       </div>
                       <AIMarkdown>{selectedMatch.report.generated}</AIMarkdown>
@@ -2899,15 +2899,15 @@ export default function PupilLounge() {
 
                   {/* Parent POTM Voting */}
                   {teamSquad.length > 0 && (
-                    <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-energy-500/20">
+                    <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-brand-accent">
                       <div className="flex items-center gap-2 mb-3">
-                        <Heart className="w-5 h-5 text-energy-400" />
+                        <Heart className="w-5 h-5 text-brand-accent" />
                         <h4 className="font-display font-semibold text-white">Parents' Pupil of the Match</h4>
                       </div>
                       {parentVoteData?.my_vote ? (
                         <div className="space-y-3">
                           <p className="text-sm text-secondary">
-                            You voted for <span className="text-energy-400 font-medium">
+                            You voted for <span className="text-brand-accent font-medium">
                               {teamSquad.find(p => p.id === parentVoteData.my_vote)?.name || 'a pupil'}
                             </span>
                           </p>
@@ -2917,7 +2917,7 @@ export default function PupilLounge() {
                               setParentVoteData(prev => prev ? { ...prev, my_vote: null } : null)
                               setVotingPlayerId(null)
                             }}
-                            className="text-xs text-secondary hover:text-energy-400 transition-colors"
+                            className="text-xs text-secondary hover:text-brand-accent transition-colors"
                           >
                             Change vote
                           </button>
@@ -2928,7 +2928,7 @@ export default function PupilLounge() {
                           <select
                             value={votingPlayerId || ''}
                             onChange={(e) => setVotingPlayerId(e.target.value)}
-                            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
+                            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-accent focus:outline-none"
                           >
                             <option value="">Select a pupil...</option>
                             {teamSquad
@@ -2943,7 +2943,7 @@ export default function PupilLounge() {
                           <button
                             onClick={() => votingPlayerId && handleParentPotmVote(selectedMatch.id, votingPlayerId)}
                             disabled={!votingPlayerId || submittingVote}
-                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-energy-500 text-navy-950 rounded-lg text-sm font-medium hover:bg-energy-600 transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-navy-950 rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
                           >
                             {submittingVote ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -2984,7 +2984,7 @@ export default function PupilLounge() {
 
                   {/* Date & Time */}
                   <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
-                    <Calendar className="w-5 h-5 text-pitch-400" />
+                    <Calendar className="w-5 h-5 text-brand-primary" />
                     <div>
                       <p className="text-white font-medium">{formatDate(selectedMatch.date)}</p>
                       {selectedMatch.date && new Date(selectedMatch.date).getHours() !== 0 && (
@@ -3003,10 +3003,10 @@ export default function PupilLounge() {
                       rel="noopener noreferrer"
                       className="flex items-center gap-3 p-3 bg-subtle rounded-lg hover:bg-subtle transition-colors"
                     >
-                      <MapPin className="w-5 h-5 text-pitch-400" />
+                      <MapPin className="w-5 h-5 text-brand-primary" />
                       <div className="flex-1">
                         <p className="text-white font-medium">{selectedMatch.location}</p>
-                        <p className="text-xs text-pitch-400">Tap for directions</p>
+                        <p className="text-xs text-brand-primary">Tap for directions</p>
                       </div>
                       <ChevronRight className="w-4 h-4 text-tertiary" />
                     </a>
@@ -3015,7 +3015,7 @@ export default function PupilLounge() {
                   {/* Kit Color */}
                   {(selectedMatch.kit_type || selectedMatch.is_home !== undefined) && (
                     <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
-                      <Shield className="w-5 h-5 text-pitch-400" />
+                      <Shield className="w-5 h-5 text-brand-primary" />
                       <div>
                         <p className="text-white font-medium">
                           {selectedMatch.kit_type
@@ -3033,8 +3033,8 @@ export default function PupilLounge() {
 
                   {/* Meetup Info */}
                   {selectedMatch.meetup_time && (
-                    <div className="flex items-center gap-3 p-3 bg-energy-500/10 border border-energy-500/30 rounded-lg">
-                      <Clock className="w-5 h-5 text-energy-400" />
+                    <div className="flex items-center gap-3 p-3 bg-brand-accent-tint border border-brand-accent rounded-lg">
+                      <Clock className="w-5 h-5 text-brand-accent" />
                       <div>
                         <p className="text-white font-medium">Meet at {new Date(selectedMatch.meetup_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</p>
                         {selectedMatch.meetup_location && (
@@ -3054,10 +3054,10 @@ export default function PupilLounge() {
 
                   {/* Match Prep */}
                   {selectedMatch.prep_notes && typeof selectedMatch.prep_notes === 'string' && (
-                    <div className="p-5 bg-pitch-500/10 border border-pitch-500/30 rounded-xl">
+                    <div className="p-5 bg-brand-primary-tint border border-brand-primary rounded-xl">
                       <div className="flex items-center gap-2 mb-4">
-                        <FileText className="w-6 h-6 text-pitch-400" />
-                        <p className="font-display font-bold text-lg text-pitch-400">Match Prep Notes</p>
+                        <FileText className="w-6 h-6 text-brand-primary" />
+                        <p className="font-display font-bold text-lg text-brand-primary">Match Prep Notes</p>
                       </div>
                       <AIMarkdown>{selectedMatch.prep_notes}</AIMarkdown>
                     </div>
@@ -3069,21 +3069,21 @@ export default function PupilLounge() {
                       <Loader2 className="w-5 h-5 animate-spin text-secondary" />
                     </div>
                   ) : matchSquad.length > 0 && (
-                    <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-pitch-500/20">
+                    <div className="p-4 bg-gradient-to-br from-pitch-900/20 to-navy-800/50 rounded-xl border border-brand-primary">
                       <div className="flex items-center gap-2 mb-3">
-                        <Users className="w-5 h-5 text-pitch-400" />
+                        <Users className="w-5 h-5 text-brand-primary" />
                         <h4 className="font-display font-semibold text-white">Match Squad</h4>
                       </div>
 
                       {/* Starting XI */}
                       {matchSquad.filter(p => p.is_starting).length > 0 && (
                         <div className="mb-3">
-                          <p className="text-xs font-semibold text-pitch-400 uppercase tracking-wider mb-2">Starting XI</p>
+                          <p className="text-xs font-semibold text-brand-primary uppercase tracking-wider mb-2">Starting XI</p>
                           <div className="space-y-1">
                             {matchSquad.filter(p => p.is_starting).map(p => (
                               <div key={p.id} className="flex items-center gap-2 px-3 py-1.5 bg-subtle/40 rounded-lg">
                                 {p.squad_number && (
-                                  <span className="w-6 h-6 flex items-center justify-center bg-pitch-500/20 text-pitch-400 text-xs font-bold rounded-full">
+                                  <span className="w-6 h-6 flex items-center justify-center bg-brand-primary-tint text-brand-primary text-xs font-bold rounded-full">
                                     {p.squad_number}
                                   </span>
                                 )}
@@ -3148,7 +3148,7 @@ export default function PupilLounge() {
                         </p>
                         <button
                           onClick={() => handleShareMedia(selectedMatchMedia, selectedMatch.opponent)}
-                          className="text-xs text-pitch-400 hover:text-pitch-300 flex items-center gap-1"
+                          className="text-xs text-brand-primary hover:text-brand-primary flex items-center gap-1"
                         >
                           <Share2 className="w-3.5 h-3.5" />
                           Share
@@ -3208,15 +3208,15 @@ export default function PupilLounge() {
 
                   {/* POTM Voting (match day) */}
                   {teamSquad.length > 0 && parentVoteData && (
-                    <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-energy-500/20">
+                    <div className="p-4 bg-gradient-to-br from-energy-900/30 to-navy-800/50 rounded-xl border border-brand-accent">
                       <div className="flex items-center gap-2 mb-3">
-                        <Heart className="w-5 h-5 text-energy-400" />
+                        <Heart className="w-5 h-5 text-brand-accent" />
                         <h4 className="font-display font-semibold text-white">Parents' Pupil of the Match</h4>
                       </div>
                       {parentVoteData.my_vote ? (
                         <div className="space-y-3">
                           <p className="text-sm text-secondary">
-                            You voted for <span className="text-energy-400 font-medium">
+                            You voted for <span className="text-brand-accent font-medium">
                               {teamSquad.find(p => p.id === parentVoteData.my_vote)?.name || 'a pupil'}
                             </span>
                           </p>
@@ -3226,7 +3226,7 @@ export default function PupilLounge() {
                               setParentVoteData(prev => prev ? { ...prev, my_vote: null } : null)
                               setVotingPlayerId(null)
                             }}
-                            className="text-xs text-secondary hover:text-energy-400 transition-colors"
+                            className="text-xs text-secondary hover:text-brand-accent transition-colors"
                           >
                             Change vote
                           </button>
@@ -3237,7 +3237,7 @@ export default function PupilLounge() {
                           <select
                             value={votingPlayerId || ''}
                             onChange={(e) => setVotingPlayerId(e.target.value)}
-                            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-energy-500 focus:outline-none"
+                            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-accent focus:outline-none"
                           >
                             <option value="">Select a pupil...</option>
                             {teamSquad
@@ -3252,7 +3252,7 @@ export default function PupilLounge() {
                           <button
                             onClick={() => votingPlayerId && handleParentPotmVote(selectedMatch.id, votingPlayerId)}
                             disabled={!votingPlayerId || submittingVote}
-                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-energy-500 text-navy-950 rounded-lg text-sm font-medium hover:bg-energy-600 transition-colors disabled:opacity-50"
+                            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-brand-accent text-navy-950 rounded-lg text-sm font-medium hover:bg-brand-accent transition-colors disabled:opacity-50"
                           >
                             {submittingVote ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
@@ -3308,19 +3308,19 @@ export default function PupilLounge() {
               {/* Session Header */}
               <div className={`text-center p-4 rounded-xl ${
                 selectedSession.session_type === 's&c'
-                  ? 'bg-energy-500/20 border border-energy-500/30'
-                  : 'bg-pitch-500/20 border border-pitch-500/30'
+                  ? 'bg-brand-accent-tint border border-brand-accent'
+                  : 'bg-brand-primary-tint border border-brand-primary'
               }`}>
                 <div className="flex items-center justify-center gap-2 mb-2">
                   {selectedSession.session_type === 's&c' ? (
-                    <Dumbbell className="w-6 h-6 text-energy-400" />
+                    <Dumbbell className="w-6 h-6 text-brand-accent" />
                   ) : (
-                    <Target className="w-6 h-6 text-pitch-400" />
+                    <Target className="w-6 h-6 text-brand-primary" />
                   )}
                   <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                     selectedSession.session_type === 's&c'
-                      ? 'bg-energy-500/30 text-energy-300'
-                      : 'bg-pitch-500/30 text-pitch-300'
+                      ? 'bg-brand-accent-tint text-brand-accent'
+                      : 'bg-brand-primary-tint text-brand-primary'
                   }`}>
                     {selectedSession.session_type === 's&c' ? 'S&C SESSION' : 'TRAINING'}
                   </span>
@@ -3385,7 +3385,7 @@ export default function PupilLounge() {
                   <p className="text-sm text-secondary font-medium">Focus Areas</p>
                   <div className="flex flex-wrap gap-2">
                     {selectedSession.focus_areas.map((area, i) => (
-                      <span key={i} className="px-3 py-1 bg-pitch-500/20 text-pitch-300 rounded-full text-sm">
+                      <span key={i} className="px-3 py-1 bg-brand-primary-tint text-brand-primary rounded-full text-sm">
                         {area}
                       </span>
                     ))}
@@ -3443,7 +3443,7 @@ export default function PupilLounge() {
                         {selectedSession.plan.warmUp && (
                           <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-pitch-400 font-medium text-sm">Warm-up</span>
+                              <span className="text-brand-primary font-medium text-sm">Warm-up</span>
                               {selectedSession.plan.warmUp.duration && (
                                 <span className="text-xs text-tertiary">{selectedSession.plan.warmUp.duration} mins</span>
                               )}
@@ -3460,7 +3460,7 @@ export default function PupilLounge() {
                         {selectedSession.plan.technical && (
                           <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-pitch-400 font-medium text-sm">Technical Drill</span>
+                              <span className="text-brand-primary font-medium text-sm">Technical Drill</span>
                               {selectedSession.plan.technical.duration && (
                                 <span className="text-xs text-tertiary">{selectedSession.plan.technical.duration} mins</span>
                               )}
@@ -3477,7 +3477,7 @@ export default function PupilLounge() {
                         {selectedSession.plan.tactical && (
                           <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-pitch-400 font-medium text-sm">Tactical Exercise</span>
+                              <span className="text-brand-primary font-medium text-sm">Tactical Exercise</span>
                               {selectedSession.plan.tactical.duration && (
                                 <span className="text-xs text-tertiary">{selectedSession.plan.tactical.duration} mins</span>
                               )}
@@ -3494,7 +3494,7 @@ export default function PupilLounge() {
                         {selectedSession.plan.game && (
                           <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-pitch-400 font-medium text-sm">Match Practice</span>
+                              <span className="text-brand-primary font-medium text-sm">Match Practice</span>
                               {selectedSession.plan.game.duration && (
                                 <span className="text-xs text-tertiary">{selectedSession.plan.game.duration} mins</span>
                               )}
@@ -3508,7 +3508,7 @@ export default function PupilLounge() {
                         {selectedSession.plan.coolDown && (
                           <div className="p-3 bg-subtle rounded-lg">
                             <div className="flex items-center justify-between mb-2">
-                              <span className="text-pitch-400 font-medium text-sm">Cool-down</span>
+                              <span className="text-brand-primary font-medium text-sm">Cool-down</span>
                               {selectedSession.plan.coolDown.duration && (
                                 <span className="text-xs text-tertiary">{selectedSession.plan.coolDown.duration} mins</span>
                               )}
@@ -3564,7 +3564,7 @@ export default function PupilLounge() {
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-xl text-white flex items-center gap-2">
-                <Star className="w-6 h-6 text-energy-400" />
+                <Star className="w-6 h-6 text-brand-accent" />
                 My Badges & Achievements
               </h3>
               <button onClick={() => setShowBadgesModal(false)} className="text-secondary hover:text-white">
@@ -3576,8 +3576,8 @@ export default function PupilLounge() {
             <div className="space-y-4">
               {/* Stats Summary */}
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-gradient-to-br from-energy-900/40 to-navy-900 rounded-xl p-4 text-center border border-energy-500/20">
-                  <div className="text-3xl font-bold text-energy-400">{(achievements?.length || 0) + (potmAwards?.length || 0)}</div>
+                <div className="bg-gradient-to-br from-energy-900/40 to-navy-900 rounded-xl p-4 text-center border border-brand-accent">
+                  <div className="text-3xl font-bold text-brand-accent">{(achievements?.length || 0) + (potmAwards?.length || 0)}</div>
                   <div className="text-xs text-secondary mt-1">Total Awards</div>
                 </div>
                 <div className="bg-gradient-to-br from-caution-900/40 to-navy-900 rounded-xl p-4 text-center border border-status-warning">
@@ -3592,24 +3592,24 @@ export default function PupilLounge() {
               {potmAwards?.length > 0 && (
                 <div>
                   <p className="text-sm text-secondary font-medium mb-3 flex items-center gap-2">
-                    <Award className="w-4 h-4 text-energy-400" />
+                    <Award className="w-4 h-4 text-brand-accent" />
                     Pupil of the Match ({potmAwards.length})
                   </p>
                   <div className="space-y-2">
                     {potmAwards.map((award, i) => (
                       <div
                         key={i}
-                        className="bg-gradient-to-r from-energy-900/30 to-navy-900 rounded-lg p-3 border border-energy-500/20"
+                        className="bg-gradient-to-r from-energy-900/30 to-navy-900 rounded-lg p-3 border border-brand-accent"
                       >
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full bg-energy-500/20 flex items-center justify-center text-xl">
+                          <div className="w-10 h-10 rounded-full bg-brand-accent-tint flex items-center justify-center text-xl">
                             ⭐
                           </div>
                           <div className="flex-1">
                             <p className="text-white font-medium">vs {award.opponent}</p>
                             <p className="text-xs text-secondary">{new Date(award.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}</p>
                             {award.reason && (
-                              <p className="text-xs text-energy-300 mt-1 italic">"{award.reason}"</p>
+                              <p className="text-xs text-brand-accent mt-1 italic">"{award.reason}"</p>
                             )}
                           </div>
                         </div>
@@ -3623,7 +3623,7 @@ export default function PupilLounge() {
               {achievements?.length > 0 && (
                 <div>
                   <p className="text-sm text-secondary font-medium mb-3 flex items-center gap-2">
-                    <Star className="w-4 h-4 text-pitch-400" />
+                    <Star className="w-4 h-4 text-brand-primary" />
                     Badges & Awards ({achievements.length})
                   </p>
                   <div className="grid grid-cols-2 gap-3">
@@ -3641,10 +3641,10 @@ export default function PupilLounge() {
                           {new Date(achievement.earned_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
                         </p>
                         {achievement.match_opponent && (
-                          <p className="text-xs text-pitch-400 mt-1">vs {achievement.match_opponent}</p>
+                          <p className="text-xs text-brand-primary mt-1">vs {achievement.match_opponent}</p>
                         )}
                         {achievement.training_date && (
-                          <p className="text-xs text-energy-400 mt-1">Training Session</p>
+                          <p className="text-xs text-brand-accent mt-1">Training Session</p>
                         )}
                       </div>
                     ))}
@@ -3692,7 +3692,7 @@ export default function PupilLounge() {
                     <div>
                       <div className="flex items-center gap-2">
                         <h2 className="font-display font-bold text-white">The Gaffer</h2>
-                        <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded-full font-medium">AI</span>
+                        <span className="px-2 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded-full font-medium">AI</span>
                       </div>
                       <p className="text-xs text-secondary">Your personal football coach</p>
                     </div>
@@ -3710,12 +3710,12 @@ export default function PupilLounge() {
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
                 {loadingChat ? (
                   <div className="flex justify-center py-8">
-                    <Loader2 className="w-6 h-6 animate-spin text-pitch-400" />
+                    <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
                   </div>
                 ) : chatMessages.length === 0 ? (
                   <div className="text-center py-8">
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pitch-500/20 to-energy-500/20 flex items-center justify-center mx-auto mb-3">
-                      <Sparkles className="w-8 h-8 text-pitch-400" />
+                      <Sparkles className="w-8 h-8 text-brand-primary" />
                     </div>
                     <h3 className="font-display font-semibold text-white mb-2">Ask the Gaffer!</h3>
                     <p className="text-secondary text-sm mb-4">
@@ -3746,7 +3746,7 @@ export default function PupilLounge() {
                       <div
                         className={`max-w-[85%] p-3 rounded-2xl ${
                           msg.role === 'user'
-                            ? 'bg-pitch-600 text-white rounded-br-md'
+                            ? 'bg-brand-primary text-white rounded-br-md'
                             : 'bg-subtle text-primary rounded-bl-md'
                         }`}
                       >
@@ -3762,7 +3762,7 @@ export default function PupilLounge() {
                 {sendingMessage && (
                   <div className="flex justify-start">
                     <div className="bg-subtle p-3 rounded-2xl rounded-bl-md">
-                      <Loader2 className="w-5 h-5 animate-spin text-pitch-400" />
+                      <Loader2 className="w-5 h-5 animate-spin text-brand-primary" />
                     </div>
                   </div>
                 )}
@@ -3813,7 +3813,7 @@ export default function PupilLounge() {
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-display font-bold text-lg text-white flex items-center gap-2">
-                  <Settings className="w-5 h-5 text-pitch-400" />
+                  <Settings className="w-5 h-5 text-brand-primary" />
                   Parent Settings
                 </h2>
                 <button
@@ -3830,7 +3830,7 @@ export default function PupilLounge() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
-                        <Sparkles className="w-4 h-4 text-pitch-400" />
+                        <Sparkles className="w-4 h-4 text-brand-primary" />
                         <span className="font-medium text-white">The Gaffer AI Assistant</span>
                       </div>
                       <p className="text-sm text-secondary">
@@ -3851,14 +3851,14 @@ export default function PupilLounge() {
                       ) : gafferDisabled ? (
                         <ToggleLeft className="w-8 h-8 text-tertiary" />
                       ) : (
-                        <ToggleRight className="w-8 h-8 text-pitch-400" />
+                        <ToggleRight className="w-8 h-8 text-brand-primary" />
                       )}
                     </button>
                   </div>
                   <div className={`mt-3 text-xs px-2 py-1 rounded inline-block ${
                     gafferDisabled
                       ? 'bg-status-error-tint text-status-error'
-                      : 'bg-pitch-500/20 text-pitch-400'
+                      : 'bg-brand-primary-tint text-brand-primary'
                   }`}>
                     {gafferDisabled ? 'Disabled' : 'Enabled'}
                   </div>
@@ -4026,8 +4026,8 @@ export default function PupilLounge() {
                               <span className={`text-xs px-2 py-0.5 rounded-full ${
                                 suggestion.status === 'pending' ? 'bg-status-warning-tint text-status-warning' :
                                 suggestion.status === 'in_review' ? 'bg-status-info-tint text-status-info' :
-                                suggestion.status === 'acknowledged' ? 'bg-pitch-500/20 text-pitch-400' :
-                                suggestion.status === 'implemented' ? 'bg-energy-500/20 text-energy-400' :
+                                suggestion.status === 'acknowledged' ? 'bg-brand-primary-tint text-brand-primary' :
+                                suggestion.status === 'implemented' ? 'bg-brand-accent-tint text-brand-accent' :
                                 'bg-navy-600 text-secondary'
                               }`}>
                                 {suggestion.status === 'in_review' ? 'In Review' :
@@ -4107,7 +4107,7 @@ function AvailabilityButtons({ match, onUpdate, updating }) {
 // Result badge component - calculates from goals
 function ResultBadge({ goalsFor, goalsAgainst }) {
   const config = {
-    W: { bg: 'bg-pitch-500/20', text: 'text-pitch-400', label: 'W' },
+    W: { bg: 'bg-brand-primary-tint', text: 'text-brand-primary', label: 'W' },
     L: { bg: 'bg-status-error-tint', text: 'text-status-error', label: 'L' },
     D: { bg: 'bg-navy-600/50', text: 'text-secondary', label: 'D' },
   }
@@ -4177,9 +4177,9 @@ function MatchCountdown({ date }) {
   }, [date])
 
   return (
-    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-energy-500/20 border border-energy-500/30">
-      <Clock className="w-4 h-4 text-energy-400" />
-      <span className="text-sm font-bold text-energy-400">{countdown}</span>
+    <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-accent-tint border border-brand-accent">
+      <Clock className="w-4 h-4 text-brand-accent" />
+      <span className="text-sm font-bold text-brand-accent">{countdown}</span>
     </div>
   )
 }
@@ -4294,12 +4294,12 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
               }}
               className={`
                 min-h-[70px] rounded-lg p-1 flex flex-col items-stretch transition-colors relative
-                ${isCurrentDay ? 'bg-pitch-500/20 ring-2 ring-pitch-500' : ''}
+                ${isCurrentDay ? 'bg-brand-primary-tint ring-2 ring-brand-primary' : ''}
                 ${!isCurrentMonth ? 'opacity-30' : ''}
                 ${events.length > 0 ? 'hover:bg-subtle cursor-pointer' : 'cursor-default'}
               `}
             >
-              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-pitch-400' : 'text-secondary'}`}>
+              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-brand-primary' : 'text-secondary'}`}>
                 {format(day, 'd')}
               </span>
 
@@ -4315,10 +4315,10 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
                           event.type === 'match'
                             ? event.isPast
                               ? 'bg-navy-600 text-secondary'
-                              : 'bg-energy-500/30 text-energy-300'
+                              : 'bg-brand-accent-tint text-brand-accent'
                             : event.type === 'sc'
                               ? 'bg-status-warning-tint text-status-warning'
-                              : 'bg-pitch-500/20 text-pitch-300'
+                              : 'bg-brand-primary-tint text-brand-primary'
                         }`}
                         title={
                           event.type === 'match'
@@ -4361,11 +4361,11 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
       <div className="mt-4 pt-4 border-t border-border-default">
         <div className="flex items-center justify-center gap-4 flex-wrap mb-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-energy-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-accent" />
             <span className="text-xs text-secondary">Match</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-pitch-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-primary" />
             <span className="text-xs text-secondary">Training</span>
           </div>
           <div className="flex items-center gap-1.5">
@@ -4431,7 +4431,7 @@ function MediaUploadModal({ matchId, onClose, onUpload, uploading }) {
       <div className="card p-6 max-w-lg w-full max-h-[80vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-display font-semibold text-white flex items-center gap-2">
-            <Camera className="w-5 h-5 text-pitch-400" />
+            <Camera className="w-5 h-5 text-brand-primary" />
             Upload Match Media
           </h3>
           <button onClick={onClose} className="text-secondary hover:text-white">
@@ -4444,7 +4444,7 @@ function MediaUploadModal({ matchId, onClose, onUpload, uploading }) {
         </p>
 
         {/* File input */}
-        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border-strong rounded-xl cursor-pointer hover:border-pitch-500/50 transition-colors">
+        <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-border-strong rounded-xl cursor-pointer hover:border-brand-primary transition-colors">
           <Upload className="w-8 h-8 text-tertiary mb-2" />
           <span className="text-sm text-secondary">Click to select photos or videos</span>
           <span className="text-xs text-tertiary mt-1">Max 10 files, 100MB each</span>
@@ -4541,7 +4541,7 @@ function PlayerFilmRoom({ userId }) {
   }
 
   if (loading) {
-    return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 text-pitch-400 animate-spin" /></div>
+    return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 text-brand-primary animate-spin" /></div>
   }
 
   if (videos.length === 0) {
@@ -4560,7 +4560,7 @@ function PlayerFilmRoom({ userId }) {
   return (
     <div className="space-y-4">
       <h2 className="text-lg font-semibold text-white flex items-center gap-2">
-        <MonitorPlay className="w-5 h-5 text-pitch-400" /> Film Room
+        <MonitorPlay className="w-5 h-5 text-brand-primary" /> Film Room
       </h2>
 
       {/* Section tabs */}
@@ -4568,7 +4568,7 @@ function PlayerFilmRoom({ userId }) {
         <button
           onClick={() => setActiveSection('all')}
           className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
-            activeSection === 'all' ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary'
+            activeSection === 'all' ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary'
           }`}
         >
           All
@@ -4578,7 +4578,7 @@ function PlayerFilmRoom({ userId }) {
             key={s.id}
             onClick={() => setActiveSection(s.id)}
             className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap ${
-              activeSection === s.id ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary'
+              activeSection === s.id ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary'
             }`}
           >
             {s.name}
@@ -4589,7 +4589,7 @@ function PlayerFilmRoom({ userId }) {
       {/* Featured strip */}
       {highlighted.length > 0 && (
         <div>
-          <p className="text-xs text-energy-400 font-medium mb-2 flex items-center gap-1">
+          <p className="text-xs text-brand-accent font-medium mb-2 flex items-center gap-1">
             <Star className="w-3 h-3" /> Featured
           </p>
           <div className="flex gap-3 overflow-x-auto pb-2">
@@ -4661,7 +4661,7 @@ function PlayerVideoCard({ video, onPlay, compact }) {
   return (
     <button
       onClick={onPlay}
-      className={`text-left bg-subtle rounded-lg overflow-hidden border border-border-strong hover:border-pitch-500/50 transition-colors ${compact ? 'w-48 flex-shrink-0' : ''}`}
+      className={`text-left bg-subtle rounded-lg overflow-hidden border border-border-strong hover:border-brand-primary transition-colors ${compact ? 'w-48 flex-shrink-0' : ''}`}
     >
       <div className="relative aspect-video bg-card">
         {thumbnail ? (
@@ -4675,7 +4675,7 @@ function PlayerVideoCard({ video, onPlay, compact }) {
           <Play className="w-8 h-8 text-white" />
         </div>
         {video.watched && (
-          <div className="absolute top-1.5 right-1.5 bg-pitch-500 rounded-full p-0.5">
+          <div className="absolute top-1.5 right-1.5 bg-brand-primary rounded-full p-0.5">
             <Check className="w-3 h-3 text-white" />
           </div>
         )}

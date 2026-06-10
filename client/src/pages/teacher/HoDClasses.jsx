@@ -39,7 +39,7 @@ export default function HoDClasses() {
           <button
             onClick={() => setYearFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              yearFilter === 'all' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+              yearFilter === 'all' ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
             }`}
           >
             All ({classes.length})
@@ -49,7 +49,7 @@ export default function HoDClasses() {
               key={y}
               onClick={() => setYearFilter(String(y))}
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                yearFilter === String(y) ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+                yearFilter === String(y) ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
               }`}
             >
               Year {y} ({classes.filter(c => c.year_group === y).length})
@@ -64,8 +64,8 @@ export default function HoDClasses() {
             <div key={cls.id} className="bg-card rounded-xl border border-border-default p-5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-pitch-600/20 flex items-center justify-center">
-                    <GraduationCap className="w-6 h-6 text-pitch-400" />
+                  <div className="w-12 h-12 rounded-lg bg-brand-primary-tint flex items-center justify-center">
+                    <GraduationCap className="w-6 h-6 text-brand-primary" />
                   </div>
                   <div>
                     <h3 className="text-base font-semibold text-primary">{cls.name}</h3>

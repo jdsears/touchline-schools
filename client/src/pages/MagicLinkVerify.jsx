@@ -60,7 +60,7 @@ export default function MagicLinkVerify() {
   return (
     <div className="min-h-screen bg-page flex items-center justify-center">
       <div className="text-center">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-500 mx-auto mb-4" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary mx-auto mb-4" />
         <p className="text-secondary">Signing you in...</p>
       </div>
     </div>

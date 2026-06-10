@@ -12,8 +12,8 @@ const SPORT_ICONS = {
 }
 
 const SPORT_COLORS = {
-  football: 'bg-pitch-600/20 text-pitch-400',
-  rugby: 'bg-amber-400/20 text-amber-400',
+  football: 'bg-brand-primary-tint text-brand-primary',
+  rugby: 'bg-brand-accent-tint text-brand-accent',
   cricket: 'bg-status-info-tint text-status-info',
   hockey: 'bg-purple-500/20 text-purple-400',
   netball: 'bg-pink-500/20 text-pink-400',
@@ -67,7 +67,7 @@ export default function TeacherTeams() {
             onClick={() => setSportFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
               sportFilter === 'all'
-                ? 'bg-pitch-600/20 text-pitch-400'
+                ? 'bg-brand-primary-tint text-brand-primary'
                 : 'bg-subtle text-secondary hover:text-link'
             }`}
           >
@@ -79,7 +79,7 @@ export default function TeacherTeams() {
               onClick={() => setSportFilter(sport)}
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors capitalize ${
                 sportFilter === sport
-                  ? 'bg-pitch-600/20 text-pitch-400'
+                  ? 'bg-brand-primary-tint text-brand-primary'
                   : 'bg-subtle text-secondary hover:text-link'
               }`}
             >

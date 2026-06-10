@@ -157,7 +157,7 @@ export default function ClubAnnouncements() {
             </button>
             <button
               onClick={() => setShowCreate(!showCreate)}
-              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
             >
               <Plus className="w-4 h-4" />
               New Announcement
@@ -184,7 +184,7 @@ export default function ClubAnnouncements() {
             <input
               type="text" required value={emailForm.subject}
               onChange={(e) => setEmailForm(f => ({ ...f, subject: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               placeholder="Email subject line"
             />
           </div>
@@ -193,7 +193,7 @@ export default function ClubAnnouncements() {
             <textarea
               required value={emailForm.message} rows={4}
               onChange={(e) => setEmailForm(f => ({ ...f, message: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
               placeholder="Write your message to parents..."
             />
           </div>
@@ -211,7 +211,7 @@ export default function ClubAnnouncements() {
       {showCreate && (
         <form onSubmit={handleCreate} className="bg-card border border-border-default rounded-xl p-5 space-y-4">
           <h3 className="font-semibold text-primary flex items-center gap-2">
-            <Megaphone className="w-5 h-5 text-pitch-400" />
+            <Megaphone className="w-5 h-5 text-brand-primary" />
             New Announcement
           </h3>
           <TargetSelector
@@ -225,7 +225,7 @@ export default function ClubAnnouncements() {
             <input
               type="text" required value={form.title}
               onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               placeholder="Announcement title"
             />
           </div>
@@ -234,7 +234,7 @@ export default function ClubAnnouncements() {
             <textarea
               required value={form.content} rows={4}
               onChange={(e) => setForm(f => ({ ...f, content: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
               placeholder="Write your announcement..."
             />
           </div>
@@ -244,7 +244,7 @@ export default function ClubAnnouncements() {
               <select
                 value={form.priority}
                 onChange={(e) => setForm(f => ({ ...f, priority: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="normal">Normal</option>
                 <option value="important">Important</option>
@@ -256,7 +256,7 @@ export default function ClubAnnouncements() {
                 <input
                   type="checkbox" checked={form.is_pinned}
                   onChange={(e) => setForm(f => ({ ...f, is_pinned: e.target.checked }))}
-                  className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
+                  className="rounded bg-subtle border-border-strong text-brand-primary focus:ring-brand-primary"
                 />
                 Pin to top
               </label>
@@ -264,7 +264,7 @@ export default function ClubAnnouncements() {
                 <input
                   type="checkbox" checked={form.send_email}
                   onChange={(e) => setForm(f => ({ ...f, send_email: e.target.checked }))}
-                  className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
+                  className="rounded bg-subtle border-border-strong text-brand-primary focus:ring-brand-primary"
                 />
                 Also send as email
               </label>
@@ -272,7 +272,7 @@ export default function ClubAnnouncements() {
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowCreate(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm">
               {saving ? 'Creating...' : 'Create Announcement'}
             </button>
           </div>
@@ -338,7 +338,7 @@ function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
           type="button"
           onClick={() => onChange({ target_type: 'all_parents', target_team_ids: [] })}
           className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-            targetType === 'all_parents' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
+            targetType === 'all_parents' ? 'bg-brand-primary text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
           }`}
         >
           <Users className="w-3.5 h-3.5 inline mr-1" />
@@ -348,7 +348,7 @@ function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
           type="button"
           onClick={() => onChange({ target_type: 'specific_teams' })}
           className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-            targetType === 'specific_teams' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
+            targetType === 'specific_teams' ? 'bg-brand-primary text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
           }`}
         >
           Specific Teams
@@ -367,7 +367,7 @@ function TargetSelector({ targetType, targetTeamIds, teams, onChange }) {
                     : targetTeamIds.filter(id => id !== team.id)
                   onChange({ target_team_ids: ids })
                 }}
-                className="rounded bg-border-default border-border-strong text-pitch-600 focus:ring-pitch-600"
+                className="rounded bg-border-default border-border-strong text-brand-primary focus:ring-brand-primary"
               />
               {team.name}
             </label>
@@ -382,7 +382,7 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
   const [expanded, setExpanded] = useState(false)
   const priorityColors = {
     normal: 'border-border-default',
-    important: 'border-amber-600/30',
+    important: 'border-brand-accent',
     urgent: 'border-status-error',
   }
 
@@ -393,7 +393,7 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
         className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-subtle transition-colors"
       >
         <div className="flex items-center gap-3 min-w-0">
-          {announcement.is_pinned && <Pin className="w-4 h-4 text-amber-400 shrink-0" />}
+          {announcement.is_pinned && <Pin className="w-4 h-4 text-brand-accent shrink-0" />}
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
               <p className="font-medium text-primary truncate">{announcement.title}</p>
@@ -401,13 +401,13 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
                 <span className="text-xs bg-status-error-tint text-status-error px-2 py-0.5 rounded">Urgent</span>
               )}
               {announcement.priority === 'important' && (
-                <span className="text-xs bg-amber-600/20 text-amber-400 px-2 py-0.5 rounded">Important</span>
+                <span className="text-xs bg-brand-accent-tint text-brand-accent px-2 py-0.5 rounded">Important</span>
               )}
             </div>
             <p className="text-xs text-secondary mt-0.5">
               {announcement.created_by_name} · {new Date(announcement.created_at).toLocaleDateString('en-GB')}
               {announcement.email_sent && (
-                <span className="ml-2 text-pitch-400">
+                <span className="ml-2 text-brand-primary">
                   <Mail className="w-3 h-3 inline" /> {announcement.email_count} sent
                 </span>
               )}

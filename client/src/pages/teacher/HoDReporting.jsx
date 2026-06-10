@@ -6,8 +6,8 @@ import toast from 'react-hot-toast'
 
 const STATUS_BADGES = {
   draft: { label: 'Draft', color: 'bg-border-default text-secondary' },
-  open: { label: 'Open', color: 'bg-pitch-600/20 text-pitch-400' },
-  closed: { label: 'Closed', color: 'bg-amber-400/20 text-amber-400' },
+  open: { label: 'Open', color: 'bg-brand-primary-tint text-brand-primary' },
+  closed: { label: 'Closed', color: 'bg-brand-accent-tint text-brand-accent' },
   published: { label: 'Published', color: 'bg-status-info-tint text-status-info' },
 }
 
@@ -29,12 +29,12 @@ function ConfirmModal({ title, body, warning, confirmLabel, confirmClass, onConf
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
       <div className="bg-card rounded-xl border border-border-strong w-full max-w-md mx-4 p-6 shadow-2xl">
         <div className="flex items-start gap-3 mb-4">
-          <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-brand-accent flex-shrink-0 mt-0.5" />
           <h2 className="text-lg font-semibold text-primary">{title}</h2>
         </div>
         <div className="text-sm text-secondary space-y-2 mb-4">{body}</div>
         {warning && (
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg px-3 py-2 text-xs text-amber-300 mb-5">{warning}</div>
+          <div className="bg-brand-accent-tint border border-brand-accent rounded-lg px-3 py-2 text-xs text-brand-accent mb-5">{warning}</div>
         )}
         <div className="flex gap-3">
           <button onClick={onCancel} className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">Cancel</button>
@@ -121,7 +121,7 @@ export default function HoDReporting() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           New Reporting Window
@@ -154,7 +154,7 @@ export default function HoDReporting() {
                     {w.status === 'draft' && (
                       <button
                         onClick={() => updateStatus(w.id, 'open')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
                       >
                         <Unlock className="w-3.5 h-3.5" />
                         Open
@@ -163,7 +163,7 @@ export default function HoDReporting() {
                     {w.status === 'open' && (
                       <button
                         onClick={() => requestAction(w, 'close')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-on-dark rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-accent hover:bg-brand-accent text-on-dark rounded-lg text-sm transition-colors"
                       >
                         <Lock className="w-3.5 h-3.5" />
                         Close
@@ -228,7 +228,7 @@ export default function HoDReporting() {
             }
             warning={null}
             confirmLabel="Close window"
-            confirmClass="bg-amber-500 hover:bg-amber-600 text-on-dark"
+            confirmClass="bg-brand-accent hover:bg-brand-accent text-on-dark"
             onConfirm={() => updateStatus(w.id, 'closed')}
             onCancel={() => setConfirm(null)}
           />
@@ -248,19 +248,19 @@ export default function HoDReporting() {
                 <label className="block text-sm text-secondary mb-1">Name</label>
                 <input type="text" placeholder="e.g., Autumn Term Reports 2025" value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500" autoFocus />
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary" autoFocus />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm text-secondary mb-1">Academic Year</label>
                   <input type="text" value={form.academic_year}
                     onChange={e => setForm({ ...form, academic_year: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500" />
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary" />
                 </div>
                 <div>
                   <label className="block text-sm text-secondary mb-1">Term</label>
                   <select value={form.term} onChange={e => setForm({ ...form, term: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500">
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary">
                     <option value="autumn">Autumn</option>
                     <option value="spring">Spring</option>
                     <option value="summer">Summer</option>
@@ -271,7 +271,7 @@ export default function HoDReporting() {
                 <button type="button" onClick={() => setShowCreate(false)}
                   className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">Cancel</button>
                 <button type="submit" disabled={creating}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
+                  className="flex-1 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50">
                   {creating ? 'Creating...' : 'Create'}
                 </button>
               </div>

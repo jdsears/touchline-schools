@@ -8,8 +8,8 @@ const SPORT_ICONS = {
   hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E',
 }
 const SPORT_COLORS = {
-  football: 'bg-pitch-600/20 text-pitch-400',
-  rugby: 'bg-amber-400/20 text-amber-400',
+  football: 'bg-brand-primary-tint text-brand-primary',
+  rugby: 'bg-brand-accent-tint text-brand-accent',
   cricket: 'bg-status-info-tint text-status-info',
   hockey: 'bg-purple-500/20 text-purple-400',
   netball: 'bg-pink-500/20 text-pink-400',
@@ -61,7 +61,7 @@ export default function HoDTeams() {
           <button
             onClick={() => setSportFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              sportFilter === 'all' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+              sportFilter === 'all' ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
             }`}
           >
             All ({teams.length})
@@ -71,7 +71,7 @@ export default function HoDTeams() {
               key={sport}
               onClick={() => setSportFilter(sport)}
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors capitalize ${
-                sportFilter === sport ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+                sportFilter === sport ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
               }`}
             >
               {SPORT_ICONS[sport]} {sport} ({teams.filter(t => t.sport === sport).length})

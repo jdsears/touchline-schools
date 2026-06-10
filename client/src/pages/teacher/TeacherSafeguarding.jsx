@@ -32,18 +32,18 @@ export default function TeacherSafeguarding() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
-          <ShieldCheck className="w-7 h-7 text-pitch-400" />
+          <ShieldCheck className="w-7 h-7 text-brand-primary" />
           Safeguarding
         </h1>
         <p className="text-secondary mt-1">Safeguarding, compliance, and incident management</p>
       </div>
 
       {/* Key principles banner */}
-      <div className="bg-card rounded-xl border border-amber-400/30 p-5 mb-6">
+      <div className="bg-card rounded-xl border border-brand-accent p-5 mb-6">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-brand-accent shrink-0 mt-0.5" />
           <div>
-            <h3 className="text-sm font-semibold text-amber-400 mb-1">Safeguarding is everyone's responsibility</h3>
+            <h3 className="text-sm font-semibold text-brand-accent mb-1">Safeguarding is everyone's responsibility</h3>
             <p className="text-xs text-secondary">
               If you have a concern about a pupil, report it immediately to your Designated Safeguarding Lead.
               If a child is in immediate danger, contact the police (999) or local authority children's services.
@@ -85,7 +85,7 @@ export default function TeacherSafeguarding() {
       {isHoD && (
         <>
           <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-amber-400" />
+            <Shield className="w-5 h-5 text-brand-accent" />
             DSL / Head of Department
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -134,8 +134,8 @@ export default function TeacherSafeguarding() {
 function ActionCard({ icon: Icon, title, description, buttonLabel, color, href }) {
   const colors = {
     alert: 'bg-status-error-tint text-status-error',
-    pitch: 'bg-pitch-600/20 text-pitch-400',
-    amber: 'bg-amber-400/20 text-amber-400',
+    pitch: 'bg-brand-primary-tint text-brand-primary',
+    amber: 'bg-brand-accent-tint text-brand-accent',
   }
   return (
     <div className="bg-card rounded-xl border border-border-default p-5 flex flex-col">
@@ -147,7 +147,7 @@ function ActionCard({ icon: Icon, title, description, buttonLabel, color, href }
       <Link
         to={href}
         className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-          color === 'alert' ? 'text-status-error hover:text-status-error' : 'text-pitch-400 hover:text-pitch-300'
+          color === 'alert' ? 'text-status-error hover:text-status-error' : 'text-brand-primary hover:text-brand-primary'
         } transition-colors`}
       >
         {buttonLabel} <ChevronRight className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ function ActionCard({ icon: Icon, title, description, buttonLabel, color, href }
 function DashboardCard({ icon: Icon, title, description, href }) {
   return (
     <Link to={href} className="bg-subtle rounded-xl border border-border-strong/50 p-5 hover:border-border-strong transition-colors flex items-start gap-4">
-      <Icon className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+      <Icon className="w-5 h-5 text-brand-accent shrink-0 mt-0.5" />
       <div>
         <h3 className="text-sm font-medium text-primary">{title}</h3>
         <p className="text-xs text-secondary mt-0.5">{description}</p>
@@ -171,7 +171,7 @@ function DashboardCard({ icon: Icon, title, description, href }) {
 function PolicyRow({ title, description }) {
   return (
     <div className="flex items-start gap-3 p-3 rounded-lg bg-subtle">
-      <div className="w-2 h-2 rounded-full bg-pitch-400 mt-1.5 shrink-0" />
+      <div className="w-2 h-2 rounded-full bg-brand-primary mt-1.5 shrink-0" />
       <div>
         <div className="text-sm font-medium text-primary">{title}</div>
         <div className="text-xs text-secondary">{description}</div>

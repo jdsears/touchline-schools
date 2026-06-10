@@ -17,10 +17,10 @@ const FILTER_TABS = [
 
 const TYPE_CONFIG = {
   attendance: { icon: Users, color: 'bg-status-info-tint text-status-info border-status-info', label: 'Attendance' },
-  compliance: { icon: Shield, color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', label: 'Compliance' },
+  compliance: { icon: Shield, color: 'bg-brand-accent-tint text-brand-accent border-brand-accent', label: 'Compliance' },
   financial: { icon: DollarSign, color: 'bg-status-success-tint text-status-success border-status-success', label: 'Financial' },
   performance: { icon: TrendingUp, color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', label: 'Performance' },
-  general: { icon: Sparkles, color: 'bg-pitch-600/20 text-pitch-400 border-pitch-500/30', label: 'General' },
+  general: { icon: Sparkles, color: 'bg-brand-primary-tint text-brand-primary border-brand-primary', label: 'General' },
 }
 
 const PRIORITY_STYLES = {
@@ -167,14 +167,14 @@ export default function ClubInsights() {
               onClick={() => setActiveFilter(tab.id)}
               className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                 activeFilter === tab.id
-                  ? 'bg-pitch-600/20 text-pitch-400'
+                  ? 'bg-brand-primary-tint text-brand-primary'
                   : 'text-secondary hover:text-primary hover:bg-subtle'
               }`}
             >
               {tab.label}
               {count > 0 && (
                 <span className={`ml-1.5 text-xs ${
-                  activeFilter === tab.id ? 'text-pitch-400/70' : 'text-tertiary'
+                  activeFilter === tab.id ? 'text-brand-primary' : 'text-tertiary'
                 }`}>
                   ({count})
                 </span>
@@ -243,7 +243,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
                 </span>
               )}
               {isActioned && (
-                <span className="text-xs bg-pitch-600/20 text-pitch-400 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
+                <span className="text-xs bg-brand-primary-tint text-brand-primary px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" /> Actioned
                 </span>
               )}
@@ -288,7 +288,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
               <button
                 onClick={(e) => { e.stopPropagation(); onMarkActioned(insight.id) }}
                 disabled={isActioning}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs font-medium transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-xs font-medium transition-colors"
               >
                 <CheckCircle2 className="w-3.5 h-3.5" />
                 {isActioning ? 'Updating...' : 'Mark as actioned'}

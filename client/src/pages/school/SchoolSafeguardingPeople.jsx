@@ -128,8 +128,8 @@ export default function ClubSafeguardingPeople() {
     const expiry = new Date(record.dbs_expiry)
     const daysUntil = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24))
     if (daysUntil < 0) return { label: 'Expired', color: 'text-status-error', bg: 'bg-status-error-tint', Icon: ShieldX }
-    if (daysUntil <= 30) return { label: `${daysUntil}d left`, color: 'text-amber-400', bg: 'bg-amber-500/20', Icon: ShieldAlert }
-    return { label: 'Valid', color: 'text-pitch-400', bg: 'bg-pitch-600/20', Icon: ShieldCheck }
+    if (daysUntil <= 30) return { label: `${daysUntil}d left`, color: 'text-brand-accent', bg: 'bg-brand-accent-tint', Icon: ShieldAlert }
+    return { label: 'Valid', color: 'text-brand-primary', bg: 'bg-brand-primary-tint', Icon: ShieldCheck }
   }
 
   // Filter out members who already have records
@@ -163,7 +163,7 @@ export default function ClubSafeguardingPeople() {
         {canManage && (
           <button
             onClick={() => setShowAdd(!showAdd)}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             Add Record
@@ -182,7 +182,7 @@ export default function ClubSafeguardingPeople() {
                 required
                 value={form.member_id}
                 onChange={(e) => setForm(f => ({ ...f, member_id: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="">Select member...</option>
                 {availableMembers.map(m => (
@@ -195,7 +195,7 @@ export default function ClubSafeguardingPeople() {
               <select
                 value={form.role}
                 onChange={(e) => setForm(f => ({ ...f, role: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="volunteer">Volunteer</option>
                 <option value="coach">Coach</option>
@@ -210,7 +210,7 @@ export default function ClubSafeguardingPeople() {
               <select
                 value={form.dbs_type}
                 onChange={(e) => setForm(f => ({ ...f, dbs_type: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="enhanced">Enhanced</option>
                 <option value="standard">Standard</option>
@@ -223,7 +223,7 @@ export default function ClubSafeguardingPeople() {
                 type="text"
                 value={form.dbs_number}
                 onChange={(e) => setForm(f => ({ ...f, dbs_number: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. 001234567890"
               />
             </div>
@@ -233,7 +233,7 @@ export default function ClubSafeguardingPeople() {
                 type="date"
                 value={form.dbs_issue_date}
                 onChange={(e) => setForm(f => ({ ...f, dbs_issue_date: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -242,7 +242,7 @@ export default function ClubSafeguardingPeople() {
                 type="date"
                 value={form.dbs_expiry}
                 onChange={(e) => setForm(f => ({ ...f, dbs_expiry: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -254,7 +254,7 @@ export default function ClubSafeguardingPeople() {
                 id="first_aid"
                 checked={form.first_aid_valid}
                 onChange={(e) => setForm(f => ({ ...f, first_aid_valid: e.target.checked }))}
-                className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
+                className="w-4 h-4 rounded border-border-strong bg-subtle text-brand-primary focus:ring-brand-primary"
               />
               <label htmlFor="first_aid" className="text-sm text-secondary">First Aid Certified</label>
             </div>
@@ -265,7 +265,7 @@ export default function ClubSafeguardingPeople() {
                   type="date"
                   value={form.first_aid_expiry}
                   onChange={(e) => setForm(f => ({ ...f, first_aid_expiry: e.target.value }))}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
             )}
@@ -278,7 +278,7 @@ export default function ClubSafeguardingPeople() {
                 id="safeguarding_training"
                 checked={form.safeguarding_training_valid}
                 onChange={(e) => setForm(f => ({ ...f, safeguarding_training_valid: e.target.checked }))}
-                className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
+                className="w-4 h-4 rounded border-border-strong bg-subtle text-brand-primary focus:ring-brand-primary"
               />
               <label htmlFor="safeguarding_training" className="text-sm text-secondary">Safeguarding Training Complete</label>
             </div>
@@ -290,7 +290,7 @@ export default function ClubSafeguardingPeople() {
                     type="date"
                     value={form.safeguarding_training_date}
                     onChange={(e) => setForm(f => ({ ...f, safeguarding_training_date: e.target.value }))}
-                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   />
                 </div>
                 <div>
@@ -299,7 +299,7 @@ export default function ClubSafeguardingPeople() {
                     type="text"
                     value={form.safeguarding_training_provider}
                     onChange={(e) => setForm(f => ({ ...f, safeguarding_training_provider: e.target.value }))}
-                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                     placeholder="e.g. FA, NSPCC"
                   />
                 </div>
@@ -313,7 +313,7 @@ export default function ClubSafeguardingPeople() {
               type="text"
               value={form.coaching_badges}
               onChange={(e) => setForm(f => ({ ...f, coaching_badges: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               placeholder="e.g. FA Level 1, UEFA B"
             />
           </div>
@@ -324,7 +324,7 @@ export default function ClubSafeguardingPeople() {
               value={form.notes}
               onChange={(e) => setForm(f => ({ ...f, notes: e.target.value }))}
               rows={2}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
               placeholder="Any additional notes..."
             />
           </div>
@@ -340,7 +340,7 @@ export default function ClubSafeguardingPeople() {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
             >
               {saving ? 'Creating...' : 'Create Record'}
             </button>
@@ -388,12 +388,12 @@ export default function ClubSafeguardingPeople() {
                       DBS: {dbs.label}
                     </span>
                     {r.first_aid_valid && (
-                      <span className="hidden sm:inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-pitch-600/20 text-pitch-400">
+                      <span className="hidden sm:inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-brand-primary-tint text-brand-primary">
                         <Check className="w-3 h-3" /> First Aid
                       </span>
                     )}
                     {r.safeguarding_training_valid && (
-                      <span className="hidden sm:inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-pitch-600/20 text-pitch-400">
+                      <span className="hidden sm:inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-brand-primary-tint text-brand-primary">
                         <Check className="w-3 h-3" /> Safeguarding
                       </span>
                     )}
@@ -416,7 +416,7 @@ export default function ClubSafeguardingPeople() {
                             <select
                               value={editForm.role}
                               onChange={(e) => setEditForm(f => ({ ...f, role: e.target.value }))}
-                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             >
                               <option value="volunteer">Volunteer</option>
                               <option value="coach">Coach</option>
@@ -432,7 +432,7 @@ export default function ClubSafeguardingPeople() {
                               type="text"
                               value={editForm.dbs_number}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_number: e.target.value }))}
-                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             />
                           </div>
                           <div>
@@ -440,7 +440,7 @@ export default function ClubSafeguardingPeople() {
                             <select
                               value={editForm.dbs_type}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_type: e.target.value }))}
-                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             >
                               <option value="enhanced">Enhanced</option>
                               <option value="standard">Standard</option>
@@ -453,7 +453,7 @@ export default function ClubSafeguardingPeople() {
                               type="date"
                               value={editForm.dbs_issue_date}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_issue_date: e.target.value }))}
-                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             />
                           </div>
                           <div>
@@ -462,7 +462,7 @@ export default function ClubSafeguardingPeople() {
                               type="date"
                               value={editForm.dbs_expiry}
                               onChange={(e) => setEditForm(f => ({ ...f, dbs_expiry: e.target.value }))}
-                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             />
                           </div>
                         </div>
@@ -474,7 +474,7 @@ export default function ClubSafeguardingPeople() {
                               id={`edit_first_aid_${r.id}`}
                               checked={editForm.first_aid_valid}
                               onChange={(e) => setEditForm(f => ({ ...f, first_aid_valid: e.target.checked }))}
-                              className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
+                              className="w-4 h-4 rounded border-border-strong bg-subtle text-brand-primary focus:ring-brand-primary"
                             />
                             <label htmlFor={`edit_first_aid_${r.id}`} className="text-sm text-secondary">First Aid Certified</label>
                           </div>
@@ -485,7 +485,7 @@ export default function ClubSafeguardingPeople() {
                                 type="date"
                                 value={editForm.first_aid_expiry}
                                 onChange={(e) => setEditForm(f => ({ ...f, first_aid_expiry: e.target.value }))}
-                                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                               />
                             </div>
                           )}
@@ -498,7 +498,7 @@ export default function ClubSafeguardingPeople() {
                               id={`edit_safeguarding_${r.id}`}
                               checked={editForm.safeguarding_training_valid}
                               onChange={(e) => setEditForm(f => ({ ...f, safeguarding_training_valid: e.target.checked }))}
-                              className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-600 focus:ring-pitch-600"
+                              className="w-4 h-4 rounded border-border-strong bg-subtle text-brand-primary focus:ring-brand-primary"
                             />
                             <label htmlFor={`edit_safeguarding_${r.id}`} className="text-sm text-secondary">Safeguarding Training</label>
                           </div>
@@ -510,7 +510,7 @@ export default function ClubSafeguardingPeople() {
                                   type="date"
                                   value={editForm.safeguarding_training_date}
                                   onChange={(e) => setEditForm(f => ({ ...f, safeguarding_training_date: e.target.value }))}
-                                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                                 />
                               </div>
                               <div>
@@ -519,7 +519,7 @@ export default function ClubSafeguardingPeople() {
                                   type="text"
                                   value={editForm.safeguarding_training_provider}
                                   onChange={(e) => setEditForm(f => ({ ...f, safeguarding_training_provider: e.target.value }))}
-                                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                                 />
                               </div>
                             </>
@@ -532,7 +532,7 @@ export default function ClubSafeguardingPeople() {
                             type="text"
                             value={editForm.coaching_badges}
                             onChange={(e) => setEditForm(f => ({ ...f, coaching_badges: e.target.value }))}
-                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             placeholder="e.g. FA Level 1, UEFA B"
                           />
                         </div>
@@ -543,7 +543,7 @@ export default function ClubSafeguardingPeople() {
                             value={editForm.notes}
                             onChange={(e) => setEditForm(f => ({ ...f, notes: e.target.value }))}
                             rows={2}
-                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+                            className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
                           />
                         </div>
 
@@ -574,7 +574,7 @@ export default function ClubSafeguardingPeople() {
                           <button
                             onClick={() => handleUpdate(r.id)}
                             disabled={saving}
-                            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
+                            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
                           >
                             <Save className="w-4 h-4" />
                             {saving ? 'Saving...' : 'Save Changes'}
@@ -651,7 +651,7 @@ export default function ClubSafeguardingPeople() {
                                   href={doc.url}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="text-xs bg-subtle text-pitch-400 hover:text-pitch-300 px-3 py-1.5 rounded-lg transition-colors"
+                                  className="text-xs bg-subtle text-brand-primary hover:text-brand-primary px-3 py-1.5 rounded-lg transition-colors"
                                 >
                                   {doc.name || `Document ${i + 1}`}
                                 </a>
@@ -664,7 +664,7 @@ export default function ClubSafeguardingPeople() {
                           <div className="flex justify-end">
                             <button
                               onClick={() => startEdit(r)}
-                              className="flex items-center gap-2 px-3 py-1.5 text-sm text-pitch-400 hover:text-pitch-300 transition-colors"
+                              className="flex items-center gap-2 px-3 py-1.5 text-sm text-brand-primary hover:text-brand-primary transition-colors"
                             >
                               <Edit className="w-4 h-4" />
                               Edit Record

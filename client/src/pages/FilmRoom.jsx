@@ -126,7 +126,7 @@ export default function FilmRoom() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 text-pitch-400 animate-spin" />
+        <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
       </div>
     )
   }
@@ -137,7 +137,7 @@ export default function FilmRoom() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white flex items-center gap-3">
-            <MonitorPlay className="w-7 h-7 text-pitch-400" />
+            <MonitorPlay className="w-7 h-7 text-brand-primary" />
             Film Room
           </h1>
           <p className="text-secondary mt-1">Curate educational videos for your pupils</p>
@@ -168,7 +168,7 @@ export default function FilmRoom() {
           <button
             onClick={() => setActiveSection('all')}
             className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
-              activeSection === 'all' ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary hover:bg-border-default'
+              activeSection === 'all' ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:bg-border-default'
             }`}
           >
             All ({videos.length})
@@ -180,7 +180,7 @@ export default function FilmRoom() {
                 key={s.id}
                 onClick={() => setActiveSection(s.id)}
                 className={`px-3 py-1.5 rounded-lg text-sm whitespace-nowrap transition-colors ${
-                  activeSection === s.id ? 'bg-pitch-500 text-white' : 'bg-subtle text-secondary hover:bg-border-default'
+                  activeSection === s.id ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:bg-border-default'
                 }`}
               >
                 {s.name} ({count})
@@ -310,7 +310,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
 
   return (
     <div className={`bg-subtle rounded-xl overflow-hidden border transition-colors ${
-      video.is_highlighted ? 'border-energy-500/50' : !video.is_visible ? 'border-border-strong opacity-60' : 'border-border-strong'
+      video.is_highlighted ? 'border-brand-accent' : !video.is_visible ? 'border-border-strong opacity-60' : 'border-border-strong'
     }`}>
       {/* Thumbnail */}
       <div className="relative aspect-video bg-card">
@@ -326,7 +326,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
           </div>
         )}
         {video.is_highlighted && (
-          <div className="absolute top-2 left-2 bg-energy-500 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+          <div className="absolute top-2 left-2 bg-brand-accent text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
             <Star className="w-3 h-3" /> Featured
           </div>
         )}
@@ -357,7 +357,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
         <div className="flex items-center justify-between mt-3 pt-2 border-t border-border-strong">
           <button
             onClick={onShowWatchers}
-            className="text-xs text-secondary hover:text-pitch-400 flex items-center gap-1"
+            className="text-xs text-secondary hover:text-brand-primary flex items-center gap-1"
           >
             <Users className="w-3.5 h-3.5" />
             {video.watch_count !== undefined ? `${video.watch_count} watched` : 'Watchers'}
@@ -366,8 +366,8 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
             <button onClick={onEdit} className="p-1.5 text-secondary hover:text-white" title="Edit">
               <Edit3 className="w-3.5 h-3.5" />
             </button>
-            <button onClick={onToggleHighlight} className="p-1.5 text-secondary hover:text-energy-400" title="Feature">
-              <Star className={`w-3.5 h-3.5 ${video.is_highlighted ? 'fill-energy-400 text-energy-400' : ''}`} />
+            <button onClick={onToggleHighlight} className="p-1.5 text-secondary hover:text-brand-accent" title="Feature">
+              <Star className={`w-3.5 h-3.5 ${video.is_highlighted ? 'fill-energy-400 text-brand-accent' : ''}`} />
             </button>
             <button onClick={onToggleVisibility} className="p-1.5 text-secondary hover:text-white" title={video.is_visible ? 'Hide' : 'Show'}>
               {video.is_visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -600,7 +600,7 @@ function WatcherDrawer({ video, onClose }) {
         </div>
 
         {loading ? (
-          <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 text-pitch-400 animate-spin" /></div>
+          <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 text-brand-primary animate-spin" /></div>
         ) : data ? (
           <div className="p-4">
             <p className="text-sm text-secondary mb-4">
@@ -610,7 +610,7 @@ function WatcherDrawer({ video, onClose }) {
               {data.watchers.map(w => (
                 <div key={w.pupil_id} className="flex items-center gap-3 py-2">
                   <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                    w.watched ? 'bg-pitch-500/20 text-pitch-400' : 'bg-border-default text-tertiary'
+                    w.watched ? 'bg-brand-primary-tint text-brand-primary' : 'bg-border-default text-tertiary'
                   }`}>
                     {w.watched ? <Check className="w-3.5 h-3.5" /> : <X className="w-3.5 h-3.5" />}
                   </div>

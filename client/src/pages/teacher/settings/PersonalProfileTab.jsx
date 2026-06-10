@@ -43,7 +43,7 @@ export default function PersonalProfileTab({ user }) {
       <form onSubmit={handleSave} className="space-y-6">
         {/* Avatar placeholder */}
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-pitch-600/30 flex items-center justify-center text-xl font-bold text-pitch-400">
+          <div className="w-16 h-16 rounded-full bg-brand-primary-tint flex items-center justify-center text-xl font-bold text-brand-primary">
             {initials || '?'}
           </div>
           <div>
@@ -59,7 +59,7 @@ export default function PersonalProfileTab({ user }) {
               <input
                 value={form.name}
                 onChange={e => set('name')(e.target.value)}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
               />
             </div>
             <div>
@@ -68,7 +68,7 @@ export default function PersonalProfileTab({ user }) {
                 value={form.phone}
                 onChange={e => set('phone')(e.target.value)}
                 placeholder="07700 900000"
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
               />
             </div>
           </div>
@@ -88,7 +88,7 @@ export default function PersonalProfileTab({ user }) {
               onChange={e => set('bio')(e.target.value)}
               rows={3}
               placeholder="Brief description for the staff directory..."
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500 resize-none"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary resize-none"
             />
           </div>
           <div>
@@ -96,7 +96,7 @@ export default function PersonalProfileTab({ user }) {
             <select
               value={form.timezone}
               onChange={e => set('timezone')(e.target.value)}
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
             >
               {TIMEZONES.map(tz => <option key={tz} value={tz}>{tz}</option>)}
             </select>
@@ -106,7 +106,7 @@ export default function PersonalProfileTab({ user }) {
         <button
           type="submit"
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save Profile

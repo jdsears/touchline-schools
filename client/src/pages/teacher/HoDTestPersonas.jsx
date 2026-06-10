@@ -12,7 +12,7 @@ import toast from 'react-hot-toast'
 const YEAR_COLORS = {
   7: 'bg-status-info-tint text-status-info',
   9: 'bg-purple-500/20 text-purple-400',
-  11: 'bg-amber-500/20 text-amber-400',
+  11: 'bg-brand-accent-tint text-brand-accent',
   13: 'bg-status-success-tint text-status-success',
 }
 
@@ -73,7 +73,7 @@ export default function HoDTestPersonas() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
-            <Users className="w-7 h-7 text-pitch-400" />
+            <Users className="w-7 h-7 text-brand-primary" />
             Test Personas
           </h1>
           <p className="text-sm text-secondary mt-1">
@@ -144,7 +144,7 @@ export default function HoDTestPersonas() {
                         {p.house} House
                       </span>
                       {p.protected_from_reset && (
-                        <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-pitch-600/20 text-pitch-400 text-xs font-medium">
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded bg-brand-primary-tint text-brand-primary text-xs font-medium">
                           <ShieldCheck className="w-3 h-3" />
                           Protected
                         </span>
@@ -156,7 +156,7 @@ export default function HoDTestPersonas() {
                   <button
                     onClick={() => handleQuickLogin(p)}
                     disabled={impersonating === p.id}
-                    className="flex items-center gap-2 px-4 py-2 bg-amber-600 hover:bg-amber-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-brand-accent hover:bg-brand-accent text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
                   >
                     {impersonating === p.id ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -178,7 +178,7 @@ export default function HoDTestPersonas() {
               {/* Stats row */}
               <div className="flex flex-wrap gap-4 pl-13">
                 <StatBadge icon={ClipboardCheck} label="Observations" value={p.observation_count} color="text-status-info" />
-                <StatBadge icon={Trophy} label="Teams" value={p.team_count} color="text-amber-400" />
+                <StatBadge icon={Trophy} label="Teams" value={p.team_count} color="text-brand-accent" />
                 <StatBadge icon={GraduationCap} label="Classes" value={p.class_count} color="text-purple-400" />
                 <StatBadge icon={BookOpen} label="Assessments" value={p.assessment_count} color="text-status-success" />
                 {p.sports && (

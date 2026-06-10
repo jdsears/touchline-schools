@@ -174,7 +174,7 @@ export default function TeacherClassDetail() {
     return (
       <div className="p-6 text-center">
         <p className="text-secondary">Teaching group not found.</p>
-        <Link to="/teacher/classes" className="text-pitch-400 hover:underline text-sm mt-2 inline-block">
+        <Link to="/teacher/classes" className="text-brand-primary hover:underline text-sm mt-2 inline-block">
           Back to classes
         </Link>
       </div>
@@ -195,8 +195,8 @@ export default function TeacherClassDetail() {
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
-          <div className="w-14 h-14 rounded-xl bg-pitch-600/20 flex items-center justify-center">
-            <GraduationCap className="w-7 h-7 text-pitch-400" />
+          <div className="w-14 h-14 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+            <GraduationCap className="w-7 h-7 text-brand-primary" />
           </div>
           <div>
             <h1 className="text-2xl font-bold text-primary">{group.name}</h1>
@@ -223,12 +223,12 @@ export default function TeacherClassDetail() {
         <div className="lg:col-span-2 space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-              <BookOpen className="w-5 h-5 text-pitch-400" />
+              <BookOpen className="w-5 h-5 text-brand-primary" />
               Sport Units
             </h2>
             <button
               onClick={() => setShowAddUnit(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
             >
               <Plus className="w-3.5 h-3.5" />
               Add Unit
@@ -243,7 +243,7 @@ export default function TeacherClassDetail() {
                     <div>
                       <h3 className="text-base font-medium text-primary">{unit.unit_name}</h3>
                       <div className="flex items-center gap-3 mt-1">
-                        <span className="px-2 py-0.5 bg-pitch-600/20 text-pitch-400 rounded text-xs capitalize">{unit.sport}</span>
+                        <span className="px-2 py-0.5 bg-brand-primary-tint text-brand-primary rounded text-xs capitalize">{unit.sport}</span>
                         <span className="text-xs text-secondary capitalize">{unit.curriculum_area?.replace('_', ' ')}</span>
                         {unit.term && <span className="text-xs text-secondary capitalize">{unit.term} term</span>}
                         {unit.lesson_count && <span className="text-xs text-secondary">{unit.lesson_count} lessons</span>}
@@ -275,7 +275,7 @@ export default function TeacherClassDetail() {
               </p>
               <button
                 onClick={() => setShowAddUnit(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm mx-auto transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm mx-auto transition-colors"
               >
                 <Plus className="w-4 h-4" />
                 Add Sport Unit
@@ -288,12 +288,12 @@ export default function TeacherClassDetail() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-              <Users className="w-5 h-5 text-pitch-400" />
+              <Users className="w-5 h-5 text-brand-primary" />
               Pupils ({group.pupils?.length || 0})
             </h2>
             <button
               onClick={openAddPupils}
-              className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs transition-colors"
+              className="flex items-center gap-1 px-2.5 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-xs transition-colors"
             >
               <UserPlus className="w-3.5 h-3.5" />
               Add
@@ -306,7 +306,7 @@ export default function TeacherClassDetail() {
                 {group.pupils.map(pupil => (
                   <div key={pupil.id} className="flex items-center justify-between py-2 px-3 rounded-lg hover:bg-subtle group">
                     <Link to={`/teacher/hod/pupils/${pupil.id}`} className="flex-1 min-w-0">
-                      <span className="text-sm text-primary hover:text-pitch-400 transition-colors">
+                      <span className="text-sm text-primary hover:text-brand-primary transition-colors">
                         {pupil.last_name ? `${pupil.last_name}, ${pupil.first_name}` : pupil.name || pupil.first_name}
                       </span>
                       {pupil.house && (
@@ -333,7 +333,7 @@ export default function TeacherClassDetail() {
                 </p>
                 <button
                   onClick={openAddPupils}
-                  className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm mx-auto transition-colors"
+                  className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm mx-auto transition-colors"
                 >
                   <UserPlus className="w-4 h-4" />
                   Add Pupils
@@ -362,7 +362,7 @@ export default function TeacherClassDetail() {
                 placeholder="Search by name..."
                 value={pupilSearch}
                 onChange={e => setPupilSearch(e.target.value)}
-                className="w-full pl-9 pr-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                className="w-full pl-9 pr-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                 autoFocus
               />
             </div>
@@ -407,7 +407,7 @@ export default function TeacherClassDetail() {
                         <button
                           onClick={() => handleAddPupils([p.id])}
                           disabled={isAdding}
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs transition-colors disabled:opacity-50"
+                          className="flex items-center gap-1 px-2.5 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-xs transition-colors disabled:opacity-50"
                         >
                           {isAdding ? <Loader2 className="w-3 h-3 animate-spin" /> : <Plus className="w-3 h-3" />}
                           Add
@@ -454,7 +454,7 @@ export default function TeacherClassDetail() {
                       unit_name: unitForm.unit_name || sport?.label || '',
                     })
                   }}
-                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 >
                   {SPORTS.map(s => (
                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -468,7 +468,7 @@ export default function TeacherClassDetail() {
                   placeholder="e.g., Football - Invasion Games"
                   value={unitForm.unit_name}
                   onChange={e => setUnitForm({ ...unitForm, unit_name: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                 />
               </div>
               <div className="grid grid-cols-2 gap-4">
@@ -477,7 +477,7 @@ export default function TeacherClassDetail() {
                   <select
                     value={unitForm.term}
                     onChange={e => setUnitForm({ ...unitForm, term: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                   >
                     {TERMS.map(t => (
                       <option key={t.value} value={t.value}>{t.label}</option>
@@ -491,7 +491,7 @@ export default function TeacherClassDetail() {
                     placeholder="e.g., 6"
                     value={unitForm.lesson_count}
                     onChange={e => setUnitForm({ ...unitForm, lesson_count: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                   />
                 </div>
               </div>
@@ -506,7 +506,7 @@ export default function TeacherClassDetail() {
                 <button
                   type="submit"
                   disabled={addingUnit}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {addingUnit ? 'Adding...' : 'Add Unit'}
                 </button>

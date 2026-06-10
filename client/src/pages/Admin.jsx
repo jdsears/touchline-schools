@@ -44,9 +44,9 @@ import toast from 'react-hot-toast'
 // Stat Card Component
 function StatCard({ title, value, subtitle, icon: Icon, color = 'pitch' }) {
   const colors = {
-    pitch: 'bg-pitch-500/20 text-pitch-400',
+    pitch: 'bg-brand-primary-tint text-brand-primary',
     blue: 'bg-status-info-tint text-status-info',
-    amber: 'bg-amber-500/20 text-amber-400',
+    amber: 'bg-brand-accent-tint text-brand-accent',
     purple: 'bg-purple-500/20 text-purple-400',
     cyan: 'bg-cyan-500/20 text-cyan-400',
     orange: 'bg-orange-500/20 text-orange-400',
@@ -149,7 +149,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
               value={formData.code}
               onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
               placeholder="e.g. SUMMER20"
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
               disabled={!!editingCode}
             />
           </div>
@@ -161,7 +161,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               placeholder="e.g. Summer promotion - 20% off"
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
             />
           </div>
 
@@ -170,7 +170,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
             <select
               value={formData.discount_type}
               onChange={(e) => setFormData({ ...formData, discount_type: e.target.value })}
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-brand-primary focus:outline-none"
             >
               <option value="percentage">Percentage Off</option>
               <option value="fixed">Fixed Amount Off (£)</option>
@@ -189,7 +189,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
                 onChange={(e) => setFormData({ ...formData, discount_value: e.target.value })}
                 min="0"
                 max={formData.discount_type === 'percentage' ? 100 : 9999}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
               />
             </div>
           )}
@@ -203,7 +203,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
                 onChange={(e) => setFormData({ ...formData, max_uses: e.target.value })}
                 placeholder="Unlimited"
                 min="1"
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
               />
               <p className="text-xs text-tertiary mt-1">
                 {formData.max_uses ? `Limited to ${formData.max_uses} total redemptions` : 'Leave blank for unlimited uses'}
@@ -215,7 +215,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
                 type="date"
                 value={formData.valid_until}
                 onChange={(e) => setFormData({ ...formData, valid_until: e.target.value })}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-brand-primary focus:outline-none"
               />
               <p className="text-xs text-tertiary mt-1">
                 {formData.valid_until ? '' : 'Leave blank for no expiry'}
@@ -234,7 +234,7 @@ function PromoCodeModal({ isOpen, onClose, onSave, editingCode }) {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-pitch-500 text-navy-950 rounded-lg hover:bg-pitch-600 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : null}
               {editingCode ? 'Update' : 'Create'}
@@ -455,15 +455,15 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
 
         {loading ? (
           <div className="flex justify-center py-12">
-            <Loader2 className="w-6 h-6 animate-spin text-pitch-500" />
+            <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
           </div>
         ) : userDetail ? (
           <div className="p-4 space-y-5">
             {/* User Info */}
             <div className="bg-subtle rounded-lg p-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-pitch-500/20 flex items-center justify-center">
-                  <Users className="w-5 h-5 text-pitch-400" />
+                <div className="w-10 h-10 rounded-full bg-brand-primary-tint flex items-center justify-center">
+                  <Users className="w-5 h-5 text-brand-primary" />
                 </div>
                 <div>
                   <div className="text-white font-medium">{userDetail.name || 'No name'}</div>
@@ -484,7 +484,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
               <div className="mt-1 text-sm text-secondary">
                 Pupil Profile:{' '}
                 {userDetail.pupil_id ? (
-                  <span className="text-pitch-400">{userDetail.player_name || 'Linked'}</span>
+                  <span className="text-brand-primary">{userDetail.player_name || 'Linked'}</span>
                 ) : (
                   <span className="text-status-error">Not linked</span>
                 )}
@@ -496,9 +496,9 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <span
                     className={`ml-2 px-1.5 py-0.5 rounded text-xs ${
                       userDetail.subscription.status === 'active'
-                        ? 'bg-pitch-500/20 text-pitch-400'
+                        ? 'bg-brand-primary-tint text-brand-primary'
                         : userDetail.subscription.status === 'trialing'
-                        ? 'bg-amber-500/20 text-amber-400'
+                        ? 'bg-brand-accent-tint text-brand-accent'
                         : 'bg-status-error-tint text-status-error'
                     }`}
                   >
@@ -509,7 +509,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
               {userDetail.subscription_tier && !['free', 'free_trial', ''].includes(userDetail.subscription_tier) && (
                 <div className="mt-1 text-sm text-secondary">
                   Plan:{' '}
-                  <span className="text-pitch-400 capitalize">
+                  <span className="text-brand-primary capitalize">
                     {userDetail.subscription_tier.replace('team_', '').replace('_monthly', '').replace('_annual', '').replace(/_/g, ' ')}
                   </span>
                 </div>
@@ -530,7 +530,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   value={userDetail.role}
                   onChange={(e) => handleChangeRole(e.target.value)}
                   disabled={actionLoading === 'role'}
-                  className="px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                  className="px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none"
                 >
                   <option value="manager">Manager</option>
                   <option value="assistant">Assistant</option>
@@ -544,7 +544,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
             <div className="bg-subtle rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-amber-400" />
+                  <ShieldCheck className="w-4 h-4 text-brand-accent" />
                   <div>
                     <div className="text-white text-sm font-medium">Billing Exempt</div>
                     <div className="text-xs text-secondary">
@@ -557,7 +557,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   disabled={actionLoading === 'billing'}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                     userDetail.billing_exempt
-                      ? 'bg-amber-500/20 text-amber-400 hover:bg-amber-500/30'
+                      ? 'bg-brand-accent-tint text-brand-accent hover:bg-brand-accent-tint'
                       : 'bg-border-default text-secondary hover:bg-navy-600'
                   }`}
                 >
@@ -576,7 +576,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
             {userDetail.team_id && (
               <div className="bg-subtle rounded-lg p-3">
                 <div className="flex items-center gap-2 mb-3">
-                  <Calendar className="w-4 h-4 text-pitch-400" />
+                  <Calendar className="w-4 h-4 text-brand-primary" />
                   <div className="text-white text-sm font-medium">Grant Temporary Access</div>
                 </div>
                 <div className="flex gap-2">
@@ -587,14 +587,14 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                       onChange={(e) => setTrialDays(parseInt(e.target.value) || 0)}
                       min="1"
                       max="365"
-                      className="w-20 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                      className="w-20 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none"
                     />
                     <span className="text-sm text-secondary">days</span>
                   </div>
                   <button
                     onClick={handleExtendTrial}
                     disabled={actionLoading === 'trial' || trialDays < 1}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-pitch-500 text-navy-950 rounded-lg text-sm hover:bg-pitch-600 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-brand-primary text-navy-950 rounded-lg text-sm hover:bg-brand-primary transition-colors disabled:opacity-50"
                   >
                     {actionLoading === 'trial' ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -621,7 +621,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <select
                     value={selectedPlan}
                     onChange={(e) => setSelectedPlan(e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                    className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none"
                   >
                     {plans.map((p) => (
                       <option key={p.id} value={p.id}>
@@ -668,7 +668,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                     if (e.target.value) fetchTeamPlayers(e.target.value)
                     else setTeamPlayers([])
                   }}
-                  className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                  className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none"
                 >
                   <option value="">No team</option>
                   {allTeams.map((t) => (
@@ -706,7 +706,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                   <select
                     value={selectedPlayerId}
                     onChange={(e) => setSelectedPlayerId(e.target.value)}
-                    className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+                    className="flex-1 px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none"
                   >
                     <option value="">No pupil linked</option>
                     {teamPlayers.map((p) => (
@@ -862,7 +862,7 @@ function DemoRequestsTab() {
           <div className="grid md:grid-cols-2 gap-4 text-sm">
             <div><span className="text-secondary">School:</span> <span className="text-white ml-2">{r.school_name}</span></div>
             <div><span className="text-secondary">Type:</span> <span className="text-white ml-2">{r.school_type}</span></div>
-            <div><span className="text-secondary">Email:</span> <a href={`mailto:${r.email}`} className="text-pitch-400 ml-2">{r.email}</a></div>
+            <div><span className="text-secondary">Email:</span> <a href={`mailto:${r.email}`} className="text-brand-primary ml-2">{r.email}</a></div>
             <div><span className="text-secondary">Pupil roll:</span> <span className="text-white ml-2">{r.pupil_roll_band}</span></div>
             <div><span className="text-secondary">Referral:</span> <span className="text-white ml-2">{r.referral_source || 'Not provided'}</span></div>
             <div><span className="text-secondary">Submitted:</span> <span className="text-white ml-2">{new Date(r.created_at).toLocaleString('en-GB')}</span></div>
@@ -879,7 +879,7 @@ function DemoRequestsTab() {
               value={editNotes}
               onChange={e => setEditNotes(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none text-sm"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none text-sm"
               placeholder="Add notes about follow-up, conversation, next steps..."
             />
             <button onClick={() => saveNotes(r.id)} disabled={saving} className="mt-2 px-4 py-2 bg-border-default text-white rounded-lg text-sm hover:bg-navy-600 disabled:opacity-50">
@@ -1370,7 +1370,7 @@ export default function Admin() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -1400,7 +1400,7 @@ export default function Admin() {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-lg font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-pitch-500 text-navy-950'
+                ? 'bg-brand-primary text-navy-950'
                 : 'text-secondary hover:text-white hover:bg-subtle'
             }`}
           >
@@ -1634,7 +1634,7 @@ export default function Admin() {
       {activeTab === 'finance' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           {financeLoading ? (
-            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-pitch-400" /></div>
+            <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 animate-spin text-brand-primary" /></div>
           ) : finance ? (
             <>
               {/* Revenue KPIs */}
@@ -1649,7 +1649,7 @@ export default function Admin() {
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Subscription Tiers */}
                 <div className="card p-5">
-                  <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><CreditCard className="w-4 h-4 text-pitch-400" /> Revenue by Tier</h3>
+                  <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><CreditCard className="w-4 h-4 text-brand-primary" /> Revenue by Tier</h3>
                   <div className="space-y-3">
                     {finance.tierBreakdown?.length > 0 ? finance.tierBreakdown.map(tier => {
                       const tierPrices = {
@@ -1668,7 +1668,7 @@ export default function Admin() {
                             <span className="text-tertiary text-xs ml-2">{tier.subscription_tier.includes('annual') ? '(annual)' : '(monthly)'}</span>
                           </div>
                           <div className="text-right">
-                            <span className="text-pitch-400 font-semibold">£{(monthlyRevenue / 100).toFixed(2)}</span>
+                            <span className="text-brand-primary font-semibold">£{(monthlyRevenue / 100).toFixed(2)}</span>
                             <span className="text-tertiary text-xs ml-1">/mo</span>
                             <span className="text-secondary text-sm ml-3">{tier.count} {parseInt(tier.count) === 1 ? 'team' : 'teams'}</span>
                           </div>
@@ -1680,21 +1680,21 @@ export default function Admin() {
 
                 {/* Credit Purchases */}
                 <div className="card p-5">
-                  <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><Sparkles className="w-4 h-4 text-energy-400" /> Credit Purchases</h3>
+                  <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><Sparkles className="w-4 h-4 text-brand-accent" /> Credit Purchases</h3>
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-3 rounded-lg bg-subtle">
                       <div>
                         <p className="text-white font-medium">Video Analysis Credits</p>
                         <p className="text-secondary text-xs">Team-level top-ups</p>
                       </div>
-                      <span className="text-pitch-400 font-semibold">{finance.videoCredits?.totalRemaining || 0} remaining</span>
+                      <span className="text-brand-primary font-semibold">{finance.videoCredits?.totalRemaining || 0} remaining</span>
                     </div>
                     <div className="flex items-center justify-between p-3 rounded-lg bg-subtle">
                       <div>
                         <p className="text-white font-medium">Deep Video Credits</p>
                         <p className="text-secondary text-xs">{finance.deepVideoCredits?.usersWithCredits || 0} users with credits</p>
                       </div>
-                      <span className="text-energy-400 font-semibold">{finance.deepVideoCredits?.totalRemaining || 0} remaining</span>
+                      <span className="text-brand-accent font-semibold">{finance.deepVideoCredits?.totalRemaining || 0} remaining</span>
                     </div>
                     <div className="flex items-center justify-between p-3 rounded-lg bg-subtle">
                       <div>
@@ -1709,7 +1709,7 @@ export default function Admin() {
 
               {/* Monthly Growth */}
               <div className="card p-5">
-                <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-pitch-400" /> Monthly Growth (Last 6 Months)</h3>
+                <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><TrendingUp className="w-4 h-4 text-brand-primary" /> Monthly Growth (Last 6 Months)</h3>
                 {finance.monthlyTeams?.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-sm">
@@ -1732,12 +1732,12 @@ export default function Admin() {
                             <tr key={month.month} className="border-b border-border-subtle">
                               <td className="py-2 text-white font-medium">{new Date(month.month + '-01').toLocaleDateString('en-GB', { month: 'short', year: 'numeric' })}</td>
                               <td className="py-2 text-right text-secondary">{month.new_teams}</td>
-                              <td className="py-2 text-right text-pitch-400">{month.paid_teams}</td>
+                              <td className="py-2 text-right text-brand-primary">{month.paid_teams}</td>
                               <td className="py-2 text-right text-secondary">{subData?.new_subscriptions || 0}</td>
                               <td className="py-2 text-right">
                                 <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
-                                  conversion >= 30 ? 'bg-pitch-500/20 text-pitch-400' :
-                                  conversion >= 10 ? 'bg-energy-500/20 text-energy-400' :
+                                  conversion >= 30 ? 'bg-brand-primary-tint text-brand-primary' :
+                                  conversion >= 10 ? 'bg-brand-accent-tint text-brand-accent' :
                                   'bg-border-default text-secondary'
                                 }`}>{conversion}%</span>
                               </td>
@@ -1766,7 +1766,7 @@ export default function Admin() {
                   </div>
                   <div className="p-4 rounded-lg bg-subtle text-center">
                     <p className="text-secondary text-xs mb-1">Annual Run Rate</p>
-                    <p className="text-pitch-400 text-xl font-bold">£{(finance.arr / 100).toFixed(0)}</p>
+                    <p className="text-brand-primary text-xl font-bold">£{(finance.arr / 100).toFixed(0)}</p>
                     <p className="text-tertiary text-xs">12 months projected</p>
                   </div>
                 </div>
@@ -1794,9 +1794,9 @@ export default function Admin() {
                             <td className="py-2 text-secondary">{sub.plan_id?.replace(/_/g, ' ')}</td>
                             <td className="py-2">
                               <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
-                                sub.status === 'active' ? 'bg-pitch-500/20 text-pitch-400' :
+                                sub.status === 'active' ? 'bg-brand-primary-tint text-brand-primary' :
                                 sub.status === 'trialing' ? 'bg-status-info-tint text-status-info' :
-                                sub.status === 'past_due' ? 'bg-energy-500/20 text-energy-400' :
+                                sub.status === 'past_due' ? 'bg-brand-accent-tint text-brand-accent' :
                                 'bg-status-error-tint text-status-error'
                               }`}>{sub.status}</span>
                             </td>
@@ -1824,7 +1824,7 @@ export default function Admin() {
                 setEditingCode(null)
                 setShowModal(true)
               }}
-              className="flex items-center gap-2 px-3 py-2 bg-pitch-500 text-navy-950 rounded-lg hover:bg-pitch-600 transition-colors"
+              className="flex items-center gap-2 px-3 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors"
             >
               <Plus className="w-4 h-4" />
               Create Code
@@ -1863,7 +1863,7 @@ export default function Admin() {
                               className="text-secondary hover:text-white"
                             >
                               {copiedCode === code.code ? (
-                                <Check className="w-4 h-4 text-pitch-500" />
+                                <Check className="w-4 h-4 text-brand-primary" />
                               ) : (
                                 <Copy className="w-4 h-4" />
                               )}
@@ -1872,7 +1872,7 @@ export default function Admin() {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-1.5">
-                            <DiscountIcon className="w-4 h-4 text-pitch-400" />
+                            <DiscountIcon className="w-4 h-4 text-brand-primary" />
                             <span className="text-white">{getDiscountDisplay(code)}</span>
                           </div>
                         </td>
@@ -1892,7 +1892,7 @@ export default function Admin() {
                             onClick={() => handleToggleActive(code)}
                             className={`px-2 py-1 rounded text-xs font-medium ${
                               code.is_active
-                                ? 'bg-pitch-500/20 text-pitch-400'
+                                ? 'bg-brand-primary-tint text-brand-primary'
                                 : 'bg-status-error-tint text-status-error'
                             }`}
                           >
@@ -1942,7 +1942,7 @@ export default function Admin() {
                   setUserPage(1)
                 }}
                 placeholder="Search by name or email..."
-                className="w-full pl-10 pr-4 py-2 bg-card border border-border-default rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 bg-card border border-border-default rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
               />
             </div>
             <div className="text-sm text-secondary">
@@ -1969,12 +1969,12 @@ export default function Admin() {
                         <div className="text-white flex items-center gap-2">
                           {u.name || 'No name'}
                           {u.is_admin && (
-                            <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-xs rounded">
+                            <span className="px-1.5 py-0.5 bg-brand-accent-tint text-brand-accent text-xs rounded">
                               Admin
                             </span>
                           )}
                           {u.billing_exempt && (
-                            <span className="px-1.5 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded">
+                            <span className="px-1.5 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded">
                               Exempt
                             </span>
                           )}
@@ -1988,11 +1988,11 @@ export default function Admin() {
                     </td>
                     <td className="px-4 py-3 hidden md:table-cell">
                       {u.billing_exempt ? (
-                        <span className="text-xs text-pitch-400">Full access</span>
+                        <span className="text-xs text-brand-primary">Full access</span>
                       ) : (u.role === 'parent' || u.role === 'pupil') && u.team_name ? (
                         <span className="text-xs text-status-info">Team member</span>
                       ) : u.subscription_tier && !['free', 'free_trial', 'trial_14d', ''].includes(u.subscription_tier) ? (
-                        <span className="text-xs text-pitch-400 capitalize">
+                        <span className="text-xs text-brand-primary capitalize">
                           {u.subscription_tier.replace('team_', '').replace('_monthly', '').replace('_annual', '').replace(/_/g, ' ')}
                         </span>
                       ) : (
@@ -2061,7 +2061,7 @@ export default function Admin() {
                   <button
                     onClick={handleSavePost}
                     disabled={savingPost}
-                    className="flex items-center gap-2 px-4 py-2 bg-pitch-500 text-navy-950 rounded-lg hover:bg-pitch-600 transition-colors disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors disabled:opacity-50"
                   >
                     {savingPost ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
                     Save
@@ -2077,7 +2077,7 @@ export default function Admin() {
                     value={editingPost.title}
                     onChange={(e) => setEditingPost({ ...editingPost, title: e.target.value })}
                     placeholder="Post title"
-                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
                   />
                 </div>
 
@@ -2089,7 +2089,7 @@ export default function Admin() {
                       value={editingPost.slug || ''}
                       onChange={(e) => setEditingPost({ ...editingPost, slug: e.target.value })}
                       placeholder="auto-generated-from-title"
-                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
                     />
                   </div>
                   <div>
@@ -2097,7 +2097,7 @@ export default function Admin() {
                     <select
                       value={editingPost.status}
                       onChange={(e) => setEditingPost({ ...editingPost, status: e.target.value })}
-                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white focus:border-brand-primary focus:outline-none"
                     >
                       <option value="draft">Draft</option>
                       <option value="published">Published</option>
@@ -2122,7 +2122,7 @@ export default function Admin() {
                       <div className="cover-image-error hidden flex-col items-center justify-center gap-3 p-6 rounded-lg border border-border-strong bg-subtle text-secondary text-sm">
                         <p>Image failed to load</p>
                         <div className="flex gap-3">
-                          <label className="cursor-pointer px-3 py-1.5 bg-pitch-600 text-white rounded-lg text-sm hover:bg-pitch-500 flex items-center gap-1.5">
+                          <label className="cursor-pointer px-3 py-1.5 bg-brand-primary text-white rounded-lg text-sm hover:bg-brand-primary flex items-center gap-1.5">
                             <Upload className="w-4 h-4" />
                             Upload New
                             <input
@@ -2167,20 +2167,20 @@ export default function Admin() {
                       onDragLeave={() => setDragOver(false)}
                       onDrop={handleDrop}
                       className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
-                        dragOver ? 'border-pitch-500 bg-pitch-500/10' : 'border-border-strong hover:border-border-strong'
+                        dragOver ? 'border-brand-primary bg-brand-primary-tint' : 'border-border-strong hover:border-border-strong'
                       }`}
                       onClick={() => document.getElementById('blog-cover-upload').click()}
                     >
                       {uploadingImage ? (
                         <div className="flex flex-col items-center gap-2">
-                          <Loader2 className="w-8 h-8 animate-spin text-pitch-500" />
+                          <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
                           <p className="text-secondary text-sm">Uploading...</p>
                         </div>
                       ) : (
                         <div className="flex flex-col items-center gap-2">
                           <Image className="w-8 h-8 text-tertiary" />
                           <p className="text-secondary text-sm">
-                            Drag & drop an image here, or <span className="text-pitch-400">click to browse</span>
+                            Drag & drop an image here, or <span className="text-brand-primary">click to browse</span>
                           </p>
                           <p className="text-tertiary text-xs">PNG, JPG, WebP up to 5MB · Best at 1200 x 630px</p>
                         </div>
@@ -2199,7 +2199,7 @@ export default function Admin() {
                     value={editingPost.cover_image_url || ''}
                     onChange={(e) => setEditingPost({ ...editingPost, cover_image_url: e.target.value })}
                     placeholder="Or paste an image URL..."
-                    className="w-full mt-2 px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                    className="w-full mt-2 px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white text-sm placeholder-navy-500 focus:border-brand-primary focus:outline-none"
                   />
                 </div>
 
@@ -2210,7 +2210,7 @@ export default function Admin() {
                     onChange={(e) => setEditingPost({ ...editingPost, excerpt: e.target.value })}
                     placeholder="Short summary for previews..."
                     rows={2}
-                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-none"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none resize-none"
                   />
                 </div>
 
@@ -2221,7 +2221,7 @@ export default function Admin() {
                     onChange={(e) => setEditingPost({ ...editingPost, content: e.target.value })}
                     placeholder="Write your blog post in markdown..."
                     rows={16}
-                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-y font-mono text-sm"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none resize-y font-mono text-sm"
                   />
                 </div>
 
@@ -2233,7 +2233,7 @@ export default function Admin() {
                       value={editingPost.meta_title || ''}
                       onChange={(e) => setEditingPost({ ...editingPost, meta_title: e.target.value })}
                       placeholder="SEO title (defaults to title)"
-                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
                     />
                   </div>
                   <div>
@@ -2243,7 +2243,7 @@ export default function Admin() {
                       value={(editingPost.tags || []).join(', ')}
                       onChange={(e) => setEditingPost({ ...editingPost, tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })}
                       placeholder="coaching, training, tactics"
-                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
                     />
                   </div>
                 </div>
@@ -2255,7 +2255,7 @@ export default function Admin() {
                     onChange={(e) => setEditingPost({ ...editingPost, meta_description: e.target.value })}
                     placeholder="SEO description (defaults to excerpt)"
                     rows={2}
-                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none resize-none"
+                    className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none resize-none"
                   />
                 </div>
               </div>
@@ -2266,14 +2266,14 @@ export default function Admin() {
               <div className="flex flex-col sm:flex-row gap-3 justify-between">
                 <div className="flex items-center gap-2 flex-1">
                   <div className="relative flex-1 max-w-sm">
-                    <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-pitch-400" />
+                    <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-primary" />
                     <input
                       type="text"
                       value={generateTopic}
                       onChange={(e) => setGenerateTopic(e.target.value)}
                       onKeyDown={(e) => e.key === 'Enter' && handleGeneratePost()}
                       placeholder="Enter topic to AI generate..."
-                      className="w-full pl-10 pr-4 py-2 bg-card border border-border-default rounded-lg text-white placeholder-navy-500 focus:border-pitch-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-2 bg-card border border-border-default rounded-lg text-white placeholder-navy-500 focus:border-brand-primary focus:outline-none"
                     />
                   </div>
                   <button
@@ -2287,7 +2287,7 @@ export default function Admin() {
                 </div>
                 <button
                   onClick={handleNewPost}
-                  className="flex items-center gap-2 px-3 py-2 bg-pitch-500 text-navy-950 rounded-lg hover:bg-pitch-600 transition-colors whitespace-nowrap"
+                  className="flex items-center gap-2 px-3 py-2 bg-brand-primary text-navy-950 rounded-lg hover:bg-brand-primary transition-colors whitespace-nowrap"
                 >
                   <Plus className="w-4 h-4" />
                   New Post
@@ -2296,7 +2296,7 @@ export default function Admin() {
 
               {blogLoading ? (
                 <div className="flex justify-center py-12">
-                  <Loader2 className="w-6 h-6 animate-spin text-pitch-500" />
+                  <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
                 </div>
               ) : blogPosts.length === 0 ? (
                 <div className="bg-card border border-border-default rounded-xl p-8 text-center text-secondary">
@@ -2314,9 +2314,9 @@ export default function Admin() {
                         <div className="flex items-center gap-2 mb-1">
                           <h4 className="text-white font-medium truncate">{post.title}</h4>
                           <span className={`px-2 py-0.5 rounded text-xs font-medium shrink-0 ${
-                            post.status === 'published' ? 'bg-pitch-500/20 text-pitch-400' :
+                            post.status === 'published' ? 'bg-brand-primary-tint text-brand-primary' :
                             post.status === 'archived' ? 'bg-border-default text-secondary' :
-                            'bg-amber-500/20 text-amber-400'
+                            'bg-brand-accent-tint text-brand-accent'
                           }`}>
                             {post.status}
                           </span>
@@ -2361,7 +2361,7 @@ export default function Admin() {
       {activeTab === 'screenshots' && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <h2 className="text-xl font-bold text-white flex items-center gap-2">
-            <Monitor className="w-5 h-5 text-pitch-400" /> Feature Page Screenshots
+            <Monitor className="w-5 h-5 text-brand-primary" /> Feature Page Screenshots
           </h2>
           <p className="text-secondary text-sm">Upload screenshots for each feature page. Each page has 4 slots: a hero image and 3 step images. Recommended size: 1280x720px (16:9).</p>
 
@@ -2379,7 +2379,7 @@ export default function Admin() {
                       {existing ? (
                         <div
                           className={`relative group aspect-video rounded-lg overflow-hidden border transition-colors ${
-                            isDragOver ? 'border-pitch-500 ring-2 ring-pitch-500/30' : 'border-border-strong'
+                            isDragOver ? 'border-brand-primary ring-2 ring-brand-primary' : 'border-border-strong'
                           }`}
                           onDragOver={(e) => { e.preventDefault(); setDragOverSlot(`${feature.slug}-${slot}`) }}
                           onDragLeave={() => setDragOverSlot(null)}
@@ -2392,18 +2392,18 @@ export default function Admin() {
                           />
                           {isUploading ? (
                             <div className="absolute inset-0 bg-black/70 flex items-center justify-center">
-                              <Loader2 className="w-8 h-8 text-pitch-500 animate-spin" />
+                              <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
                             </div>
                           ) : isDragOver ? (
-                            <div className="absolute inset-0 bg-pitch-500/30 flex items-center justify-center">
+                            <div className="absolute inset-0 bg-brand-primary-tint flex items-center justify-center">
                               <div className="text-center">
-                                <Upload className="w-8 h-8 text-pitch-400 mx-auto mb-1" />
-                                <span className="text-sm text-pitch-300 font-medium">Drop to replace</span>
+                                <Upload className="w-8 h-8 text-brand-primary mx-auto mb-1" />
+                                <span className="text-sm text-brand-primary font-medium">Drop to replace</span>
                               </div>
                             </div>
                           ) : (
                             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-                              <label className="cursor-pointer p-2 bg-pitch-500 rounded-lg hover:bg-pitch-600 transition-colors">
+                              <label className="cursor-pointer p-2 bg-brand-primary rounded-lg hover:bg-brand-primary transition-colors">
                                 <Upload className="w-4 h-4 text-navy-950" />
                                 <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && handleScreenshotUpload(feature.slug, slot, e.target.files[0])} />
                               </label>
@@ -2417,19 +2417,19 @@ export default function Admin() {
                         <label
                           className={`cursor-pointer flex flex-col items-center justify-center aspect-video rounded-lg border-2 border-dashed transition-all ${
                             isDragOver
-                              ? 'border-pitch-500 bg-pitch-500/10 ring-2 ring-pitch-500/30'
-                              : 'border-border-strong hover:border-pitch-500/50 bg-subtle'
+                              ? 'border-brand-primary bg-brand-primary-tint ring-2 ring-brand-primary'
+                              : 'border-border-strong hover:border-brand-primary bg-subtle'
                           }`}
                           onDragOver={(e) => { e.preventDefault(); setDragOverSlot(`${feature.slug}-${slot}`) }}
                           onDragLeave={() => setDragOverSlot(null)}
                           onDrop={(e) => handleScreenshotDrop(e, feature.slug, slot)}
                         >
                           {isUploading ? (
-                            <Loader2 className="w-6 h-6 text-pitch-500 animate-spin" />
+                            <Loader2 className="w-6 h-6 text-brand-primary animate-spin" />
                           ) : isDragOver ? (
                             <>
-                              <Upload className="w-6 h-6 text-pitch-400 mb-1" />
-                              <span className="text-xs text-pitch-400 font-medium">Drop image</span>
+                              <Upload className="w-6 h-6 text-brand-primary mb-1" />
+                              <span className="text-xs text-brand-primary font-medium">Drop image</span>
                             </>
                           ) : (
                             <>

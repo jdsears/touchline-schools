@@ -11,7 +11,7 @@ const SYMPTOMS = [
 ]
 
 const SEVERITY_OPTS = [
-  { value: 'mild', label: 'Mild', cls: 'bg-amber-500/20 text-amber-400' },
+  { value: 'mild', label: 'Mild', cls: 'bg-brand-accent-tint text-brand-accent' },
   { value: 'moderate', label: 'Moderate', cls: 'bg-orange-500/20 text-orange-400' },
   { value: 'severe', label: 'Severe', cls: 'bg-status-error-tint text-status-error' },
   { value: 'awaiting_assessment', label: 'Awaiting Assessment', cls: 'bg-border-default text-secondary' },
@@ -19,7 +19,7 @@ const SEVERITY_OPTS = [
 
 const STATUS_LABELS = {
   excluded: { label: 'Excluded from contact sport', cls: 'bg-status-error-tint text-status-error' },
-  graduated_return: { label: 'Graduated return in progress', cls: 'bg-amber-500/20 text-amber-400' },
+  graduated_return: { label: 'Graduated return in progress', cls: 'bg-brand-accent-tint text-brand-accent' },
   fully_cleared: { label: 'Fully cleared', cls: 'bg-status-success-tint text-status-success' },
 }
 
@@ -180,7 +180,7 @@ export default function ConcussionPanel({ pupilId, matchId }) {
                         </span>
                         {!f.completed_at && f.stage <= (detail.followups.filter(x => x.completed_at).length + 1) && (
                           <button onClick={() => completeStage(inc.id, f.stage)}
-                            className="ml-auto px-2 py-0.5 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded text-[10px]">
+                            className="ml-auto px-2 py-0.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded text-[10px]">
                             Complete
                           </button>
                         )}

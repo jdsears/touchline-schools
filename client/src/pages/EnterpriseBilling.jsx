@@ -4,8 +4,8 @@ import { Building2, Check, Pause, XCircle, Clock, Users, Shield } from 'lucide-r
 import toast from 'react-hot-toast'
 
 const STATUS_CONFIG = {
-  active: { label: 'Active', color: 'bg-pitch-600/20 text-pitch-400', icon: Check },
-  trial: { label: 'Trial', color: 'bg-amber-400/20 text-amber-400', icon: Clock },
+  active: { label: 'Active', color: 'bg-brand-primary-tint text-brand-primary', icon: Check },
+  trial: { label: 'Trial', color: 'bg-brand-accent-tint text-brand-accent', icon: Clock },
   suspended: { label: 'Suspended', color: 'bg-status-error-tint text-status-error', icon: Pause },
   cancelled: { label: 'Cancelled', color: 'bg-border-default text-secondary', icon: XCircle },
 }
@@ -76,7 +76,7 @@ export default function EnterpriseBilling() {
                     <select
                       value={school.subscription_status || 'active'}
                       onChange={e => updateStatus(school.id, e.target.value)}
-                      className="px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-xs focus:outline-none focus:border-pitch-500"
+                      className="px-3 py-1.5 bg-subtle border border-border-strong rounded-lg text-white text-xs focus:outline-none focus:border-brand-primary"
                     >
                       <option value="active">Active</option>
                       <option value="trial">Trial</option>

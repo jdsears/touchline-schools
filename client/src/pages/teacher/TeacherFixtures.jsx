@@ -5,14 +5,14 @@ import { Trophy, Calendar as CalIcon, List, MapPin, ChevronLeft, ChevronRight, X
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, addMonths, subMonths, isToday, isWeekend } from 'date-fns'
 
 const SPORT_ICONS = { football: '\u26BD', rugby: '\uD83C\uDFC9', cricket: '\uD83C\uDFCF', hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E' }
-const SPORT_DOT = { football: 'bg-navy-300', rugby: 'bg-amber-500', cricket: 'bg-status-success', hockey: 'bg-sky-500', netball: 'bg-purple-500' }
+const SPORT_DOT = { football: 'bg-navy-300', rugby: 'bg-brand-accent', cricket: 'bg-status-success', hockey: 'bg-sky-500', netball: 'bg-purple-500' }
 
 function resultBadge(m) {
   const gf = parseInt(m.score_for ?? m.goals_for)
   const ga = parseInt(m.score_against ?? m.goals_against)
   if (isNaN(gf) || isNaN(ga)) return null
   const w = gf > ga ? 'W' : gf < ga ? 'L' : 'D'
-  const c = { W: 'bg-pitch-600/20 text-pitch-400', L: 'bg-status-error-tint text-status-error', D: 'bg-amber-400/20 text-amber-400' }
+  const c = { W: 'bg-brand-primary-tint text-brand-primary', L: 'bg-status-error-tint text-status-error', D: 'bg-brand-accent-tint text-brand-accent' }
   return { label: w, score: `${gf}-${ga}`, color: c[w] }
 }
 
@@ -48,7 +48,7 @@ function FixtureCard({ match, compact }) {
             </>
           ) : (
             <>
-              <a href={`/api/calendar/event/fixture/${match.id}.ics`} onClick={e => e.stopPropagation()} download title="Add to calendar" className="p-1 text-tertiary hover:text-pitch-400 transition-colors">
+              <a href={`/api/calendar/event/fixture/${match.id}.ics`} onClick={e => e.stopPropagation()} download title="Add to calendar" className="p-1 text-tertiary hover:text-brand-primary transition-colors">
                 <CalendarPlus className="w-3.5 h-3.5" />
               </a>
               <span className="px-2 py-0.5 bg-subtle rounded text-[10px] text-secondary">Upcoming</span>
@@ -95,15 +95,15 @@ function CalendarView({ fixtures, month, setMonth, selectedDate, onSelectDate })
               onClick={() => onSelectDate(df.length > 0 ? day : null)}
               className={`relative p-1.5 min-h-[44px] rounded-lg text-center text-xs transition-colors ${
                 !inMonth ? 'text-navy-700' : isWe ? 'bg-subtle text-secondary' : 'text-secondary hover:bg-subtle'
-              } ${isSel ? 'ring-1 ring-pitch-500' : ''}`}
+              } ${isSel ? 'ring-1 ring-brand-primary' : ''}`}
             >
-              <span className={isT ? 'w-6 h-6 inline-flex items-center justify-center rounded-full ring-2 ring-amber-400/60 text-amber-400 font-bold' : ''}>
+              <span className={isT ? 'w-6 h-6 inline-flex items-center justify-center rounded-full ring-2 ring-brand-accent text-brand-accent font-bold' : ''}>
                 {format(day, 'd')}
               </span>
               {df.length > 0 && (
                 <div className="flex justify-center gap-0.5 mt-1">
                   {df.slice(0, 3).map((f, i) => (
-                    <div key={i} className={`w-1.5 h-1.5 rounded-full ${SPORT_DOT[f.sport] || 'bg-pitch-500'}`} title={`${f.team_name} vs ${f.opponent}`} />
+                    <div key={i} className={`w-1.5 h-1.5 rounded-full ${SPORT_DOT[f.sport] || 'bg-brand-primary'}`} title={`${f.team_name} vs ${f.opponent}`} />
                   ))}
                   {df.length > 3 && <span className="text-[8px] text-tertiary">+{df.length - 3}</span>}
                 </div>
@@ -190,13 +190,13 @@ export default function TeacherFixtures() {
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-2 mb-5">
         {['all', 'upcoming', 'results'].map(f => (
-          <button key={f} onClick={() => setTimeFilter(f)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${timeFilter === f ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'}`}>
+          <button key={f} onClick={() => setTimeFilter(f)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${timeFilter === f ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'}`}>
             {f === 'all' ? 'All' : f}
           </button>
         ))}
         <div className="w-px h-5 bg-border-default" />
         {['all', 'home', 'away'].map(v => (
-          <button key={v} onClick={() => setVenueFilter(v)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${venueFilter === v ? 'bg-amber-500/20 text-amber-400' : 'bg-subtle text-secondary hover:text-link'}`}>
+          <button key={v} onClick={() => setVenueFilter(v)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${venueFilter === v ? 'bg-brand-accent-tint text-brand-accent' : 'bg-subtle text-secondary hover:text-link'}`}>
             {v === 'all' ? 'H/A' : v}
           </button>
         ))}
@@ -204,7 +204,7 @@ export default function TeacherFixtures() {
           <>
             <div className="w-px h-5 bg-border-default" />
             {sports.map(s => (
-              <button key={s} onClick={() => setSportFilter(sportFilter === s ? 'all' : s)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${sportFilter === s ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'}`}>
+              <button key={s} onClick={() => setSportFilter(sportFilter === s ? 'all' : s)} className={`px-3 py-1 rounded-lg text-xs font-medium transition-colors capitalize ${sportFilter === s ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'}`}>
                 {SPORT_ICONS[s] || ''} {s}
               </button>
             ))}

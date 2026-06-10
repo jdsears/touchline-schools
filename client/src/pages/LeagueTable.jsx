@@ -432,7 +432,7 @@ export default function LeagueTable() {
         >
           <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-pitch-400" />
+              <Sparkles className="w-5 h-5 text-brand-primary" />
               <h2 className="text-xl font-display font-bold text-white">
                 Import {importType === 'detailed' ? 'Detailed' : 'Summary'} Table from Image
               </h2>
@@ -500,11 +500,11 @@ export default function LeagueTable() {
                     onDrop={handleDrop}
                     className={`block w-full p-8 border-2 border-dashed rounded-lg transition cursor-pointer text-center ${
                       isDragging
-                        ? 'border-pitch-500 bg-pitch-500/10'
-                        : 'border-border-strong hover:border-pitch-500'
+                        ? 'border-brand-primary bg-brand-primary-tint'
+                        : 'border-border-strong hover:border-brand-primary'
                     }`}
                   >
-                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-pitch-400' : 'text-tertiary'}`} />
+                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-brand-primary' : 'text-tertiary'}`} />
                     <p className="text-white font-medium">
                       {isDragging ? 'Drop image here' : 'Click or drag & drop image'}
                     </p>
@@ -531,7 +531,7 @@ export default function LeagueTable() {
                       setImageFile(null)
                       setImagePreview(null)
                     }}
-                    className="text-sm text-pitch-400 hover:text-pitch-300"
+                    className="text-sm text-brand-primary hover:text-brand-primary"
                   >
                     Try another image
                   </button>
@@ -564,14 +564,14 @@ export default function LeagueTable() {
                       {extractedTable.map((teamRow, index) => (
                         <tr
                           key={index}
-                          className={teamRow.is_own_team ? 'bg-pitch-500/10' : ''}
+                          className={teamRow.is_own_team ? 'bg-brand-primary-tint' : ''}
                         >
                           <td className="px-3 py-2 text-secondary">{index + 1}</td>
                           <td className="px-3 py-2">
-                            <span className={teamRow.is_own_team ? 'text-pitch-400 font-medium' : 'text-white'}>
+                            <span className={teamRow.is_own_team ? 'text-brand-primary font-medium' : 'text-white'}>
                               {teamRow.team_name}
                               {teamRow.is_own_team && (
-                                <span className="ml-2 text-xs bg-pitch-500/20 text-pitch-400 px-1.5 py-0.5 rounded">
+                                <span className="ml-2 text-xs bg-brand-primary-tint text-brand-primary px-1.5 py-0.5 rounded">
                                   You
                                 </span>
                               )}
@@ -665,7 +665,7 @@ export default function LeagueTable() {
         >
           <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Upload className="w-5 h-5 text-pitch-400" />
+              <Upload className="w-5 h-5 text-brand-primary" />
               <h2 className="text-xl font-display font-bold text-white">Import Table from Image</h2>
             </div>
             <button
@@ -683,14 +683,14 @@ export default function LeagueTable() {
 
             <button
               onClick={() => setImportType('summary')}
-              className="w-full p-4 rounded-lg border border-border-strong hover:border-pitch-500 transition text-left group"
+              className="w-full p-4 rounded-lg border border-border-strong hover:border-brand-primary transition text-left group"
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-subtle flex items-center justify-center group-hover:bg-pitch-500/20">
-                  <List className="w-5 h-5 text-secondary group-hover:text-pitch-400" />
+                <div className="w-10 h-10 rounded-lg bg-subtle flex items-center justify-center group-hover:bg-brand-primary-tint">
+                  <List className="w-5 h-5 text-secondary group-hover:text-brand-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-white group-hover:text-pitch-400">Summary Table</h3>
+                  <h3 className="font-medium text-white group-hover:text-brand-primary">Summary Table</h3>
                   <p className="text-sm text-secondary mt-1">
                     Basic standings with P, W, D, L, GD, Pts columns
                   </p>
@@ -700,14 +700,14 @@ export default function LeagueTable() {
 
             <button
               onClick={() => setImportType('detailed')}
-              className="w-full p-4 rounded-lg border border-border-strong hover:border-energy-500 transition text-left group"
+              className="w-full p-4 rounded-lg border border-border-strong hover:border-brand-accent transition text-left group"
             >
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-lg bg-subtle flex items-center justify-center group-hover:bg-energy-500/20">
-                  <LayoutGrid className="w-5 h-5 text-secondary group-hover:text-energy-400" />
+                <div className="w-10 h-10 rounded-lg bg-subtle flex items-center justify-center group-hover:bg-brand-accent-tint">
+                  <LayoutGrid className="w-5 h-5 text-secondary group-hover:text-brand-accent" />
                 </div>
                 <div>
-                  <h3 className="font-medium text-white group-hover:text-energy-400">Detailed Table</h3>
+                  <h3 className="font-medium text-white group-hover:text-brand-accent">Detailed Table</h3>
                   <p className="text-sm text-secondary mt-1">
                     Full breakdown with Home/Away stats (P, W, D, L, F, A for each)
                   </p>
@@ -735,7 +735,7 @@ export default function LeagueTable() {
       <tr className="bg-subtle">
         <td className="px-4 py-3 text-secondary">-</td>
         <td className="px-4 py-3">
-          <span className={teamRecord.is_own_team ? 'text-pitch-400 font-medium' : 'text-white'}>
+          <span className={teamRecord.is_own_team ? 'text-brand-primary font-medium' : 'text-white'}>
             {teamRecord.team_name}
           </span>
         </td>
@@ -775,7 +775,7 @@ export default function LeagueTable() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-500" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -787,7 +787,7 @@ export default function LeagueTable() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-display font-bold text-white flex items-center gap-3">
-              <Trophy className="w-7 h-7 text-pitch-500" />
+              <Trophy className="w-7 h-7 text-brand-primary" />
               {settings.league_name || 'League Table'}
             </h1>
             <p className="text-secondary">
@@ -810,7 +810,7 @@ export default function LeagueTable() {
               href={settings.fa_fulltime_table_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-pitch-400 hover:text-pitch-300 text-sm flex items-center gap-1"
+              className="text-brand-primary hover:text-brand-primary text-sm flex items-center gap-1"
             >
               View on FA Full-Time
               <ExternalLink className="w-4 h-4" />
@@ -839,7 +839,7 @@ export default function LeagueTable() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-display font-bold text-white flex items-center gap-3">
-            <Trophy className="w-7 h-7 text-pitch-500" />
+            <Trophy className="w-7 h-7 text-brand-primary" />
             {settings?.league_name || 'League Table'}
           </h1>
           <p className="text-secondary">
@@ -874,7 +874,7 @@ export default function LeagueTable() {
               onClick={() => setViewMode('summary')}
               className={`px-3 py-1.5 text-sm flex items-center gap-1.5 transition ${
                 viewMode === 'summary'
-                  ? 'bg-pitch-500 text-white'
+                  ? 'bg-brand-primary text-white'
                   : 'bg-subtle text-secondary hover:text-white'
               }`}
             >
@@ -885,7 +885,7 @@ export default function LeagueTable() {
               onClick={() => setViewMode('detailed')}
               className={`px-3 py-1.5 text-sm flex items-center gap-1.5 transition ${
                 viewMode === 'detailed'
-                  ? 'bg-energy-500 text-white'
+                  ? 'bg-brand-accent text-white'
                   : 'bg-subtle text-secondary hover:text-white'
               }`}
             >
@@ -946,13 +946,13 @@ export default function LeagueTable() {
                     <tr
                       key={teamRecord.id}
                       className={`hover:bg-subtle ${
-                        teamRecord.is_own_team ? 'bg-pitch-500/10' : ''
+                        teamRecord.is_own_team ? 'bg-brand-primary-tint' : ''
                       }`}
                     >
                       <td className="px-3 py-2">
                         <span className={`font-medium ${
                           index === 0 ? 'text-status-warning' :
-                          index < 3 ? 'text-pitch-400' :
+                          index < 3 ? 'text-brand-primary' :
                           index >= sortedTable.length - 2 ? 'text-status-error' :
                           'text-secondary'
                         }`}>
@@ -960,10 +960,10 @@ export default function LeagueTable() {
                         </span>
                       </td>
                       <td className="px-3 py-2">
-                        <span className={teamRecord.is_own_team ? 'text-pitch-400 font-medium' : 'text-white'}>
+                        <span className={teamRecord.is_own_team ? 'text-brand-primary font-medium' : 'text-white'}>
                           {teamRecord.team_name}
                           {teamRecord.is_own_team && (
-                            <span className="ml-2 text-xs bg-pitch-500/20 text-pitch-400 px-1.5 py-0.5 rounded">
+                            <span className="ml-2 text-xs bg-brand-primary-tint text-brand-primary px-1.5 py-0.5 rounded">
                               You
                             </span>
                           )}
@@ -1044,13 +1044,13 @@ export default function LeagueTable() {
                       <tr
                         key={teamRecord.id}
                         className={`hover:bg-subtle ${
-                          teamRecord.is_own_team ? 'bg-pitch-500/10' : ''
+                          teamRecord.is_own_team ? 'bg-brand-primary-tint' : ''
                         }`}
                       >
                         <td className="px-4 py-3">
                           <span className={`font-medium ${
                             index === 0 ? 'text-status-warning' :
-                            index < 3 ? 'text-pitch-400' :
+                            index < 3 ? 'text-brand-primary' :
                             index >= sortedTable.length - 2 ? 'text-status-error' :
                             'text-secondary'
                           }`}>
@@ -1058,10 +1058,10 @@ export default function LeagueTable() {
                           </span>
                         </td>
                         <td className="px-4 py-3">
-                          <span className={teamRecord.is_own_team ? 'text-pitch-400 font-medium' : 'text-white'}>
+                          <span className={teamRecord.is_own_team ? 'text-brand-primary font-medium' : 'text-white'}>
                             {teamRecord.team_name}
                             {teamRecord.is_own_team && (
-                              <span className="ml-2 text-xs bg-pitch-500/20 text-pitch-400 px-2 py-0.5 rounded">
+                              <span className="ml-2 text-xs bg-brand-primary-tint text-brand-primary px-2 py-0.5 rounded">
                                 Your Team
                               </span>
                             )}
@@ -1143,7 +1143,7 @@ export default function LeagueTable() {
             href={settings.fa_fulltime_table_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-pitch-400 hover:text-pitch-300 text-sm flex items-center justify-center gap-1"
+            className="text-brand-primary hover:text-brand-primary text-sm flex items-center justify-center gap-1"
           >
             View official table on FA Full-Time
             <ExternalLink className="w-4 h-4" />

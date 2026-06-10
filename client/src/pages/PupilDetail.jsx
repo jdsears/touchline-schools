@@ -622,7 +622,7 @@ export default function PupilDetail() {
   if (loading) {
     return (
       <div className="p-6 lg:p-8 flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -736,7 +736,7 @@ export default function PupilDetail() {
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors
                 ${activeTab === tab.id
-                  ? 'bg-pitch-600 text-white'
+                  ? 'bg-brand-primary text-white'
                   : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                 }
               `}
@@ -767,7 +767,7 @@ export default function PupilDetail() {
             {pupil.parent_contact && parseParentContacts(pupil.parent_contact).length > 0 && (
               <div className="card p-6">
                 <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                  <Phone className="w-5 h-5 text-pitch-400" />
+                  <Phone className="w-5 h-5 text-brand-primary" />
                   Parent/Guardian Contacts
                 </h2>
                 <div className="grid gap-3">
@@ -787,7 +787,7 @@ export default function PupilDetail() {
                           {contact.email && (
                             <a
                               href={`mailto:${contact.email}`}
-                              className="text-sm text-secondary hover:text-pitch-400 flex items-center gap-1.5"
+                              className="text-sm text-secondary hover:text-brand-primary flex items-center gap-1.5"
                             >
                               <Mail className="w-3.5 h-3.5" />
                               {contact.email}
@@ -796,7 +796,7 @@ export default function PupilDetail() {
                           {contact.phone && (
                             <a
                               href={`tel:${contact.phone}`}
-                              className="text-sm text-secondary hover:text-pitch-400 flex items-center gap-1.5"
+                              className="text-sm text-secondary hover:text-brand-primary flex items-center gap-1.5"
                             >
                               <Phone className="w-3.5 h-3.5" />
                               {contact.phone}
@@ -817,7 +817,7 @@ export default function PupilDetail() {
             {pupil.notes && (
               <div className="card p-6">
                 <h2 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                  <MessageSquare className="w-5 h-5 text-pitch-400" />
+                  <MessageSquare className="w-5 h-5 text-brand-primary" />
                   Notes
                 </h2>
                 <p className="text-secondary whitespace-pre-wrap">{pupil.notes}</p>
@@ -845,12 +845,12 @@ export default function PupilDetail() {
             <div className="card p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                  <Award className="w-5 h-5 text-energy-400" />
+                  <Award className="w-5 h-5 text-brand-accent" />
                   Achievements & Badges
                 </h2>
                 <button
                   onClick={() => setShowAwardModal(true)}
-                  className="text-sm text-pitch-400 hover:text-pitch-300 flex items-center gap-1"
+                  className="text-sm text-brand-primary hover:text-brand-primary flex items-center gap-1"
                 >
                   <Plus className="w-4 h-4" />
                   Award Badge
@@ -862,7 +862,7 @@ export default function PupilDetail() {
                   {achievements.map(achievement => (
                     <div
                       key={achievement.id}
-                      className="relative group bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-4 text-center border border-border-strong hover:border-energy-500/30 transition-all"
+                      className="relative group bg-gradient-to-br from-navy-800 to-navy-900 rounded-xl p-4 text-center border border-border-strong hover:border-brand-accent transition-all"
                     >
                       <button
                         onClick={() => handleDeleteAchievement(achievement.id)}
@@ -927,8 +927,8 @@ export default function PupilDetail() {
                 }}
                 className="card-hover p-4 flex items-center gap-3"
               >
-                <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-pitch-400" />
+                <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+                  <Plus className="w-5 h-5 text-brand-primary" />
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-white">Add Observation</p>
@@ -942,7 +942,7 @@ export default function PupilDetail() {
                 className="card-hover p-4 flex items-center gap-3"
               >
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pitch-500/20 to-energy-500/20 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-pitch-400" />
+                  <Sparkles className="w-5 h-5 text-brand-primary" />
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-white">Pupil AI Coach</p>
@@ -955,8 +955,8 @@ export default function PupilDetail() {
                 to={`/chat?q=Give me training recommendations for ${pupil.name}`}
                 className="card-hover p-4 flex items-center gap-3"
               >
-                <div className="w-10 h-10 rounded-xl bg-energy-500/10 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-energy-400" />
+                <div className="w-10 h-10 rounded-xl bg-brand-accent-tint flex items-center justify-center">
+                  <Target className="w-5 h-5 text-brand-accent" />
                 </div>
                 <div className="text-left">
                   <p className="font-medium text-white">Coach AI</p>
@@ -1022,7 +1022,7 @@ export default function PupilDetail() {
                               {typeConfig?.label || obs.type}
                             </span>
                             {obs.context_type === 'match' && obs.match_opponent && (
-                              <span className="inline-flex items-center gap-1 text-xs bg-energy-500/10 text-energy-400 px-2 py-0.5 rounded-full">
+                              <span className="inline-flex items-center gap-1 text-xs bg-brand-accent-tint text-brand-accent px-2 py-0.5 rounded-full">
                                 <Trophy className="w-3 h-3" />
                                 vs {obs.match_opponent}
                               </span>
@@ -1130,7 +1130,7 @@ export default function PupilDetail() {
                     onChange={(e) => handleAutoReviewChange(e.target.checked)}
                     className="sr-only"
                   />
-                  <div className={`w-9 h-5 rounded-full transition-colors ${idpAutoReview ? 'bg-pitch-500' : 'bg-border-default'}`}>
+                  <div className={`w-9 h-5 rounded-full transition-colors ${idpAutoReview ? 'bg-brand-primary' : 'bg-border-default'}`}>
                     <div className={`w-4 h-4 rounded-full bg-card shadow-sm transform transition-transform mt-0.5 ${idpAutoReview ? 'translate-x-4.5 ml-[18px]' : 'translate-x-0.5 ml-[2px]'}`} />
                   </div>
                 </div>
@@ -1150,7 +1150,7 @@ export default function PupilDetail() {
                     {idp.strengths && idp.strengths.length > 0 && (
                       <div>
                         <h3 className="font-display font-semibold text-white mb-2 flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-pitch-500" />
+                          <span className="w-2 h-2 rounded-full bg-brand-primary" />
                           Strengths
                         </h3>
                         <ul className="space-y-1 text-secondary">
@@ -1165,7 +1165,7 @@ export default function PupilDetail() {
                     {idp.areas_to_improve && idp.areas_to_improve.length > 0 && (
                       <div>
                         <h3 className="font-display font-semibold text-white mb-2 flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-energy-500" />
+                          <span className="w-2 h-2 rounded-full bg-brand-accent" />
                           Areas to Improve
                         </h3>
                         <ul className="space-y-1 text-secondary">
@@ -1327,10 +1327,10 @@ export default function PupilDetail() {
                             px-3 py-1.5 rounded-lg text-sm font-medium transition-colors relative
                             ${isSelected
                               ? posData?.priority === 'primary'
-                                ? 'bg-pitch-600 text-white'
+                                ? 'bg-brand-primary text-white'
                                 : posData?.priority === 'secondary'
-                                  ? 'bg-pitch-600/70 text-white'
-                                  : 'bg-pitch-600/50 text-white'
+                                  ? 'bg-brand-primary-tint text-white'
+                                  : 'bg-brand-primary-tint text-white'
                               : isDisabled
                                 ? 'bg-card text-tertiary cursor-not-allowed'
                                 : 'bg-subtle text-secondary hover:text-white'
@@ -1352,7 +1352,7 @@ export default function PupilDetail() {
                       {getSortedPositions(editData.positions).map(({ position: pos, priority }, idx) => (
                         <span key={pos}>
                           {idx > 0 && ' → '}
-                          <span className={priority === 'primary' ? 'text-pitch-400' : 'text-secondary'}>
+                          <span className={priority === 'primary' ? 'text-brand-primary' : 'text-secondary'}>
                             {positions[pos]?.label} ({priority === 'primary' ? '1st' : priority === 'secondary' ? '2nd' : '3rd'})
                           </span>
                         </span>
@@ -1428,7 +1428,7 @@ export default function PupilDetail() {
                         const updated = [...contacts, { name: '', email: '', phone: '' }]
                         setEditData(prev => ({ ...prev, parent_contact: JSON.stringify(updated) }))
                       }}
-                      className="w-full p-2 border border-dashed border-border-strong rounded-lg text-sm text-secondary hover:text-pitch-400 hover:border-pitch-500 transition-colors flex items-center justify-center gap-2"
+                      className="w-full p-2 border border-dashed border-border-strong rounded-lg text-sm text-secondary hover:text-brand-primary hover:border-brand-primary transition-colors flex items-center justify-center gap-2"
                     >
                       <Plus className="w-4 h-4" />
                       Add Contact
@@ -1564,7 +1564,7 @@ export default function PupilDetail() {
                           className={`
                             p-2.5 rounded-lg flex items-center justify-center gap-2 text-sm transition-colors
                             ${newObs.contextType === ctx.value
-                              ? 'bg-pitch-500/20 border border-pitch-500 text-white'
+                              ? 'bg-brand-primary-tint border border-brand-primary text-white'
                               : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}
@@ -1635,7 +1635,7 @@ export default function PupilDetail() {
                     type="checkbox"
                     checked={newObs.visibleToPupil}
                     onChange={(e) => setNewObs(prev => ({ ...prev, visibleToPupil: e.target.checked }))}
-                    className="w-4 h-4 rounded border-border-strong bg-subtle text-pitch-500 focus:ring-pitch-500"
+                    className="w-4 h-4 rounded border-border-strong bg-subtle text-brand-primary focus:ring-brand-primary"
                   />
                   <span className="text-sm text-secondary">Share with pupil</span>
                 </label>
@@ -1747,9 +1747,9 @@ export default function PupilDetail() {
               <div className="p-6">
                 {parentInviteSuccess ? (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-lg">
-                      <Check className="w-5 h-5 text-pitch-400" />
-                      <p className="text-pitch-400">
+                    <div className="flex items-center gap-3 p-4 bg-brand-primary-tint border border-brand-primary rounded-lg">
+                      <Check className="w-5 h-5 text-brand-primary" />
+                      <p className="text-brand-primary">
                         Invite link generated for {parentInviteSuccess.invite?.email}
                       </p>
                     </div>
@@ -1948,7 +1948,7 @@ export default function PupilDetail() {
                           className={`
                             p-2.5 rounded-lg flex items-center justify-center gap-2 text-sm transition-colors
                             ${editObsData.contextType === ctx.value
-                              ? 'bg-pitch-500/20 border border-pitch-500 text-white'
+                              ? 'bg-brand-primary-tint border border-brand-primary text-white'
                               : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}
@@ -2051,7 +2051,7 @@ export default function PupilDetail() {
             >
               <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
-                  <Award className="w-6 h-6 text-energy-400" />
+                  <Award className="w-6 h-6 text-brand-accent" />
                   Award Badge to {pupil.name}
                 </h2>
                 <button
@@ -2074,7 +2074,7 @@ export default function PupilDetail() {
                         className={`
                           p-3 rounded-lg flex items-center gap-3 transition-colors text-left
                           ${awardData.achievement_type === key
-                            ? 'bg-energy-500/20 border border-energy-500 text-white'
+                            ? 'bg-brand-accent-tint border border-brand-accent text-white'
                             : 'bg-subtle border border-border-strong text-secondary hover:text-white hover:border-border-strong'
                           }
                         `}
@@ -2207,7 +2207,7 @@ export default function PupilDetail() {
             >
               <div className="p-6 border-b border-border-default flex items-center justify-between">
                 <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-pitch-400" />
+                  <Sparkles className="w-5 h-5 text-brand-primary" />
                   Attribute Analysis for {pupil.name}
                 </h2>
                 <button
@@ -2221,7 +2221,7 @@ export default function PupilDetail() {
               <div className="p-6 max-h-[70vh] overflow-y-auto">
                 {analyzingAttributes ? (
                   <div className="flex flex-col items-center justify-center py-12">
-                    <Loader2 className="w-8 h-8 animate-spin text-pitch-400 mb-4" />
+                    <Loader2 className="w-8 h-8 animate-spin text-brand-primary mb-4" />
                     <p className="text-secondary">Analyzing pupil attributes...</p>
                     <p className="text-sm text-tertiary mt-1">This may take a few seconds</p>
                   </div>

@@ -64,13 +64,13 @@ export default function CalendarExportTab() {
       {!hasSchedule && (
         <div className="bg-subtle border border-border-strong rounded-xl p-5">
           <div className="flex items-start gap-3">
-            <Calendar className="w-5 h-5 text-pitch-400 mt-0.5 shrink-0" />
+            <Calendar className="w-5 h-5 text-brand-primary mt-0.5 shrink-0" />
             <div>
               <h3 className="text-sm font-medium text-primary mb-1">Get started</h3>
               <p className="text-xs text-secondary mb-3">
                 Generate a subscription URL to see all your classes, fixtures, and training sessions in your personal calendar.
               </p>
-              <button onClick={() => createToken('teacher_schedule')} className="flex items-center gap-2 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark text-sm rounded-lg transition-colors">
+              <button onClick={() => createToken('teacher_schedule')} className="flex items-center gap-2 px-3 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark text-sm rounded-lg transition-colors">
                 <Plus className="w-4 h-4" />Generate my schedule URL
               </button>
             </div>
@@ -94,7 +94,7 @@ export default function CalendarExportTab() {
                 <div className="flex items-center gap-2">
                   <input readOnly value={feedUrl(t.token)} className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-xs text-secondary font-mono truncate" />
                   <button onClick={() => copyUrl(t.token, t.id)} className="p-2 bg-subtle hover:bg-border-default border border-border-strong rounded-lg transition-colors" title="Copy">
-                    {copied === t.id ? <Check className="w-4 h-4 text-pitch-400" /> : <Copy className="w-4 h-4 text-secondary" />}
+                    {copied === t.id ? <Check className="w-4 h-4 text-brand-primary" /> : <Copy className="w-4 h-4 text-secondary" />}
                   </button>
                 </div>
               )}
@@ -111,8 +111,8 @@ export default function CalendarExportTab() {
           <div><span className="text-secondary font-medium">Outlook:</span> Add calendar &gt; Subscribe from web &gt; paste the subscription URL</div>
           <div><span className="text-secondary font-medium">Apple Calendar:</span> File &gt; New Calendar Subscription &gt; paste the subscription URL</div>
         </div>
-        <div className="mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg">
-          <p className="text-xs text-amber-400">Keep your subscription URL private. Anyone with the URL can view your schedule. If it's compromised, revoke it and generate a new one.</p>
+        <div className="mt-3 p-3 bg-brand-accent-tint border border-brand-accent rounded-lg">
+          <p className="text-xs text-brand-accent">Keep your subscription URL private. Anyone with the URL can view your schedule. If it's compromised, revoke it and generate a new one.</p>
         </div>
       </div>
 

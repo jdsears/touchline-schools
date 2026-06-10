@@ -2,7 +2,7 @@ import { usePupilProfile } from '../../hooks/usePupilProfile'
 
 const HOUSE_COLOURS = {
   elm: 'bg-status-success-tint text-status-success border-status-success',
-  oak: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+  oak: 'bg-brand-accent-tint text-brand-accent border-brand-accent',
   maple: 'bg-status-error-tint text-status-error border-status-error',
   birch: 'bg-sky-500/15 text-sky-400 border-sky-500/30',
   willow: 'bg-purple-500/15 text-purple-400 border-purple-500/30',

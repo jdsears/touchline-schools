@@ -9,10 +9,10 @@ import {
 import toast from 'react-hot-toast'
 
 const OBS_TYPE_LABELS = {
-  development: { label: 'Development', color: 'bg-pitch-600/20 text-pitch-400' },
+  development: { label: 'Development', color: 'bg-brand-primary-tint text-brand-primary' },
   skill: { label: 'Skill', color: 'bg-status-info-tint text-status-info' },
   tactical: { label: 'Tactical', color: 'bg-purple-500/20 text-purple-400' },
-  behaviour: { label: 'Behaviour', color: 'bg-amber-400/20 text-amber-400' },
+  behaviour: { label: 'Behaviour', color: 'bg-brand-accent-tint text-brand-accent' },
   training_implication: { label: 'Training', color: 'bg-cyan-500/20 text-cyan-400' },
   team_level: { label: 'Team', color: 'bg-navy-600/40 text-secondary' },
 }
@@ -121,7 +121,7 @@ export default function VoiceObservationReview() {
     return (
       <div className="p-6 text-center">
         <p className="text-secondary">Voice observation not found or still processing.</p>
-        <button onClick={() => navigate('/teacher')} className="text-pitch-400 hover:underline text-sm mt-2">
+        <button onClick={() => navigate('/teacher')} className="text-brand-primary hover:underline text-sm mt-2">
           Back to Teacher Hub
         </button>
       </div>
@@ -139,8 +139,8 @@ export default function VoiceObservationReview() {
       {/* Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-pitch-600/20 flex items-center justify-center">
-            <Mic className="w-5 h-5 text-pitch-400" />
+          <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+            <Mic className="w-5 h-5 text-brand-primary" />
           </div>
           <div>
             <h1 className="text-xl font-bold text-primary">Review Voice Observation</h1>
@@ -250,7 +250,7 @@ export default function VoiceObservationReview() {
           <button
             onClick={handleConfirmAll}
             disabled={confirming}
-            className="flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg font-medium transition-colors disabled:opacity-50"
           >
             {confirming ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCheck className="w-4 h-4" />}
             Confirm all ({pendingObs.length})
@@ -308,11 +308,11 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
             value={editContent}
             onChange={e => onEditContentChange(e.target.value)}
             rows={3}
-            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500 resize-none"
+            className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary resize-none"
           />
           <div className="flex gap-2 mt-2">
             <button onClick={onCancelEdit} className="px-3 py-1 bg-subtle text-secondary rounded text-xs">Cancel</button>
-            <button onClick={() => onSaveEdit(obs.id)} className="px-3 py-1 bg-pitch-600 text-on-dark rounded text-xs">Save</button>
+            <button onClick={() => onSaveEdit(obs.id)} className="px-3 py-1 bg-brand-primary text-on-dark rounded text-xs">Save</button>
           </div>
         </div>
       ) : (

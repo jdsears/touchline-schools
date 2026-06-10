@@ -98,7 +98,7 @@ export default function TeacherClasses() {
         </div>
         <button
           onClick={() => setShowCreate(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg transition-colors"
         >
           <Plus className="w-4 h-4" />
           <span className="text-sm font-medium">New Class</span>
@@ -123,7 +123,7 @@ export default function TeacherClasses() {
                   placeholder="e.g., Year 9 Group B PE"
                   value={form.name}
                   onChange={e => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                   autoFocus
                 />
               </div>
@@ -133,7 +133,7 @@ export default function TeacherClasses() {
                   <select
                     value={form.year_group}
                     onChange={e => setForm({ ...form, year_group: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                   >
                     {[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13].map(y => (
                       <option key={y} value={y}>Year {y} ({KEY_STAGES[y]})</option>
@@ -147,7 +147,7 @@ export default function TeacherClasses() {
                     placeholder="e.g., B"
                     value={form.group_identifier}
                     onChange={e => setForm({ ...form, group_identifier: e.target.value })}
-                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                    className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                   />
                 </div>
               </div>
@@ -157,7 +157,7 @@ export default function TeacherClasses() {
                   type="text"
                   value={form.academic_year}
                   onChange={e => setForm({ ...form, academic_year: e.target.value })}
-                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 />
               </div>
               <div className="flex gap-3 pt-2">
@@ -171,7 +171,7 @@ export default function TeacherClasses() {
                 <button
                   type="submit"
                   disabled={creating}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex-1 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {creating ? 'Creating...' : 'Create'}
                 </button>
@@ -190,7 +190,7 @@ export default function TeacherClasses() {
             placeholder="Search classes..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+            className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
           />
         </div>
       )}
@@ -206,8 +206,8 @@ export default function TeacherClasses() {
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg bg-pitch-600/20 flex items-center justify-center">
-                    <GraduationCap className="w-6 h-6 text-pitch-400" />
+                  <div className="w-12 h-12 rounded-lg bg-brand-primary-tint flex items-center justify-center">
+                    <GraduationCap className="w-6 h-6 text-brand-primary" />
                   </div>
                   <div>
                     <h3 className="text-base font-semibold text-primary">{group.name}</h3>
@@ -259,7 +259,7 @@ export default function TeacherClasses() {
           </p>
           <button
             onClick={() => setShowCreate(true)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors mx-auto"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg transition-colors mx-auto"
           >
             <Plus className="w-4 h-4" />
             <span className="text-sm font-medium">Create Teaching Group</span>

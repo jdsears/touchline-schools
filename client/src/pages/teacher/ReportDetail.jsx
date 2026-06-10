@@ -10,12 +10,12 @@ const GRADE_LABELS = {
 
 const GRADE_COLORS = {
   emerging: 'bg-status-error-tint text-status-error',
-  developing: 'bg-amber-500/20 text-amber-400',
-  secure: 'bg-pitch-500/20 text-pitch-400',
+  developing: 'bg-brand-accent-tint text-brand-accent',
+  secure: 'bg-brand-primary-tint text-brand-primary',
   excelling: 'bg-status-info-tint text-status-info',
   needs_improvement: 'bg-status-error-tint text-status-error',
-  good: 'bg-amber-500/20 text-amber-400',
-  very_good: 'bg-pitch-500/20 text-pitch-400',
+  good: 'bg-brand-accent-tint text-brand-accent',
+  very_good: 'bg-brand-primary-tint text-brand-primary',
   excellent: 'bg-status-info-tint text-status-info',
 }
 
@@ -37,7 +37,7 @@ export default function ReportDetail() {
   if (error || !report) return (
     <div className="p-6 text-center text-secondary">
       <p className="mb-4">{error || 'Report not found'}</p>
-      <button onClick={() => navigate(-1)} className="text-pitch-400 hover:text-pitch-300 text-sm">← Go back</button>
+      <button onClick={() => navigate(-1)} className="text-brand-primary hover:text-brand-primary text-sm">← Go back</button>
     </div>
   )
 
@@ -63,7 +63,7 @@ export default function ReportDetail() {
           </div>
           <span className={`ml-auto px-2 py-0.5 rounded text-xs font-medium capitalize ${
             report.status === 'published' ? 'bg-status-info-tint text-status-info' :
-            report.status === 'submitted' ? 'bg-amber-400/20 text-amber-400' :
+            report.status === 'submitted' ? 'bg-brand-accent-tint text-brand-accent' :
             'bg-border-default text-secondary'
           }`}>{report.status}</span>
         </div>

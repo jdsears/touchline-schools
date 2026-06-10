@@ -39,7 +39,7 @@ export default function VenueMap({ venue, schoolPostcode }) {
       </div>
       <div className="flex gap-2">
         <a href={directionsUrl} target="_blank" rel="noopener noreferrer"
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm">
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm">
           <Navigation className="w-3.5 h-3.5" /> Get Directions
         </a>
         <a href={`https://www.openstreetmap.org/?mlat=${venue.latitude}&mlon=${venue.longitude}#map=16/${venue.latitude}/${venue.longitude}`}

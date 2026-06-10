@@ -11,7 +11,7 @@ import toast from 'react-hot-toast'
 
 const EVENT_TYPES = [
   { value: 'camp', label: 'Camp', icon: Tent, color: 'bg-status-success-tint text-status-success' },
-  { value: 'tournament', label: 'Tournament', icon: Trophy, color: 'bg-amber-600/20 text-amber-400' },
+  { value: 'tournament', label: 'Tournament', icon: Trophy, color: 'bg-brand-accent-tint text-brand-accent' },
   { value: 'trial', label: 'Trial Day', icon: Flag, color: 'bg-status-info-tint text-status-info' },
   { value: 'social', label: 'Social Event', icon: Star, color: 'bg-purple-600/20 text-purple-400' },
   { value: 'fundraiser', label: 'Fundraiser', icon: DollarSign, color: 'bg-pink-600/20 text-pink-400' },
@@ -27,7 +27,7 @@ const FILTER_TABS = [
 ]
 
 const STATUS_BADGES = {
-  published: { label: 'Published', className: 'bg-pitch-600/20 text-pitch-400' },
+  published: { label: 'Published', className: 'bg-brand-primary-tint text-brand-primary' },
   draft: { label: 'Draft', className: 'bg-border-default text-secondary' },
   cancelled: { label: 'Cancelled', className: 'bg-status-error-tint text-status-error' },
 }
@@ -282,7 +282,7 @@ export default function ClubEvents() {
                 setShowCreate(true)
               }
             }}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
           >
             {showCreate ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
             {showCreate ? 'Cancel' : 'Create Event'}
@@ -294,7 +294,7 @@ export default function ClubEvents() {
       {showCreate && (
         <form onSubmit={handleSubmit} className="bg-card border border-border-default rounded-xl p-5 space-y-5">
           <h3 className="font-semibold text-primary flex items-center gap-2">
-            <CalendarDays className="w-5 h-5 text-pitch-400" />
+            <CalendarDays className="w-5 h-5 text-brand-primary" />
             {editingEvent ? 'Edit Event' : 'New Event'}
           </h3>
 
@@ -307,7 +307,7 @@ export default function ClubEvents() {
                 required
                 value={form.title}
                 onChange={(e) => setForm(f => ({ ...f, title: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. Summer Holiday Camp 2026"
               />
             </div>
@@ -316,7 +316,7 @@ export default function ClubEvents() {
               <select
                 value={form.event_type}
                 onChange={(e) => setForm(f => ({ ...f, event_type: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 {EVENT_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -332,7 +332,7 @@ export default function ClubEvents() {
               value={form.description}
               rows={3}
               onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
               placeholder="Describe the event, what to bring, etc..."
             />
           </div>
@@ -346,7 +346,7 @@ export default function ClubEvents() {
                 required
                 value={form.start_date}
                 onChange={(e) => setForm(f => ({ ...f, start_date: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -355,7 +355,7 @@ export default function ClubEvents() {
                 type="date"
                 value={form.end_date}
                 onChange={(e) => setForm(f => ({ ...f, end_date: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -364,7 +364,7 @@ export default function ClubEvents() {
                 type="time"
                 value={form.start_time}
                 onChange={(e) => setForm(f => ({ ...f, start_time: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -373,7 +373,7 @@ export default function ClubEvents() {
                 type="time"
                 value={form.end_time}
                 onChange={(e) => setForm(f => ({ ...f, end_time: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -386,7 +386,7 @@ export default function ClubEvents() {
                 type="text"
                 value={form.venue}
                 onChange={(e) => setForm(f => ({ ...f, venue: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. Main Pitch"
               />
             </div>
@@ -396,7 +396,7 @@ export default function ClubEvents() {
                 type="text"
                 value={form.venue_address}
                 onChange={(e) => setForm(f => ({ ...f, venue_address: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="Full address for map link"
               />
             </div>
@@ -414,7 +414,7 @@ export default function ClubEvents() {
                   min="0"
                   value={form.price}
                   onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))}
-                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="0.00 = Free"
                 />
               </div>
@@ -429,7 +429,7 @@ export default function ClubEvents() {
                   min="0"
                   value={form.sibling_discount}
                   onChange={(e) => setForm(f => ({ ...f, sibling_discount: e.target.value }))}
-                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
@@ -444,7 +444,7 @@ export default function ClubEvents() {
                   min="0"
                   value={form.early_bird_price}
                   onChange={(e) => setForm(f => ({ ...f, early_bird_price: e.target.value }))}
-                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg pl-7 pr-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="0.00"
                 />
               </div>
@@ -455,7 +455,7 @@ export default function ClubEvents() {
                 type="date"
                 value={form.early_bird_deadline}
                 onChange={(e) => setForm(f => ({ ...f, early_bird_deadline: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -469,7 +469,7 @@ export default function ClubEvents() {
                 min="1"
                 value={form.max_participants}
                 onChange={(e) => setForm(f => ({ ...f, max_participants: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="Unlimited"
               />
             </div>
@@ -479,7 +479,7 @@ export default function ClubEvents() {
                 type="date"
                 value={form.registration_deadline}
                 onChange={(e) => setForm(f => ({ ...f, registration_deadline: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -487,7 +487,7 @@ export default function ClubEvents() {
               <select
                 value={form.status}
                 onChange={(e) => setForm(f => ({ ...f, status: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="published">Published</option>
                 <option value="draft">Draft</option>
@@ -503,7 +503,7 @@ export default function ClubEvents() {
                 type="button"
                 onClick={() => setForm(f => ({ ...f, target_audience: 'all', target_team_ids: [] }))}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                  form.target_audience === 'all' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
+                  form.target_audience === 'all' ? 'bg-brand-primary text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
                 }`}
               >
                 <Users className="w-3.5 h-3.5 inline mr-1" />
@@ -513,7 +513,7 @@ export default function ClubEvents() {
                 type="button"
                 onClick={() => setForm(f => ({ ...f, target_audience: 'specific' }))}
                 className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-                  form.target_audience === 'specific' ? 'bg-pitch-600 text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
+                  form.target_audience === 'specific' ? 'bg-brand-primary text-on-dark' : 'bg-subtle text-secondary hover:text-primary'
                 }`}
               >
                 Specific Teams
@@ -532,7 +532,7 @@ export default function ClubEvents() {
                           : form.target_team_ids.filter(id => id !== team.id)
                         setForm(f => ({ ...f, target_team_ids: ids }))
                       }}
-                      className="rounded bg-border-default border-border-strong text-pitch-600 focus:ring-pitch-600"
+                      className="rounded bg-border-default border-border-strong text-brand-primary focus:ring-brand-primary"
                     />
                     {team.name}
                   </label>
@@ -548,7 +548,7 @@ export default function ClubEvents() {
                 type="checkbox"
                 checked={form.requires_medical_info}
                 onChange={(e) => setForm(f => ({ ...f, requires_medical_info: e.target.checked }))}
-                className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
+                className="rounded bg-subtle border-border-strong text-brand-primary focus:ring-brand-primary"
               />
               Request medical info
             </label>
@@ -557,7 +557,7 @@ export default function ClubEvents() {
                 type="checkbox"
                 checked={form.requires_photo_consent}
                 onChange={(e) => setForm(f => ({ ...f, requires_photo_consent: e.target.checked }))}
-                className="rounded bg-subtle border-border-strong text-pitch-600 focus:ring-pitch-600"
+                className="rounded bg-subtle border-border-strong text-brand-primary focus:ring-brand-primary"
               />
               Require photo consent
             </label>
@@ -584,7 +584,7 @@ export default function ClubEvents() {
                 value={customFieldInput}
                 onChange={(e) => setCustomFieldInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), addCustomField())}
-                className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. T-shirt size, dietary requirements..."
               />
               <button
@@ -602,7 +602,7 @@ export default function ClubEvents() {
             <button type="button" onClick={resetForm} className="px-4 py-2 text-sm text-secondary hover:text-primary transition-colors">
               Cancel
             </button>
-            <button type="submit" disabled={saving} className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors">
+            <button type="submit" disabled={saving} className="px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors">
               {saving ? 'Saving...' : editingEvent ? 'Update Event' : 'Create Event'}
             </button>
           </div>
@@ -617,7 +617,7 @@ export default function ClubEvents() {
             onClick={() => setActiveFilter(tab.id)}
             className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeFilter === tab.id
-                ? 'bg-pitch-600/20 text-pitch-400'
+                ? 'bg-brand-primary-tint text-brand-primary'
                 : 'text-secondary hover:text-primary hover:bg-subtle'
             }`}
           >
@@ -737,7 +737,7 @@ function EventCard({
         {/* Actions */}
         <div className="flex items-center gap-1 shrink-0">
           {canManage && event.status === 'published' && (
-            <button onClick={onCopyLink} className="p-2 text-secondary hover:text-pitch-400 transition-colors" title="Copy public link">
+            <button onClick={onCopyLink} className="p-2 text-secondary hover:text-brand-primary transition-colors" title="Copy public link">
               <Copy className="w-4 h-4" />
             </button>
           )}
@@ -765,8 +765,8 @@ function EventCard({
             <div
               className={`h-full rounded-full transition-all ${
                 registrationCount >= event.max_participants ? 'bg-status-error' :
-                registrationCount >= event.max_participants * 0.8 ? 'bg-amber-500' :
-                'bg-pitch-500'
+                registrationCount >= event.max_participants * 0.8 ? 'bg-brand-accent' :
+                'bg-brand-primary'
               }`}
               style={{ width: `${Math.min(100, (registrationCount / event.max_participants) * 100)}%` }}
             />
@@ -849,7 +849,7 @@ function EventCard({
                             onClick={() => onAttendanceToggle(reg.id, !reg.attended)}
                             className={`p-1.5 rounded-lg transition-colors ${
                               reg.attended
-                                ? 'bg-pitch-600/20 text-pitch-400 hover:bg-pitch-600/30'
+                                ? 'bg-brand-primary-tint text-brand-primary hover:bg-brand-primary-tint'
                                 : 'bg-subtle text-tertiary hover:text-primary'
                             }`}
                             title={reg.attended ? 'Mark as not attended' : 'Mark as attended'}
