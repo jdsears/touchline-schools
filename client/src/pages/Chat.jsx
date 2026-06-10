@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { ASSISTANT_NAME } from '../lib/assistant'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTeam } from '../context/TeamContext'
@@ -205,7 +206,7 @@ export default function Chat() {
             <Sparkles className="w-5 h-5 text-brand-primary" />
           </div>
           <div>
-            <h1 className="font-display font-semibold text-primary">Pep</h1>
+            <h1 className="font-display font-semibold text-primary">{ASSISTANT_NAME}</h1>
             <p className="text-sm text-secondary">
               {team ? `Helping ${team.name}` : 'Your AI coaching assistant'}
             </p>

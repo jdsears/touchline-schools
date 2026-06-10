@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { ASSISTANT_NAME } from '../lib/assistant'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -18,8 +19,8 @@ const steps = [
     color: 'pitch',
     title: 'Welcome to MoonBoots Sports!',
     description:
-      "You've got your very own AI coaching assistant called Pep. Ask Pep for help with training plans, match preparation, tactics, and pupil development - anytime you need a hand.",
-    cta: 'Meet Pep',
+      `You've got your very own AI coaching assistant called ${ASSISTANT_NAME}. Ask ${ASSISTANT_NAME} for help with training plans, match preparation, tactics, and pupil development - anytime you need a hand.`,
+    cta: `Meet ${ASSISTANT_NAME}`,
     href: '/chat',
   },
   {

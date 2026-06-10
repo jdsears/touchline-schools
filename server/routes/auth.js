@@ -256,9 +256,9 @@ router.post('/register', async (req, res, next) => {
     // Generate token
     const token = jwt.sign({ userId: user.id }, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN })
 
-    // Auto-seed FA development guidelines into the team's knowledge base (non-blocking)
-    seedFAGuidelines(team.id, team.age_group).catch(err =>
-      console.error('FA guidelines seeding failed (non-critical):', err.message)
+    // Auto-seed NGB development guidelines into the team's knowledge base (non-blocking)
+    seedFAGuidelines(team.id, team.age_group, team.sport).catch(err =>
+      console.error('NGB guidelines seeding failed (non-critical):', err.message)
     )
 
     // Seed predefined Film Room sections for the new team (non-blocking)

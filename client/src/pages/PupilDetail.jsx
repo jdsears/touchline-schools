@@ -67,6 +67,24 @@ const observationTypes = [
   { value: 's&c', label: 'S&C', icon: Dumbbell, color: 'caution' },
 ]
 
+const obsTileClasses = {
+  pitch: { bg: 'bg-status-success-tint', text: 'text-status-success' },
+  blue: { bg: 'bg-status-info-tint', text: 'text-status-info' },
+  energy: { bg: 'bg-brand-accent-tint', text: 'text-brand-accent' },
+  alert: { bg: 'bg-status-error-tint', text: 'text-status-error' },
+  caution: { bg: 'bg-status-warning-tint', text: 'text-status-warning' },
+  navy: { bg: 'bg-subtle', text: 'text-secondary' },
+}
+
+const obsChipClasses = {
+  pitch: 'bg-status-success-tint border border-status-success text-status-success',
+  blue: 'bg-status-info-tint border border-status-info text-status-info',
+  energy: 'bg-brand-accent-tint border border-brand-accent text-brand-accent',
+  alert: 'bg-status-error-tint border border-status-error text-status-error',
+  caution: 'bg-status-warning-tint border border-status-warning text-status-warning',
+  navy: 'bg-subtle border border-border-strong text-primary',
+}
+
 const tabs = [
   { id: 'overview', label: 'Overview', icon: User },
   { id: 'observations', label: 'Observations', icon: FileText },
@@ -1013,8 +1031,8 @@ export default function PupilDetail() {
                       className="card p-4"
                     >
                       <div className="flex items-start gap-4">
-                        <div className={`w-10 h-10 rounded-xl bg-${typeConfig?.color || 'navy'}-500/10 flex items-center justify-center shrink-0`}>
-                          <TypeIcon className={`w-5 h-5 text-${typeConfig?.color || 'navy'}-400`} />
+                        <div className={`w-10 h-10 rounded-xl ${(obsTileClasses[typeConfig?.color] || obsTileClasses.navy).bg} flex items-center justify-center shrink-0`}>
+                          <TypeIcon className={`w-5 h-5 ${(obsTileClasses[typeConfig?.color] || obsTileClasses.navy).text}`} />
                         </div>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -1529,7 +1547,7 @@ export default function PupilDetail() {
                           className={`
                             p-3 rounded-lg flex items-center gap-2 transition-colors
                             ${newObs.type === type.value
-                              ? `bg-${type.color}-500/20 border border-${type.color}-500 text-white`
+                              ? (obsChipClasses[type.color] || obsChipClasses.navy)
                               : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}
@@ -1913,7 +1931,7 @@ export default function PupilDetail() {
                           className={`
                             p-3 rounded-lg flex items-center gap-2 transition-colors
                             ${editObsData.type === type.value
-                              ? `bg-${type.color}-500/20 border border-${type.color}-500 text-white`
+                              ? (obsChipClasses[type.color] || obsChipClasses.navy)
                               : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                             }
                           `}

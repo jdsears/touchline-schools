@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import pool from '../config/database.js'
 import { getTaxonomy } from '../constants/sportTaxonomy.js'
+import { ASSISTANT_NAME } from './assistantIdentity.js'
 
 const anthropic = new Anthropic()
 
@@ -78,7 +79,7 @@ async function callClaudeWithRetry(params, maxRetries = 3, timeoutMs = CLAUDE_CA
       }
 
       const delay = Math.pow(2, attempt + 1) * 1000 // 2s, 4s, 8s
-      console.log(`[Gaffer] Claude API error (${status || err.message}), retrying in ${delay / 1000}s (attempt ${attempt + 1}/${maxRetries})...`)
+      console.log(`[VideoAnalysis] Claude API error (${status || err.message}), retrying in ${delay / 1000}s (attempt ${attempt + 1}/${maxRetries})...`)
       await new Promise(resolve => setTimeout(resolve, delay))
     }
   }
@@ -269,7 +270,7 @@ Return JSON:
   const response = await callClaudeWithRetry({
     model: 'claude-sonnet-4-6',
     max_tokens: 4000,
-    system: cacheableSystem(`You are The Gaffer, Touchline's AI tactical assistant for ${term.context}. Analyse ${term.matchWord} footage segments precisely. Be specific about what you see. When shirt numbers are not readable, identify pupils by their position on the pitch and map to the squad list. Always respond with valid JSON.`),
+    system: cacheableSystem(`You are ${ASSISTANT_NAME}, the AI performance analysis assistant for ${term.context}. Analyse ${term.matchWord} footage segments precisely. Be specific about what you see. When shirt numbers are not readable, identify pupils by their position on the pitch and map to the squad list. Always respond with valid JSON.`),
     messages: [{ role: 'user', content }],
   })
 
@@ -504,18 +505,18 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
     model: 'claude-sonnet-4-6',
     max_tokens: 16000,
     temperature: 0.3,
-    system: cacheableSystem(`You are The Gaffer, Touchline's AI tactical assistant for ${term.context}. You synthesise detailed ${term.matchWord} segment analyses into comprehensive, actionable coaching reports. Be constructive and practical. Always respond with valid JSON.`),
+    system: cacheableSystem(`You are ${ASSISTANT_NAME}, the AI performance analysis assistant for ${term.context}. You synthesise detailed ${term.matchWord} segment analyses into comprehensive, actionable coaching reports. Be constructive and practical. Always respond with valid JSON.`),
     messages: [{ role: 'user', content: prompt }],
   }
   let response = await callClaudeWithRetry(params, 3, CLAUDE_SYNTHESIS_TIMEOUT_MS)
 
   // Detect truncation - if the response was cut off, the JSON (especially playerFeedback) may be incomplete
   if (response.stop_reason === 'max_tokens') {
-    console.warn(`[Gaffer] Synthesis response truncated at ${params.max_tokens} tokens - retrying with higher limit`)
+    console.warn(`[VideoAnalysis] Synthesis response truncated at ${params.max_tokens} tokens - retrying with higher limit`)
     params.max_tokens = 32000
     response = await callClaudeWithRetry(params, 3, CLAUDE_SYNTHESIS_TIMEOUT_MS)
     if (response.stop_reason === 'max_tokens') {
-      console.warn(`[Gaffer] Synthesis STILL truncated at ${params.max_tokens} tokens`)
+      console.warn(`[VideoAnalysis] Synthesis STILL truncated at ${params.max_tokens} tokens`)
     }
   }
 
@@ -540,7 +541,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
     try {
       return normalizeKeys(JSON.parse(text))
     } catch (e1) {
-      console.log(`[Gaffer] Direct JSON parse failed: ${e1.message}`)
+      console.log(`[VideoAnalysis] Direct JSON parse failed: ${e1.message}`)
 
       // Try extracting the outermost { ... }
       const jsonMatch = text.match(/\{[\s\S]*\}/)
@@ -548,7 +549,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
         try {
           return normalizeKeys(JSON.parse(jsonMatch[0]))
         } catch (e2) {
-          console.log(`[Gaffer] Regex JSON parse failed: ${e2.message}`)
+          console.log(`[VideoAnalysis] Regex JSON parse failed: ${e2.message}`)
 
           // Try fixing common AI JSON issues: trailing commas before } or ]
           let repaired = jsonMatch[0]
@@ -557,15 +558,15 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
           try {
             return normalizeKeys(JSON.parse(repaired))
           } catch (e3) {
-            console.log(`[Gaffer] Repaired JSON parse also failed: ${e3.message}`)
-            console.log(`[Gaffer] Raw text (first 500 chars): ${text.substring(0, 500)}`)
+            console.log(`[VideoAnalysis] Repaired JSON parse also failed: ${e3.message}`)
+            console.log(`[VideoAnalysis] Raw text (first 500 chars): ${text.substring(0, 500)}`)
           }
         }
       }
     }
 
     // All parse attempts failed - extract what we can via regex
-    console.log('[Gaffer] Falling back to regex field extraction')
+    console.log('[VideoAnalysis] Falling back to regex field extraction')
     const result = { summary: text }
 
     // Try to extract summary string
@@ -589,7 +590,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
       try {
         result.playerFeedback = JSON.parse(pfMatch[1])
       } catch (pfErr) {
-        console.warn(`[Gaffer] Regex-extracted playerFeedback failed to parse (${pfErr.message}) - captured ${pfMatch[1].length} chars`)
+        console.warn(`[VideoAnalysis] Regex-extracted playerFeedback failed to parse (${pfErr.message}) - captured ${pfMatch[1].length} chars`)
         // Try to salvage: extract individual complete objects from the truncated array
         const objectMatches = pfMatch[1].matchAll(/\{[^{}]*(?:\{[^{}]*\}[^{}]*)*\}/g)
         const salvaged = []
@@ -597,17 +598,17 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
           try { salvaged.push(JSON.parse(m[0])) } catch { /* skip malformed */ }
         }
         if (salvaged.length > 0) {
-          console.log(`[Gaffer] Salvaged ${salvaged.length} pupil entries from truncated response`)
+          console.log(`[VideoAnalysis] Salvaged ${salvaged.length} pupil entries from truncated response`)
           result.playerFeedback = salvaged
         }
       }
     } else {
-      console.warn('[Gaffer] No playerFeedback found in regex fallback extraction')
+      console.warn('[VideoAnalysis] No playerFeedback found in regex fallback extraction')
     }
 
     return result
   } catch (outerErr) {
-    console.error('[Gaffer] Synthesis parse completely failed:', outerErr.message)
+    console.error('[VideoAnalysis] Synthesis parse completely failed:', outerErr.message)
     return { summary: response.content[0].text }
   }
 }
@@ -624,7 +625,7 @@ export async function analyseVideoWithMux(video, options = {}) {
   const playbackId = video.mux_playback_id
 
   if (!playbackId) {
-    console.error('[Gaffer] No playback ID for video', video.id)
+    console.error('[VideoAnalysis] No playback ID for video', video.id)
     return
   }
 
@@ -635,7 +636,7 @@ export async function analyseVideoWithMux(video, options = {}) {
       [video.id]
     )
   } catch (err) {
-    console.error('[Gaffer] Failed to clean up old failed records:', err.message)
+    console.error('[VideoAnalysis] Failed to clean up old failed records:', err.message)
   }
 
   // Create a progress record immediately so the frontend can track status
@@ -649,7 +650,7 @@ export async function analyseVideoWithMux(video, options = {}) {
     )
     analysisId = insertResult.rows[0].id
   } catch (err) {
-    console.error('[Gaffer] Failed to create progress record:', err.message)
+    console.error('[VideoAnalysis] Failed to create progress record:', err.message)
   }
 
   async function updateProgress(progress) {
@@ -676,12 +677,12 @@ export async function analyseVideoWithMux(video, options = {}) {
     frameTimes.push(Math.round(duration / 2))
   }
 
-  console.log(`[Gaffer] Sampling ${frameTimes.length} frames from ${Math.round(duration)}s video (${isClip ? 'clip' : 'full match'} mode, ${interval}s interval)`)
+  console.log(`[VideoAnalysis] Sampling ${frameTimes.length} frames from ${Math.round(duration)}s video (${isClip ? 'clip' : 'full match'} mode, ${interval}s interval)`)
 
   const allFrames = await fetchFramesBatch(playbackId, frameTimes)
 
   if (allFrames.length === 0) {
-    console.error('[Gaffer] No frames extracted for video', video.id)
+    console.error('[VideoAnalysis] No frames extracted for video', video.id)
     if (analysisId) {
       await pool.query('UPDATE video_ai_analysis SET status = $1, error = $2, progress = NULL WHERE id = $3',
         ['failed', 'Failed to extract frames from video', analysisId])
@@ -689,14 +690,14 @@ export async function analyseVideoWithMux(video, options = {}) {
     return
   }
 
-  console.log(`[Gaffer] Fetched ${allFrames.length}/${frameTimes.length} frames successfully`)
+  console.log(`[VideoAnalysis] Fetched ${allFrames.length}/${frameTimes.length} frames successfully`)
   await updateProgress(`Extracted ${allFrames.length} frames`)
 
   let analysis
 
   try {
     if (allFrames.length <= FRAMES_PER_BATCH) {
-      console.log(`[Gaffer] Single-pass analysis (${allFrames.length} frames)`)
+      console.log(`[VideoAnalysis] Single-pass analysis (${allFrames.length} frames)`)
       await updateProgress('Analysing video...')
 
       const segResult = await analyseSegment(allFrames, 0, 1, video, options)
@@ -728,7 +729,7 @@ export async function analyseVideoWithMux(video, options = {}) {
         batches.push(allFrames.slice(i, i + FRAMES_PER_BATCH))
       }
 
-      console.log(`[Gaffer] Multi-pass analysis: ${batches.length} batches of ~${FRAMES_PER_BATCH} frames`)
+      console.log(`[VideoAnalysis] Multi-pass analysis: ${batches.length} batches of ~${FRAMES_PER_BATCH} frames`)
 
       // Process batches in parallel (3 concurrent for deep, 2 for standard)
       // Visual profiles accumulate across waves so later segments can identify pupils more reliably
@@ -742,7 +743,7 @@ export async function analyseVideoWithMux(video, options = {}) {
         if (analysisId) {
           const statusCheck = await pool.query('SELECT status FROM video_ai_analysis WHERE id = $1', [analysisId])
           if (statusCheck.rows[0]?.status === 'cancelled') {
-            console.log(`[Gaffer] Analysis ${analysisId} cancelled by user - stopping`)
+            console.log(`[VideoAnalysis] Analysis ${analysisId} cancelled by user - stopping`)
             return
           }
         }
@@ -760,14 +761,14 @@ export async function analyseVideoWithMux(video, options = {}) {
           Promise.allSettled(
             waveBatches.map((batch, j) => {
               const idx = waveStart + j
-              console.log(`[Gaffer] Analysing segment ${idx + 1}/${batches.length} (${batch.length} frames)...`)
+              console.log(`[VideoAnalysis] Analysing segment ${idx + 1}/${batches.length} (${batch.length} frames)...`)
               return analyseSegment(batch, idx, batches.length, video, waveOptions)
             })
           ),
           waveTimeoutMs,
           `Wave segments ${wave + 1}-${Math.min(wave + waveBatches.length, batches.length)}`
         ).catch(err => {
-          console.error(`[Gaffer] Wave timed out: ${err.message}`)
+          console.error(`[VideoAnalysis] Wave timed out: ${err.message}`)
           // Return rejected results for all segments in this wave
           return waveBatches.map(() => ({ status: 'rejected', reason: err }))
         })
@@ -796,7 +797,7 @@ export async function analyseVideoWithMux(video, options = {}) {
               }
             }
           } else {
-            console.error(`[Gaffer] Segment ${idx + 1} failed:`, waveResults[j].reason?.message)
+            console.error(`[VideoAnalysis] Segment ${idx + 1} failed:`, waveResults[j].reason?.message)
             segmentResults[idx] = {
               segmentSummary: `Segment ${idx + 1} analysis failed`,
               observations: [],
@@ -811,19 +812,19 @@ export async function analyseVideoWithMux(video, options = {}) {
 
       const profileCount = Object.keys(knownProfiles).length
       if (profileCount > 0) {
-        console.log(`[Gaffer] Built visual profiles for ${profileCount} pupils: ${Object.entries(knownProfiles).map(([num, p]) => `#${num} ${p.name} (${p.descriptors.length} traits)`).join(', ')}`)
+        console.log(`[VideoAnalysis] Built visual profiles for ${profileCount} pupils: ${Object.entries(knownProfiles).map(([num, p]) => `#${num} ${p.name} (${p.descriptors.length} traits)`).join(', ')}`)
       }
 
       // Check cancellation before synthesis
       if (analysisId) {
         const statusCheck = await pool.query('SELECT status FROM video_ai_analysis WHERE id = $1', [analysisId])
         if (statusCheck.rows[0]?.status === 'cancelled') {
-          console.log(`[Gaffer] Analysis ${analysisId} cancelled by user - stopping before synthesis`)
+          console.log(`[VideoAnalysis] Analysis ${analysisId} cancelled by user - stopping before synthesis`)
           return
         }
       }
 
-      console.log(`[Gaffer] Synthesising ${segmentResults.length} segments...`)
+      console.log(`[VideoAnalysis] Synthesising ${segmentResults.length} segments...`)
       await updateProgress('Building final report...')
       analysis = await synthesiseAnalysis(segmentResults, video, options)
 
@@ -831,7 +832,7 @@ export async function analyseVideoWithMux(video, options = {}) {
       if (squadPlayers.length > 0) {
         // Normalize key: AI may return "player_feedback" (snake_case) instead of "playerFeedback" (camelCase)
         if (!analysis.playerFeedback && analysis.player_feedback) {
-          console.log(`[Gaffer] AI returned snake_case "player_feedback" - normalizing to camelCase`)
+          console.log(`[VideoAnalysis] AI returned snake_case "player_feedback" - normalizing to camelCase`)
           analysis.playerFeedback = analysis.player_feedback
         }
 
@@ -841,9 +842,9 @@ export async function analyseVideoWithMux(video, options = {}) {
 
         // Log what the AI returned before filtering
         const aiFeedback = analysis.playerFeedback || []
-        console.log(`[Gaffer] AI returned ${aiFeedback.length} playerFeedback entries: ${aiFeedback.map(pf => `#${pf.squad_number} ${pf.name} (type: ${typeof pf.squad_number})`).join(', ')}`)
-        console.log(`[Gaffer] Squad numbers in DB: ${[...squadNumbers].join(', ')}`)
-        console.log(`[Gaffer] Analysis keys: ${Object.keys(analysis).join(', ')}`)
+        console.log(`[VideoAnalysis] AI returned ${aiFeedback.length} playerFeedback entries: ${aiFeedback.map(pf => `#${pf.squad_number} ${pf.name} (type: ${typeof pf.squad_number})`).join(', ')}`)
+        console.log(`[VideoAnalysis] Squad numbers in DB: ${[...squadNumbers].join(', ')}`)
+        console.log(`[VideoAnalysis] Analysis keys: ${Object.keys(analysis).join(', ')}`)
 
         // Remove any pupils not in the squad (but don't throw away everything if filtering is too aggressive)
         if (analysis.playerFeedback?.length > 0) {
@@ -855,11 +856,11 @@ export async function analyseVideoWithMux(video, options = {}) {
             return numberMatch || nameMatch
           })
           const removed = before - filtered.length
-          if (removed > 0) console.log(`[Gaffer] Filtered out ${removed} pupils not in match squad`)
+          if (removed > 0) console.log(`[VideoAnalysis] Filtered out ${removed} pupils not in match squad`)
           // Safeguard: if filtering removed ALL entries, the AI likely used slightly different names/numbers
           // Keep the originals rather than replacing everything with generic placeholders
           if (filtered.length === 0 && before > 0) {
-            console.warn(`[Gaffer] WARNING: Filtering removed ALL ${before} playerFeedback entries - keeping originals (likely name/number mismatch)`)
+            console.warn(`[VideoAnalysis] WARNING: Filtering removed ALL ${before} playerFeedback entries - keeping originals (likely name/number mismatch)`)
           } else {
             analysis.playerFeedback = filtered
           }
@@ -907,13 +908,13 @@ export async function analyseVideoWithMux(video, options = {}) {
                 rating: defaultRating,
               })
             }
-            console.log(`[Gaffer] Added default feedback for ${missing.length} starters AI missed: ${missing.map(p => p.name).join(', ')}`)
+            console.log(`[VideoAnalysis] Added default feedback for ${missing.length} starters AI missed: ${missing.map(p => p.name).join(', ')}`)
           }
         }
       }
     }
   } catch (err) {
-    console.error('[Gaffer] Analysis failed:', err.message)
+    console.error('[VideoAnalysis] Analysis failed:', err.message)
     // Extract a user-friendly error message
     let userMessage = 'Analysis failed - please try again'
     const status = err?.status || err?.error?.status
@@ -968,11 +969,11 @@ export async function analyseVideoWithMux(video, options = {}) {
       )
     }
 
-    console.log(`[Gaffer] Analysis complete for video ${video.id}: ${allFrames.length} frames analysed across ${Math.ceil(allFrames.length / FRAMES_PER_BATCH)} batch(es)`)
+    console.log(`[VideoAnalysis] Analysis complete for video ${video.id}: ${allFrames.length} frames analysed across ${Math.ceil(allFrames.length / FRAMES_PER_BATCH)} batch(es)`)
 
     // Pupil observations are saved when the manager approves the analysis (via /approve endpoint)
   } catch (error) {
-    console.error('[Gaffer] Failed to save analysis:', error.message)
+    console.error('[VideoAnalysis] Failed to save analysis:', error.message)
     // Mark the record as failed so the frontend can show the error instead of leaving it stuck as 'processing'
     if (analysisId) {
       try {
@@ -989,7 +990,7 @@ export async function analyseVideoWithMux(video, options = {}) {
 export async function savePlayerObservations(video, playerFeedback, squadPlayers, options) {
   const { userId, includeRatings = false } = options
   if (!userId) {
-    console.log('[Gaffer] No userId provided - skipping observation auto-save')
+    console.log('[VideoAnalysis] No userId provided - skipping observation auto-save')
     return
   }
 
@@ -1042,16 +1043,16 @@ export async function savePlayerObservations(video, playerFeedback, squadPlayers
             )
           }
         } catch (capErr) {
-          console.log(`[Gaffer] core_capabilities column not yet available for ${pf.name}:`, capErr.message)
+          console.log(`[VideoAnalysis] core_capabilities column not yet available for ${pf.name}:`, capErr.message)
         }
       }
 
       saved++
     } catch (err) {
-      console.error(`[Gaffer] Failed to save observation for pupil ${pf.name}:`, err.message)
+      console.error(`[VideoAnalysis] Failed to save observation for pupil ${pf.name}:`, err.message)
     }
   }
-  console.log(`[Gaffer] Saved ${saved} pupil observations to match ${video.match_id}`)
+  console.log(`[VideoAnalysis] Saved ${saved} pupil observations to match ${video.match_id}`)
 }
 
 // Keep legacy export for backwards compatibility

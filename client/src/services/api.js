@@ -222,7 +222,7 @@ export const tacticsService = {
   deletePlay: (playId) => api.delete(`/tactics/plays/${playId}`),
 }
 
-// Chat service (team/coach AI assistant - "Pep")
+// Chat service (team/coach AI assistant)
 export const chatService = {
   getHistory: (teamId, limit = 50) => api.get(`/chat/${teamId}/history`, { params: { limit } }),
   sendMessage: (teamId, message, context = {}) =>
@@ -232,14 +232,14 @@ export const chatService = {
   clearHistory: (teamId) => api.delete(`/chat/${teamId}/history`),
 }
 
-// Pupil chat service (pupil/parent AI assistant - "The Gaffer")
+// Pupil chat service (pupil/parent AI assistant)
 export const playerChatService = {
   getHistory: (pupilId, limit = 50) =>
     api.get(`/chat/pupil/${pupilId}/history`, { params: { limit } }),
   sendMessage: (pupilId, message) =>
     api.post(`/chat/pupil/${pupilId}/message`, { message }),
   clearHistory: (pupilId) => api.delete(`/chat/pupil/${pupilId}/history`),
-  // Parent control for The Gaffer
+  // Parent control for the pupil AI assistant
   getGafferStatus: (pupilId) => api.get(`/chat/pupil/${pupilId}/gaffer-status`),
   setGafferStatus: (pupilId, disabled) =>
     api.put(`/chat/pupil/${pupilId}/gaffer-status`, { disabled }),
