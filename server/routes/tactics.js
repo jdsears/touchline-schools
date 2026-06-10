@@ -1,8 +1,25 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { getUserTeamIds, isAllowed } from '../middleware/tenancy.js'
 
 const router = Router()
+
+// Confirm the caller may modify the play (tactic) identified by id.
+// Returns true on success, or false after sending a 404.
+async function ensurePlayAccess(req, res, id) {
+  const owner = await pool.query('SELECT team_id FROM tactics WHERE id = $1', [id])
+  if (owner.rows.length === 0) {
+    res.status(404).json({ message: 'Play not found' })
+    return false
+  }
+  const teams = await getUserTeamIds(req.user)
+  if (!isAllowed(teams, owner.rows[0].team_id)) {
+    res.status(404).json({ message: 'Play not found' })
+    return false
+  }
+  return true
+}
 
 // Get game model
 router.get('/:teamId/game-model', authenticateToken, async (req, res, next) => {
@@ -110,9 +127,11 @@ router.put('/plays/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
     const { name, type, positions, movements, notes } = req.body
-    
+
+    if (!(await ensurePlayAccess(req, res, id))) return
+
     const result = await pool.query(
-      `UPDATE tactics SET 
+      `UPDATE tactics SET
         name = COALESCE($1, name),
         type = COALESCE($2, type),
         positions = COALESCE($3, positions),
@@ -138,6 +157,7 @@ router.put('/plays/:id', authenticateToken, async (req, res, next) => {
 router.delete('/plays/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
+    if (!(await ensurePlayAccess(req, res, id))) return
     const result = await pool.query('DELETE FROM tactics WHERE id = $1 RETURNING id', [id])
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Play not found' })
