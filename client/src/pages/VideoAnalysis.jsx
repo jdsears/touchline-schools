@@ -1,4 +1,5 @@
 import '@mux/mux-player'
+import { ASSISTANT_NAME } from '../lib/assistant'
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -48,6 +49,15 @@ const DEFAULT_CLIP_CATEGORIES = [
   { value: 'goal', label: 'Goal', color: 'pitch' },
   { value: 'mistake', label: 'Learning Moment', color: 'caution' },
 ]
+
+const clipChipClasses = {
+  pitch: 'bg-status-success-tint border border-status-success text-status-success',
+  energy: 'bg-brand-accent-tint border border-brand-accent text-brand-accent',
+  alert: 'bg-status-error-tint border border-status-error text-status-error',
+  caution: 'bg-status-warning-tint border border-status-warning text-status-warning',
+  blue: 'bg-status-info-tint border border-status-info text-status-info',
+  navy: 'bg-subtle border border-border-strong text-primary',
+}
 
 function formatTime(seconds) {
   if (!seconds && seconds !== 0) return '0:00'
@@ -789,7 +799,7 @@ export default function VideoAnalysis() {
                   </div>
                   <div>
                     <h2 className="font-display font-semibold text-white">AI Analysis</h2>
-                    <p className="text-xs text-secondary">Powered by The Gaffer</p>
+                    <p className="text-xs text-secondary">Powered by {ASSISTANT_NAME}</p>
                   </div>
                 </div>
                 <div className="mb-3">
@@ -957,7 +967,7 @@ export default function VideoAnalysis() {
                     <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border-default">
                       <CheckCircle className="w-6 h-6 text-brand-primary" />
                       <div className="flex-1">
-                        <h2 className="font-display text-lg font-semibold text-white">The Gaffer's Analysis</h2>
+                        <h2 className="font-display text-lg font-semibold text-white">{ASSISTANT_NAME}&apos;s Analysis</h2>
                         <p className="text-sm text-secondary">
                           {latestAnalysis.frames_analysed} frames analysed{match?.opponent && ` - vs ${match.opponent}`}
                         </p>
@@ -1414,7 +1424,7 @@ export default function VideoAnalysis() {
                     {clipCategories.map(cat => (
                       <button key={cat.value} type="button" onClick={() => setNewClip(prev => ({ ...prev, clipType: cat.value }))}
                         className={`p-2 rounded-lg text-sm font-medium transition-colors text-left flex items-center gap-2 ${
-                          newClip.clipType === cat.value ? `bg-${cat.color}-500/20 border border-${cat.color}-500 text-white` : 'bg-subtle border border-border-strong text-secondary hover:text-white'
+                          newClip.clipType === cat.value ? (clipChipClasses[cat.color] || clipChipClasses.navy) : 'bg-subtle border border-border-strong text-secondary hover:text-white'
                         }`}
                       >
                         <Tag className="w-3 h-3" /> {cat.label}

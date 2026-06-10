@@ -2,6 +2,7 @@ import pool from '../config/database.js'
 import Anthropic from '@anthropic-ai/sdk'
 import fs from 'fs'
 import dotenv from 'dotenv'
+import { getSportFramework, getSportAgeGuidance, getSportGoverningBody } from './sportKnowledge.js'
 
 dotenv.config()
 
@@ -331,7 +332,7 @@ Return JSON: {"queries": ["query1", "query2", "query3"], "category": "one of: co
 
 /**
  * Retrieve relevant knowledge base context for a coaching query
- * This is the main entry point used by The Gaffer's chat flow
+ * This is the main entry point used by the assistant's chat flow
  */
 export async function retrieveCoachingContext({
   teamId,
@@ -382,7 +383,7 @@ export async function retrieveCoachingContext({
       return null
     }
 
-    // Format retrieved context for injection into The Gaffer's prompt
+    // Format retrieved context for injection into the assistant's prompt
     const contextParts = sortedResults.map((r, i) => {
       const source = r.document_title || 'Coaching Resource'
       return `[Source: ${source}${r.skill_focus ? ` | Focus: ${r.skill_focus}` : ''}${r.age_group ? ` | Age: ${r.age_group}` : ''}]\n${r.content}`
@@ -480,42 +481,55 @@ export async function getKnowledgeBaseStats(teamId) {
  * Called on team creation and when age group changes.
  * Replaces any previous auto-seeded FA guidelines for this team.
  */
-export async function seedFAGuidelines(teamId, ageGroup) {
+export async function seedFAGuidelines(teamId, ageGroup, sport = 'football') {
   if (!ageGroup) return null
 
   const ag = ageGroup.toLowerCase().replace(/[^0-9u]/g, '')
   const num = parseInt(ag.replace('u', ''))
   if (isNaN(num)) return null
 
-  // Remove any previously auto-seeded FA guidelines for this team
+  // Remove any previously auto-seeded NGB guidelines for this team
+  // (source_type retains the legacy 'fa_guidelines' value so existing
+  // auto-seeded documents are cleaned up on re-seed)
   try {
     await pool.query(
       `DELETE FROM knowledge_base_documents WHERE team_id = $1 AND source_type = 'fa_guidelines'`,
       [teamId]
     )
   } catch (error) {
-    console.error('Error removing old FA guidelines:', error.message)
+    console.error('Error removing old NGB guidelines:', error.message)
   }
 
-  // Build age-appropriate content
-  const { title, content } = buildFAGuidelinesContent(num)
+  // Build age-appropriate content for the team's sport: the FA corpus for
+  // football, the relevant NGB framework + age guidance for everything else
+  const sportKey = (sport || 'football').toLowerCase().trim()
+  let title, content, governingBody
+  if (sportKey === 'football') {
+    governingBody = 'FA'
+    ;({ title, content } = buildFAGuidelinesContent(num))
+  } else {
+    governingBody = getSportGoverningBody(sportKey) || 'NGB'
+    const yearGroup = Math.max(1, num - 5)
+    title = `${governingBody} Development Guidelines - ${ageGroup}`
+    content = `# ${governingBody} Development Guidelines (${ageGroup})\n\n${getSportFramework(sportKey)}\n\n${getSportAgeGuidance(sportKey, yearGroup)}`
+  }
 
   try {
     const result = await ingestDocument({
       teamId,
       uploadedBy: null,
       title,
-      description: `Automatically populated FA development guidelines for ${ageGroup} teams. This content is updated when your team's age group changes.`,
+      description: `Automatically populated ${governingBody} development guidelines for ${ageGroup} teams. This content is updated when your team's age group or sport changes.`,
       content,
       sourceType: 'fa_guidelines',
       category: 'coaching_guidelines',
       ageGroup: ageGroup,
-      tags: ['FA', 'development', 'guidelines', ageGroup],
+      tags: [governingBody, 'development', 'guidelines', ageGroup],
     })
-    console.log(`FA guidelines seeded for team ${teamId} (${ageGroup})`)
+    console.log(`${governingBody} guidelines seeded for team ${teamId} (${ageGroup}, ${sportKey})`)
     return result
   } catch (error) {
-    console.error('Error seeding FA guidelines:', error.message)
+    console.error('Error seeding NGB guidelines:', error.message)
     return null
   }
 }

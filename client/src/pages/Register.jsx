@@ -1322,8 +1322,8 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 transition={{ delay: 0.6 + i * 0.1 }}
                 className="flex items-center gap-3 p-3 rounded-lg bg-subtle border border-border-strong/50"
               >
-                <div className={`w-8 h-8 rounded-md bg-${color}-500/20 flex items-center justify-center`}>
-                  <Icon className={`w-4 h-4 text-${color}-400`} />
+                <div className={`w-8 h-8 rounded-md ${color === 'amber' ? 'bg-brand-accent-tint' : 'bg-brand-primary-tint'} flex items-center justify-center`}>
+                  <Icon className={`w-4 h-4 ${color === 'amber' ? 'text-brand-accent' : 'text-brand-primary'}`} />
                 </div>
                 <span className="text-sm text-primary font-medium">{label}</span>
               </motion.div>

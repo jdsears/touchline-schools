@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { ASSISTANT_NAME } from '../lib/assistant'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useTeam } from '../context/TeamContext'
@@ -213,7 +214,7 @@ export default function Dashboard() {
   }
   
   const quickActions = [
-    { name: 'Ask Pep', href: '/chat', icon: MessageSquare, color: 'pitch' },
+    { name: `Ask ${ASSISTANT_NAME}`, href: '/chat', icon: MessageSquare, color: 'pitch' },
     { name: 'Add Training', href: '/training?new=true', icon: Calendar, color: 'energy' },
     { name: 'Add Pupil', href: '/pupils?new=true', icon: Users, color: 'blue' },
     { name: 'Log Match', href: '/matches?new=true', icon: Trophy, color: 'caution' },
@@ -349,7 +350,7 @@ export default function Dashboard() {
                   <Sparkles className="w-5 h-5 text-brand-primary" />
                 </div>
                 <div>
-                  <h2 className="font-display font-semibold text-white">Pep</h2>
+                  <h2 className="font-display font-semibold text-white">{ASSISTANT_NAME}</h2>
                   <p className="text-sm text-secondary">Your AI coaching assistant</p>
                 </div>
               </div>

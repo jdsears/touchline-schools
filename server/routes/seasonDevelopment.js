@@ -427,7 +427,7 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
       max_tokens: 2000,
       messages: [{
         role: 'user',
-        content: `You are a grassroots football development analyst for ${team.name} (${team.age_group || 'youth'} team).
+        content: `You are a school sport development analyst for ${team.name} (${team.age_group || 'youth'} ${team.sport || 'sport'} team).
 
 Analyse the following season data and write a Season Development Review answering these 4 questions with specific pupil names:
 
@@ -454,7 +454,7 @@ ${achievementData || 'No achievements awarded yet'}
 ## Pupil of the Match Awards
 ${potmData || 'No POTM awards yet'}
 
-Keep it practical and encouraging - this is grassroots youth football. Use pupil first names where possible. Be specific (cite data points) not vague. If data is limited for a category, say so honestly and suggest what the coach should start tracking. Format with markdown headers matching the 5 sections above.`
+Keep it practical and encouraging - this is school sport. Use pupil first names where possible. Be specific (cite data points) not vague. If data is limited for a category, say so honestly and suggest what the coach should start tracking. Format with markdown headers matching the 5 sections above.`
       }],
     })
 

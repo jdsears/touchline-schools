@@ -357,6 +357,586 @@ Development Principles:
 }
 
 // ==========================================
+// ATHLETICS (ENGLAND ATHLETICS)
+// ==========================================
+export const athleticsGuidance = {
+  framework: `ATHLETICS DEVELOPMENT FRAMEWORK (ENGLAND ATHLETICS):
+Based on England Athletics development guidance, Funetics, and the Athletics 365 multi-event framework.
+
+Development Phases:
+- Funetics / Fundamentals (ages 4-11): running, jumping and throwing through play and games
+- Athletics 365 (ages 8-15): multi-event skill development across all event groups
+- Event Group Development (U15-U17): sprints, endurance, jumps, throws - broad within group
+- Event Specialisation (U17+): event-specific training and competition focus
+
+Key Development Principles:
+- Multi-event development before specialisation: athletes should experience sprints, endurance, jumps and throws every term
+- Do NOT specialise in a single event before ~age 14; early specialisation harms long-term development
+- Technique before load: sprint mechanics, take-off shapes, and throwing actions taught with light/modified equipment
+- Age-appropriate implements: lighter shots, foam javelins/howlers, modified discus at primary and early secondary
+- Jumping safety: scissors technique before Fosbury flop; flop only with appropriate landing area and supervision
+- Endurance through play and varied paces, not high-mileage grinding (especially primary age)
+- Competition formats: Sportshall (indoor team, U11/U13/U15), Quadkids (4-event team scoring), track and field with age-group rules
+- Relative age and growth: sprint and jump performance fluctuates through growth spurts - judge technique, not just times/distances`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) { // primary
+      return `ENGLAND ATHLETICS GUIDANCE - FUNDAMENTALS (Years 2-6):
+- Run/jump/throw through games and relays, not formal event training
+- Sportshall and Quadkids style team formats: everyone competes, team scoring
+- Throwing: foam javelins/howlers, light balls, bean bags; strict safety lines and throwing on command only
+- Jumping: standing long jump, scissors over low elastic; soft landing areas
+- Running: short sprints, agility and relay races, fun paced runs (no laps-as-punishment)
+- Score effort and personal improvement, not just placings`
+    }
+    if (yearGroup <= 9) { // KS3
+      return `ENGLAND ATHLETICS GUIDANCE - MULTI-EVENT DEVELOPMENT (Years 7-9 / U12-U14):
+- Athletics 365 approach: every athlete experiences all event groups each cycle
+- Teach sprint mechanics (drive, posture, arm action), relay changeovers, hurdle rhythm over low hurdles
+- Jumps: long jump approach and take-off, high jump scissors -> flop progression only with proper landing beds
+- Throws: shot (age-appropriate weight), discus and javelin technique with modified implements; strict throwing-area discipline
+- Endurance: varied-pace work, 800m-1500m race experience; avoid high mileage
+- Quadkids and Sportshall competitions; introduce English Schools' age-group rules`
+    }
+    return `ENGLAND ATHLETICS GUIDANCE - EVENT GROUP DEVELOPMENT (Year ${yearGroup} / U${yearGroup + 5}):
+- Develop within an event GROUP (sprints/endurance/jumps/throws) while keeping a second event
+- Implement weights and hurdle heights per English Schools'/UKA age-group specifications
+- Introduce structured training: acceleration work, plyometric foundations, throws technique under load
+- Growth-related injury awareness (Osgood-Schlatter, Sever's): manage volume during growth spurts
+- Competition pathway: school -> district -> county -> English Schools' Championships
+- Officiating and self-management: athletes learn rules, check-in procedures, warm-up routines`
+  }
+}
+
+// ==========================================
+// BASKETBALL (BASKETBALL ENGLAND)
+// ==========================================
+export const basketballGuidance = {
+  framework: `BASKETBALL DEVELOPMENT FRAMEWORK (BASKETBALL ENGLAND):
+Based on Basketball England development guidance, Mini Basketball, and the Jr. NBA schools programme.
+
+Development Phases:
+- Mini Basketball (U11): modified game - size 5 ball, lower rings (2.60m), simplified rules
+- Junior Development (U12-U14): transition to full rules, fundamental skill consolidation
+- Youth Performance (U15-U18): tactical systems, athletic development, pathway competition
+
+Mini Basketball Modifications (U11):
+- Size 5 ball, ring height 2.60m where equipment allows
+- Man-to-man defence only - NO zone defences (this continues through junior basketball)
+- Equal playing time expectations; every player experiences different roles
+- No three-point line emphasis; score inside play and good movement
+
+Key Development Principles:
+- Fundamentals before systems: dribbling (both hands), passing, footwork (pivot, triple threat), lay-ups both sides
+- Ball size progression: size 5 (mini/primary), size 6 (typically U14 boys and all girls from U12), size 7 (boys ~U14+)
+- Man-to-man defensive principles (stance, positioning, help) before any zone concepts
+- Small-sided games (3v3 especially) maximise touches and decision-making; 3x3 is also a formal discipline
+- Free-flowing play over set plays at school level: teach spacing, give-and-go, screening concepts progressively
+- Respect officials; learn the rules (travelling, double dribble, fouls) through game play`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) { // primary
+      return `BASKETBALL ENGLAND GUIDANCE - MINI BASKETBALL (Years 4-6 / U11):
+- Size 5 ball, lowered rings (2.60m) where possible
+- 4v4 or 5v5 with simplified rules; relaxed violations while learning
+- Man-to-man only, no zones, no presses
+- Focus: dribbling with head up, chest/bounce pass, pivoting, lay-up introduction
+- High-activity practices: every child has a ball for skill work
+- Equal playing time, rotate positions and roles`
+    }
+    if (yearGroup <= 9) { // KS3
+      return `BASKETBALL ENGLAND GUIDANCE - JUNIOR BASKETBALL (Years 7-9 / U12-U14):
+- Transition to full rules and standard rings; size 6 ball (size 5 -> 6 transition at U12)
+- Man-to-man defence remains the rule and the teaching focus
+- Fundamentals under pressure: both-hands finishing, jump stop, triple threat, on-ball defence
+- Concepts: spacing, cutting, give-and-go, basic screening; fast-break lanes
+- 3v3 games heavily - touches, decisions, conditioning
+- Introduce shooting form work (BEEF/balance-eyes-elbow-follow-through style cues)`
+    }
+    return `BASKETBALL ENGLAND GUIDANCE - YOUTH BASKETBALL (Year ${yearGroup} / U${yearGroup + 5}):
+- Full FIBA-aligned rules; size 7 (boys) / size 6 (girls) ball
+- Tactical development: pick-and-roll basics, help-side defence, press offence/defence, set plays in moderation
+- Athletic development: landing mechanics, change of direction, injury prevention (ankle/knee)
+- Game management: time and score awareness, fouls management, timeout usage
+- Pathway: school -> local league -> Basketball England club/regional competition
+- Encourage officiating and table-official experience for game understanding`
+  }
+}
+
+// ==========================================
+// SWIMMING (SWIM ENGLAND)
+// ==========================================
+export const swimmingGuidance = {
+  framework: `SWIMMING DEVELOPMENT FRAMEWORK (SWIM ENGLAND):
+Based on the Swim England Learn to Swim Framework and School Swimming and Water Safety guidance.
+
+Statutory Context (England):
+- National curriculum requires that by the end of primary school pupils can: swim competently over at least 25 metres, use a range of strokes effectively, and perform safe self-rescue
+- School swimming is the only statutory PE activity with defined outcomes - prioritise non-swimmers
+
+Development Phases:
+- Learn to Swim Stages 1-7: water confidence -> stroke foundations -> 25m+ proficiency across all four strokes
+- Aquatic Skills Stages 8-10: stroke refinement and pathway into competitive/artistic/water polo/diving disciplines
+- Club/Competitive Pathway: club development squads -> county -> regional -> national age groups
+
+Key Development Principles:
+- Water safety and self-rescue are core outcomes, not extras: floating, treading water, HELP position, safe entry/exit, calling for help
+- Stroke development order: front crawl and backstroke foundations first; breaststroke timing and butterfly introduced progressively
+- Technique before distance; distance before speed
+- Short, frequent quality swims beat occasional long sessions
+- SEND inclusion: swimming is often the most accessible PA for pupils with physical disabilities - adapt entry, support, and equipment
+- Safety governance: appropriate lifeguard/teacher ratios, pool depth rules for diving entries, clear poolside behaviour codes
+- Competitive introduction: club galas, school galas with stroke-law basics (legal turns, finishes, starts)`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) { // primary
+      return `SWIM ENGLAND GUIDANCE - SCHOOL SWIMMING (Years 3-6):
+- Target the statutory outcomes: 25m unaided, range of strokes, safe self-rescue
+- Group by ability stage (Learn to Swim 1-7), not by age; prioritise non-swimmers
+- Every lesson includes a water safety element (floating, treading, reach rescue, HELP position)
+- Front crawl/backstroke foundations: body position, kick from hips, breathing patterns
+- Use aids purposefully (noodles, floats) and remove them progressively
+- Maximise active swim time; short distances with quality technique`
+    }
+    if (yearGroup <= 9) { // KS3
+      return `SWIM ENGLAND GUIDANCE - AQUATIC DEVELOPMENT (Years 7-9):
+- Audit and close gaps: some pupils will still not meet the 25m standard - provide catch-up
+- Refine all four strokes: bilateral breathing, breaststroke timing, butterfly body undulation
+- Introduce racing skills: dive starts (DEEP water only per pool rules), legal turns and finishes
+- Personal survival skills: clothed swimming, surface dives, extended treading water
+- Water polo / mini-polo and relays add game-based engagement
+- Signpost club pathway for swimmers beyond Stage 7`
+    }
+    return `SWIM ENGLAND GUIDANCE - COMPETITIVE/LIFESTYLE SWIMMING (Year ${yearGroup}):
+- Two tracks: competitive development (stroke law, pacing, training sets) and lifelong fitness/safety
+- Training structure: warm-up, technique set, main set, swim-down; stroke-count and pacing awareness
+- Lifesaving qualifications (e.g. Rookie Lifeguard/RLSS awards) as leadership options
+- Officiating/timekeeping roles at galas build engagement
+- Safety leadership: pupils articulate open-water dangers (cold shock, currents, Float to Live)
+- Maintain stroke breadth even for swimmers who favour one stroke or distance`
+  }
+}
+
+// ==========================================
+// GYMNASTICS (BRITISH GYMNASTICS)
+// ==========================================
+export const gymnasticsGuidance = {
+  framework: `GYMNASTICS DEVELOPMENT FRAMEWORK (BRITISH GYMNASTICS):
+Based on British Gymnastics schools guidance (Rise Gymnastics) and fundamental movement development.
+
+Development Phases:
+- Foundation movement (KS1): shapes, travels, balances, rolls through exploration
+- Skill development (KS2): rolls, cartwheels, balances, low apparatus, sequences
+- Technical development (KS3+): progressions to inverted skills, flight, apparatus work, composition
+
+Core Content Strands:
+- Shapes: tuck, pike, straddle, straight, star, dish, arch - the alphabet of gymnastics
+- Travels and rolls: log, egg, forward, backward (with progressions), teddy-bear roll
+- Balances: points and patches, partner balances (counter-balance/counter-tension), headstand/handstand progressions
+- Flight: jumps with shape, landings BEFORE height, vault progressions
+- Sequence and composition: linking movements with control, levels, speed and direction changes
+
+Critical Safety Rules:
+- Landings first: teach safe landing mechanics (bent knees, feet together, arms forward) before any height/flight work
+- Headstands/handstands: wall and partner progressions; mats appropriate; no pressure on neck for forward roll (chin to chest, weight on shoulders)
+- NO somersaults or flight-to-inversion skills without a suitably qualified gymnastics coach and appropriate matting
+- Apparatus: check, carry and set up correctly; height appropriate to ability; supervised at all times
+- Jewellery removed, hair tied back, bare feet or gym shoes (no socks on apparatus)
+- Spotting/support only with taught technique - never improvised manual support of inverted skills`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `BRITISH GYMNASTICS GUIDANCE - PRIMARY GYMNASTICS (Years 1-6):
+- Explore shapes, travels, balances, rolls; quality of body tension and extension over difficulty
+- Forward roll progressions (rock and roll, down a slope) - never force; backward roll only with progressions
+- Points and patches balances, partner balances at KS2 (counter-balance introduced carefully)
+- Low apparatus: benches, low beams, padded boxes; jumping AND landing with shape
+- Short sequences: 4-6 elements with a clear start and finish position
+- High activity, minimal queuing: stations with mats for all`
+    }
+    if (yearGroup <= 9) {
+      return `BRITISH GYMNASTICS GUIDANCE - KS3 GYMNASTICS (Years 7-9):
+- Refine rolls, cartwheel -> round-off progressions, headstand/handstand against wall -> free
+- Vault progressions on suitable equipment: squat-on, straddle-over only when take-off and landing are secure
+- Flight with shape from height (controlled): tuck/star/pike jumps off boxes with stuck landings
+- Partner/group balances: counter-balance and counter-tension, safe building and dismounting order
+- Composition: unison/canon, levels, pathways; peer assessment against criteria
+- Strength and flexibility foundations: core tension (dish/arch holds), shoulder and hamstring mobility`
+    }
+    return `BRITISH GYMNASTICS GUIDANCE - KS4+ GYMNASTICS (Year ${yearGroup}):
+- Personalised skill development: students select apparatus/skill families suited to their ability
+- Advanced skills (flight, inversion combinations) ONLY with qualified coaching support and correct matting
+- Leadership: students lead warm-ups, judge sequences against criteria, choreograph group routines
+- Trampolining (if offered) requires specifically qualified staff - one bouncer at a time, spotters trained
+- Link to exam PE: analysis of movement, biomechanics of rotation, aesthetic appreciation
+- Lifelong link: conditioning, mobility and body management for any sport`
+  }
+}
+
+// ==========================================
+// TENNIS (LTA)
+// ==========================================
+export const tennisGuidance = {
+  framework: `TENNIS DEVELOPMENT FRAMEWORK (LTA):
+Based on LTA Youth and the international red/orange/green/yellow ball progression.
+
+Stage Progression (by age and competence):
+- Red (typically 8 & under): mini court (badminton-size), red felt/foam ball (75% slower), 17-23" rackets
+- Orange (typically 9 & under): 3/4 court, orange ball (50% slower), 23-25" rackets
+- Green (typically 10 & under): full court, green ball (25% slower), 25-26" rackets
+- Yellow (11+): full court, standard ball - only when ready; many beginners at ANY age start on slower balls
+
+Key Development Principles:
+- The slower-ball progression is the single most important tool: it makes rallying achievable, which is where learning happens
+- Serve, rally, score from the first lesson: game-based learning over isolated technique queues
+- Fundamental priorities: ready position, racket-head control, contact point in front, recovery after each shot
+- Rally cooperation before competition: count consecutive rallies, then introduce point play
+- Whole-class formats: tarmac/playground tennis with lines/cones, sponge balls indoors - no courts required
+- Competition: team tennis formats and individual box leagues; match-play etiquette (self-umpiring, line calls, scoring)
+- Older beginners still start with slower balls - stage by competence, not just age`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `LTA GUIDANCE - RED/ORANGE STAGE (Years 1-6):
+- Red ball mini-courts (or cones/lines on playground); short rackets sized to the child
+- Rally-based games: floor tennis, throw-catch tennis -> racket feeds -> cooperative rallies
+- Underarm serve to start every point; simple first-to-7 scoring
+- Develop: ready position, sideways hitting stance, gentle racket-head control, tracking the ball
+- Orange stage (upper KS2): bigger court, introduce basic serve action and rally tactics (deep vs short)
+- Every child plays every lesson - doubles and team formats keep activity high`
+    }
+    if (yearGroup <= 9) {
+      return `LTA GUIDANCE - GREEN/YELLOW TRANSITION (Years 7-9):
+- Stage by competence: many beginners should still rally with green (or orange) balls
+- Technique within game play: forehand/backhand swing shape, overarm serve progression, volley introduction
+- Tactics: consistency first, then placement (deep, wide), approach-and-volley basics
+- Scoring: full tennis scoring, tie-breaks, self-umpired match play with etiquette
+- Doubles formats maximise court usage; rotate partners
+- Box leagues and team tennis for sustained competition`
+    }
+    return `LTA GUIDANCE - YELLOW BALL DEVELOPMENT (Year ${yearGroup}):
+- Full-court yellow ball play for competent players; slower balls remain a teaching tool for new starters
+- Shot development: spin (topspin drive, slice), serve placement and second-serve reliability
+- Tactical play: patterns (serve+1), defending vs attacking court positions, doubles formations
+- Physical: split-step timing, lateral movement, shoulder care for serving loads
+- Leadership: pupils run box leagues, umpire matches, coach red-ball groups
+- Signpost LTA Youth clubs and competitions for development beyond school`
+  }
+}
+
+// ==========================================
+// BADMINTON (BADMINTON ENGLAND)
+// ==========================================
+export const badmintonGuidance = {
+  framework: `BADMINTON DEVELOPMENT FRAMEWORK (BADMINTON ENGLAND):
+Based on Badminton England schools programmes (Racket Pack primary, Smash Up! secondary).
+
+Development Phases:
+- Racket Pack (primary): fun, game-based racket-skill foundations
+- Smash Up! (secondary): fast, social, challenge-based badminton for engagement
+- Club/Performance Pathway: junior club -> county -> regional performance centres
+
+Key Development Principles:
+- Racket familiarity first: balloon/shuttle balancing, tap-ups, partner feeds before full-court play
+- Grip fundamentals: relaxed forehand ("handshake") and thumb-up backhand grip; grip changes are the gateway skill
+- Serve rules taught early: underarm action, below the waist, diagonal service courts
+- Half-court singles is the core school format: maximises court usage and rally relevance
+- Shot progression: high serve, overhead clear -> drop shot -> net shot -> smash (introduce smash last)
+- Movement: split-step base, chasse to corners, lunge at the net, recover to base every shot
+- Modified equipment: slower/plastic shuttles for beginners; lower nets acceptable for KS1-2
+- Scoring: rally scoring to 21 (or shorter games to 11/15 for rotation); umpire your own games`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `BADMINTON ENGLAND GUIDANCE - RACKET PACK (Years 2-6):
+- Racket-skill stations: shuttle balancing, tap-ups, throw-hit rallies over low nets/benches
+- Balloon badminton and slow shuttles make rallies achievable
+- Underarm serve and cooperative rally counting (beat your record)
+- Light, short rackets; one between two maximum
+- Simple half-court games with relaxed rules once rallying emerges
+- Celebrate rally length and improvement, not just winners`
+    }
+    if (yearGroup <= 9) {
+      return `BADMINTON ENGLAND GUIDANCE - KS3 / SMASH UP! (Years 7-9):
+- Half-court singles as the default; rotate via ladder/king-of-the-court formats
+- Teach: high serve, overhead clear, drop shot, net shot; introduce smash once clears are sound
+- Grips checked constantly - forehand/backhand grip change drills
+- Movement: base position, split-step, lunge recovery
+- Rally scoring, service rules and faults; pupils umpire and score
+- Doubles introduction: sides vs front-and-back basics`
+    }
+    return `BADMINTON ENGLAND GUIDANCE - KS4+ BADMINTON (Year ${yearGroup}):
+- Full-court singles and doubles with tactical intent: attack from rear court, defend the smash, net pressure
+- Doubles systems: serve and return formations, rotation between attack (front/back) and defence (sides)
+- Deception and variation: slice drops, flick serves, punch clears
+- Conditioning: multi-shuttle feeding, shadow movement patterns
+- Leadership: organise ladders, umpire, coach younger groups
+- Signpost local club and county pathways`
+  }
+}
+
+// ==========================================
+// ROUNDERS (ROUNDERS ENGLAND)
+// ==========================================
+export const roundersGuidance = {
+  framework: `ROUNDERS DEVELOPMENT FRAMEWORK (ROUNDERS ENGLAND):
+Based on Rounders England rules and schools guidance.
+
+Game Essentials:
+- 9 players a side (school variants flexible); innings-based; batting square, bowling square, 4 posts
+- Legal bowl: smooth underarm action, ball between knee and head height, inside the batting square, no bouncing
+- Scoring: 1 rounder (hit and reach 4th post), 1/2 rounder (reach 4th without hit, or reach 2nd post after a hit), penalty 1/2 rounders for no-balls
+- Out: caught, stumped out at post running to, run out, obstruction; batters must keep contact with post until next bowl
+
+Key Development Principles:
+- Striking and fielding literacy: throwing, catching, tracking, ground fielding transfer across cricket/softball
+- Maximise involvement: small-sided versions (5-6 a side), everyone bats each innings, rotate fielding positions including backstop and bowler
+- Batting: one-handed grip, watch the ball, hit into space (placement over power), run on every hit decision-making
+- Bowling: consistent legal action first, then variation (pace, height within legal zone, spin)
+- Fielding: backstop technique, post-player footwork (ball before foot on post), deep fielders' long barrier and overarm return
+- Safety: batters carry the bat (never thrown), waiting batters behind the line, no jewellery, post bases stable
+- Modify for ability: bigger/softer balls, batting tees or drop-feeds, shorter pitch distances at primary`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `ROUNDERS ENGLAND GUIDANCE - PRIMARY ROUNDERS (Years 3-6):
+- Modified games: 5-6 a side, big soft ball, everyone bats every innings
+- Striking from a tee or gentle drop-feed before live bowling
+- Throwing/catching circuits and target games every lesson
+- Simple rules: hit and run to 1st post, build to full post-running
+- Rotate every role including bowler and backstop
+- Score team rounders collectively - celebrate fielding stops as much as hits`
+    }
+    if (yearGroup <= 9) {
+      return `ROUNDERS ENGLAND GUIDANCE - KS3 ROUNDERS (Years 7-9):
+- Full rules introduced: legal bowling action, no-ball calls, post-running and contact rules
+- Batting: placement into space, choosing when to run, backward hit rules
+- Bowling: accuracy under the legal zone, introduce pace/height variation
+- Fielding systems: backstop + post players' stumping chains, deep field coverage, relay throws
+- Small-sided versions retained for touches; full 9v9 for fixtures
+- Pupils umpire (bowler's and batter's square umpires) to learn the laws`
+    }
+    return `ROUNDERS ENGLAND GUIDANCE - KS4+ ROUNDERS (Year ${yearGroup}):
+- Tactical play: batting orders, targeting weaker field zones, sacrifice running decisions
+- Advanced fielding: pre-set plays for likely hits, communication systems, cut-off throws
+- Bowling variation as a weapon: spin, pace change, legal height extremes
+- Fitness through fielding circuits and sprint-running between posts
+- Leadership: pupils captain, set fields, umpire full games
+- Inter-form and district competition; link to Rounders England club opportunities`
+  }
+}
+
+// ==========================================
+// DANCE (NATIONAL CURRICULUM PE / ONE DANCE UK)
+// ==========================================
+export const danceGuidance = {
+  framework: `DANCE DEVELOPMENT FRAMEWORK (NC PE / ONE DANCE UK):
+Based on national curriculum PE dance requirements and One Dance UK education guidance.
+
+Three Strands (all key stages):
+1. Performing: technical control, musicality, expression, performance presence
+2. Creating/Choreographing: generating movement from stimuli, using choreographic devices
+3. Appreciating: describing, analysing and evaluating dance using appropriate vocabulary
+
+Progression Expectations:
+- KS1: simple movement patterns, respond to music/stimuli, perform with control
+- KS2: compose phrases, use canon/unison/levels/pathways, perform with expression, evaluate peers
+- KS3: advanced techniques in specific styles, longer compositions, professional work analysis
+- KS4+: refined performance and choreography; links to GCSE Dance and vocational pathways
+
+Key Principles:
+- Stimulus-led creation: music, words, images, props, themes - movement generated by pupils, not just copied
+- Choreographic devices: unison, canon, repetition, retrograde, levels, dynamics, formations, contact work (taught safely)
+- Style breadth: creative/contemporary core plus cultural and social styles (e.g. street, Bhangra, capoeira-influenced, ballroom basics)
+- Safe practice: structured warm-up, safe landing/rolling technique, no high lifts without taught progressions, appropriate flooring
+- Performance for an audience (even just the class) every unit; filming for self-evaluation where school policy allows
+- Inclusive by design: dance is assessable on individual quality of movement, not physical prowess`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `DANCE GUIDANCE - PRIMARY (Years 1-6):
+- Respond to varied stimuli (music, stories, weather, animals) with whole-body movement
+- Build phrases of 4-8 counts; practise, refine, perform to the class
+- Devices: unison, mirroring, levels (high/medium/low), simple canon at upper KS2
+- Action words: travel, turn, jump, gesture, stillness - vary speed and size
+- Warm-up rituals every lesson; bare feet or suitable footwear; clear spacing
+- Evaluate with two stars and a wish using dance vocabulary`
+    }
+    if (yearGroup <= 9) {
+      return `DANCE GUIDANCE - KS3 (Years 7-9):
+- Technique development within styles (contemporary release/contraction, street foundations, cultural forms)
+- Choreograph in pairs/groups from abstract stimuli; use retrograde, fragmentation, formation change
+- Contact work and weight-sharing with taught progressions and trust-building
+- Musicality: counts, phrasing, accenting beats vs moving through them
+- Analyse professional repertoire (live or filmed): action, space, dynamics, relationships
+- Perform every unit; structured peer feedback against shared criteria`
+    }
+    return `DANCE GUIDANCE - KS4+ (Year ${yearGroup}):
+- Extended choreography: develop motifs through a full piece with clear intent
+- Performance skills: projection, focus, stamina, style-specific precision
+- Safe practice leadership: students lead warm-ups and risk-assess contact/lift work
+- Critical appreciation using professional works as reference points
+- Links: GCSE/A-level Dance, BTEC performing arts, community dance leadership
+- Celebrate showcase opportunities (assemblies, school productions, local festivals)`
+  }
+}
+
+// ==========================================
+// VOLLEYBALL (VOLLEYBALL ENGLAND)
+// ==========================================
+export const volleyballGuidance = {
+  framework: `VOLLEYBALL DEVELOPMENT FRAMEWORK (VOLLEYBALL ENGLAND):
+Based on Volleyball England schools guidance and mini-volleyball progressions.
+
+Development Progression:
+- Catch-throw volleyball (introduction): 1v1/2v2 over a low net, catching allowed - teaches court movement and tactics
+- Mini volleyball (2v2/3v3/4v4): small courts, lower nets, lighter balls; volley and dig develop
+- 6v6 transition (KS3+): rotation, positions, three-touch play
+- Formats: indoor 6v6, beach/grass doubles, sitting volleyball (fully inclusive format)
+
+Key Development Principles:
+- Three-touch culture from the start: dig/receive -> set -> attack; reward teams that use three touches
+- Skill order: volley (set) shape first, underarm serve, dig/forearm pass, then overarm serve, spike and block last
+- Lighter/softer balls and lower nets remove fear and enable rallies; progress equipment as control grows
+- Small courts and small teams = more touches; 4v4 is the ideal school format
+- Rotation and serving order teach the unique positional structure of the game
+- Rally scoring (point every rally) keeps games moving; first to 15/21/25 by context
+- Sitting volleyball: outstanding inclusion tool and a serious Paralympic discipline - use it for mixed-ability units`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `VOLLEYBALL ENGLAND GUIDANCE - PRIMARY INTRODUCTION (Years 4-6):
+- Balloon and beach-ball rallies, catch-throw games over low nets/benches
+- 1v1 and 2v2 tiny courts: throw-catch -> throw-volley -> volley-volley progressions
+- Volley shape: triangle window above forehead, extend through the ball
+- Underarm serve from close range; move back as success grows
+- Count cooperative rally records before competitive points
+- High-activity circuits: every pair has a ball and a 'net' (bench, rope, line)`
+    }
+    if (yearGroup <= 9) {
+      return `VOLLEYBALL ENGLAND GUIDANCE - KS3 MINI-VOLLEYBALL (Years 7-9):
+- 3v3/4v4 on badminton-court footprints, net ~2m, soft training balls
+- Dig (forearm pass) technique: platform, legs not arms, angle to target
+- Three-touch play rewarded (bonus point schemes work well)
+- Overarm serve introduction once underarm is consistent
+- Spike from a setter's feed - approach footwork (left-right-left for right-handers), arm swing
+- Rotation basics and simple positional play (setter at net)`
+    }
+    return `VOLLEYBALL ENGLAND GUIDANCE - 6v6 VOLLEYBALL (Year ${yearGroup}):
+- Full 6v6 with rotation, serving order, and positional fault rules
+- Systems: W-receive pattern, setter penetration basics (e.g. simple 4-2), block + cover
+- Skills under pressure: jump serve/float serve options, spike vs tip decisions, defensive digging
+- Beach/grass doubles and sitting volleyball as format breadth
+- Officiating: first referee hand signals, scoring, line judging by pupils
+- Pathway: Volleyball England junior clubs and competitions`
+  }
+}
+
+// ==========================================
+// CROSS COUNTRY (ENGLAND ATHLETICS)
+// ==========================================
+export const crossCountryGuidance = {
+  framework: `CROSS COUNTRY DEVELOPMENT FRAMEWORK (ENGLAND ATHLETICS):
+Based on England Athletics endurance development guidance and English Schools' cross country structures.
+
+Development Principles:
+- Endurance through enjoyment: varied, game-based aerobic work for younger pupils - NOT high mileage
+- Age-appropriate distances: school races typically ~1-2km (primary), building to ~3-6km by senior school age groups (English Schools' distances vary by age/gender)
+- Develop the aerobic base with varied paces: steady runs, fartlek (speed-play), short hills, relays
+- Running technique matters: posture, cadence, relaxed shoulders, uphill/downhill technique
+- Pacing is the key racing skill: teach even-pace and negative-split strategies; practise race starts (fast-out, settle)
+- Avoid early specialisation: cross country athletes should also sprint, jump and play games
+- Growth awareness: endurance training load must respect growth spurts; aches at growth plates = reduce load
+- Race-day skills: course walking, layered clothing, warm-up routine, spikes/trail shoe choice by ground
+
+Safety and Welfare:
+- Course risk assessment: terrain, traffic, water hazards, marshalling points, sweep runner
+- Weather protocols: cold/wet kit requirements, heat modifications
+- Inclusion: distance options, walk-run formats, personal-best culture over placing culture`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `CROSS COUNTRY GUIDANCE - PRIMARY (Years 3-6):
+- Distances ~1-2km maximum in races; training through games (stuck in the mud, relays, scavenger runs)
+- Run-walk progressions for developing runners - finishing feeling good builds runners
+- Daily Mile culture: regular easy running normalises the activity
+- Teach simple pacing: "start like a snail, finish like a cheetah"
+- Off-road experience: grass, trails, gentle hills in school grounds
+- Celebrate participation and personal improvement publicly`
+    }
+    if (yearGroup <= 9) {
+      return `CROSS COUNTRY GUIDANCE - KS3 (Years 7-9 / U13-U14):
+- Race distances ~2.5-4km depending on age/gender; train below race distance mostly
+- Structured variety: one steady run, one fartlek/hills, one games-based session per cycle
+- Pacing practice: even-pace challenges with predicted-time scoring (closest to prediction wins)
+- Hill technique: short drive uphill, controlled lean downhill
+- District and county trials pathway; team scoring formats (first 4-6 score) build squad ethos
+- Watch training load during growth spurts; never use running as punishment`
+    }
+    return `CROSS COUNTRY GUIDANCE - SENIOR (Year ${yearGroup}):
+- Race distances up to ~5-7km by senior age groups; periodise toward county/English Schools' dates
+- Training structure: aerobic volume (conversational pace), threshold work, hill strength, race-pace efforts
+- Recovery literacy: sleep, fuelling, easy days genuinely easy
+- Racing craft: course recces, positioning at starts, surging, finishing kicks
+- Dual pathway: club athletics (track endurance) complements school cross country
+- Leadership: senior runners lead warm-ups and mentor younger squads`
+  }
+}
+
+// ==========================================
+// GENERIC PE / MULTI-SKILLS (NC PE FALLBACK)
+// ==========================================
+export const genericPEGuidance = {
+  framework: `PHYSICAL EDUCATION DEVELOPMENT FRAMEWORK (NATIONAL CURRICULUM):
+General framework for sports and activities without a sport-specific module. Grounded in the national curriculum for PE and UK Chief Medical Officers' physical activity guidelines.
+
+National Curriculum Aims (all sports/activities):
+- Develop competence to excel in a broad range of physical activities
+- Be physically active for sustained periods (CMO guidance: 60+ active minutes daily for 5-18s)
+- Engage in competitive sports and activities
+- Lead healthy, active lives
+
+Universal Development Principles:
+- Fundamental movement skills first (agility, balance, coordination, running, jumping, throwing, catching) - these transfer across every sport
+- Development phases: explore and play (KS1) -> learn and apply core skills (KS2) -> refine technique and tactics (KS3) -> specialise and lead (KS4+)
+- Game/activity-based learning over isolated drills; maximise active time, minimise queuing
+- Differentiate with the STEP framework: change Space, Task, Equipment or People to make activities harder/easier
+- Holistic development every session: physical (head), technical (hand) and personal/social (heart) outcomes
+- Competition with purpose: balanced against participation, enjoyment and personal improvement
+- Safeguarding and safety: appropriate equipment, jewellery removed, qualified supervision for higher-risk activities
+
+Apply these principles using the conventions, rules and safety requirements of the specific sport or activity in question, and follow the relevant national governing body's guidance where it exists.`,
+
+  getAgeGuidance(yearGroup) {
+    if (yearGroup <= 6) {
+      return `NC PE GUIDANCE - PRIMARY (Years 1-6):
+- Master fundamental movement: running, jumping, throwing, catching, balance, agility, coordination
+- Apply basics in a broad range of activities; small-sided and modified versions of games
+- Simple tactics: attacking/defending principles, finding space, working with team-mates
+- High activity, every child engaged with equipment sized to them
+- Develop flexibility, strength, technique, control and balance through varied movement
+- Personal-best culture: compare against self, celebrate effort and improvement`
+    }
+    if (yearGroup <= 9) {
+      return `NC PE GUIDANCE - KS3 (Years 7-9):
+- Build on fundamentals: develop technique and tactical understanding in a range of sports
+- Overcome opponents in direct competition through team and individual games
+- Analyse performances against previous ones; demonstrate improvement
+- Develop physical confidence: strength, stamina, suppleness through structured activity
+- Leadership introduction: warm-up leading, officiating, peer coaching
+- Out-of-lesson signposting: clubs, teams and community pathways`
+    }
+    return `NC PE GUIDANCE - KS4+ (Year ${yearGroup}):
+- Tackle complex and demanding activities; refine technique under competitive pressure
+- Personal fitness ownership: design and evaluate own training approaches
+- Continued participation focus: find the formats each student will sustain beyond school
+- Leadership and officiating roles: organise, referee, coach
+- Link to examined PE and vocational pathways where relevant
+- Health literacy: training principles, recovery, lifelong activity habits`
+  }
+}
+
+// ==========================================
 // SPORT SELECTOR
 // ==========================================
 const sportModules = {
@@ -365,15 +945,31 @@ const sportModules = {
   cricket: cricketGuidance,
   hockey: hockeyGuidance,
   netball: netballGuidance,
+  athletics: athleticsGuidance,
+  basketball: basketballGuidance,
+  swimming: swimmingGuidance,
+  gymnastics: gymnasticsGuidance,
+  tennis: tennisGuidance,
+  badminton: badmintonGuidance,
+  rounders: roundersGuidance,
+  dance: danceGuidance,
+  volleyball: volleyballGuidance,
+  'cross-country': crossCountryGuidance,
+  'cross country': crossCountryGuidance,
+}
+
+function normaliseSport(sport) {
+  return (sport || '').toLowerCase().trim()
 }
 
 /**
  * Get the development framework text for a sport.
- * Used as a baseline in the AI system prompt.
+ * Used as a baseline in the AI system prompt. Unknown or unspecified
+ * sports fall back to the national curriculum PE framework rather
+ * than any single sport.
  */
 export function getSportFramework(sport) {
-  const module = sportModules[sport]
-  if (!module) return ''
+  const module = sportModules[normaliseSport(sport)] || genericPEGuidance
   return module.framework
 }
 
@@ -382,8 +978,7 @@ export function getSportFramework(sport) {
  * Injected into the AI system prompt alongside the framework.
  */
 export function getSportAgeGuidance(sport, yearGroup) {
-  const module = sportModules[sport]
-  if (!module) return ''
+  const module = sportModules[normaliseSport(sport)] || genericPEGuidance
   return module.getAgeGuidance(yearGroup)
 }
 
@@ -397,11 +992,26 @@ export function getSportGoverningBody(sport) {
     cricket: 'England and Wales Cricket Board (ECB)',
     hockey: 'England Hockey',
     netball: 'England Netball',
+    athletics: 'England Athletics',
+    basketball: 'Basketball England',
+    swimming: 'Swim England',
+    gymnastics: 'British Gymnastics',
+    tennis: 'Lawn Tennis Association (LTA)',
+    badminton: 'Badminton England',
+    rounders: 'Rounders England',
+    dance: 'One Dance UK',
+    volleyball: 'Volleyball England',
+    'cross-country': 'England Athletics',
+    'cross country': 'England Athletics',
   }
-  return bodies[sport] || ''
+  return bodies[normaliseSport(sport)] || ''
 }
 
 /**
  * List all supported sports.
  */
-export const SUPPORTED_SPORTS = ['football', 'rugby', 'cricket', 'hockey', 'netball']
+export const SUPPORTED_SPORTS = [
+  'football', 'rugby', 'cricket', 'hockey', 'netball',
+  'athletics', 'basketball', 'swimming', 'gymnastics', 'tennis',
+  'badminton', 'rounders', 'dance', 'volleyball', 'cross-country',
+]

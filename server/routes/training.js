@@ -104,14 +104,16 @@ router.post('/generate', authenticateToken, async (req, res, next) => {
       }
     }
 
-    // Get team format and age group if teamId provided
+    // Get team format, age group and sport if teamId provided
     let teamFormat = 11
     let ageGroup = null
+    let sport = null
     if (teamId) {
-      const teamResult = await pool.query('SELECT team_format, age_group FROM teams WHERE id = $1', [teamId])
+      const teamResult = await pool.query('SELECT team_format, age_group, sport FROM teams WHERE id = $1', [teamId])
       if (teamResult.rows[0]) {
         teamFormat = teamResult.rows[0].team_format || 11
         ageGroup = teamResult.rows[0].age_group
+        sport = teamResult.rows[0].sport || null
       }
     }
 
@@ -122,6 +124,7 @@ router.post('/generate', authenticateToken, async (req, res, next) => {
       constraints,
       teamFormat,
       ageGroup,
+      sport,
     })
     
     // Optionally save the session

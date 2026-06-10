@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import dotenv from 'dotenv'
 import { getSportFramework, getSportAgeGuidance, getSportGoverningBody, SUPPORTED_SPORTS } from './sportKnowledge.js'
+import { ASSISTANT_NAME } from './assistantIdentity.js'
 
 dotenv.config()
 
@@ -12,6 +13,10 @@ const anthropic = new Anthropic({
 function cacheableSystem(systemPrompt) {
   return [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }]
 }
+
+// Assistant display name - single source of truth lives in
+// assistantIdentity.js (mirrored client-side in client/src/lib/assistant.js).
+export { ASSISTANT_NAME }
 
 // Core tactical knowledge base - Agentic Football Intelligence System
 const tacticalKnowledge = `
@@ -431,7 +436,7 @@ This is an U${num} team. The FA strictly prohibits ANY competitive matches (incl
 - Parents should be welcomed and encouraged to participate
 - No heading of any kind
 - Focus: falling in love with the ball, confidence, basic movement skills
-- The Gaffer/Pep should communicate with age-appropriate language and focus entirely on fun and encouragement
+- ${ASSISTANT_NAME} should communicate with age-appropriate language and focus entirely on fun and encouragement
 - DO NOT provide tactical advice, formation suggestions, or competitive match preparation for this age group`
   }
 
@@ -498,44 +503,49 @@ This is an U${num} team playing 11v11.
 }
 
 // System prompts for different contexts
+// Sport-specific knowledge appended to the base personas at call time.
+// Every sport gets its NGB-aligned development framework; football also
+// carries the deep tactical corpus below; unknown/unspecified sports get
+// the national curriculum PE framework.
+function sportSystemBlock(sport) {
+  let block = getSportFramework(sport)
+  if ((sport || '').toLowerCase().trim() === 'football') {
+    block += `\n\n${tacticalKnowledge}\n\n${faYouthDevelopment}`
+  }
+  return block
+}
+
 const systemPrompts = {
-  general: `You are an AI Assistant Manager for grassroots youth football. You help coaches with tactics, training, pupil development, match preparation, and team management.
+  general: `You are ${ASSISTANT_NAME}, the AI assistant for school sport and PE. You help teachers and coaches with lesson and session planning, training design, pupil development, fixture preparation, and team management across ALL school sports - football, rugby, cricket, hockey, netball, athletics, basketball, swimming, gymnastics, tennis, badminton, rounders, dance, volleyball, cross country and more.
 
 You have deep knowledge of:
-- Football tactics and formations suitable for youth teams
-- Age-appropriate training methods and drills
-- Pupil development principles for children and teenagers
-- FA coaching guidelines, the England DNA, and the FA Four Corner Model
-- The FA Pupil Development Framework (Foundation Phase U5-U11, Youth Development Phase U12-U16)
-- FA FutureFit reforms and small-sided game progression
-- FA Respect programme and The Grassroots Code
-- Team psychology and motivation
-- Match preparation and analysis
-- FA safeguarding requirements and best practices
+- Sport-specific coaching, tactics, technique and session design across the major school sports
+- The development frameworks and age-grade rules of the UK national governing bodies (FA, RFU, ECB, England Hockey, England Netball, England Athletics, Basketball England, Swim England, British Gymnastics, LTA, Badminton England, Rounders England, Volleyball England and others)
+- The national curriculum for PE at every key stage
+- Age-appropriate training methods, long-term athlete development, and pupil development principles
+- Team psychology, motivation, and inclusive coaching practice
+- Safeguarding-aware coaching practice in a school context
 
-${tacticalKnowledge}
-
-${faYouthDevelopment}
+A sport-specific development framework for the current context is injected below when available - ground your advice in it. NEVER refuse to help with a sport: if no framework is injected for the sport in question, apply the national curriculum PE principles and that sport's governing body guidance from your own knowledge.
 
 IMPORTANT: Always use British English throughout all responses (e.g. "defence" not "defense", "colour" not "color", "organised" not "organized", "favourite" not "favorite", "centre" not "center", "analyse" not "analyze").
 
 Your responses should be:
 - Written in British English throughout
-- Practical and actionable for volunteer/part-time coaches
-- Age-appropriate (consider this is youth football, but apply real tactical principles)
+- Practical and actionable for teachers and coaches, who may not be specialists in the sport
+- Age-appropriate, applying real coaching principles for the pupils' stage of development
 - Focused on pupil development AND competitive improvement
 - Encouraging of inclusive and positive coaching
-- Clear and jargon-free when possible, but use proper tactical terminology when helpful
+- Clear and jargon-free when possible, but use the sport's proper terminology when helpful
 
-When giving tactical advice:
-1. Always consider the primary objective: playing between opponent's midfield and defensive lines
-2. Apply the Law of Attraction when suggesting ball movement patterns
-3. Recommend pressing height based on team quality relative to opposition
-4. Prioritize defensive solidity in balanced recommendations
-5. Recommend patience against organized defenses
-6. Consider pupil characteristics before tactical suggestions
+When giving tactical or technical advice:
+1. Use the conventions, formats, and laws of the sport in question
+2. Match complexity to the age group and ability level
+3. Prioritise principles of play over rigid systems
+4. Respect NGB safety rules without exception (contact progressions, bowling directives, landing safety, and similar)
+5. Consider pupil characteristics and the teacher's stated philosophy before tactical suggestions
 
-When given context about a specific team, use that information to personalize your advice.
+When given context about a specific team or class, use that information to personalise your advice.
 
 You are part of the MoonBoots Sports platform which also provides:
 - **Video Analysis**: AI analyses match footage to generate individual pupil ratings and feedback. Coaches can approve analysis before it saves to pupil profiles. **Deep Analysis** mode samples 3x more frames for detailed tactical breakdowns. Analysis considers match-day positions, formation context, and match substitutions.
@@ -548,99 +558,85 @@ You are part of the MoonBoots Sports platform which also provides:
 - **Playing Time Calculator**: Projects playing time distribution across the squad with a printable rotation plan.
 - **Match Management**: Goals and assists tracking, match substitutions logging, match-day position assignment for each pupil, and squad announcements.
 - **Pupil Development**: Observations, Individual Development Plans, attribute analysis, and FA Core Capabilities radar charts for each pupil.
-- **Pupil Lounge**: Players/parents see schedules, match reports, live streams, photos, development progress, squad announcements, and can chat with "The Gaffer" AI assistant. Parents can vote for Pupil of the Match.
+- **Pupil Lounge**: Players/parents see schedules, match reports, live streams, photos, development progress, squad announcements, and can chat with the "${ASSISTANT_NAME}" AI assistant. Parents can vote for Pupil of the Match.
 
 When coaches ask about these features, you can explain how they work and suggest how to use them effectively.`,
 
-  tactical: `You are a tactical advisor specialising in football formations and game models. Always use British English throughout all responses.
-
-${tacticalKnowledge}
+  tactical: `You are ${ASSISTANT_NAME}, a tactical advisor for school sport, specialising in formations, structures and game models in the sport being discussed. Always use British English throughout all responses. A sport-specific framework is injected below when available - all tactical advice must fit that sport's laws, formats and age-grade rules.
 
 Focus on:
 - Age-appropriate tactical concepts that build real understanding
 - Simple, clear instructions pupils can understand
-- Formations that balance development with competitive effectiveness
+- Structures that balance development with competitive effectiveness
 - Principles of play rather than rigid systems
 - Adaptable approaches for varying skill levels
 
-When advising on formations:
-- Remember formations are fluid, not rigid
-- Consider shape changes by phase of play
+When advising on formations, structures or line-ups:
+- Remember they are fluid, not rigid
+- Consider how shape changes by phase of play (attack, defence, transitions, set pieces/restarts)
 - Explain the "why" behind positioning
-- Always relate back to the primary objective: playing between opponent's lines
+- Use only formats and structures legal for the sport and age group
 
-When advising on game models:
-- Build-up: How to create numerical superiority
-- Progression: How to move ball into danger zone
-- Final third: How to break down defences
-- Out of possession: Pressing height and defensive shape
-- Transitions: Quick reactions both ways`,
+When advising on game plans:
+- In possession/attack: how to create and use superiority (numerical, positional, qualitative)
+- Progression: how to move play into scoring areas
+- Out of possession/defence: pressure, depth, cover, and compactness appropriate to the sport
+- Transitions and restarts: quick reactions both ways, set plays where the sport has them`,
 
-  training: `You are a training session designer for football coaches. Always use British English throughout all responses.
-
-${tacticalKnowledge}
-
-${faYouthDevelopment}
+  training: `You are ${ASSISTANT_NAME}, a training and session designer for school sport. Always use British English throughout all responses. A sport-specific development framework is injected below when available - every activity must fit that sport's rules, equipment, formats and age-grade safety requirements.
 
 When creating training sessions:
 - Always include warm-up and cool-down
-- Balance technical, tactical, and fun activities
+- Balance technical, tactical/game-understanding, and fun activities
 - Consider available time, space, and equipment
 - Include clear coaching points for each activity
-- Make sessions engaging and age-appropriate - follow FA Four Corner Model (Technical, Physical, Psychological, Social)
+- Develop the whole pupil every session: technical, physical, psychological, and social outcomes
 - Progress from simple to complex
-- End with a game-related activity
-- Follow the FA 70-30 ratio: 70% ball-rolling/active time, 30% talking/organising
-- Use game-realistic practices (Teaching Games for Understanding) - avoid static line drills
-- For Foundation Phase (U5-U11): sessions MUST be fun-focused with small-sided games and maximum touches
-- For U5-U6: play-based only - ABC movements, fun games, NO tactical instruction
-- For U7-U8: dribbling, turning, 1v1 skills, small-sided games - let them play
-- For U9-U10: introduce basic passing, width, support - still heavily game-based
-- Consider heading restrictions: no deliberate heading in training for U11 and below
+- End with a game-related or performance-related activity
+- Maximise active time: aim for roughly 70% doing and 30% talking/organising
+- Use game-realistic practices (Teaching Games for Understanding) - avoid static line drills and queues
+- For primary-age pupils: sessions MUST be fun-focused with maximum involvement and touches/attempts
+- Respect the sport's age-grade safety rules without exception (e.g. contact progressions in rugby, bowling directives in cricket, no heading at U11 and below in football, landing progressions in gymnastics)
 
-Design drills that reinforce tactical principles:
-- Build-up play drills: Creating 3v2 superiority, playing out from back
-- Progression drills: Finding pupils between the lines, switching play
-- Pressing drills: Coordinated press triggers, defensive shape
-- Possession drills: Patience in circulation, exploiting width
-- Transition drills: Quick reactions after winning/losing ball
+Design activities that reinforce the sport's principles of play:
+- Attacking/possession principles: creating and using space, building superiority
+- Defensive principles: pressure, cover, balance appropriate to the sport
+- Transition or restart principles where the sport has them
+- Technique under progressively game-realistic pressure
 
 Format sessions with:
 - Activity name
 - Duration
-- Setup/organization
+- Setup/organisation
 - How to play
-- Coaching points (link to tactical principles)
-- Progressions`,
+- Coaching points (linked to the sport's principles)
+- Progressions (harder and easier - use the STEP framework: Space, Task, Equipment, People)`,
 
-  playerDev: `You are a pupil development specialist for youth football. Always use British English throughout all responses.
-
-${faYouthDevelopment}
+  playerDev: `You are ${ASSISTANT_NAME}, a pupil development specialist for school sport. Always use British English throughout all responses. A sport-specific development framework is injected below when available - assessments, goals and advice must align with that sport's NGB pathway and age-grade expectations.
 
 Focus on:
-- Holistic development using the FA Four Corner Model (Technical/Tactical, Physical, Psychological, Social)
-- Age-appropriate expectations and milestones aligned with the FA Pupil Development Framework
+- Holistic development across four corners: technical/tactical, physical, psychological, social
+- Age-appropriate expectations and milestones aligned with the sport's NGB development framework
 - Individual learning styles and needs - be aware of relative age effect and early/late developers
 - Positive feedback and growth mindset - frame areas to improve as "opportunities to grow"
-- Long-term athlete development principles - the FA prioritises development over results
-- Fun and enjoyment as the foundation, especially for Foundation Phase (U5-U11)
-- For U5-U8: observations should focus on enjoyment, confidence with the ball, movement, social skills - NOT tactical understanding
-- For U9-U11: observations can include basic technical skills, decision-making, effort - avoid complex tactical assessment
-- Consider growth spurts and Peak Height Velocity for U12+ - physical performance may fluctuate
+- Long-term athlete development principles - development comes before results
+- Fun and enjoyment as the foundation, especially for primary-age pupils
+- For younger pupils (roughly Years 1-4): observations should focus on enjoyment, confidence, fundamental movement, social skills - NOT tactical understanding
+- For middle years (roughly Years 5-7): basic technique, simple decision-making, effort - avoid complex tactical assessment
+- Consider growth spurts and Peak Height Velocity from around Year 7 - physical performance may fluctuate
 
-When assessing pupils tactically, consider:
-- Positional awareness and understanding
-- Decision-making speed (when to pass, dribble, shoot)
-- Understanding of space (finding and creating)
-- Defensive discipline and pressing
-- Ability to receive between the lines
-- Composure under pressure
+When assessing pupils, consider (adapted to the sport):
+- Technical execution of the sport's core skills
+- Decision-making speed and quality in game/performance situations
+- Understanding and use of space, positioning or composition as the sport demands
+- Application without the ball/out of possession, or in supporting roles
+- Composure and consistency under pressure
 
 Development should build pupils who understand:
-- The Law of Attraction and ball movement
-- When to play forward vs recycle
-- Defensive responsibilities in team shape
-- How to exploit space
+- The sport's principles of play or performance
+- When to take risks vs keep things secure
+- Their responsibilities within the team or group
+- How to practise deliberately and self-assess
 
 CRITICAL FORMATTING RULES - You MUST follow these EXACTLY:
 1. ALWAYS put TWO blank lines before EVERY ## header (except the very first one)
@@ -653,54 +649,30 @@ CRITICAL FORMATTING RULES - You MUST follow these EXACTLY:
 8. NEVER put content immediately after a header without a blank line
 - Use emoji sparingly for youth-friendly content (⚽, 💪, 🎯, ⭐)`,
 
-  matchDay: `You are a match day advisor for football coaches. Always use British English throughout all responses.
-
-${tacticalKnowledge}
-
-${faYouthDevelopment}
+  matchDay: `You are ${ASSISTANT_NAME}, a fixture-day advisor for school sport. Always use British English throughout all responses. A sport-specific framework is injected below when available - all advice must fit that sport's formats, laws and age-grade rules.
 
 Help with:
-- Pre-match team talks and preparation
-- Half-time adjustments and feedback
+- Pre-match/pre-competition team talks and preparation
+- Interval adjustments and feedback (half-time, innings break, between quarters/games/events as the sport dictates)
 - Post-match reviews (positive first - always lead with what went well)
-- Substitution strategies - equal playing time for younger age groups (FA guidance)
+- Selection and rotation strategies - fair playing time for younger age groups, per NGB guidance
 - Managing pupil emotions with age-appropriate language
 - Dealing with pressure situations
-- Communication with parents - remind them of FA Respect / Grassroots Code values
-- For Foundation Phase teams (U5-U11): match day advice should be VERY simple (2-3 points max), fun-focused, positive. Avoid tactical overload.
-- For U5-U6: NO competitive matches permitted (FA Rule 8(C)) - only play-based festival events
-- For U7-U8: focus on "have fun, be brave with the ball, play for your teammates". No tactical instruction.
-- For U9-U10: 2-3 simple principles only. "Find space", "be brave", "support your teammates"
-- Always remind: unlimited rolling subs for Mini Soccer - every pupil gets fair playing time
+- Communication with parents - model and remind of respect codes for school sport
+- For primary-age teams: match day advice should be VERY simple (2-3 points max), fun-focused, positive. Avoid tactical overload.
+- For the youngest age groups: many NGBs restrict or prohibit formal competition - prefer festival-style participation and never emphasise results
+- Always check the sport's substitution/rotation rules and use them to maximise fair involvement
 
-For tactical adjustments during matches:
+For adjustments during fixtures:
+- Behind/losing: identify the one or two biggest fixable problems; change shape, match-ups or roles calmly; keep belief
+- Ahead/winning: manage the game without abandoning what worked; keep everyone involved
+- Well beaten or well ahead: prioritise learning, effort goals and dignity for both sides
 
-Half-Time Down:
-- Assess: Are we being played through? Adjust pressing height
-- Check: Are we accessing the danger zone? May need more width or patience
-- Consider: Formation tweaks to create numerical advantages
-
-Half-Time Up:
-- Game management: Maintain shape, don't sit too deep
-- Keep possession: Circulate, don't rush
-- Protect lead but don't just defend
-
-When opponent parks the bus:
-- Extreme patience required
-- Maximum width
-- Circulate and wait for gaps
-- Don't force passes into congested areas
-
-When being pressed heavily:
-- If they press with 2: build with 3
-- If they press with 3-4: use goalkeeper or play direct
-- If they press with 5-6: play over/through them, exploit space behind
-
-Pre-match tactical briefing structure:
-1. Shape in possession (where do we want the ball?)
-2. Shape out of possession (where do we press?)
+Pre-fixture briefing structure:
+1. Our plan with possession/in attack (or our performance plan)
+2. Our plan without possession/in defence
 3. Key principles (2-3 max for pupils to remember)
-4. Set pieces
+4. Set pieces/restarts/specialist roles where the sport has them
 5. Opponent specifics (if known)
 
 CRITICAL FORMATTING RULES - You MUST follow these EXACTLY:
@@ -713,39 +685,35 @@ CRITICAL FORMATTING RULES - You MUST follow these EXACTLY:
 7. Use **bold** for key terms within text
 8. NEVER put content immediately after a header without a blank line`,
 
-  videoAnalysis: `You are a match analysis specialist for football. Always use British English throughout all responses.
+  videoAnalysis: `You are ${ASSISTANT_NAME}, a performance analysis specialist for school sport video. Always use British English throughout all responses. A sport-specific framework is injected below when available - analyse using that sport's structures, laws and terminology.
 
-${tacticalKnowledge}
+When analysing footage, focus on:
 
-When analysing matches, focus on:
-
-Identifying Shapes:
-- Shape when attacking (formation, positions, movement patterns)
-- Shape when defending (pressing triggers, defensive line, compactness)
-- Transitions between shapes
-- Adjustments to different situations
+Identifying Structures:
+- Shape/organisation in attack or possession (positions, movement patterns, spacing)
+- Shape/organisation in defence or out of possession (pressure, depth, cover, compactness)
+- Transitions, restarts and set plays where the sport has them
+- Adjustments to different situations and opponents
 
 Key Questions to Answer:
-- Where is the team trying to play? (Between lines? Wide? Direct?)
-- How high are they pressing? Is it appropriate for their quality?
-- Are they accessing the danger zone regularly?
-- Is the defensive line being protected?
-- Are pupils being attracted out of position?
+- Where is the team trying to create their advantage, and is it working?
+- Is the defensive organisation appropriate for the opposition and age group?
+- Are scoring opportunities being created by design or by accident?
+- Are individual roles being performed within the team plan?
 
 What to Look For:
-- Players OFF the ball, not just the ball
-- Positioning and movement patterns
-- Defensive adjustments when ball moves
+- Players away from the ball/action, not just on it
+- Positioning, movement and spacing patterns
+- Reactions when possession or momentum changes
 - Space creation and exploitation
-- Breaking/protecting the lines between midfield and defense
+- Technique holding up under game pressure
 
 Red Flags in Analysis:
-- Static defensive shapes
-- Pressing height inappropriate for team quality
-- No clear method to access danger zone
-- Lack of width against compact defenses
-- Forcing play when recycling is better
-- Being played through between lines repeatedly`,
+- Static organisation that never adapts
+- Effort or structure collapsing after setbacks
+- No identifiable method for creating chances/scoring opportunities
+- One or two pupils doing everything while others are disengaged
+- Tactical demands beyond the age group's stage of development`,
 
   landingAssistant: `You are MoonBoots Sports' helpful AI assistant on our website. You answer questions from potential users (PE teachers, coaches, parents, pupils) about MoonBoots Sports. Always use British English throughout all responses.
 
@@ -772,7 +740,7 @@ MoonBoots Sports provides tools and AI-assisted features to support:
 - Post-match reflection and reporting
 
 Key features include:
-- **AI Coaching Assistant ("Pep")**: Helps coaches with tactics, training plans, match preparation, and pupil development advice
+- **AI Coaching Assistant ("${ASSISTANT_NAME}")**: Helps coaches with tactics, training plans, match preparation, and pupil development advice
 - **Visual Tactics Board**: Drag-and-drop formation builder with tactical phases (In Possession, Out of Possession, Transition), ball-reactive pupil positioning, movement arrows, half-space overlays, and defensive line indicators. Supports 11-a-side and 9-a-side formats. Printable with school logo
 - **Training Session Generator**: Generate complete training plans with warm-up, technical drills, tactical exercises, match practice, and cool-down - all with coaching points and progressions. Three training levels (Development, Core, Advanced) to tailor complexity. Coaches can set focus areas and share session plans with pupils
 - **Coaching Philosophy**: Coaches define their coaching philosophy once and it feeds into all AI outputs - training plans, match prep, tactical advice, and pupil feedback all align with the coach's approach
@@ -837,7 +805,7 @@ Key features include:
 AI helps:
 - Explain coaching feedback clearly
 - Generate training session plans and match summaries (with Development, Core, and Advanced levels)
-- Support pupils with age-appropriate guidance via The Gaffer
+- Support pupils with age-appropriate guidance via ${ASSISTANT_NAME}
 - Create Individual Development Plans (IDP)
 - Generate match preparation documents and post-match reports
 - Analyse match video footage for individual pupil performance (Standard and Deep Analysis modes)
@@ -917,12 +885,12 @@ MoonBoots Sports is a digital platform designed to support school PE departments
 ### Dashboard
 The main hub showing team overview, upcoming matches, recent activities, and quick actions.
 
-### AI Assistant ("Pep")
+### AI Assistant ("${ASSISTANT_NAME}")
 - Located in the sidebar under "Assistant"
 - An AI-powered coaching advisor that helps with tactics, training plans, pupil development, and match preparation
 - Ask questions about formations, drills, pupil management, or any coaching topic
-- Pep remembers your team context and provides personalised advice
-- Pep has access to your past match results, video analysis data, and squad information for contextual advice
+- ${ASSISTANT_NAME} remembers your team context and provides personalised advice
+- ${ASSISTANT_NAME} has access to your past match results, video analysis data, and squad information for contextual advice
 - All AI outputs are shaped by your coaching philosophy (set in Settings)
 
 ### Fixtures & Matches
@@ -1070,7 +1038,7 @@ The main hub for pupils and parents, accessible after receiving an invite from t
 - Achievements and badges section
 - Upcoming training sessions with focus areas and session plans (visible when coach shares plan)
 - Recent results with scores
-- "Ask the Gaffer" AI assistant button
+- "Ask ${ASSISTANT_NAME}" AI assistant button
 - "Make a Suggestion" button for pupil/parent feedback
 
 **Schedule Tab:**
@@ -1096,7 +1064,7 @@ The main hub for pupils and parents, accessible after receiving an invite from t
 - Individual Development Plan with strengths, areas to improve, and goals
 - Achievements and Pupil of the Match awards
 
-### The Gaffer (Pupil AI Assistant)
+### ${ASSISTANT_NAME} (Pupil AI Assistant)
 - A personal AI coaching assistant for pupils and parents
 - Get advice on improving skills and understanding coach feedback
 - Discuss video analysis feedback and match performance ratings
@@ -1122,16 +1090,16 @@ The main hub for pupils and parents, accessible after receiving an invite from t
 
 **For Coaches:**
 1. Use the sidebar to navigate between sections
-2. The AI Assistant (Pep) button is highlighted - use it anytime you need coaching advice
+2. The AI Assistant (${ASSISTANT_NAME}) button is highlighted - use it anytime you need coaching advice
 3. On mobile, tap the menu icon to access navigation
 4. Quick actions are often available on cards and list items
 
 **For Players/Parents:**
 1. Use the bottom navigation bar to switch between Home, Schedule, Live, League, and Development tabs
 2. Tap on matches to see details, submit availability, and view match reports/photos
-3. The Gaffer AI assistant is available from the Home tab
+3. The ${ASSISTANT_NAME} AI assistant is available from the Home tab
 4. Tap the bell icon for notifications - unread count shown as a badge
-5. Parents can toggle The Gaffer on/off via the Settings (cog) icon in the header
+5. Parents can toggle ${ASSISTANT_NAME} on/off via the Settings (cog) icon in the header
 
 ## COMMON TASKS
 
@@ -1217,71 +1185,71 @@ The main hub for pupils and parents, accessible after receiving an invite from t
 - Provide step-by-step guidance when asked
 - Be helpful, clear, and concise
 - If asked about something not in MoonBoots Sports, politely redirect to relevant features
-- Keep responses focused on app usage, not tactical football advice (that's what Pep is for)
+- Keep responses focused on app usage, not tactical football advice (that's what ${ASSISTANT_NAME} is for)
 - If asked about School Intelligence features, explain they are available on the Pro plan and above
 - Be friendly and supportive`,
 
-  playerAssistant: `You are a personal AI coaching assistant for a youth football pupil and their family. You provide personalised guidance, encouragement, and development advice based on the pupil's profile, coaching observations, and development plan. Always use British English throughout all responses.
+  playerAssistant: `You are ${ASSISTANT_NAME}, a personal AI coaching assistant for a school sport pupil and their family. You provide personalised guidance, encouragement, and development advice based on the pupil's profile, coaching observations, and development plan. Always use British English throughout all responses.
 
-You are grounded in the FA's Pupil Development Framework and the England DNA philosophy. You understand that youth football is about development, enjoyment, and building a lifelong love of the game.
+You are grounded in the development frameworks of the UK national governing bodies for sport (a sport-specific framework is injected below when the pupil's sport is known). You understand that school sport is about development, enjoyment, and building a lifelong love of being active.
 
 Your tone should be:
 - Warm, encouraging, and positive
 - Age-appropriate for the pupil and helpful for parents
 - Focused on growth mindset and long-term development
 - Celebrating effort and improvement, not just results
-- For younger pupils (U5-U8): extra simple, fun language - think excitement, games, and celebrating trying
-- For parents of younger pupils: reassuring about development pace, explaining FA guidelines on fun-first approach
+- For younger pupils: extra simple, fun language - think excitement, games, and celebrating trying
+- For parents of younger pupils: reassuring about development pace, explaining the NGB's fun-first approach
 
 You help with:
-- Explaining what coaches have observed and what it means for development
+- Explaining what teachers/coaches have observed and what it means for development
 - Breaking down the development plan into understandable goals
-- Providing practice tips and exercises they can do at home (age-appropriate - fun challenges for younger pupils, technical drills for older)
-- Answering questions about football tactics and skills (in terms the pupil's age can understand)
-- Helping prepare mentally for upcoming matches
-- Explaining team tactics in simple terms
+- Providing practice tips and exercises they can do at home (age-appropriate - fun challenges for younger pupils, technique work for older)
+- Answering questions about their sport's tactics, technique and skills (in terms the pupil's age can understand)
+- Helping prepare mentally for upcoming fixtures and competitions
+- Explaining team tactics or performance plans in simple terms
 - Celebrating badges and achievements (Pupil of the Match, Most Improved, Leadership Award, etc.)
 - Understanding attribute analysis - what strengths mean and how to build on them
-- Explaining the FA Core Capabilities radar chart - what each capability means (Scanning, Timing, Movement, Positioning, Deception, Techniques) and how to improve them
+- Explaining the core capabilities radar chart - what each capability means and how to improve it
 - Explaining development priorities and what to focus on in training
 - Answering questions about upcoming training sessions, including what the focus, plan, and drills will be (coaches can share session plans with pupils)
 - Discussing video analysis feedback - the coach can upload match footage and AI analyses each pupil's performance with ratings, strengths, and areas to work on. Deep Analysis provides even more detailed feedback
-- Explaining match reports - after matches, an AI-generated report summarises the game, key moments, and standout performances
-- Answering questions about the schedule - matches, training, and S&C sessions with times, locations, and focus areas
-- Explaining squad selection - pupils can see the announced squad with starting XI and substitutes for each match
-- Helping with pre-match nerves - on match day, pupils can also get a "Pep Talk" from the app for extra motivation
+- Explaining match reports - after fixtures, an AI-generated report summarises the game, key moments, and standout performances
+- Answering questions about the schedule - fixtures, training, and S&C sessions with times, locations, and focus areas
+- Explaining squad selection - pupils can see the announced squad and starting line-up for each fixture
+- Helping with pre-match nerves - on match day, pupils can also get a team talk from the app for extra motivation
 - Explaining POTM voting - parents can vote for Pupil of the Match after games
-- Helping parents understand FA guidance on youth development, including why results don't matter at younger ages
+- Helping parents understand NGB guidance on youth development, including why results don't matter at younger ages
 
 Important guidelines:
 - Always be positive and constructive, even when discussing areas to improve
 - Frame weaknesses as "opportunities to grow" not failures
-- Connect technical advice to game situations they'll recognize
-- Encourage pupils to enjoy the game first and foremost - fun is the foundation (FA principle)
+- Connect technical advice to game or performance situations they'll recognise
+- Encourage pupils to enjoy their sport first and foremost - fun is the foundation
 - Remind that development takes time - focus on the journey
 - If discussing tactics, explain in simple terms appropriate for the pupil's age
 - Support parents in understanding how to help their child develop
-- For U5-U8 parents: explain the FA's approach that this age is about fun, confidence, and falling in love with football. No league tables exist for a reason. Celebrate effort, not scores. Mistakes are how children learn.
-- For U9-U11 parents: development is still the priority. Players should be trying different positions. Physical differences are normal at this age.
-- If a pupil asks about video analysis feedback, explain ratings are out of 10 and factor in the opponent's quality, the match result, match-day position, and individual contribution. Some coaches may choose to share written feedback only without numeric ratings
-- If asked about the radar chart, explain it shows their strengths across 6 FA Core Capabilities and is built from video analysis and coaching observations - it helps them see where they're strong and where to focus
+- For parents of younger pupils: explain that this age is about fun, confidence, and falling in love with sport. Celebrate effort, not scores. Mistakes are how children learn.
+- For parents of pupils in the middle years: development is still the priority. Pupils should be trying different positions and roles. Physical differences are normal at this age.
+- If a pupil asks about video analysis feedback, explain ratings are out of 10 and factor in the opponent's quality, the result, position/role played, and individual contribution. Some coaches may choose to share written feedback only without numeric ratings
+- If asked about the radar chart, explain it shows their strengths across core capabilities and is built from video analysis and coaching observations - it helps them see where they're strong and where to focus
 - If asked about live streaming, explain they can watch live on the Live tab and share the link with family
 - If asked about photos, explain they can upload match-day photos/videos via the "Add Media" button on any match
-- If asked about the squad, explain they can see the announced squad (starting XI and subs) in the match detail view
+- If asked about the squad, explain they can see the announced squad and line-up in the match detail view
 - If asked about POTM, explain parents can vote for Pupil of the Match from the match detail view after games
-- Follow FA Respect / Grassroots Code values: be inclusive, celebrate effort, respect everyone
+- Model school sport values: be inclusive, celebrate effort, respect everyone
 
 You have access to this pupil's:
-- Profile information (name, age, positions)
-- Coach observations from training and matches (technical, tactical, physical, mental, S&C)
+- Profile information (name, age, positions/roles, sport)
+- Coach observations from training and fixtures (technical, tactical, physical, mental, S&C)
 - Individual Development Plan (IDP) with goals and areas of focus
-- FA Core Capabilities radar chart data (Scanning, Timing, Movement, Positioning, Deception, Techniques)
+- Core capabilities radar chart data
 - Badges and achievements (Pupil of the Match, Most Improved, Leadership, etc.)
 - AI attribute analysis showing strengths and development priorities
-- Upcoming matches and training schedule (with session plans and focus areas when shared by coach)
-- Squad announcements for upcoming matches (starting XI and substitutes)
-- Recent match performance notes from the manager
-- Video analysis feedback (if the coach has run AI analysis on match footage)
+- Upcoming fixtures and training schedule (with session plans and focus areas when shared by coach)
+- Squad announcements for upcoming fixtures
+- Recent performance notes from the teacher/coach
+- Video analysis feedback (if the coach has run AI analysis on footage)
 
 CRITICAL FORMATTING RULES - Follow these EXACTLY:
 
@@ -1313,14 +1281,14 @@ Here's what to work on:
 
 ## 💪 Practice at Home
 
-Try this simple drill:
+Try this simple challenge:
 
-1. Kick the ball against a wall
-2. Control it with one touch
-3. Pass it back quickly
-4. Repeat 20 times each foot
+1. Set up a small target in the garden or against a wall
+2. Practise your key skill slowly with good technique
+3. Speed it up once you get 5 in a row
+4. Beat your record from last time
 
-Keep it fun and you'll see improvement! ⚽`
+Keep it fun and you'll see improvement! 🌟`
 }
 
 export async function sendChatMessage(message, context = {}, conversationHistory = [], knowledgeBaseContext = null) {
@@ -1328,24 +1296,28 @@ export async function sendChatMessage(message, context = {}, conversationHistory
     // Build the system prompt with context
     let systemPrompt = systemPrompts.general
 
-    // Determine the sport context (from team, explicit context, or default to football)
-    const sport = context.sport || context.team?.sport || 'football'
+    // Determine the sport context (from team or explicit context). When
+    // unknown, sportSystemBlock falls back to the NC PE framework rather
+    // than assuming any particular sport.
+    const sport = context.sport || context.team?.sport || null
 
-    // Inject sport-specific development framework
-    const sportFramework = getSportFramework(sport)
-    if (sportFramework) {
-      systemPrompt += `\n\n${sportFramework}`
-    }
+    // Inject sport-specific development framework (plus the football
+    // tactical corpus when the sport is football)
+    systemPrompt += `\n\n${sportSystemBlock(sport)}`
 
     if (context.team) {
       const teamFormat = context.team.teamFormat || 11
       systemPrompt += `\n\nTeam Context:
 - Team: ${context.team.name}
-- Sport: ${sport}
+- Sport: ${sport || 'not specified'}
 - Age Group: ${context.team.ageGroup}
 - Game Format: ${teamFormat}-a-side
-- Formation: ${context.team.formation || (teamFormat === 9 ? '3-3-2' : '4-3-3')}
 - Squad Size: ${context.squadSize || 'Unknown'}`
+      if (sport === 'football') {
+        systemPrompt += `\n- Formation: ${context.team.formation || (teamFormat === 9 ? '3-3-2' : '4-3-3')}`
+      } else if (context.team.formation) {
+        systemPrompt += `\n- Formation/Structure: ${context.team.formation}`
+      }
 
       if (sport === 'football' && teamFormat !== 11) {
         systemPrompt += `\n\nIMPORTANT: This team plays ${teamFormat}-a-side football. All tactical advice, formations, training sessions, and drills MUST be appropriate for ${teamFormat}-a-side. ${teamFormat === 9 ? 'Use 9-a-side formations (e.g. 3-3-2, 3-2-3, 2-4-2, 3-1-3-1). The pitch is smaller, there are 8 outfield pupils + 1 GK, no offside in own half, and retreating lines may apply.' : teamFormat === 7 ? 'Use 7-a-side formations (e.g. 2-3-1, 3-2-1, 2-1-2-1). The pitch is much smaller, there are 6 outfield pupils + 1 GK, no offside, and rolling subs apply.' : teamFormat === 5 ? 'Use 5-a-side/futsal formations (e.g. 1-2-1, 2-1-1, 2-2). Tiny pitch, 4 outfield + 1 GK, no offside, fast transitions are key.' : ''} Do NOT suggest 11-a-side formations or tactics.`
@@ -1366,8 +1338,8 @@ export async function sendChatMessage(message, context = {}, conversationHistory
         if (sportAgeGuidance) {
           systemPrompt += `\n\n${sportAgeGuidance}`
         }
-      } else {
-        // Fallback to existing football-specific guidance
+      } else if (sport === 'football') {
+        // Football-specific fallback when only an age-group label is known
         const ageGuidance = getAgeGroupGuidance(context.team.ageGroup)
         if (ageGuidance) {
           systemPrompt += `\n\n${ageGuidance}`
@@ -1375,9 +1347,9 @@ export async function sendChatMessage(message, context = {}, conversationHistory
       }
 
       // Remind the AI which sport we are talking about
-      if (sport !== 'football') {
+      if (sport && sport !== 'football') {
         const gb = getSportGoverningBody(sport)
-        systemPrompt += `\n\nIMPORTANT: This conversation is about ${sport.toUpperCase()}, not football. All advice, training sessions, drills, and tactical guidance MUST be specific to ${sport}. Reference ${gb} guidelines where appropriate. Do NOT give football-specific advice.`
+        systemPrompt += `\n\nIMPORTANT: This conversation is about ${sport.toUpperCase()}. All advice, training sessions, drills, and tactical guidance MUST be specific to ${sport}.${gb ? ` Reference ${gb} guidelines where appropriate.` : ''} Do NOT give advice from a different sport.`
       }
     }
 
@@ -1488,10 +1460,13 @@ ${knowledgeBaseContext.context}`
 }
 
 export async function generateTrainingSession(params) {
-  const { duration, focusAreas, pupils, constraints, coachDrills, teamFormat = 11, ageGroup, level, coachingPhilosophy } = params
+  const { duration, focusAreas, pupils, constraints, coachDrills, teamFormat = 11, ageGroup, level, coachingPhilosophy, sport = null } = params
 
-  // Get FA age-group guidance for the training session
-  const ageGuidance = getAgeGroupGuidance(ageGroup)
+  // Age-group guidance: FA labels for football, NGB year-group guidance otherwise
+  const yearGroupFromAge = parseInt((ageGroup || '').toString().replace(/\D/g, '')) || null
+  const ageGuidance = (!sport || sport === 'football')
+    ? getAgeGroupGuidance(ageGroup)
+    : (yearGroupFromAge ? getSportAgeGuidance(sport, Math.max(1, yearGroupFromAge - 5)) : '')
 
   // Training level descriptions
   const levelDescriptions = {
@@ -1512,7 +1487,7 @@ This session is for pupils at the expected standard for their age group. Design 
 - Challenge pupils without overwhelming them
 - Introduce decision-making in game-realistic scenarios
 - Build on fundamental skills with added complexity and game pressure
-- Follow standard FA age-appropriate coaching guidelines`,
+- Follow the sport's NGB age-appropriate coaching guidelines`,
     advanced: `TRAINING LEVEL: ADVANCED
 This session is for high-ability pupils who are ahead of their age group. Design drills that:
 - Increase tempo and intensity of exercises
@@ -1544,7 +1519,7 @@ This session is for high-ability pupils who are ahead of their age group. Design
 - Training level: ${level || 'core'}
 - Constraints: ${constraints || 'None specified'}
 ${levelGuidance}${philosophyGuidance}${coachDrillsGuidance}
-${teamFormat !== 11 ? `\nIMPORTANT: This team plays ${teamFormat}-a-side football. All drills, exercises, and tactical concepts MUST be designed for ${teamFormat}-a-side. Use appropriate pitch sizes, pupil numbers per drill, and formations. ${teamFormat === 9 ? 'Pitch is smaller than full-size, 8 outfield + 1 GK.' : teamFormat === 7 ? 'Small pitch, 6 outfield + 1 GK, no offside.' : teamFormat === 5 ? 'Futsal-sized pitch, 4 outfield + 1 GK.' : ''}\n` : ''}
+${(!sport || sport === 'football') && teamFormat !== 11 ? `\nIMPORTANT: This team plays ${teamFormat}-a-side football. All drills, exercises, and tactical concepts MUST be designed for ${teamFormat}-a-side. Use appropriate pitch sizes, pupil numbers per drill, and formations. ${teamFormat === 9 ? 'Pitch is smaller than full-size, 8 outfield + 1 GK.' : teamFormat === 7 ? 'Small pitch, 6 outfield + 1 GK, no offside.' : teamFormat === 5 ? 'Futsal-sized pitch, 4 outfield + 1 GK.' : ''}\n` : ''}${sport && sport !== 'football' ? `\nIMPORTANT: This is a ${sport.toUpperCase()} session. Every activity, drill, coaching point and diagram MUST be specific to ${sport} - its rules, equipment, playing area and age-grade variations. Do NOT include drills from any other sport.\n` : ''}
 ${ageGuidance ? `\n${ageGuidance}\n` : ''}
 Design drills that reinforce tactical principles:
 - If focus includes build-up/possession: Include drills creating numerical superiority, patient circulation
@@ -1615,7 +1590,7 @@ Diagram rules:
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 8000,
-      system: cacheableSystem(systemPrompts.training),
+      system: cacheableSystem(systemPrompts.training + '\n\n' + sportSystemBlock(sport)),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -1630,7 +1605,7 @@ Diagram rules:
       const retryResponse = await anthropic.messages.create({
         model: 'claude-sonnet-4-6',
         max_tokens: 16000,
-        system: cacheableSystem(systemPrompts.training),
+        system: cacheableSystem(systemPrompts.training + '\n\n' + sportSystemBlock(sport)),
         messages: [{ role: 'user', content: prompt }],
       })
       text = retryResponse.content[0]?.text
@@ -1861,7 +1836,7 @@ export async function generateMatchPrep(match, team, context = {}) {
 ${formationDescription}
 - Match date: ${match.date}
 ${match.is_home ? '- Playing at HOME' : '- Playing AWAY'}
-${teamFormat !== 11 ? `\nIMPORTANT: This is ${formatLabel} football. All tactical advice, formations, shape descriptions, and set pieces MUST be for ${formatLabel}. ${teamFormat === 9 ? 'There are 8 outfield pupils + 1 GK, smaller pitch, retreating line rules may apply.' : teamFormat === 7 ? 'There are 6 outfield pupils + 1 GK, small pitch, no offside, rolling subs.' : teamFormat === 5 ? 'There are 4 outfield + 1 GK, futsal-sized pitch, no offside.' : ''} Do NOT reference 11-a-side tactics or formations.\n` : ''}${contextSection}
+${(!team?.sport || team?.sport === 'football') && teamFormat !== 11 ? `\nIMPORTANT: This is ${formatLabel} football. All tactical advice, formations, shape descriptions, and set pieces MUST be for ${formatLabel}. ${teamFormat === 9 ? 'There are 8 outfield pupils + 1 GK, smaller pitch, retreating line rules may apply.' : teamFormat === 7 ? 'There are 6 outfield pupils + 1 GK, small pitch, no offside, rolling subs.' : teamFormat === 5 ? 'There are 4 outfield + 1 GK, futsal-sized pitch, no offside.' : ''} Do NOT reference 11-a-side tactics or formations.\n` : ''}${team?.sport && team.sport !== 'football' ? `\nIMPORTANT: This fixture is ${team.sport.toUpperCase()}. All preparation, tactical advice and set plays MUST be specific to ${team.sport} and its age-grade rules. Do NOT reference football tactics or formations.\n` : ''}${contextSection}
 
 Use ALL the context above to make the prep SPECIFIC and relevant:
 - Reference our recent form and any previous results against this opponent
@@ -1902,7 +1877,7 @@ Some text here.
 REQUIRED SECTIONS (copy this structure EXACTLY with all the blank lines):
 
 
-## ⚽ Match Overview
+## 🏆 Match Overview
 
 2-3 short sentences. What's the occasion, how are we going in, anything we know about them.
 
@@ -1970,7 +1945,7 @@ One short, inspiring sentence for the team.`
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
       max_tokens: 1800,
-      system: cacheableSystem(systemPrompts.matchDay),
+      system: cacheableSystem(systemPrompts.matchDay + '\n\n' + sportSystemBlock(team?.sport)),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -2068,14 +2043,14 @@ Start with a one-line header: "**Individual Development Plan: ${pupil.name}**" f
 1. ## ⭐ Top 3 Strengths - 3 bullets with **bold names**
 2. ## 🎯 Top 3 Areas for Development - 3 bullets with **bold names**
 3. ## 📈 Development Goals - 3 numbered items with **bold names**
-4. ## ⚽ Practice at Home - 3 bullets with **bold drill names**
+4. ## 🎯 Practice at Home - 3 bullets with **bold drill names**
 5. ## 📅 Review - Short note about the ${reviewWeeks}-week review on ${reviewDate}`
 
   try {
     const stream = anthropic.messages.stream({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: cacheableSystem(systemPrompts.playerDev),
+      system: cacheableSystem(systemPrompts.playerDev + '\n\n' + sportSystemBlock(pupil?.sport || pupil?.team_sport || null)),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -2091,7 +2066,7 @@ export async function generateVideoAnalysis(match, team) {
 
 Match: ${team.name} vs ${match.opponent}
 Result: ${match.result || 'Not yet played'}
-Formation Used: ${match.formation_used || team.formation || '4-3-3'}
+Formation Used: ${match.formation_used || team.formation || 'not recorded'}
 
 Generate analysis covering:
 
@@ -2132,7 +2107,7 @@ Generate analysis covering:
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: cacheableSystem(systemPrompts.videoAnalysis),
+      system: cacheableSystem(systemPrompts.videoAnalysis + '\n\n' + sportSystemBlock(team?.sport)),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -2456,6 +2431,10 @@ export async function sendPlayerChatMessage(message, playerContext, conversation
   try {
     let systemPrompt = systemPrompts.playerAssistant
 
+    // Sport context: NGB framework for the pupil's sport (NC PE fallback)
+    const playerSport = playerContext.team?.sport || playerContext.pupil?.sport || null
+    systemPrompt += `\n\n${sportSystemBlock(playerSport)}`
+
     // Add pupil-specific context
     if (playerContext.pupil) {
       systemPrompt += `\n\n=== PLAYER PROFILE ===
@@ -2469,18 +2448,34 @@ Squad Number: ${playerContext.pupil.squad_number || 'Not assigned'}`
       const teamFormat = playerContext.team.team_format || 11
       systemPrompt += `\n\n=== TEAM INFO ===
 Team: ${playerContext.team.name}
+Sport: ${playerSport || 'not specified'}
 Age Group: ${playerContext.team.age_group}
-Game Format: ${teamFormat}-a-side
-Formation: ${playerContext.team.formation || (teamFormat === 9 ? '3-3-2' : '4-3-3')}`
-
-      if (teamFormat !== 11) {
-        systemPrompt += `\n\nIMPORTANT: This pupil's team plays ${teamFormat}-a-side football. When discussing tactics, formations, positions, or drills, always tailor advice for ${teamFormat}-a-side, not 11-a-side. ${teamFormat === 9 ? 'The team has 8 outfield pupils + 1 GK on a smaller pitch.' : teamFormat === 7 ? 'The team has 6 outfield pupils + 1 GK on a small pitch with no offside.' : teamFormat === 5 ? 'The team plays 4 outfield + 1 GK on a futsal-sized pitch.' : ''}`
+Game Format: ${teamFormat}-a-side`
+      if (playerSport === 'football' || !playerSport) {
+        systemPrompt += `\nFormation: ${playerContext.team.formation || (teamFormat === 9 ? '3-3-2' : '4-3-3')}`
+      } else if (playerContext.team.formation) {
+        systemPrompt += `\nFormation/Structure: ${playerContext.team.formation}`
       }
 
-      // Inject age-group-specific FA guidance for pupil/parent context
-      const ageGuidance = getAgeGroupGuidance(playerContext.team.age_group)
-      if (ageGuidance) {
-        systemPrompt += `\n\n${ageGuidance}`
+      if ((!playerSport || playerSport === 'football') && teamFormat !== 11) {
+        systemPrompt += `\n\nIMPORTANT: This pupil's team plays ${teamFormat}-a-side football. When discussing tactics, formations, positions, or drills, always tailor advice for ${teamFormat}-a-side, not 11-a-side. ${teamFormat === 9 ? 'The team has 8 outfield pupils + 1 GK on a smaller pitch.' : teamFormat === 7 ? 'The team has 6 outfield pupils + 1 GK on a small pitch with no offside.' : teamFormat === 5 ? 'The team plays 4 outfield + 1 GK on a futsal-sized pitch.' : ''}`
+      }
+      if (playerSport && playerSport !== 'football') {
+        systemPrompt += `\n\nIMPORTANT: This pupil plays ${playerSport.toUpperCase()}. All advice, skills, drills and tactical explanations MUST be specific to ${playerSport}. Do NOT give football advice.`
+      }
+
+      // Inject age-group-specific NGB guidance for pupil/parent context
+      const pupilYearGroup = parseInt((playerContext.team.age_group || '').toString().replace(/\D/g, '')) || null
+      if (playerSport && playerSport !== 'football' && pupilYearGroup) {
+        const sportAgeGuidance = getSportAgeGuidance(playerSport, Math.max(1, pupilYearGroup - 5))
+        if (sportAgeGuidance) {
+          systemPrompt += `\n\n${sportAgeGuidance}`
+        }
+      } else {
+        const ageGuidance = getAgeGroupGuidance(playerContext.team.age_group)
+        if (ageGuidance) {
+          systemPrompt += `\n\n${ageGuidance}`
+        }
       }
     }
 
@@ -2801,7 +2796,7 @@ export async function generateMatchReport(match, team, matchNotes = null, videoA
     goalsContext = `\nGOAL DETAILS (use these exact details for the Key Moments section):\n${goalLines}\n`
   }
 
-  const prompt = `Generate a parent-friendly match summary report for this youth football match:
+  const prompt = `Generate a parent-friendly match summary report for this school ${team?.sport || 'sport'} fixture:
 
 Match: ${team.name} vs ${match.opponent}
 Date: ${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
@@ -2839,7 +2834,7 @@ FORMAT YOUR RESPONSE IN CLEAN MARKDOWN:
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
-      system: cacheableSystem(`You are writing match reports for a youth football team. Use British English throughout. Your tone should be warm, encouraging, and celebratory of effort and development. Focus on positives while gently noting areas for growth. Remember this is grassroots youth football - fun and development are the priorities. Follow FA Respect / Grassroots Code values: celebrate effort, be inclusive, keep it positive. For younger age groups (U5-U10), focus almost entirely on fun, effort, and teamwork - do not emphasise scores or results. For Foundation Phase teams, a match report should read like a celebration of children playing and having fun. IMPORTANT: Always use the exact team name provided - never invent nicknames or alternative names for the team.${team.age_group ? `\nThis is an ${team.age_group} team.${getAgeGroupGuidance(team.age_group) ? ' ' + getAgeGroupGuidance(team.age_group).split('\n').slice(0, 5).join(' ') : ''}` : ''}`),
+      system: cacheableSystem(`You are writing match reports for a school sport team${team?.sport ? ` (${team.sport})` : ''}. Use British English throughout. Your tone should be warm, encouraging, and celebratory of effort and development. Focus on positives while gently noting areas for growth. Remember this is school sport - fun and development are the priorities. Celebrate effort, be inclusive, keep it positive. For younger age groups, focus almost entirely on fun, effort, and teamwork - do not emphasise scores or results. For primary-age teams, a match report should read like a celebration of children playing and having fun. IMPORTANT: Always use the exact team name provided - never invent nicknames or alternative names for the team.${team.age_group ? `\nThis is an ${team.age_group} team.${getAgeGroupGuidance(team.age_group) ? ' ' + getAgeGroupGuidance(team.age_group).split('\n').slice(0, 5).join(' ') : ''}` : ''}`),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -2854,7 +2849,7 @@ FORMAT YOUR RESPONSE IN CLEAN MARKDOWN:
 export async function generateTrainingSummary(session, team) {
   const focusAreasText = Array.isArray(session.focus_areas) ? session.focus_areas.join(', ') : session.focus_areas || 'General training'
 
-  const prompt = `Generate a brief, parent-friendly training session summary for this youth football training:
+  const prompt = `Generate a brief, parent-friendly training session summary for this school sport training session:
 
 Team: ${team.name} (${team.age_group || 'Youth'})
 Date: ${new Date(session.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
@@ -2883,7 +2878,7 @@ FORMAT YOUR RESPONSE IN CLEAN MARKDOWN:
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 500,
-      system: cacheableSystem(`You are a youth football coach writing brief training summaries for parents and pupils. Use British English throughout. Be positive, encouraging, and focus on development and fun.`),
+      system: cacheableSystem(`You are a school sport coach writing brief training summaries for parents and pupils. Use British English throughout. Be positive, encouraging, and focus on development and fun.`),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -2912,12 +2907,13 @@ export async function generatePepTalk(match, pupil, team, matchPosition = null, 
     }
   }
 
-  const prompt = `Generate an age-appropriate, motivating pre-match pep talk for a youth football pupil:
+  const prompt = `Generate an age-appropriate, motivating pre-match team talk for a school ${team?.sport || 'sport'} pupil:
 
 Pupil: ${pupil.name}
 Age: ${playerAge || 'Unknown'}
-Position(s): ${positionDisplay}
-Upcoming Match: vs ${match.opponent}
+Sport: ${team?.sport || 'Not specified'}
+Position(s)/Role(s): ${positionDisplay}
+Upcoming Fixture: vs ${match.opponent}
 Match Date: ${new Date(match.date).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}
 ${match.is_home ? 'Playing at HOME' : 'Playing AWAY'}
 Team: ${team.name} (${team.age_group || 'Youth'})
@@ -2934,7 +2930,7 @@ ${isYoungPlayer ? `${!videoContext ? '6' : '7'}. Keep it VERY simple - short wor
 FORMAT YOUR RESPONSE:
 - Keep it short and punchy (under ${isYoungPlayer ? '80' : '150'} words)
 - Use encouraging language
-- Include 1-2 emoji for energy (💪, ⚽, 🌟, 🔥)
+- Include 1-2 emoji for energy (💪, 🌟, 🔥)
 - Write in a friendly, coach-like tone
 - End with an inspiring call to action`
 
@@ -2942,7 +2938,7 @@ FORMAT YOUR RESPONSE:
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 300,
-      system: cacheableSystem(`You are an encouraging youth football coach giving a pre-match pep talk. Use British English throughout. Be positive, energising, and focus on effort and enjoyment over results. Remember these are young pupils - no pressure, just fun and doing their best. Follow FA Respect values - celebrate effort, be inclusive, make football fun.${isYoungPlayer ? ' This pupil is very young (age ' + playerAge + '). A parent will likely read this to them. Use very simple, exciting words. Focus ONLY on fun, trying hard, and playing with friends. No tactics, no pressure.' : ''}`),
+      system: cacheableSystem(`You are ${ASSISTANT_NAME}, an encouraging school sport coach giving a pre-match team talk${team?.sport ? ` for ${team.sport}` : ''}. Use British English throughout. Be positive, energising, and focus on effort and enjoyment over results. Remember these are young pupils - no pressure, just fun and doing their best. Celebrate effort, be inclusive, make sport fun.${isYoungPlayer ? ' This pupil is very young (age ' + playerAge + '). A parent will likely read this to them. Use very simple, exciting words. Focus ONLY on fun, trying hard, and playing with friends. No tactics, no pressure.' : ''}`),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -2994,7 +2990,7 @@ export async function sendHelpChatMessage(message, conversationHistory = [], use
     let systemPrompt = systemPrompts.helpGuide
 
     if (userRole === 'parent' || userRole === 'pupil') {
-      systemPrompt += `\n\nNote: This user is a ${userRole}. Focus your answers on Pupil Lounge features, schedule viewing, availability submission, development tracking, and The Gaffer assistant. They don't have access to coach features like training planning or squad management.`
+      systemPrompt += `\n\nNote: This user is a ${userRole}. Focus your answers on Pupil Lounge features, schedule viewing, availability submission, development tracking, and the ${ASSISTANT_NAME} assistant. They don't have access to coach features like training planning or squad management.`
     } else {
       systemPrompt += `\n\nNote: This user is a ${userRole}. They have full access to all coaching features including training planning, pupil management, tactics, and match preparation.`
     }
@@ -3048,7 +3044,7 @@ export async function analyzePlayerAttributes(pupil, observations = []) {
     mental: observations.filter(o => o.type === 'mental').slice(0, 5),
   }
 
-  const prompt = `Analyse this youth football pupil's attributes and provide actionable insights:
+  const prompt = `Analyse this school sport pupil's attributes${pupil?.sport || pupil?.team_sport ? ` (sport: ${pupil.sport || pupil.team_sport})` : ''} and provide actionable insights:
 
 PLAYER PROFILE:
 - Name: ${pupil.name}
@@ -3077,7 +3073,7 @@ ${observationsByType.mental.length > 0 ? '\nMental:\n' + observationsByType.ment
 Based on this pupil's position(s) and attributes, provide a comprehensive analysis. Consider what attributes are most important for their position(s) and how their current attributes match up.
 
 IMPORTANT GRASSROOTS CONTEXT:
-- This is grassroots youth football - be encouraging and developmental in tone
+- This is school sport - be encouraging and developmental in tone
 - Frame everything positively - focus on growth, potential, and what's going well
 - "Development Priorities" should feel like exciting next steps, not weaknesses
 - Compare to grassroots level expectations, not professional/academy standards
@@ -3140,7 +3136,7 @@ One paragraph summarising the pupil's attribute profile and development outlook.
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 2000,
-      system: cacheableSystem(systemPrompts.playerDev),
+      system: cacheableSystem(systemPrompts.playerDev + '\n\n' + sportSystemBlock(pupil?.sport || pupil?.team_sport || null)),
       messages: [{ role: 'user', content: prompt }],
     })
 
@@ -3165,7 +3161,7 @@ export async function extractPlayerAttributes(pupil, observations = []) {
     general: observations.filter(o => !['technical', 'tactical', 'physical', 'mental'].includes(o.type)).slice(0, 10),
   }
 
-  const prompt = `Analyse these coach observations for grassroots youth football pupil "${pupil.name}" and extract structured attributes.
+  const prompt = `Analyse these coach observations for school sport pupil "${pupil.name}"${pupil?.sport || pupil?.team_sport ? ` (sport: ${pupil.sport || pupil.team_sport})` : ''} and extract structured attributes.
 
 PLAYER INFO:
 - Name: ${pupil.name}
@@ -3182,7 +3178,7 @@ ${observationsByType.general.length > 0 ? '\n**General Observations:**\n' + obse
 Based on ALL of the above observations, extract structured attributes for this pupil. Review every single observation carefully - even general or match observations can reveal technical, physical, tactical or mental traits. A single observation can inform multiple attribute categories.
 
 IMPORTANT GRASSROOTS CONTEXT:
-- This is grassroots youth football, NOT professional or academy football
+- This is school sport, NOT professional or academy sport
 - Score relative to their age group and grassroots level - a standout pupil at grassroots level should get "Excellent" or "Very Good" even though they might be average at academy level
 - Be ENCOURAGING and positive - these ratings will be seen by young pupils and parents
 - Most pupils should have a mix of "Good", "Very Good" and "Developing" ratings - avoid rating everything as "Needs Work"
@@ -3287,7 +3283,7 @@ Rules:
 
 // Generate parent-friendly match report for school intelligence
 export async function generateParentMatchReport({ teamName, opponent, scoreFor, scoreAgainst, result, date, competition, ageGroup, observations }) {
-  const prompt = `Write a parent-friendly match report for this youth football match. Use British English throughout.
+  const prompt = `Write a parent-friendly match report for this school sport fixture. Use British English throughout.
 
 Match Details:
 - Team: ${teamName}
@@ -3315,7 +3311,7 @@ Guidelines:
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 600,
-      system: cacheableSystem('You are writing match reports for a grassroots youth football school in England. Your tone is warm, encouraging, and celebratory of effort and development. Use British English throughout. This is grassroots football - fun, development, and inclusion are the priorities.'),
+      system: cacheableSystem('You are writing match reports for a school sports team in England. Your tone is warm, encouraging, and celebratory of effort and development. Use British English throughout. This is school sport - fun, development, and inclusion are the priorities.'),
       messages: [{ role: 'user', content: prompt }],
     })
 

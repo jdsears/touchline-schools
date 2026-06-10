@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { ASSISTANT_NAME } from '../lib/assistant'
 import { useAuth } from '../context/AuthContext'
 import api, { playerZoneService, playerChatService, announcementService, matchMediaService, teamService, leagueService, notificationService, suggestionService, streamingService, libraryService, SERVER_URL } from '../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -71,11 +72,11 @@ const baseTabs = [
 ]
 
 const observationTypeConfig = {
-  technical: { label: 'Technical', icon: Target, color: 'pitch' },
-  tactical: { label: 'Tactical', icon: Brain, color: 'blue' },
-  physical: { label: 'Physical', icon: Zap, color: 'energy' },
-  mental: { label: 'Mental', icon: Heart, color: 'alert' },
-  's&c': { label: 'S&C', icon: Dumbbell, color: 'caution' },
+  technical: { label: 'Technical', icon: Target, color: 'pitch', tileBg: 'bg-status-success-tint', tileText: 'text-status-success' },
+  tactical: { label: 'Tactical', icon: Brain, color: 'blue', tileBg: 'bg-status-info-tint', tileText: 'text-status-info' },
+  physical: { label: 'Physical', icon: Zap, color: 'energy', tileBg: 'bg-brand-accent-tint', tileText: 'text-brand-accent' },
+  mental: { label: 'Mental', icon: Heart, color: 'alert', tileBg: 'bg-status-error-tint', tileText: 'text-status-error' },
+  's&c': { label: 'S&C', icon: Dumbbell, color: 'caution', tileBg: 'bg-status-warning-tint', tileText: 'text-status-warning' },
 }
 
 // Helper to get primary position from positions array (supports both old and new format)
@@ -541,7 +542,7 @@ export default function PupilLounge() {
       const newStatus = !gafferDisabled
       await playerChatService.setGafferStatus(user.pupil_id, newStatus)
       setGafferDisabled(newStatus)
-      toast.success(newStatus ? 'The Gaffer has been disabled' : 'The Gaffer has been enabled')
+      toast.success(newStatus ? `${ASSISTANT_NAME} has been disabled` : `${ASSISTANT_NAME} has been enabled`)
     } catch (err) {
       console.error('Failed to toggle Gaffer status:', err)
       toast.error('Failed to update setting')
@@ -1087,7 +1088,7 @@ export default function PupilLounge() {
                     </div>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-display text-lg font-bold text-white">Ask the Gaffer</h3>
+                        <h3 className="font-display text-lg font-bold text-white">Ask {ASSISTANT_NAME}</h3>
                         <span className="px-2 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded-full font-medium">AI</span>
                       </div>
                       <p className="text-sm text-secondary mt-1">Get tips, ask questions, and level up your game</p>
@@ -1269,7 +1270,7 @@ export default function PupilLounge() {
                             ) : (
                               <Flame className="w-5 h-5" />
                             )}
-                            {loadingPepTalk ? 'Getting Your Pep Talk...' : '🔥 Get Pumped for the Match!'}
+                            {loadingPepTalk ? 'Getting Your Team Talk...' : '🔥 Get Pumped for the Match!'}
                           </button>
                         ) : null
                       })()}
@@ -2173,13 +2174,13 @@ export default function PupilLounge() {
                 </h3>
                 {observations?.length > 0 ? (
                   observations.map((obs, i) => {
-                    const config = observationTypeConfig[obs.type] || { label: obs.type, icon: FileText, color: 'navy' }
+                    const config = observationTypeConfig[obs.type] || { label: obs.type, icon: FileText, color: 'navy', tileBg: 'bg-subtle', tileText: 'text-secondary' }
                     const Icon = config.icon
                     return (
                       <div key={i} className="card p-4">
                         <div className="flex items-start gap-3">
-                          <div className={`w-8 h-8 rounded-lg bg-${config.color}-500/10 flex items-center justify-center shrink-0`}>
-                            <Icon className={`w-4 h-4 text-${config.color}-400`} />
+                          <div className={`w-8 h-8 rounded-lg ${config.tileBg} flex items-center justify-center shrink-0`}>
+                            <Icon className={`w-4 h-4 ${config.tileText}`} />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
@@ -2289,7 +2290,7 @@ export default function PupilLounge() {
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-display font-bold text-xl text-white flex items-center gap-2">
                 <Flame className="w-6 h-6 text-brand-accent" />
-                Pre-Match Pep Talk
+                Pre-Match Team Talk
               </h3>
               <button onClick={() => setShowPepTalk(false)} className="text-secondary hover:text-white">
                 <X className="w-5 h-5" />
@@ -3280,7 +3281,7 @@ export default function PupilLounge() {
                     ) : (
                       <Flame className="w-5 h-5" />
                     )}
-                    Get Pre-Match Pep Talk
+                    Get Pre-Match Team Talk
                   </button>
                 </>
               )}
@@ -3691,7 +3692,7 @@ export default function PupilLounge() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <h2 className="font-display font-bold text-white">The Gaffer</h2>
+                        <h2 className="font-display font-bold text-white">{ASSISTANT_NAME}</h2>
                         <span className="px-2 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded-full font-medium">AI</span>
                       </div>
                       <p className="text-xs text-secondary">Your personal football coach</p>
@@ -3717,7 +3718,7 @@ export default function PupilLounge() {
                     <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent-hover flex items-center justify-center mx-auto mb-3">
                       <Sparkles className="w-8 h-8 text-brand-primary" />
                     </div>
-                    <h3 className="font-display font-semibold text-white mb-2">Ask the Gaffer!</h3>
+                    <h3 className="font-display font-semibold text-white mb-2">Ask {ASSISTANT_NAME}!</h3>
                     <p className="text-secondary text-sm mb-4">
                       I know everything about your training, matches, and development. Ask me anything!
                     </p>
@@ -3776,7 +3777,7 @@ export default function PupilLounge() {
                     type="text"
                     value={chatInput}
                     onChange={e => setChatInput(e.target.value)}
-                    placeholder="Ask the Gaffer..."
+                    placeholder={`Ask ${ASSISTANT_NAME}...`}
                     className="input flex-1"
                     disabled={sendingMessage}
                   />
@@ -3831,12 +3832,12 @@ export default function PupilLounge() {
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         <Sparkles className="w-4 h-4 text-brand-primary" />
-                        <span className="font-medium text-white">The Gaffer AI Assistant</span>
+                        <span className="font-medium text-white">{ASSISTANT_NAME} AI Assistant</span>
                       </div>
                       <p className="text-sm text-secondary">
                         {gafferDisabled
-                          ? "The Gaffer is currently disabled. Your child cannot access the AI coaching assistant."
-                          : "The Gaffer provides age-appropriate coaching guidance and motivation to help your child develop."}
+                          ? `${ASSISTANT_NAME} is currently disabled. Your child cannot access the AI coaching assistant.`
+                          : `${ASSISTANT_NAME} provides age-appropriate coaching guidance and motivation to help your child develop.`}
                       </p>
                     </div>
                     <button
@@ -3868,7 +3869,7 @@ export default function PupilLounge() {
                 <div className="bg-subtle rounded-lg p-3 flex gap-3">
                   <Shield className="w-5 h-5 text-tertiary flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-secondary">
-                    As a parent, you can control your child's access to The Gaffer AI assistant.
+                    As a parent, you can control your child's access to the {ASSISTANT_NAME} AI assistant.
                     All AI interactions are logged and can be reviewed in your parent dashboard.
                   </p>
                 </div>
@@ -4070,9 +4071,9 @@ export default function PupilLounge() {
 // Availability buttons component
 function AvailabilityButtons({ match, onUpdate, updating }) {
   const options = [
-    { value: 'available', icon: CheckCircle, color: 'pitch', label: 'Yes' },
-    { value: 'unavailable', icon: XCircle, color: 'alert', label: 'No' },
-    { value: 'maybe', icon: HelpCircle, color: 'caution', label: 'Maybe' },
+    { value: 'available', icon: CheckCircle, label: 'Yes', selectedClasses: 'bg-status-success-tint text-status-success border border-status-success' },
+    { value: 'unavailable', icon: XCircle, label: 'No', selectedClasses: 'bg-status-error-tint text-status-error border border-status-error' },
+    { value: 'maybe', icon: HelpCircle, label: 'Maybe', selectedClasses: 'bg-status-warning-tint text-status-warning border border-status-warning' },
   ]
 
   return (
@@ -4087,7 +4088,7 @@ function AvailabilityButtons({ match, onUpdate, updating }) {
             disabled={updating}
             className={`p-2 rounded-lg transition-colors ${
               isSelected
-                ? `bg-${opt.color}-500/20 text-${opt.color}-400 border border-${opt.color}-500/50`
+                ? opt.selectedClasses
                 : 'bg-subtle text-tertiary hover:text-secondary border border-transparent'
             }`}
             title={opt.label}

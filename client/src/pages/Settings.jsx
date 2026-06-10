@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { ASSISTANT_NAME } from '../lib/assistant'
 import { useAuth } from '../context/AuthContext'
 import { useTeam, isLightColor } from '../context/TeamContext'
 import { motion } from 'framer-motion'
@@ -1764,7 +1765,7 @@ export default function Settings() {
               <div className="mt-8 pt-8 border-t border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white mb-2">Coaching Philosophy</h2>
                 <p className="text-secondary text-sm mb-4">
-                  Describe your coaching philosophy and approach. This will be used by Pep and other AI features to tailor their advice and session plans to match your style.
+                  Describe your coaching philosophy and approach. This will be used by {ASSISTANT_NAME} and other AI features to tailor their advice and session plans to match your style.
                 </p>
                 <textarea
                   value={coachingPhilosophy}
@@ -2102,7 +2103,7 @@ export default function Settings() {
                           <Shield className={`w-5 h-5 ${!gafferDisabled ? 'text-brand-primary' : 'text-secondary'}`} />
                         </div>
                         <div>
-                          <p className="font-medium text-white">The Gaffer AI</p>
+                          <p className="font-medium text-white">{ASSISTANT_NAME} AI</p>
                           <p className={`text-sm ${!gafferDisabled ? 'text-brand-primary' : 'text-secondary'}`}>
                             {!gafferDisabled ? 'Enabled - Your child can chat with The Gaffer' : 'Disabled - AI chat is turned off'}
                           </p>
@@ -2129,12 +2130,12 @@ export default function Settings() {
                     ) : gafferDisabled ? (
                       <>
                         <Shield className="w-4 h-4" />
-                        Enable The Gaffer
+                        Enable {ASSISTANT_NAME}
                       </>
                     ) : (
                       <>
                         <X className="w-4 h-4" />
-                        Disable The Gaffer
+                        Disable {ASSISTANT_NAME}
                       </>
                     )}
                   </button>

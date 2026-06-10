@@ -294,11 +294,11 @@ router.put('/:id', authenticateToken, requireTeamAccess, async (req, res, next) 
       return res.status(404).json({ message: 'Team not found' })
     }
 
-    // If age group changed, re-seed FA development guidelines (non-blocking)
+    // If age group changed, re-seed NGB development guidelines (non-blocking)
     if (age_group) {
       const updatedTeam = result.rows[0]
-      seedFAGuidelines(updatedTeam.id, updatedTeam.age_group).catch(err =>
-        console.error('FA guidelines re-seed failed (non-critical):', err.message)
+      seedFAGuidelines(updatedTeam.id, updatedTeam.age_group, updatedTeam.sport).catch(err =>
+        console.error('NGB guidelines re-seed failed (non-critical):', err.message)
       )
     }
 
@@ -1027,6 +1027,7 @@ router.post('/:id/training/generate', authenticateToken, requireTeamAccess, asyn
       ageGroup,
       level,
       coachingPhilosophy,
+      sport: teamResult.rows[0]?.sport || null,
     })
 
     let result
