@@ -49,7 +49,7 @@ export default function MatchVideoV15() {
     formData.append('video', file)
 
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('fam_token')
       const xhr = new XMLHttpRequest()
       xhr.upload.onprogress = (evt) => { if (evt.lengthComputable) setProgress(Math.round(evt.loaded / evt.total * 100)) }
       xhr.onload = () => {
