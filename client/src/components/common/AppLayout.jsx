@@ -145,16 +145,16 @@ export default function AppLayout() {
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive 
-                      ? 'bg-pitch-600/20 text-pitch-400' 
+                      ? 'bg-brand-primary-tint text-brand-primary' 
                       : 'text-secondary hover:text-primary hover:bg-subtle'
                     }
                     ${item.highlight && !isActive ? 'bg-subtle' : ''}
                   `}
                 >
-                  <item.icon className={`w-5 h-5 ${item.highlight && !isActive ? 'text-pitch-400' : ''}`} />
+                  <item.icon className={`w-5 h-5 ${item.highlight && !isActive ? 'text-brand-primary' : ''}`} />
                   <span className="font-medium">{item.name}</span>
                   {item.highlight && (
-                    <span className="ml-auto text-xs bg-pitch-600/30 text-pitch-400 px-2 py-0.5 rounded-full">
+                    <span className="ml-auto text-xs bg-brand-primary-tint text-brand-primary px-2 py-0.5 rounded-full">
                       AI
                     </span>
                   )}
@@ -177,14 +177,14 @@ export default function AppLayout() {
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive
-                      ? 'bg-amber-600/20 text-amber-400'
-                      : 'text-amber-400/70 hover:text-amber-400 hover:bg-subtle'
+                      ? 'bg-brand-accent-tint text-brand-accent'
+                      : 'text-secondary hover:text-brand-accent hover:bg-subtle'
                     }
                   `}
                 >
                   <Building2 className="w-5 h-5" />
                   <span className="font-medium truncate">{school.name}</span>
-                  <span className="ml-auto text-xs bg-amber-600/20 text-amber-400 px-2 py-0.5 rounded-full capitalize">
+                  <span className="ml-auto text-xs bg-brand-accent-tint text-brand-accent px-2 py-0.5 rounded-full capitalize">
                     {school.my_role}
                   </span>
                 </NavLink>
@@ -196,8 +196,8 @@ export default function AppLayout() {
                   className={({ isActive }) => `
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive
-                      ? 'bg-amber-600/20 text-amber-400'
-                      : 'text-secondary hover:text-amber-400 hover:bg-subtle'
+                      ? 'bg-brand-accent-tint text-brand-accent'
+                      : 'text-secondary hover:text-brand-accent hover:bg-subtle'
                     }
                   `}
                 >
@@ -218,7 +218,7 @@ export default function AppLayout() {
                 className={({ isActive }) => `
                   flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                   ${isActive
-                    ? 'bg-pitch-600/20 text-pitch-400'
+                    ? 'bg-brand-primary-tint text-brand-primary'
                     : 'text-secondary hover:text-primary hover:bg-subtle'
                   }
                 `}
@@ -236,8 +236,8 @@ export default function AppLayout() {
                 className={({ isActive }) => `
                   flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                   ${isActive
-                    ? 'bg-amber-600/20 text-amber-400'
-                    : 'text-amber-400/70 hover:text-amber-400 hover:bg-subtle'
+                    ? 'bg-brand-accent-tint text-brand-accent'
+                    : 'text-secondary hover:text-brand-accent hover:bg-subtle'
                   }
                 `}
               >
@@ -257,7 +257,7 @@ export default function AppLayout() {
               </div>
               <button
                 onClick={logout}
-                className="p-2 text-secondary hover:text-alert-400 transition-colors"
+                className="p-2 text-secondary hover:text-status-error transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />

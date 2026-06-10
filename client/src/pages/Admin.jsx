@@ -839,7 +839,7 @@ function DemoRequestsTab() {
     contacted: 'bg-yellow-500/20 text-yellow-400',
     demo_issued: 'bg-green-500/20 text-green-400',
     declined: 'bg-red-500/20 text-red-400',
-    no_response: 'bg-gray-500/20 text-gray-400',
+    no_response: 'bg-gray-500/20 text-tertiary',
   }
 
   if (selectedRequest) {

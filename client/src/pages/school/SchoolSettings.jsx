@@ -406,7 +406,7 @@ export default function ClubSettings() {
                   charityForm.gift_aid_enabled ? 'bg-pitch-600' : 'bg-border-default'
                 }`}
               >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-card rounded-full transition-transform ${
                   charityForm.gift_aid_enabled ? 'translate-x-5' : ''
                 }`} />
               </button>

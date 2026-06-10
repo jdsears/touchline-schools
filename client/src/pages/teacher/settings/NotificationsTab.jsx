@@ -23,7 +23,7 @@ function Toggle({ checked, onChange, disabled }) {
         checked ? 'bg-pitch-600' : 'bg-border-default'
       } ${disabled ? 'cursor-default opacity-50' : 'cursor-pointer'}`}
     >
-      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-card transition-transform ${
         checked ? 'translate-x-5' : 'translate-x-0.5'
       }`} />
     </button>

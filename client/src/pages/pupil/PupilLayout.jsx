@@ -125,7 +125,7 @@ function ImpersonationBanner() {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-black px-4 py-1.5 flex items-center justify-between text-sm font-medium">
+    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-primary px-4 py-1.5 flex items-center justify-between text-sm font-medium">
       <span>Viewing as: {impersonating} (test persona)</span>
       <button
         onClick={handleEnd}

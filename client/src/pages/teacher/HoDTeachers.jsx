@@ -330,7 +330,7 @@ export default function HoDTeachers() {
                   <div className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
                     newRole === r.value ? 'border-pitch-500 bg-pitch-500' : 'border-border-strong'
                   }`}>
-                    {newRole === r.value && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                    {newRole === r.value && <div className="w-1.5 h-1.5 rounded-full bg-card" />}
                   </div>
                   <div>
                     <span className={`text-sm font-medium ${newRole === r.value ? 'text-primary' : 'text-secondary'}`}>

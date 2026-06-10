@@ -1144,7 +1144,7 @@ export default function Training() {
                           }`}
                         >
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            className={`inline-block h-4 w-4 transform rounded-full bg-card transition-transform ${
                               createForm.recurring ? 'translate-x-6' : 'translate-x-1'
                             }`}
                           />
@@ -1844,7 +1844,7 @@ export default function Training() {
                           <Loader2 className="w-4 h-4 animate-spin absolute left-1/2 -translate-x-1/2 text-white" />
                         ) : (
                           <span
-                            className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            className={`inline-block h-4 w-4 transform rounded-full bg-card transition-transform ${
                               selectedSession.share_plan_with_players ? 'translate-x-6' : 'translate-x-1'
                             }`}
                           />

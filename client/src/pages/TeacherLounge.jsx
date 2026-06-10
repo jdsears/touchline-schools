@@ -761,7 +761,7 @@ export default function TeacherLounge() {
                 >
                   <span
                     className={`
-                      absolute top-1 w-4 h-4 rounded-full bg-white transition-transform
+                      absolute top-1 w-4 h-4 rounded-full bg-card transition-transform
                       ${uploadVisibleToParents ? 'left-7' : 'left-1'}
                     `}
                   />

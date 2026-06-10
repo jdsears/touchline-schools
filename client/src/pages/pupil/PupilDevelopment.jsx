@@ -90,7 +90,7 @@ export default function PupilDevelopment() {
               <button
                 onClick={() => setFilter('all')}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                  filter === 'all' ? 'bg-white text-navy-900' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
+                  filter === 'all' ? 'bg-card text-navy-900' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
                 }`}
               >
                 All ({observations.length})
@@ -100,7 +100,7 @@ export default function PupilDevelopment() {
                   key={sport}
                   onClick={() => setFilter(sport)}
                   className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-colors ${
-                    filter === sport ? 'bg-white text-navy-900' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
+                    filter === sport ? 'bg-card text-navy-900' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
                   }`}
                 >
                   {SPORT_EMOJI[sport] || ''} {sport} ({observations.filter(o => o.sport === sport).length})

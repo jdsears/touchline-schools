@@ -92,7 +92,7 @@ export default function HoDVoiceSettings() {
               `}
             >
               <div className={`
-                absolute top-0.5 w-6 h-6 rounded-full bg-white transition-transform shadow
+                absolute top-0.5 w-6 h-6 rounded-full bg-card transition-transform shadow
                 ${settings.voice_observations_enabled ? 'translate-x-7' : 'translate-x-0.5'}
               `} />
             </button>
