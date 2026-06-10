@@ -40,10 +40,10 @@ function MiniPitchView({ team, myPupilId }) {
               className="absolute flex flex-col items-center"
               style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)' }}
             >
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md ${isMe ? 'bg-yellow-400 text-navy-900 ring-2 ring-white' : 'bg-white/90 text-navy-700'}`}>
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md ${isMe ? 'bg-status-warning text-navy-900 ring-2 ring-white' : 'bg-white/90 text-navy-700'}`}>
                 {pos.label?.charAt(0) || '?'}
               </div>
-              <span className={`mt-0.5 text-[7px] font-medium px-1 rounded ${isMe ? 'text-yellow-300' : 'text-white/70'}`}>{pos.label}</span>
+              <span className={`mt-0.5 text-[7px] font-medium px-1 rounded ${isMe ? 'text-status-warning' : 'text-white/70'}`}>{pos.label}</span>
             </div>
           )
         })}

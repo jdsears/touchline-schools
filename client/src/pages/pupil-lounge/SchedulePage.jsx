@@ -10,7 +10,7 @@ import EventDetailModal from '../../components/pupil-lounge/EventDetailModal'
 const EVENT_STYLE = {
   fixture: { bg: 'bg-gold-500/20', text: 'text-gold-400', dot: 'bg-gold-400' },
   training: { bg: 'bg-navy-700/60', text: 'text-navy-300', dot: 'bg-navy-400' },
-  lesson: { bg: 'bg-emerald-500/15', text: 'text-emerald-400', dot: 'bg-emerald-400' },
+  lesson: { bg: 'bg-status-success-tint', text: 'text-status-success', dot: 'bg-status-success' },
   assessment: { bg: 'bg-violet-500/15', text: 'text-violet-400', dot: 'bg-violet-400' },
 }
 

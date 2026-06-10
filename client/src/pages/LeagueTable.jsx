@@ -470,7 +470,7 @@ export default function LeagueTable() {
                           setImagePreview(null)
                           if (fileInputRef.current) fileInputRef.current.value = ''
                         }}
-                        className="absolute top-2 right-2 p-1.5 bg-red-500 rounded-full hover:bg-red-600"
+                        className="absolute top-2 right-2 p-1.5 bg-status-error rounded-full hover:bg-status-error"
                       >
                         <X className="w-4 h-4 text-white" />
                       </button>
@@ -578,9 +578,9 @@ export default function LeagueTable() {
                             </span>
                           </td>
                           <td className="px-3 py-2 text-center text-secondary">{teamRow.played}</td>
-                          <td className="px-3 py-2 text-center text-green-400">{teamRow.won}</td>
-                          <td className="px-3 py-2 text-center text-yellow-400">{teamRow.drawn}</td>
-                          <td className="px-3 py-2 text-center text-red-400">{teamRow.lost}</td>
+                          <td className="px-3 py-2 text-center text-status-success">{teamRow.won}</td>
+                          <td className="px-3 py-2 text-center text-status-warning">{teamRow.drawn}</td>
+                          <td className="px-3 py-2 text-center text-status-error">{teamRow.lost}</td>
                           {importType === 'detailed' && (
                             <>
                               <td className="px-3 py-2 text-center text-secondary">{teamRow.goals_for}</td>
@@ -589,8 +589,8 @@ export default function LeagueTable() {
                           )}
                           <td className="px-3 py-2 text-center">
                             <span className={
-                              teamRow.goal_difference > 0 ? 'text-green-400' :
-                              teamRow.goal_difference < 0 ? 'text-red-400' :
+                              teamRow.goal_difference > 0 ? 'text-status-success' :
+                              teamRow.goal_difference < 0 ? 'text-status-error' :
                               'text-secondary'
                             }>
                               {teamRow.goal_difference > 0 ? '+' : ''}{teamRow.goal_difference}
@@ -756,13 +756,13 @@ export default function LeagueTable() {
           <div className="flex gap-1">
             <button
               onClick={() => updateTeamStats(teamRecord.id, stats)}
-              className="p-1 text-green-400 hover:bg-green-500/20 rounded"
+              className="p-1 text-status-success hover:bg-status-success-tint rounded"
             >
               <Check className="w-4 h-4" />
             </button>
             <button
               onClick={() => setEditingTeam(null)}
-              className="p-1 text-red-400 hover:bg-red-500/20 rounded"
+              className="p-1 text-status-error hover:bg-status-error-tint rounded"
             >
               <X className="w-4 h-4" />
             </button>
@@ -951,9 +951,9 @@ export default function LeagueTable() {
                     >
                       <td className="px-3 py-2">
                         <span className={`font-medium ${
-                          index === 0 ? 'text-yellow-400' :
+                          index === 0 ? 'text-status-warning' :
                           index < 3 ? 'text-pitch-400' :
-                          index >= sortedTable.length - 2 ? 'text-red-400' :
+                          index >= sortedTable.length - 2 ? 'text-status-error' :
                           'text-secondary'
                         }`}>
                           {index + 1}
@@ -971,25 +971,25 @@ export default function LeagueTable() {
                       </td>
                       {/* Home Stats */}
                       <td className="px-2 py-2 text-center text-secondary border-l border-border-strong">{teamRecord.home_played || 0}</td>
-                      <td className="px-2 py-2 text-center text-green-400">{teamRecord.home_won || 0}</td>
-                      <td className="px-2 py-2 text-center text-yellow-400">{teamRecord.home_drawn || 0}</td>
-                      <td className="px-2 py-2 text-center text-red-400">{teamRecord.home_lost || 0}</td>
+                      <td className="px-2 py-2 text-center text-status-success">{teamRecord.home_won || 0}</td>
+                      <td className="px-2 py-2 text-center text-status-warning">{teamRecord.home_drawn || 0}</td>
+                      <td className="px-2 py-2 text-center text-status-error">{teamRecord.home_lost || 0}</td>
                       <td className="px-2 py-2 text-center text-secondary">{teamRecord.home_goals_for || 0}</td>
                       <td className="px-2 py-2 text-center text-secondary">{teamRecord.home_goals_against || 0}</td>
                       {/* Away Stats */}
                       <td className="px-2 py-2 text-center text-secondary border-l border-border-strong">{teamRecord.away_played || 0}</td>
-                      <td className="px-2 py-2 text-center text-green-400">{teamRecord.away_won || 0}</td>
-                      <td className="px-2 py-2 text-center text-yellow-400">{teamRecord.away_drawn || 0}</td>
-                      <td className="px-2 py-2 text-center text-red-400">{teamRecord.away_lost || 0}</td>
+                      <td className="px-2 py-2 text-center text-status-success">{teamRecord.away_won || 0}</td>
+                      <td className="px-2 py-2 text-center text-status-warning">{teamRecord.away_drawn || 0}</td>
+                      <td className="px-2 py-2 text-center text-status-error">{teamRecord.away_lost || 0}</td>
                       <td className="px-2 py-2 text-center text-secondary">{teamRecord.away_goals_for || 0}</td>
                       <td className="px-2 py-2 text-center text-secondary">{teamRecord.away_goals_against || 0}</td>
                       {/* Overall */}
-                      <td className="px-2 py-2 text-center text-green-400 border-l border-border-strong">{teamRecord.won}</td>
-                      <td className="px-2 py-2 text-center text-yellow-400">{teamRecord.drawn}</td>
+                      <td className="px-2 py-2 text-center text-status-success border-l border-border-strong">{teamRecord.won}</td>
+                      <td className="px-2 py-2 text-center text-status-warning">{teamRecord.drawn}</td>
                       <td className="px-2 py-2 text-center">
                         <span className={
-                          teamRecord.goal_difference > 0 ? 'text-green-400' :
-                          teamRecord.goal_difference < 0 ? 'text-red-400' :
+                          teamRecord.goal_difference > 0 ? 'text-status-success' :
+                          teamRecord.goal_difference < 0 ? 'text-status-error' :
                           'text-secondary'
                         }>
                           {teamRecord.goal_difference > 0 ? '+' : ''}{teamRecord.goal_difference}
@@ -1007,7 +1007,7 @@ export default function LeagueTable() {
                             </button>
                             <button
                               onClick={() => removeTeam(teamRecord.id)}
-                              className="p-1 text-secondary hover:text-red-400 hover:bg-red-500/20 rounded"
+                              className="p-1 text-secondary hover:text-status-error hover:bg-status-error-tint rounded"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -1049,9 +1049,9 @@ export default function LeagueTable() {
                       >
                         <td className="px-4 py-3">
                           <span className={`font-medium ${
-                            index === 0 ? 'text-yellow-400' :
+                            index === 0 ? 'text-status-warning' :
                             index < 3 ? 'text-pitch-400' :
-                            index >= sortedTable.length - 2 ? 'text-red-400' :
+                            index >= sortedTable.length - 2 ? 'text-status-error' :
                             'text-secondary'
                           }`}>
                             {index + 1}
@@ -1068,15 +1068,15 @@ export default function LeagueTable() {
                           </span>
                         </td>
                         <td className="px-4 py-3 text-center text-secondary">{teamRecord.played}</td>
-                        <td className="px-4 py-3 text-center text-green-400">{teamRecord.won}</td>
-                        <td className="px-4 py-3 text-center text-yellow-400">{teamRecord.drawn}</td>
-                        <td className="px-4 py-3 text-center text-red-400">{teamRecord.lost}</td>
+                        <td className="px-4 py-3 text-center text-status-success">{teamRecord.won}</td>
+                        <td className="px-4 py-3 text-center text-status-warning">{teamRecord.drawn}</td>
+                        <td className="px-4 py-3 text-center text-status-error">{teamRecord.lost}</td>
                         <td className="px-4 py-3 text-center text-secondary">{teamRecord.goals_for}</td>
                         <td className="px-4 py-3 text-center text-secondary">{teamRecord.goals_against}</td>
                         <td className="px-4 py-3 text-center">
                           <span className={
-                            teamRecord.goal_difference > 0 ? 'text-green-400' :
-                            teamRecord.goal_difference < 0 ? 'text-red-400' :
+                            teamRecord.goal_difference > 0 ? 'text-status-success' :
+                            teamRecord.goal_difference < 0 ? 'text-status-error' :
                             'text-secondary'
                           }>
                             {teamRecord.goal_difference > 0 ? '+' : ''}{teamRecord.goal_difference}
@@ -1096,7 +1096,7 @@ export default function LeagueTable() {
                               </button>
                               <button
                                 onClick={() => removeTeam(teamRecord.id)}
-                                className="p-1 text-secondary hover:text-red-400 hover:bg-red-500/20 rounded"
+                                className="p-1 text-secondary hover:text-status-error hover:bg-status-error-tint rounded"
                               >
                                 <Trash2 className="w-4 h-4" />
                               </button>

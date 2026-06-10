@@ -1287,7 +1287,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   {customFormations.some(cf => cf.name === formation) && (
                     <button
                       onClick={(e) => handleDeleteCustomFormation(formation, e)}
-                      className="btn-ghost p-2 text-alert-400 hover:bg-alert-500/10"
+                      className="btn-ghost p-2 text-status-error hover:bg-status-error-tint"
                       title="Delete this custom formation"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -1325,8 +1325,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                   onClick={() => setTacticalPhase(PHASES.OUT_OF_POSSESSION)}
                   className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-all flex items-center gap-1.5 ${
                     tacticalPhase === PHASES.OUT_OF_POSSESSION
-                      ? 'bg-alert-500 text-white'
-                      : 'bg-subtle text-secondary hover:bg-alert-500/20'
+                      ? 'bg-status-error text-white'
+                      : 'bg-subtle text-secondary hover:bg-status-error-tint'
                   }`}
                 >
                   <Shield className="w-3.5 h-3.5" />
@@ -1405,7 +1405,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       onClick={() => setTacticalSettings(s => ({ ...s, showPressingZones: !s.showPressingZones }))}
                       className={`p-2 rounded-lg transition-all ${
                         tacticalSettings.showPressingZones
-                          ? 'bg-alert-500/20 text-alert-400'
+                          ? 'bg-status-error-tint text-status-error'
                           : 'bg-subtle text-tertiary hover:text-secondary'
                       }`}
                     >
@@ -1461,7 +1461,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                               ? 'bg-purple-500/10 border-purple-400/30'
                               : zone.color === 'green'
                               ? 'bg-pitch-500/8 border-pitch-400/20'
-                              : 'bg-blue-500/8 border-blue-400/20'
+                              : 'bg-status-info-tint border-status-info'
                           }`}
                           style={{
                             left: `${zone.x}%`,
@@ -1473,7 +1473,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                               ? 'text-purple-300/70'
                               : zone.color === 'green'
                               ? 'text-pitch-300/60'
-                              : 'text-blue-300/60'
+                              : 'text-status-info'
                           }`}>
                             {zone.label}
                           </span>
@@ -1500,7 +1500,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           transition={{ delay: i * 0.05 }}
                           className={`absolute left-0 right-0 border-y ${
                             zone.id === 'attacking'
-                              ? 'bg-alert-500/8 border-alert-400/20'
+                              ? 'bg-status-error-tint border-status-error'
                               : zone.id === 'defensive'
                               ? 'bg-pitch-500/8 border-pitch-400/20'
                               : 'bg-energy-500/5 border-energy-400/15'
@@ -1512,7 +1512,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         >
                           <span className={`absolute left-2 top-1/2 -translate-y-1/2 text-[9px] font-semibold uppercase tracking-wider ${
                             zone.id === 'attacking'
-                              ? 'text-alert-300/60'
+                              ? 'text-status-error'
                               : zone.id === 'defensive'
                               ? 'text-pitch-300/60'
                               : 'text-energy-300/50'
@@ -1540,7 +1540,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         transition={{ duration: 0.2 }}
                         className={`absolute left-[4%] right-[4%] border-2 border-dashed rounded pointer-events-none ${
                           tacticalSettings.pressingTriggerZone === 'high'
-                            ? 'bg-alert-500/15 border-alert-400/80'
+                            ? 'bg-status-error-tint border-status-error'
                             : 'bg-transparent border-white/15'
                         }`}
                         style={{ top: '4%', height: '28%' }}
@@ -1549,7 +1549,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           <motion.span
                             initial={{ opacity: 0, y: -5 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="absolute top-2 left-3 text-[10px] font-semibold text-alert-300 uppercase tracking-wider"
+                            className="absolute top-2 left-3 text-[10px] font-semibold text-status-error uppercase tracking-wider"
                           >
                             Press Zone
                           </motion.span>
@@ -1626,7 +1626,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className={`absolute -top-6 left-1/2 -translate-x-1/2 text-[9px] font-semibold bg-black/50 backdrop-blur-sm px-2 py-1 rounded whitespace-nowrap ${
-                          tacticalPhase === PHASES.OUT_OF_POSSESSION ? 'text-alert-300' : 'text-white/60'
+                          tacticalPhase === PHASES.OUT_OF_POSSESSION ? 'text-status-error' : 'text-white/60'
                         }`}
                       >
                         Defensive Line
@@ -1777,7 +1777,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                           shadow-lg select-none pointer-events-auto
                           transition-transform hover:scale-105 active:scale-95
                           ${isSelected
-                            ? 'ring-4 ring-yellow-400'
+                            ? 'ring-4 ring-status-warning'
                             : isSwapTarget && assignedPlayer
                               ? 'ring-2 ring-energy-400/60 hover:ring-energy-400'
                               : ''
@@ -1881,7 +1881,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                             e.stopPropagation()
                             removePlayerFromPosition(assignedPosition.id)
                           }}
-                          className="p-1 text-secondary hover:text-alert-400 transition-colors"
+                          className="p-1 text-secondary hover:text-status-error transition-colors"
                           title="Remove from position"
                         >
                           <UserMinus className="w-4 h-4" />
@@ -1933,7 +1933,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                       <div key={sub.id} className="flex items-center gap-2 p-2 bg-subtle rounded-lg text-sm">
                         <span className="text-energy-400 font-medium w-10">{sub.minute}'</span>
                         <div className="flex-1 flex items-center gap-1">
-                          <span className="text-alert-400">{playerOff?.squad_number || '?'}</span>
+                          <span className="text-status-error">{playerOff?.squad_number || '?'}</span>
                           <ArrowRightLeft className="w-3 h-3 text-tertiary" />
                           <span className="text-pitch-400">{playerOn?.squad_number || '?'}</span>
                           <span className="text-secondary text-xs ml-1 truncate">
@@ -1942,7 +1942,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         </div>
                         <button
                           onClick={() => removePlannedSub(sub.id)}
-                          className="p-1 text-tertiary hover:text-alert-400"
+                          className="p-1 text-tertiary hover:text-status-error"
                         >
                           <Trash2 className="w-3 h-3" />
                         </button>
@@ -2010,7 +2010,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             {/* Tactical Shape Controls - only for sports that support phases */}
             {supportsPhases && <div className="card p-4">
               <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
-                <Shield className="w-5 h-5 text-alert-400" />
+                <Shield className="w-5 h-5 text-status-error" />
                 Tactical Shape
               </h2>
 
@@ -2101,7 +2101,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         onClick={() => setTacticalSettings(s => ({ ...s, pressingTriggerZone: zone }))}
                         className={`flex-1 px-2 py-1.5 rounded-lg text-xs font-medium transition-all capitalize ${
                           tacticalSettings.pressingTriggerZone === zone
-                            ? zone === 'high' ? 'bg-alert-500 text-white' :
+                            ? zone === 'high' ? 'bg-status-error text-white' :
                               zone === 'mid' ? 'bg-energy-500 text-white' :
                               'bg-pitch-500 text-white'
                             : 'bg-subtle text-secondary hover:bg-border-default/50'
@@ -2420,7 +2420,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
 
                             <div className="flex-1">
                               <div className="flex items-center gap-2 text-sm">
-                                <span className="text-alert-400 font-medium">
+                                <span className="text-status-error font-medium">
                                   {playerOff?.squad_number} {playerOff?.name}
                                 </span>
                                 <ArrowRightLeft className="w-4 h-4 text-tertiary" />
@@ -2435,7 +2435,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
 
                             <button
                               onClick={() => removePlannedSub(sub.id)}
-                              className="p-2 text-tertiary hover:text-alert-400 transition-colors"
+                              className="p-2 text-tertiary hover:text-status-error transition-colors"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>

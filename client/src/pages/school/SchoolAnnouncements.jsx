@@ -170,7 +170,7 @@ export default function ClubAnnouncements() {
       {showBulkEmail && (
         <form onSubmit={handleBulkEmail} className="bg-card border border-border-default rounded-xl p-5 space-y-4">
           <h3 className="font-semibold text-primary flex items-center gap-2">
-            <Mail className="w-5 h-5 text-blue-400" />
+            <Mail className="w-5 h-5 text-status-info" />
             Email Parents
           </h3>
           <TargetSelector
@@ -199,7 +199,7 @@ export default function ClubAnnouncements() {
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowBulkEmail(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" disabled={sending} className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-on-dark rounded-lg text-sm">
+            <button type="submit" disabled={sending} className="flex items-center gap-2 px-4 py-2 bg-status-info hover:bg-status-info disabled:opacity-50 text-on-dark rounded-lg text-sm">
               <Send className="w-4 h-4" />
               {sending ? 'Sending...' : 'Send Email'}
             </button>
@@ -383,7 +383,7 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
   const priorityColors = {
     normal: 'border-border-default',
     important: 'border-amber-600/30',
-    urgent: 'border-alert-600/30',
+    urgent: 'border-status-error',
   }
 
   return (
@@ -398,7 +398,7 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
             <div className="flex items-center gap-2 flex-wrap">
               <p className="font-medium text-primary truncate">{announcement.title}</p>
               {announcement.priority === 'urgent' && (
-                <span className="text-xs bg-alert-600/20 text-alert-400 px-2 py-0.5 rounded">Urgent</span>
+                <span className="text-xs bg-status-error-tint text-status-error px-2 py-0.5 rounded">Urgent</span>
               )}
               {announcement.priority === 'important' && (
                 <span className="text-xs bg-amber-600/20 text-amber-400 px-2 py-0.5 rounded">Important</span>
@@ -436,7 +436,7 @@ function AnnouncementCard({ announcement, canManage, onDelete, onTogglePin }) {
               </button>
               <button
                 onClick={() => onDelete(announcement.id)}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-alert-600/20 text-secondary hover:text-alert-400 rounded-lg text-xs transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-status-error-tint text-secondary hover:text-status-error rounded-lg text-xs transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 Delete

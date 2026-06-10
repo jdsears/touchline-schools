@@ -104,7 +104,7 @@ export default function WatchStream() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="text-center max-w-md">
-          <AlertCircle className="w-16 h-16 text-alert-500 mx-auto mb-4" />
+          <AlertCircle className="w-16 h-16 text-status-error mx-auto mb-4" />
           <h1 className="text-xl font-display font-bold text-white mb-2">Unable to Load Stream</h1>
           <p className="text-secondary mb-6">{error}</p>
           <button onClick={checkStream} className="btn-primary">
@@ -146,7 +146,7 @@ export default function WatchStream() {
             />
 
             {error && (
-              <p className="text-alert-500 text-sm">{error}</p>
+              <p className="text-status-error text-sm">{error}</p>
             )}
 
             <button
@@ -189,8 +189,8 @@ export default function WatchStream() {
             <p className="text-xs text-secondary">
               {stream?.status === 'active' ? (
                 <span className="flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
-                  <span className="text-alert-400">LIVE</span>
+                  <span className="w-2 h-2 rounded-full bg-status-error animate-pulse" />
+                  <span className="text-status-error">LIVE</span>
                 </span>
               ) : (
                 'Stream offline'

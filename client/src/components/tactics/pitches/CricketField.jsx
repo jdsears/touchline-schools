@@ -11,7 +11,7 @@ export default function CricketField({ teamFormat = 11 }) {
       <div className="absolute inset-[18%] border-[2px] border-dashed border-white/40 rounded-full" />
 
       {/* Pitch strip */}
-      <div className="absolute top-[28%] bottom-[28%] left-[46%] right-[46%] border-[2px] border-white/55 bg-yellow-900/25 rounded-sm" />
+      <div className="absolute top-[28%] bottom-[28%] left-[46%] right-[46%] border-[2px] border-white/55 bg-status-warning-tint rounded-sm" />
 
       {/* Batting crease - top */}
       <div className="absolute top-[34%] left-[41%] right-[41%] h-[1.5px] bg-white/65" />

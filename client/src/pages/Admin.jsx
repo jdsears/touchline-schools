@@ -45,7 +45,7 @@ import toast from 'react-hot-toast'
 function StatCard({ title, value, subtitle, icon: Icon, color = 'pitch' }) {
   const colors = {
     pitch: 'bg-pitch-500/20 text-pitch-400',
-    blue: 'bg-blue-500/20 text-blue-400',
+    blue: 'bg-status-info-tint text-status-info',
     amber: 'bg-amber-500/20 text-amber-400',
     purple: 'bg-purple-500/20 text-purple-400',
     cyan: 'bg-cyan-500/20 text-cyan-400',
@@ -486,7 +486,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                 {userDetail.pupil_id ? (
                   <span className="text-pitch-400">{userDetail.player_name || 'Linked'}</span>
                 ) : (
-                  <span className="text-red-400">Not linked</span>
+                  <span className="text-status-error">Not linked</span>
                 )}
               </div>
               {userDetail.subscription && (
@@ -499,7 +499,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
                         ? 'bg-pitch-500/20 text-pitch-400'
                         : userDetail.subscription.status === 'trialing'
                         ? 'bg-amber-500/20 text-amber-400'
-                        : 'bg-red-500/20 text-red-400'
+                        : 'bg-status-error-tint text-status-error'
                     }`}
                   >
                     {userDetail.subscription.status}
@@ -520,7 +520,7 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
             <div className="bg-subtle rounded-lg p-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Users className="w-4 h-4 text-blue-400" />
+                  <Users className="w-4 h-4 text-status-info" />
                   <div>
                     <div className="text-white text-sm font-medium">Role</div>
                     <div className="text-xs text-secondary">Current: <span className="capitalize text-white">{userDetail.role}</span></div>
@@ -735,28 +735,28 @@ function UserManageModal({ isOpen, onClose, userId, onUpdated }) {
             )}
 
             {/* Delete User */}
-            <div className="bg-red-900/20 border border-red-800/30 rounded-lg p-3">
+            <div className="bg-status-error-tint border border-status-error rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
-                <Trash2 className="w-4 h-4 text-red-400" />
-                <div className="text-red-400 text-sm font-medium">Danger Zone</div>
+                <Trash2 className="w-4 h-4 text-status-error" />
+                <div className="text-status-error text-sm font-medium">Danger Zone</div>
               </div>
               {!showDeleteConfirm ? (
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="w-full px-3 py-2 bg-red-600/20 text-red-400 rounded-lg text-sm hover:bg-red-600/30 transition-colors border border-red-700/30"
+                  className="w-full px-3 py-2 bg-status-error-tint text-status-error rounded-lg text-sm hover:bg-status-error-tint transition-colors border border-status-error"
                 >
                   Delete User Account
                 </button>
               ) : (
                 <div className="space-y-2">
-                  <p className="text-sm text-red-300">
+                  <p className="text-sm text-status-error">
                     Permanently delete <strong>{userDetail.name || userDetail.email}</strong>? They will need to register again. This cannot be undone.
                   </p>
                   <div className="flex gap-2">
                     <button
                       onClick={handleDeleteUser}
                       disabled={actionLoading === 'delete'}
-                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 transition-colors disabled:opacity-50"
+                      className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-status-error text-white rounded-lg text-sm hover:bg-status-error transition-colors disabled:opacity-50"
                     >
                       {actionLoading === 'delete' ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -835,10 +835,10 @@ function DemoRequestsTab() {
   }
 
   const STATUS_COLORS = {
-    new: 'bg-blue-500/20 text-blue-400',
-    contacted: 'bg-yellow-500/20 text-yellow-400',
-    demo_issued: 'bg-green-500/20 text-green-400',
-    declined: 'bg-red-500/20 text-red-400',
+    new: 'bg-status-info-tint text-status-info',
+    contacted: 'bg-status-warning-tint text-status-warning',
+    demo_issued: 'bg-status-success-tint text-status-success',
+    declined: 'bg-status-error-tint text-status-error',
     no_response: 'bg-gray-500/20 text-tertiary',
   }
 
@@ -1752,7 +1752,7 @@ export default function Admin() {
 
               {/* Forecast */}
               <div className="card p-5">
-                <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><Calendar className="w-4 h-4 text-blue-400" /> Revenue Forecast</h3>
+                <h3 className="font-display font-semibold text-white mb-4 flex items-center gap-2"><Calendar className="w-4 h-4 text-status-info" /> Revenue Forecast</h3>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="p-4 rounded-lg bg-subtle text-center">
                     <p className="text-secondary text-xs mb-1">Next Month</p>
@@ -1795,9 +1795,9 @@ export default function Admin() {
                             <td className="py-2">
                               <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                                 sub.status === 'active' ? 'bg-pitch-500/20 text-pitch-400' :
-                                sub.status === 'trialing' ? 'bg-blue-500/20 text-blue-400' :
+                                sub.status === 'trialing' ? 'bg-status-info-tint text-status-info' :
                                 sub.status === 'past_due' ? 'bg-energy-500/20 text-energy-400' :
-                                'bg-alert-500/20 text-alert-400'
+                                'bg-status-error-tint text-status-error'
                               }`}>{sub.status}</span>
                             </td>
                             <td className="py-2 text-secondary">{sub.provider}</td>
@@ -1893,7 +1893,7 @@ export default function Admin() {
                             className={`px-2 py-1 rounded text-xs font-medium ${
                               code.is_active
                                 ? 'bg-pitch-500/20 text-pitch-400'
-                                : 'bg-red-500/20 text-red-400'
+                                : 'bg-status-error-tint text-status-error'
                             }`}
                           >
                             {code.is_active ? 'Active' : 'Inactive'}
@@ -1912,7 +1912,7 @@ export default function Admin() {
                             </button>
                             <button
                               onClick={() => handleDeleteCode(code.id)}
-                              className="p-1.5 text-secondary hover:text-red-400 hover:bg-border-default rounded"
+                              className="p-1.5 text-secondary hover:text-status-error hover:bg-border-default rounded"
                             >
                               <Trash2 className="w-4 h-4" />
                             </button>
@@ -1990,7 +1990,7 @@ export default function Admin() {
                       {u.billing_exempt ? (
                         <span className="text-xs text-pitch-400">Full access</span>
                       ) : (u.role === 'parent' || u.role === 'pupil') && u.team_name ? (
-                        <span className="text-xs text-blue-400">Team member</span>
+                        <span className="text-xs text-status-info">Team member</span>
                       ) : u.subscription_tier && !['free', 'free_trial', 'trial_14d', ''].includes(u.subscription_tier) ? (
                         <span className="text-xs text-pitch-400 capitalize">
                           {u.subscription_tier.replace('team_', '').replace('_monthly', '').replace('_annual', '').replace(/_/g, ' ')}
@@ -2134,7 +2134,7 @@ export default function Admin() {
                           </label>
                           <button
                             onClick={() => setEditingPost({ ...editingPost, cover_image_url: '' })}
-                            className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 flex items-center gap-1.5"
+                            className="px-3 py-1.5 bg-status-error text-white rounded-lg text-sm hover:bg-status-error flex items-center gap-1.5"
                           >
                             <Trash2 className="w-4 h-4" />
                             Remove
@@ -2154,7 +2154,7 @@ export default function Admin() {
                         </label>
                         <button
                           onClick={() => setEditingPost({ ...editingPost, cover_image_url: '' })}
-                          className="px-3 py-1.5 bg-red-600 text-white rounded-lg text-sm hover:bg-red-700 flex items-center gap-1.5"
+                          className="px-3 py-1.5 bg-status-error text-white rounded-lg text-sm hover:bg-status-error flex items-center gap-1.5"
                         >
                           <Trash2 className="w-4 h-4" />
                           Remove
@@ -2343,7 +2343,7 @@ export default function Admin() {
                         </button>
                         <button
                           onClick={() => handleDeletePost(post.id)}
-                          className="p-2 text-secondary hover:text-red-400 hover:bg-subtle rounded-lg"
+                          className="p-2 text-secondary hover:text-status-error hover:bg-subtle rounded-lg"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -2407,7 +2407,7 @@ export default function Admin() {
                                 <Upload className="w-4 h-4 text-navy-950" />
                                 <input type="file" accept="image/*" className="hidden" onChange={e => e.target.files[0] && handleScreenshotUpload(feature.slug, slot, e.target.files[0])} />
                               </label>
-                              <button onClick={() => handleScreenshotDelete(feature.slug, slot)} className="p-2 bg-red-500 rounded-lg hover:bg-red-600 transition-colors">
+                              <button onClick={() => handleScreenshotDelete(feature.slug, slot)} className="p-2 bg-status-error rounded-lg hover:bg-status-error transition-colors">
                                 <Trash2 className="w-4 h-4 text-white" />
                               </button>
                             </div>

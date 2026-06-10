@@ -28,7 +28,7 @@ function formatDate(d) {
 function resultPill(scoreFor, scoreAgainst) {
   if (scoreFor == null || scoreAgainst == null) return null
   const w = scoreFor > scoreAgainst ? 'W' : scoreFor < scoreAgainst ? 'L' : 'D'
-  const colours = { W: 'bg-emerald-500/20 text-emerald-400', L: 'bg-red-500/20 text-red-400', D: 'bg-amber-500/20 text-amber-400' }
+  const colours = { W: 'bg-status-success-tint text-status-success', L: 'bg-status-error-tint text-status-error', D: 'bg-amber-500/20 text-amber-400' }
   return (
     <span className={`text-xs font-bold px-2 py-0.5 rounded ${colours[w]}`}>
       {w} {scoreFor}-{scoreAgainst}
@@ -203,7 +203,7 @@ export default function HoDOverview() {
                     : '/teacher/safeguarding'
                   return (
                     <Link key={si.id} to={href} className="flex items-center gap-3 p-2 rounded-lg hover:bg-subtle transition-colors">
-                      <Shield className="w-4 h-4 text-red-400" />
+                      <Shield className="w-4 h-4 text-status-error" />
                       <div className="flex-1 min-w-0">
                         <div className="text-sm text-primary truncate capitalize">{si.incident_type?.replace(/_/g, ' ')}</div>
                         <div className="text-xs text-tertiary">{si.severity} · {formatDate(si.created_at)}</div>

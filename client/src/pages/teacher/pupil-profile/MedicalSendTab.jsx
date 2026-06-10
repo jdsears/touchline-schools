@@ -43,7 +43,7 @@ export default function MedicalSendTab({ pupilId }) {
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <div className="bg-card rounded-xl border border-border-default p-5">
         <h2 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
-          <Stethoscope className="w-4 h-4 text-rose-400" />Medical
+          <Stethoscope className="w-4 h-4 text-status-error" />Medical
         </h2>
         {!m ? (
           <p className="text-sm text-tertiary text-center py-6">No medical notes recorded.</p>

@@ -727,7 +727,7 @@ export default function VideoAnalysis() {
                         </div>
                       ) : video?.status === 'processing' ? (
                         <div className="aspect-video bg-subtle rounded-lg flex flex-col items-center justify-center">
-                          <Loader2 className="w-12 h-12 text-caution-400 animate-spin mb-4" />
+                          <Loader2 className="w-12 h-12 text-status-warning animate-spin mb-4" />
                           <p className="text-white font-medium">Processing Video</p>
                           <p className="text-sm text-secondary">Mux is transcoding - usually 1-2 minutes</p>
                         </div>
@@ -815,9 +815,9 @@ export default function VideoAnalysis() {
                 </div>
 
                 {showCreditPurchase ? (
-                  <div className="rounded-xl border border-alert-500/30 bg-alert-500/5 p-4">
+                  <div className="rounded-xl border border-status-error bg-status-error-tint p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <AlertCircle className="w-5 h-5 text-alert-400" />
+                      <AlertCircle className="w-5 h-5 text-status-error" />
                       <h3 className="font-display font-semibold text-white">Analysis Limit Reached</h3>
                     </div>
                     <p className="text-sm text-secondary mb-4">You've used all your analyses this month. Purchase additional credits to keep analysing.</p>
@@ -896,7 +896,7 @@ export default function VideoAnalysis() {
                         <button
                           onClick={handleCancelAnalysis}
                           disabled={cancelling || !processingAnalysisId}
-                          className="px-3 py-2 rounded-lg bg-alert-500/20 text-alert-400 hover:bg-alert-500/30 border border-alert-500/30 transition-colors disabled:opacity-50"
+                          className="px-3 py-2 rounded-lg bg-status-error-tint text-status-error hover:bg-status-error-tint border border-status-error transition-colors disabled:opacity-50"
                           title="Stop analysis"
                         >
                           {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Square className="w-4 h-4" />}
@@ -938,9 +938,9 @@ export default function VideoAnalysis() {
                 <ul className="space-y-2 text-sm text-secondary">
                   <li className="flex items-start gap-2"><Target className="w-4 h-4 text-pitch-400 mt-0.5 shrink-0" /> Team shape and formation</li>
                   <li className="flex items-start gap-2"><Zap className="w-4 h-4 text-energy-400 mt-0.5 shrink-0" /> Key tactical moments</li>
-                  <li className="flex items-start gap-2"><Users className="w-4 h-4 text-blue-400 mt-0.5 shrink-0" /> Individual contributions</li>
-                  <li className="flex items-start gap-2"><AlertCircle className="w-4 h-4 text-caution-400 mt-0.5 shrink-0" /> Areas for improvement</li>
-                  <li className="flex items-start gap-2"><FileText className="w-4 h-4 text-alert-400 mt-0.5 shrink-0" /> Training recommendations</li>
+                  <li className="flex items-start gap-2"><Users className="w-4 h-4 text-status-info mt-0.5 shrink-0" /> Individual contributions</li>
+                  <li className="flex items-start gap-2"><AlertCircle className="w-4 h-4 text-status-warning mt-0.5 shrink-0" /> Areas for improvement</li>
+                  <li className="flex items-start gap-2"><FileText className="w-4 h-4 text-status-error mt-0.5 shrink-0" /> Training recommendations</li>
                 </ul>
               </div>
             </div>
@@ -1023,7 +1023,7 @@ export default function VideoAnalysis() {
                                     <option key={cat} value={cat}>{cat}</option>
                                   ))}
                                 </select>
-                                <button onClick={() => removeObservation(i)} className="ml-auto p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove">
+                                <button onClick={() => removeObservation(i)} className="ml-auto p-1 text-tertiary hover:text-status-error transition-colors" title="Remove">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1045,7 +1045,7 @@ export default function VideoAnalysis() {
                         <div className="space-y-2">
                           {latestAnalysis.observations.map((obs, i) => (
                             <div key={i} className="p-3 bg-subtle rounded-lg flex gap-3">
-                              <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded-full h-fit whitespace-nowrap">{obs.category}</span>
+                              <span className="px-2 py-0.5 bg-status-info-tint text-status-info text-xs rounded-full h-fit whitespace-nowrap">{obs.category}</span>
                               <div>
                                 <p className="text-sm text-primary">{obs.observation}</p>
                                 {obs.timestamp && <p className="text-xs text-tertiary mt-1">{obs.timestamp}</p>}
@@ -1080,7 +1080,7 @@ export default function VideoAnalysis() {
                                   className="input text-xs w-24"
                                   placeholder="Duration"
                                 />
-                                <button onClick={() => removeRecommendation(i)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove">
+                                <button onClick={() => removeRecommendation(i)} className="p-1 text-tertiary hover:text-status-error transition-colors" title="Remove">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1118,7 +1118,7 @@ export default function VideoAnalysis() {
                     {editing ? (
                       <div>
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <Users className="w-4 h-4 text-blue-400" /> Pupil Notes
+                          <Users className="w-4 h-4 text-status-info" /> Pupil Notes
                         </h3>
                         <div className="space-y-3">
                           {editData.player_feedback.map((pf, i) => (
@@ -1142,7 +1142,7 @@ export default function VideoAnalysis() {
                                   />
                                   <span className="text-xs text-tertiary">/10</span>
                                 </div>
-                                <button onClick={() => removePlayerFeedback(i)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove">
+                                <button onClick={() => removePlayerFeedback(i)} className="p-1 text-tertiary hover:text-status-error transition-colors" title="Remove">
                                   <Trash2 className="w-4 h-4" />
                                 </button>
                               </div>
@@ -1159,7 +1159,7 @@ export default function VideoAnalysis() {
                     ) : latestAnalysis.player_feedback?.length > 0 && (
                       <div>
                         <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                          <Users className="w-4 h-4 text-blue-400" /> Pupil Notes
+                          <Users className="w-4 h-4 text-status-info" /> Pupil Notes
                         </h3>
                         <div className="space-y-2">
                           {latestAnalysis.player_feedback.map((pf, i) => (
@@ -1250,7 +1250,7 @@ export default function VideoAnalysis() {
                         <button
                           onClick={handleCancelAnalysis}
                           disabled={cancelling || !processingAnalysisId}
-                          className="px-3 py-2 rounded-lg bg-alert-500/20 text-alert-400 hover:bg-alert-500/30 border border-alert-500/30 transition-colors disabled:opacity-50"
+                          className="px-3 py-2 rounded-lg bg-status-error-tint text-status-error hover:bg-status-error-tint border border-status-error transition-colors disabled:opacity-50"
                           title="Stop analysis"
                         >
                           {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Square className="w-4 h-4" />}
@@ -1279,8 +1279,8 @@ export default function VideoAnalysis() {
                 <Sparkles className="w-16 h-16 text-tertiary mx-auto mb-4" />
                 <h2 className="font-display text-xl font-semibold text-white mb-2">No Analysis Yet</h2>
                 {analysisError && !analysing ? (
-                  <div className="p-3 rounded-lg bg-alert-500/10 border border-alert-500/30 mb-4">
-                    <p className="text-sm text-alert-300">{analysisError}</p>
+                  <div className="p-3 rounded-lg bg-status-error-tint border border-status-error mb-4">
+                    <p className="text-sm text-status-error">{analysisError}</p>
                   </div>
                 ) : (
                   <p className="text-secondary mb-6">
@@ -1295,7 +1295,7 @@ export default function VideoAnalysis() {
                     <button
                       onClick={handleCancelAnalysis}
                       disabled={cancelling || !processingAnalysisId}
-                      className="px-3 py-2 rounded-lg bg-alert-500/20 text-alert-400 hover:bg-alert-500/30 border border-alert-500/30 transition-colors disabled:opacity-50"
+                      className="px-3 py-2 rounded-lg bg-status-error-tint text-status-error hover:bg-status-error-tint border border-status-error transition-colors disabled:opacity-50"
                       title="Stop analysis"
                     >
                       {cancelling ? <Loader2 className="w-4 h-4 animate-spin" /> : <Square className="w-4 h-4" />}
@@ -1344,7 +1344,7 @@ export default function VideoAnalysis() {
                       <div className="p-4">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="font-medium text-white line-clamp-1">{clip.title}</h3>
-                          <button onClick={() => handleDeleteClip(clip.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors">
+                          <button onClick={() => handleDeleteClip(clip.id)} className="p-1 text-tertiary hover:text-status-error transition-colors">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         </div>

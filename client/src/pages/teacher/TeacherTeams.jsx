@@ -14,7 +14,7 @@ const SPORT_ICONS = {
 const SPORT_COLORS = {
   football: 'bg-pitch-600/20 text-pitch-400',
   rugby: 'bg-amber-400/20 text-amber-400',
-  cricket: 'bg-blue-500/20 text-blue-400',
+  cricket: 'bg-status-info-tint text-status-info',
   hockey: 'bg-purple-500/20 text-purple-400',
   netball: 'bg-pink-500/20 text-pink-400',
 }

@@ -311,7 +311,7 @@ export default function HoDSSOSettings() {
                 {d}
                 <button
                   onClick={() => handleRemoveDomain(d)}
-                  className="ml-1 text-tertiary hover:text-alert-400"
+                  className="ml-1 text-tertiary hover:text-status-error"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>

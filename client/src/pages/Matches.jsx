@@ -33,9 +33,9 @@ import {
 } from 'lucide-react'
 
 const statusColors = {
-  available: 'bg-green-500/20 text-green-400 border-green-500/30',
-  unavailable: 'bg-red-500/20 text-red-400 border-red-500/30',
-  maybe: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  available: 'bg-status-success-tint text-status-success border-status-success',
+  unavailable: 'bg-status-error-tint text-status-error border-status-error',
+  maybe: 'bg-status-warning-tint text-status-warning border-status-warning',
   pending: 'bg-border-default text-secondary border-border-strong'
 }
 
@@ -240,8 +240,8 @@ export default function Matches() {
     if (!result) return ''
     const [home, away] = result.split('-').map(Number)
     if (home > away) return 'text-pitch-400 bg-pitch-500/10'
-    if (home < away) return 'text-alert-400 bg-alert-500/10'
-    return 'text-caution-400 bg-caution-500/10'
+    if (home < away) return 'text-status-error bg-status-error-tint'
+    return 'text-status-warning bg-status-warning-tint'
   }
 
   // New Match Form Modal
@@ -558,9 +558,9 @@ export default function Matches() {
     function getResultColor(fixture) {
       if (!fixture.result) return ''
       const [us, them] = fixture.result.split('-').map(Number)
-      if (us > them) return 'text-green-400'
-      if (us < them) return 'text-red-400'
-      return 'text-yellow-400'
+      if (us > them) return 'text-status-success'
+      if (us < them) return 'text-status-error'
+      return 'text-status-warning'
     }
 
     return (
@@ -612,7 +612,7 @@ export default function Matches() {
                           setImagePreview(null)
                           if (fileInputRef.current) fileInputRef.current.value = ''
                         }}
-                        className="absolute top-2 right-2 p-1.5 bg-red-500 rounded-full hover:bg-red-600"
+                        className="absolute top-2 right-2 p-1.5 bg-status-error rounded-full hover:bg-status-error"
                       >
                         <X className="w-4 h-4 text-white" />
                       </button>
@@ -702,7 +702,7 @@ export default function Matches() {
                         <div className="flex-1">
                           <div className="flex items-center gap-2">
                             <span className={`text-xs px-1.5 py-0.5 rounded ${
-                              fixture.isHome ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'
+                              fixture.isHome ? 'bg-status-success-tint text-status-success' : 'bg-status-info-tint text-status-info'
                             }`}>
                               {fixture.isHome ? 'H' : 'A'}
                             </span>
@@ -713,7 +713,7 @@ export default function Matches() {
                               </span>
                             )}
                             {fixture.status === 'postponed' && (
-                              <span className="text-xs px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">
+                              <span className="text-xs px-1.5 py-0.5 rounded bg-status-warning-tint text-status-warning">
                                 Postponed
                               </span>
                             )}
@@ -788,7 +788,7 @@ export default function Matches() {
         >
           <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Trash2 className="w-5 h-5 text-red-400" />
+              <Trash2 className="w-5 h-5 text-status-error" />
               <h2 className="text-xl font-display font-bold text-white">Delete Matches</h2>
             </div>
             <button
@@ -807,14 +807,14 @@ export default function Matches() {
             <button
               onClick={() => handleDeleteAll('upcoming')}
               disabled={upcomingMatches.length === 0}
-              className="w-full p-4 rounded-lg border border-border-strong hover:border-red-500/50 hover:bg-red-500/10 transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-4 rounded-lg border border-border-strong hover:border-status-error hover:bg-status-error-tint transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-white group-hover:text-red-400">Upcoming Fixtures</h3>
+                  <h3 className="font-medium text-white group-hover:text-status-error">Upcoming Fixtures</h3>
                   <p className="text-sm text-secondary">Delete all future matches without results</p>
                 </div>
-                <span className="text-lg font-bold text-tertiary group-hover:text-red-400">
+                <span className="text-lg font-bold text-tertiary group-hover:text-status-error">
                   {upcomingMatches.length}
                 </span>
               </div>
@@ -823,14 +823,14 @@ export default function Matches() {
             <button
               onClick={() => handleDeleteAll('results')}
               disabled={recentResults.length === 0}
-              className="w-full p-4 rounded-lg border border-border-strong hover:border-red-500/50 hover:bg-red-500/10 transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-4 rounded-lg border border-border-strong hover:border-status-error hover:bg-status-error-tint transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-white group-hover:text-red-400">Results</h3>
+                  <h3 className="font-medium text-white group-hover:text-status-error">Results</h3>
                   <p className="text-sm text-secondary">Delete all past matches with results</p>
                 </div>
-                <span className="text-lg font-bold text-tertiary group-hover:text-red-400">
+                <span className="text-lg font-bold text-tertiary group-hover:text-status-error">
                   {recentResults.length}
                 </span>
               </div>
@@ -839,14 +839,14 @@ export default function Matches() {
             <button
               onClick={() => handleDeleteAll('all')}
               disabled={matches.length === 0}
-              className="w-full p-4 rounded-lg border border-red-500/30 bg-red-500/10 hover:bg-red-500/20 transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full p-4 rounded-lg border border-status-error bg-status-error-tint hover:bg-status-error-tint transition text-left group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="font-medium text-red-400">Delete All Matches</h3>
-                  <p className="text-sm text-red-400/70">Permanently delete all fixtures and results</p>
+                  <h3 className="font-medium text-status-error">Delete All Matches</h3>
+                  <p className="text-sm text-status-error">Permanently delete all fixtures and results</p>
                 </div>
-                <span className="text-lg font-bold text-red-400">
+                <span className="text-lg font-bold text-status-error">
                   {matches.length}
                 </span>
               </div>
@@ -888,7 +888,7 @@ export default function Matches() {
             <div>
               <div className="flex items-center gap-2">
                 <span className={`text-xs px-2 py-0.5 rounded ${
-                  match.is_home ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'
+                  match.is_home ? 'bg-status-success-tint text-status-success' : 'bg-status-info-tint text-status-info'
                 }`}>
                   {match.is_home ? 'H' : 'A'}
                 </span>
@@ -910,8 +910,8 @@ export default function Matches() {
           <div className="flex items-center gap-3">
             {showResult && match.result ? (
               <div className={`text-xl font-bold ${
-                match.goals_for > match.goals_against ? 'text-green-400' :
-                match.goals_for < match.goals_against ? 'text-red-400' : 'text-yellow-400'
+                match.goals_for > match.goals_against ? 'text-status-success' :
+                match.goals_for < match.goals_against ? 'text-status-error' : 'text-status-warning'
               }`}>
                 {match.is_home ? match.goals_for : match.goals_against} - {match.is_home ? match.goals_against : match.goals_for}
               </div>
@@ -927,7 +927,7 @@ export default function Matches() {
               <button
                 onClick={(e) => handleDeleteMatch(match.id, e)}
                 disabled={deletingMatch === match.id}
-                className="p-2 text-tertiary hover:text-red-400 hover:bg-red-500/10 rounded-lg transition"
+                className="p-2 text-tertiary hover:text-status-error hover:bg-status-error-tint rounded-lg transition"
                 title="Delete match"
               >
                 {deletingMatch === match.id ? (
@@ -982,17 +982,17 @@ export default function Matches() {
 
         {/* Availability Summary */}
         <div className="grid grid-cols-4 gap-2 mb-4">
-          <div className="text-center p-2 rounded-lg bg-green-500/10 border border-green-500/20">
-            <p className="text-xl font-bold text-green-400">{summary.available}</p>
-            <p className="text-xs text-green-400/70">Yes</p>
+          <div className="text-center p-2 rounded-lg bg-status-success-tint border border-status-success">
+            <p className="text-xl font-bold text-status-success">{summary.available}</p>
+            <p className="text-xs text-status-success">Yes</p>
           </div>
-          <div className="text-center p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-            <p className="text-xl font-bold text-yellow-400">{summary.maybe}</p>
-            <p className="text-xs text-yellow-400/70">Maybe</p>
+          <div className="text-center p-2 rounded-lg bg-status-warning-tint border border-status-warning">
+            <p className="text-xl font-bold text-status-warning">{summary.maybe}</p>
+            <p className="text-xs text-status-warning">Maybe</p>
           </div>
-          <div className="text-center p-2 rounded-lg bg-red-500/10 border border-red-500/20">
-            <p className="text-xl font-bold text-red-400">{summary.unavailable}</p>
-            <p className="text-xs text-red-400/70">No</p>
+          <div className="text-center p-2 rounded-lg bg-status-error-tint border border-status-error">
+            <p className="text-xl font-bold text-status-error">{summary.unavailable}</p>
+            <p className="text-xs text-status-error">No</p>
           </div>
           <div className="text-center p-2 rounded-lg bg-border-default/50 border border-border-strong">
             <p className="text-xl font-bold text-secondary">{summary.pending}</p>
@@ -1126,7 +1126,7 @@ export default function Matches() {
               {matches.length > 0 && (
                 <button
                   onClick={() => setShowDeleteAllModal(true)}
-                  className="btn-secondary text-red-400 hover:bg-red-500/10 hover:border-red-500/30"
+                  className="btn-secondary text-status-error hover:bg-status-error-tint hover:border-status-error"
                 >
                   <Trash2 className="w-5 h-5" />
                   <span className="hidden sm:inline">Delete...</span>

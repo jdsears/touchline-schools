@@ -14,7 +14,7 @@ function expiryStatus(dateStr) {
   const d = new Date(dateStr)
   const now = new Date()
   const days = Math.ceil((d - now) / 86400000)
-  if (days < 0) return { label: 'Expired', color: 'text-red-400' }
+  if (days < 0) return { label: 'Expired', color: 'text-status-error' }
   if (days < 60) return { label: `Expires in ${days}d`, color: 'text-amber-400' }
   return null
 }

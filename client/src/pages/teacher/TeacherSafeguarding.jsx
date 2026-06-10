@@ -133,7 +133,7 @@ export default function TeacherSafeguarding() {
 
 function ActionCard({ icon: Icon, title, description, buttonLabel, color, href }) {
   const colors = {
-    alert: 'bg-alert-600/20 text-alert-400',
+    alert: 'bg-status-error-tint text-status-error',
     pitch: 'bg-pitch-600/20 text-pitch-400',
     amber: 'bg-amber-400/20 text-amber-400',
   }
@@ -147,7 +147,7 @@ function ActionCard({ icon: Icon, title, description, buttonLabel, color, href }
       <Link
         to={href}
         className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-          color === 'alert' ? 'text-alert-400 hover:text-alert-300' : 'text-pitch-400 hover:text-pitch-300'
+          color === 'alert' ? 'text-status-error hover:text-status-error' : 'text-pitch-400 hover:text-pitch-300'
         } transition-colors`}
       >
         {buttonLabel} <ChevronRight className="w-3.5 h-3.5" />

@@ -13,7 +13,7 @@ function ratingToColor(score) {
   if (score >= 10) return 'text-pitch-500'
   if (score > -10) return 'text-secondary'
   if (score > -30) return 'text-energy-400'
-  return 'text-alert-400'
+  return 'text-status-error'
 }
 
 function ImprovementBadge({ score }) {
@@ -235,7 +235,7 @@ export default function SeasonDevelopment() {
           label="Achievements"
           value={summary.total_achievements || 0}
           sub={`${summary.total_potm || 0} POTM awards`}
-          color="text-caution-400"
+          color="text-status-warning"
         />
       </div>
 
@@ -269,12 +269,12 @@ export default function SeasonDevelopment() {
               </ReviewSection>
             )}
             {aiReview.breakthrough_potential && (
-              <ReviewSection icon={Star} title="Breakthrough Potential" color="text-caution-400">
+              <ReviewSection icon={Star} title="Breakthrough Potential" color="text-status-warning">
                 {aiReview.breakthrough_potential}
               </ReviewSection>
             )}
             {aiReview.needs_support && (
-              <ReviewSection icon={Shield} title="Needs Extra Support" color="text-alert-400">
+              <ReviewSection icon={Shield} title="Needs Extra Support" color="text-status-error">
                 {aiReview.needs_support}
               </ReviewSection>
             )}
@@ -361,7 +361,7 @@ function PlayerRow({ pupil, expanded, onToggle }) {
           {training.attendance_rate != null ? (
             <span className={`text-sm font-medium ${
               training.attendance_rate >= 80 ? 'text-pitch-400' :
-              training.attendance_rate >= 60 ? 'text-energy-400' : 'text-alert-400'
+              training.attendance_rate >= 60 ? 'text-energy-400' : 'text-status-error'
             }`}>
               {Math.round(training.attendance_rate)}%
             </span>
@@ -380,7 +380,7 @@ function PlayerRow({ pupil, expanded, onToggle }) {
         <td className="px-3 py-3 text-center">
           <div className="flex items-center justify-center gap-1">
             {(pupil.match?.potm_awards > 0) && (
-              <span className="text-xs bg-caution-500/20 text-caution-400 px-1.5 py-0.5 rounded" title="Pupil of the Match">
+              <span className="text-xs bg-status-warning-tint text-status-warning px-1.5 py-0.5 rounded" title="Pupil of the Match">
                 {pupil.match.potm_awards} POTM
               </span>
             )}
@@ -479,7 +479,7 @@ function PlayerExpandedDetail({ pupil }) {
             <div className="space-y-1">
               {pupil.achievements.list.map((a, i) => (
                 <div key={i} className="flex items-center gap-2 text-sm">
-                  <Trophy className="w-3 h-3 text-caution-400 shrink-0" />
+                  <Trophy className="w-3 h-3 text-status-warning shrink-0" />
                   <span className="text-secondary truncate">{a.title || a.type}</span>
                 </div>
               ))}
@@ -489,8 +489,8 @@ function PlayerExpandedDetail({ pupil }) {
           )}
           {pupil.match?.potm_awards > 0 && (
             <div className="flex items-center gap-2 text-sm mt-1">
-              <Star className="w-3 h-3 text-caution-400" />
-              <span className="text-caution-400 font-medium">{pupil.match.potm_awards}x Pupil of the Match</span>
+              <Star className="w-3 h-3 text-status-warning" />
+              <span className="text-status-warning font-medium">{pupil.match.potm_awards}x Pupil of the Match</span>
             </div>
           )}
         </div>

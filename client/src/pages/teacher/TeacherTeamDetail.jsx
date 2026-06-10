@@ -222,7 +222,7 @@ function MatchRow({ match, showResult }) {
       </div>
       {showResult && hasResult && (
         <span className={`text-sm font-bold px-2 py-1 rounded ${
-          won ? 'text-green-400' : lost ? 'text-red-400' : 'text-secondary'
+          won ? 'text-status-success' : lost ? 'text-status-error' : 'text-secondary'
         }`}>
           {match.score_for} - {match.score_against}
         </span>

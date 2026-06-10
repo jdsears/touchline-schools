@@ -6,14 +6,14 @@ import { ArrowLeft, Search, Download } from 'lucide-react'
 const STATUS_BADGE = {
   draft: 'bg-border-default text-secondary',
   submitted: 'bg-amber-400/20 text-amber-400',
-  published: 'bg-blue-500/20 text-blue-400',
+  published: 'bg-status-info-tint text-status-info',
 }
 
 const WINDOW_STATUS_BADGE = {
   draft: 'bg-border-default text-secondary',
   open: 'bg-pitch-600/20 text-pitch-400',
   closed: 'bg-amber-400/20 text-amber-400',
-  published: 'bg-blue-500/20 text-blue-400',
+  published: 'bg-status-info-tint text-status-info',
 }
 
 function exportCSV(reports) {

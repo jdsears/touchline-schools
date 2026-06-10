@@ -5,7 +5,7 @@ import { Shield, Loader2, AlertTriangle, CheckCircle2, Eye } from 'lucide-react'
 const FLAG_META = {
   monitoring: { colour: 'bg-amber-500/20 text-amber-400', label: 'Monitoring' },
   concern:    { colour: 'bg-orange-500/20 text-orange-400', label: 'Concern' },
-  incident:   { colour: 'bg-red-500/20 text-red-400', label: 'Incident' },
+  incident:   { colour: 'bg-status-error-tint text-status-error', label: 'Incident' },
   resolved:   { colour: 'bg-border-default text-secondary', label: 'Resolved' },
 }
 
@@ -56,7 +56,7 @@ export default function SafeguardingTab({ pupilId }) {
 
       <div className="bg-card rounded-xl border border-border-default p-5">
         <h2 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
-          <AlertTriangle className="w-4 h-4 text-red-400" />Open flags ({open.length})
+          <AlertTriangle className="w-4 h-4 text-status-error" />Open flags ({open.length})
         </h2>
         {open.length === 0 ? (
           <p className="text-sm text-tertiary text-center py-4">No open safeguarding flags.</p>

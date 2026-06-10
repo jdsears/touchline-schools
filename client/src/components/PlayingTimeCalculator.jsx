@@ -270,15 +270,15 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
             <>
               {/* Summary */}
               <div className={`p-3 rounded-lg flex items-center gap-3 ${
-                result.allEqual ? 'bg-green-500/10 border border-green-500/20' : 'bg-amber-500/10 border border-amber-500/20'
+                result.allEqual ? 'bg-status-success-tint border border-status-success' : 'bg-amber-500/10 border border-amber-500/20'
               }`}>
                 {result.allEqual ? (
-                  <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                  <Check className="w-5 h-5 text-status-success flex-shrink-0" />
                 ) : (
                   <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
                 )}
                 <div className="text-sm">
-                  <p className={result.allEqual ? 'text-green-400' : 'text-amber-400'}>
+                  <p className={result.allEqual ? 'text-status-success' : 'text-amber-400'}>
                     {result.allEqual
                       ? `Equal playing time: ~${result.idealMinutesPerPlayer} min each (${Math.round((result.idealMinutesPerPlayer / matchDuration) * 100)}%)`
                       : `Range: ${result.minMinutes}-${result.maxMinutes} min (target: ~${result.idealMinutesPerPlayer} min)`
@@ -398,9 +398,9 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                     <div className="col-span-3 text-center text-secondary">{slot.totalMinutes} min</div>
                     <div className="col-span-2 text-center">
                       <span className={`px-1.5 py-0.5 rounded text-xs ${
-                        slot.percentage >= 45 ? 'bg-green-500/20 text-green-400' :
+                        slot.percentage >= 45 ? 'bg-status-success-tint text-status-success' :
                         slot.percentage >= 30 ? 'bg-amber-500/20 text-amber-400' :
-                        'bg-red-500/20 text-red-400'
+                        'bg-status-error-tint text-status-error'
                       }`}>
                         {slot.percentage}%
                       </span>

@@ -283,7 +283,7 @@ export default function FilmRoom() {
                 <ChevronDown className="w-4 h-4" />
               </button>
               {!s.is_predefined && (
-                <button onClick={() => handleDeleteSection(s)} className="p-1 text-alert-400 hover:text-alert-300">
+                <button onClick={() => handleDeleteSection(s)} className="p-1 text-status-error hover:text-status-error">
                   <Trash2 className="w-4 h-4" />
                 </button>
               )}
@@ -319,7 +319,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
         ) : (
           <div className="flex items-center justify-center h-full">
             {isProcessing ? (
-              <Loader2 className="w-8 h-8 text-caution-400 animate-spin" />
+              <Loader2 className="w-8 h-8 text-status-warning animate-spin" />
             ) : (
               <Film className="w-8 h-8 text-tertiary" />
             )}
@@ -336,13 +336,13 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
           </div>
         )}
         {video.source_type === 'youtube' && (
-          <div className="absolute bottom-2 left-2 bg-red-600 text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
+          <div className="absolute bottom-2 left-2 bg-status-error text-white text-xs px-2 py-0.5 rounded-full flex items-center gap-1">
             <Youtube className="w-3 h-3" /> YouTube
           </div>
         )}
         {isProcessing && (
           <div className="absolute inset-0 bg-card/70 flex items-center justify-center">
-            <span className="text-sm text-caution-400">Processing...</span>
+            <span className="text-sm text-status-warning">Processing...</span>
           </div>
         )}
       </div>
@@ -372,7 +372,7 @@ function VideoCard({ video, onToggleVisibility, onToggleHighlight, onDelete, onE
             <button onClick={onToggleVisibility} className="p-1.5 text-secondary hover:text-white" title={video.is_visible ? 'Hide' : 'Show'}>
               {video.is_visible ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
             </button>
-            <button onClick={onDelete} className="p-1.5 text-secondary hover:text-alert-400" title="Delete">
+            <button onClick={onDelete} className="p-1.5 text-secondary hover:text-status-error" title="Delete">
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -505,7 +505,7 @@ function AddVideoModal({ sections, teamId, onClose, onAdded }) {
           {mode === 'upload' && (
             <div>
               {!title.trim() || !sectionId ? (
-                <p className="text-sm text-caution-400">Fill in title and section above first.</p>
+                <p className="text-sm text-status-warning">Fill in title and section above first.</p>
               ) : (
                 <VideoUpload
                   teamId={teamId}

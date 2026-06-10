@@ -57,7 +57,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
         <h3 className="font-semibold text-primary flex items-center gap-2">
           <FileText className="w-4 h-4 text-purple-400" /> Public Match Report
           {status === 'draft' && <span className="text-[10px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded">Draft</span>}
-          {status === 'published' && <span className="text-[10px] bg-green-500/20 text-green-400 px-1.5 py-0.5 rounded">Published</span>}
+          {status === 'published' && <span className="text-[10px] bg-status-success-tint text-status-success px-1.5 py-0.5 rounded">Published</span>}
         </h3>
         <div className="flex gap-1.5">
           {!editing && (
@@ -67,7 +67,7 @@ export default function PublicReportPanel({ matchId, reportText, reportStatus })
                 {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
               </button>
               <button onClick={togglePublish}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${status === 'published' ? 'bg-green-500/20 text-green-400' : 'bg-pitch-600 text-on-dark hover:bg-pitch-500'}`}>
+                className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${status === 'published' ? 'bg-status-success-tint text-status-success' : 'bg-pitch-600 text-on-dark hover:bg-pitch-500'}`}>
                 {status === 'published' ? <><X className="w-3 h-3" /> Unpublish</> : <><Send className="w-3 h-3" /> Publish</>}
               </button>
             </>

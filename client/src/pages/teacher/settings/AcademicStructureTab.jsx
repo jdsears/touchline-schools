@@ -117,7 +117,7 @@ export default function AcademicStructureTab({ access }) {
               <span key={h} className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-400/10 border border-amber-400/30 text-amber-400 rounded-lg text-sm">
                 {h}
                 {canEdit && (
-                  <button onClick={() => removeHouse(h)} className="hover:text-red-400 transition-colors">
+                  <button onClick={() => removeHouse(h)} className="hover:text-status-error transition-colors">
                     <X className="w-3 h-3" />
                   </button>
                 )}

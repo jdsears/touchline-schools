@@ -13,7 +13,7 @@ function formatDate(d) {
 function resultBadge(f) {
   if (f.score_for == null || f.score_against == null) return null
   const w = f.score_for > f.score_against ? 'W' : f.score_for < f.score_against ? 'L' : 'D'
-  const colours = { W: 'bg-green-100 text-green-800', L: 'bg-red-100 text-red-800', D: 'bg-amber-100 text-amber-800' }
+  const colours = { W: 'bg-status-success-tint text-status-success', L: 'bg-status-error-tint text-status-error', D: 'bg-amber-100 text-amber-800' }
   return { label: w, score: `${f.score_for} - ${f.score_against}`, cls: colours[w] }
 }
 

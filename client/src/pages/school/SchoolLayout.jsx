@@ -228,7 +228,7 @@ export default function ClubLayout() {
               </div>
               <button
                 onClick={logout}
-                className="p-2 text-secondary hover:text-alert-400 transition-colors"
+                className="p-2 text-secondary hover:text-status-error transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-4 h-4" />

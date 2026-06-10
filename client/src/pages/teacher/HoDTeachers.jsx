@@ -43,7 +43,7 @@ const ROLE_BADGE_COLORS = {
   owner: 'bg-pitch-600/20 text-pitch-400',
   school_admin: 'bg-amber-500/20 text-amber-400',
   head_of_pe: 'bg-amber-500/20 text-amber-400',
-  head_of_sport: 'bg-blue-500/20 text-blue-400',
+  head_of_sport: 'bg-status-info-tint text-status-info',
   teacher: 'bg-border-default text-secondary',
   read_only: 'bg-subtle text-tertiary',
   admin: 'bg-amber-500/20 text-amber-400',
@@ -206,7 +206,7 @@ export default function HoDTeachers() {
                         <span className="text-xs text-secondary">({s.role?.replace(/_/g, ' ')})</span>
                         <button
                           onClick={() => handleRemoveSport(teacher.id, s.sport, teacher.name)}
-                          className="ml-1 text-tertiary hover:text-alert-400"
+                          className="ml-1 text-tertiary hover:text-status-error"
                         >
                           <X className="w-3.5 h-3.5" />
                         </button>

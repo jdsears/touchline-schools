@@ -69,10 +69,10 @@ export default function HoDConsent() {
 
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <SummaryCard label="Active Consents" value={totalGranted} icon={CheckCircle} color="text-green-400 bg-green-500/10" />
+        <SummaryCard label="Active Consents" value={totalGranted} icon={CheckCircle} color="text-status-success bg-status-success-tint" />
         <SummaryCard label="Pending" value={totalPending} icon={Clock} color="text-amber-400 bg-amber-500/10" />
         <SummaryCard label="Expiring (30 days)" value={totalExpiring} icon={AlertTriangle} color="text-orange-400 bg-orange-500/10" />
-        <SummaryCard label="Expired" value={totalExpired} icon={XCircle} color="text-red-400 bg-red-500/10" />
+        <SummaryCard label="Expired" value={totalExpired} icon={XCircle} color="text-status-error bg-status-error-tint" />
       </div>
 
       {/* Per-type breakdown */}
@@ -97,9 +97,9 @@ export default function HoDConsent() {
                 return (
                   <tr key={row.consent_type_id} className="border-b border-border-subtle hover:bg-subtle">
                     <td className="px-4 py-3 text-primary font-medium">{row.name}</td>
-                    <td className="px-4 py-3 text-center text-green-400">{row.granted || 0}</td>
+                    <td className="px-4 py-3 text-center text-status-success">{row.granted || 0}</td>
                     <td className="px-4 py-3 text-center text-amber-400">{row.pending || 0}</td>
-                    <td className="px-4 py-3 text-center text-red-400">{row.refused || 0}</td>
+                    <td className="px-4 py-3 text-center text-status-error">{row.refused || 0}</td>
                     <td className="px-4 py-3 text-center">
                       {parseInt(row.expiring_soon || 0) > 0
                         ? <span className="text-orange-400">{row.expiring_soon}</span>
@@ -107,7 +107,7 @@ export default function HoDConsent() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       {parseInt(row.expired || 0) > 0
-                        ? <span className="text-red-400">{row.expired}</span>
+                        ? <span className="text-status-error">{row.expired}</span>
                         : <span className="text-tertiary">0</span>}
                     </td>
                     <td className="px-4 py-3 text-right">
@@ -115,7 +115,7 @@ export default function HoDConsent() {
                         <div className="w-16 h-1.5 bg-border-default rounded-full overflow-hidden">
                           <div className="h-full bg-pitch-500 rounded-full" style={{ width: `${coverage}%` }} />
                         </div>
-                        <span className={`text-xs ${coverage >= 80 ? 'text-green-400' : coverage >= 50 ? 'text-amber-400' : 'text-red-400'}`}>
+                        <span className={`text-xs ${coverage >= 80 ? 'text-status-success' : coverage >= 50 ? 'text-amber-400' : 'text-status-error'}`}>
                           {coverage}%
                         </span>
                       </div>

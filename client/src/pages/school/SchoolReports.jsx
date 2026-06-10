@@ -123,7 +123,7 @@ function SeasonSummarySection({ schoolId }) {
     <div className="bg-card border border-border-default rounded-xl overflow-hidden">
       <div className="px-5 py-4 border-b border-border-default flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-blue-600/10 text-blue-400">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-status-info-tint text-status-info">
             <FileText className="w-4.5 h-4.5" />
           </div>
           <div>
@@ -300,7 +300,7 @@ function GrantHelperSection({ schoolId }) {
     <div className="bg-card border border-border-default rounded-xl overflow-hidden">
       <div className="px-5 py-4 border-b border-border-default flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-emerald-600/10 text-emerald-400">
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-status-success-tint text-status-success">
             <Landmark className="w-4.5 h-4.5" />
           </div>
           <div>
@@ -414,7 +414,7 @@ function GrantHelperSection({ schoolId }) {
                         <span className="text-sm font-medium text-primary truncate">
                           {draft.title || grantLabel}
                         </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-emerald-600/20 text-emerald-400 border border-emerald-500/30">
+                        <span className="text-xs px-2 py-0.5 rounded-full bg-status-success-tint text-status-success border border-status-success">
                           {grantLabel}
                         </span>
                       </div>
@@ -582,7 +582,7 @@ function ComplianceAnalysisSection({ schoolId }) {
               <div className="flex items-center gap-3 p-3 bg-subtle rounded-lg">
                 <div className={`text-2xl font-bold ${
                   analysis.score >= 80 ? 'text-pitch-400' :
-                  analysis.score >= 50 ? 'text-amber-400' : 'text-red-400'
+                  analysis.score >= 50 ? 'text-amber-400' : 'text-status-error'
                 }`}>
                   {analysis.score}%
                 </div>
@@ -623,8 +623,8 @@ function ComplianceAnalysisSection({ schoolId }) {
               <div className="space-y-2">
                 <h3 className="text-sm font-medium text-primary">Compliance Gaps</h3>
                 {gaps.map((gap, i) => (
-                  <div key={i} className="flex items-start gap-2 p-3 bg-red-500/5 border border-red-500/20 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-red-400 mt-0.5 shrink-0" />
+                  <div key={i} className="flex items-start gap-2 p-3 bg-status-error-tint border border-status-error rounded-lg">
+                    <AlertCircle className="w-4 h-4 text-status-error mt-0.5 shrink-0" />
                     <div>
                       <p className="text-sm text-primary font-medium">{gap.title || gap}</p>
                       {gap.description && (

@@ -324,7 +324,7 @@ export default function Onboarding() {
                       <option value="coach">Teacher</option>
                     </select>
                     {teachers.length > 1 && (
-                      <button onClick={() => removeTeacherRow(i)} className="p-1.5 text-tertiary hover:text-alert-400">
+                      <button onClick={() => removeTeacherRow(i)} className="p-1.5 text-tertiary hover:text-status-error">
                         <X className="w-4 h-4" />
                       </button>
                     )}
@@ -395,7 +395,7 @@ export default function Onboarding() {
                         </div>
                         <button
                           onClick={e => { e.preventDefault(); setCsvFile(null); setImportResult(null) }}
-                          className="ml-2 p-1 text-secondary hover:text-alert-400"
+                          className="ml-2 p-1 text-secondary hover:text-status-error"
                         >
                           <X className="w-4 h-4" />
                         </button>

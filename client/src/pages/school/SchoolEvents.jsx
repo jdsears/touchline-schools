@@ -10,9 +10,9 @@ import {
 import toast from 'react-hot-toast'
 
 const EVENT_TYPES = [
-  { value: 'camp', label: 'Camp', icon: Tent, color: 'bg-emerald-600/20 text-emerald-400' },
+  { value: 'camp', label: 'Camp', icon: Tent, color: 'bg-status-success-tint text-status-success' },
   { value: 'tournament', label: 'Tournament', icon: Trophy, color: 'bg-amber-600/20 text-amber-400' },
-  { value: 'trial', label: 'Trial Day', icon: Flag, color: 'bg-blue-600/20 text-blue-400' },
+  { value: 'trial', label: 'Trial Day', icon: Flag, color: 'bg-status-info-tint text-status-info' },
   { value: 'social', label: 'Social Event', icon: Star, color: 'bg-purple-600/20 text-purple-400' },
   { value: 'fundraiser', label: 'Fundraiser', icon: DollarSign, color: 'bg-pink-600/20 text-pink-400' },
   { value: 'other', label: 'Other', icon: CalendarDays, color: 'bg-border-default text-secondary' },
@@ -29,7 +29,7 @@ const FILTER_TABS = [
 const STATUS_BADGES = {
   published: { label: 'Published', className: 'bg-pitch-600/20 text-pitch-400' },
   draft: { label: 'Draft', className: 'bg-border-default text-secondary' },
-  cancelled: { label: 'Cancelled', className: 'bg-red-500/20 text-red-400' },
+  cancelled: { label: 'Cancelled', className: 'bg-status-error-tint text-status-error' },
 }
 
 const emptyForm = {
@@ -571,7 +571,7 @@ export default function ClubEvents() {
                 {form.custom_fields.map((field, idx) => (
                   <div key={idx} className="flex items-center gap-1.5 bg-subtle px-3 py-1.5 rounded-lg text-sm text-secondary">
                     <span>{field.label}</span>
-                    <button type="button" onClick={() => removeCustomField(idx)} className="text-tertiary hover:text-red-400">
+                    <button type="button" onClick={() => removeCustomField(idx)} className="text-tertiary hover:text-status-error">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -689,7 +689,7 @@ function EventCard({
 
   return (
     <div className={`bg-card border rounded-xl overflow-hidden ${
-      event.status === 'cancelled' ? 'border-red-500/20 opacity-75' : 'border-border-default'
+      event.status === 'cancelled' ? 'border-status-error opacity-75' : 'border-border-default'
     }`}>
       {/* Event header */}
       <div className="flex items-start gap-4 px-5 py-4">
@@ -764,7 +764,7 @@ function EventCard({
           <div className="w-full h-1.5 bg-subtle rounded-full overflow-hidden">
             <div
               className={`h-full rounded-full transition-all ${
-                registrationCount >= event.max_participants ? 'bg-red-500' :
+                registrationCount >= event.max_participants ? 'bg-status-error' :
                 registrationCount >= event.max_participants * 0.8 ? 'bg-amber-500' :
                 'bg-pitch-500'
               }`}
@@ -787,7 +787,7 @@ function EventCard({
                 <Download className="w-3.5 h-3.5" /> Export CSV
               </button>
               {event.status !== 'cancelled' && (
-                <button onClick={onCancel} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-red-600/20 text-secondary hover:text-red-400 rounded-lg text-xs transition-colors">
+                <button onClick={onCancel} className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-status-error-tint text-secondary hover:text-status-error rounded-lg text-xs transition-colors">
                   <Trash2 className="w-3.5 h-3.5" /> Cancel Event
                 </button>
               )}

@@ -127,7 +127,7 @@ export default function ClubSafeguardingPeople() {
     const now = new Date()
     const expiry = new Date(record.dbs_expiry)
     const daysUntil = Math.ceil((expiry - now) / (1000 * 60 * 60 * 24))
-    if (daysUntil < 0) return { label: 'Expired', color: 'text-red-400', bg: 'bg-red-500/20', Icon: ShieldX }
+    if (daysUntil < 0) return { label: 'Expired', color: 'text-status-error', bg: 'bg-status-error-tint', Icon: ShieldX }
     if (daysUntil <= 30) return { label: `${daysUntil}d left`, color: 'text-amber-400', bg: 'bg-amber-500/20', Icon: ShieldAlert }
     return { label: 'Valid', color: 'text-pitch-400', bg: 'bg-pitch-600/20', Icon: ShieldCheck }
   }

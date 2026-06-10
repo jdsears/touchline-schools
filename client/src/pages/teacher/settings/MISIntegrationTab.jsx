@@ -54,8 +54,8 @@ export default function MISIntegrationTab() {
   if (loading) return <div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>
 
   const statusIcon = !config?.provider ? null
-    : config.lastSyncStatus === 'success' ? <CheckCircle className="w-5 h-5 text-green-400" />
-    : config.lastSyncStatus === 'error' ? <XCircle className="w-5 h-5 text-red-400" />
+    : config.lastSyncStatus === 'success' ? <CheckCircle className="w-5 h-5 text-status-success" />
+    : config.lastSyncStatus === 'error' ? <XCircle className="w-5 h-5 text-status-error" />
     : <Clock className="w-5 h-5 text-secondary" />
 
   return (
@@ -68,7 +68,7 @@ export default function MISIntegrationTab() {
       </div>
 
       {config?.consecutiveFailures >= 3 && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 flex items-center gap-2 text-sm text-red-400">
+        <div className="bg-status-error-tint border border-status-error rounded-xl p-3 flex items-center gap-2 text-sm text-status-error">
           <AlertTriangle className="w-4 h-4 shrink-0" /> {config.consecutiveFailures} consecutive sync failures. Check your API key and endpoint.
         </div>
       )}
@@ -132,7 +132,7 @@ export default function MISIntegrationTab() {
           <div className="space-y-2">
             {history.map(h => (
               <div key={h.id} className="flex items-center gap-3 text-sm py-2 border-b border-border-subtle last:border-0">
-                {h.status === 'success' ? <CheckCircle className="w-4 h-4 text-green-400 shrink-0" /> : <XCircle className="w-4 h-4 text-red-400 shrink-0" />}
+                {h.status === 'success' ? <CheckCircle className="w-4 h-4 text-status-success shrink-0" /> : <XCircle className="w-4 h-4 text-status-error shrink-0" />}
                 <div className="flex-1">
                   <span className="text-secondary">{new Date(h.started_at).toLocaleString('en-GB')}</span>
                   {h.is_dry_run && <span className="ml-2 text-[10px] bg-border-default text-secondary px-1.5 py-0.5 rounded">Dry run</span>}
@@ -141,7 +141,7 @@ export default function MISIntegrationTab() {
                   {JSON.parse(typeof h.summary === 'string' ? h.summary : JSON.stringify(h.summary)).pupils?.added || 0} added,
                   {' '}{JSON.parse(typeof h.summary === 'string' ? h.summary : JSON.stringify(h.summary)).pupils?.updated || 0} updated
                 </span>}
-                {h.error_message && <span className="text-xs text-red-400 truncate max-w-[200px]">{h.error_message}</span>}
+                {h.error_message && <span className="text-xs text-status-error truncate max-w-[200px]">{h.error_message}</span>}
               </div>
             ))}
           </div>

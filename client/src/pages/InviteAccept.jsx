@@ -70,7 +70,7 @@ export default function InviteAccept() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="card p-8 max-w-md text-center">
-          <AlertCircle className="w-12 h-12 text-alert-400 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-status-error mx-auto mb-4" />
           <h1 className="font-display text-xl font-bold text-white mb-2">Invalid Invite</h1>
           <p className="text-secondary mb-6">{error}</p>
           <Link to="/login" className="btn-primary">
@@ -144,7 +144,7 @@ export default function InviteAccept() {
           </div>
           
           {error && (
-            <p className="text-alert-400 text-sm">{error}</p>
+            <p className="text-status-error text-sm">{error}</p>
           )}
           
           <button type="submit" disabled={accepting} className="btn-primary w-full">

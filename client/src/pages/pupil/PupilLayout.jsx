@@ -102,7 +102,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding
           </div>
           <button
             onClick={logout}
-            className="p-1.5 text-navy-400 hover:text-alert-400 transition-colors"
+            className="p-1.5 text-navy-400 hover:text-status-error transition-colors"
             title="Log out"
           >
             <LogOut className="w-4 h-4" />

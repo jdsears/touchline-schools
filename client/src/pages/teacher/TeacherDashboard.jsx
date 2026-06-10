@@ -27,7 +27,7 @@ function fmtDate(d) {
 function resultBadge(r) {
   if (!r || r.score_for == null) return null
   const w = r.score_for > r.score_against ? 'W' : r.score_for < r.score_against ? 'L' : 'D'
-  const c = { W: 'text-emerald-400', L: 'text-red-400', D: 'text-amber-400' }
+  const c = { W: 'text-status-success', L: 'text-status-error', D: 'text-amber-400' }
   return <span className={`text-xs font-bold ${c[w]}`}>{w} {r.score_for}-{r.score_against}</span>
 }
 

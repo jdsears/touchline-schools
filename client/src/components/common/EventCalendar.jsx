@@ -155,11 +155,11 @@ export default function EventCalendar({
                               ? event.data.result?.includes('-') && parseInt(event.data.result.split('-')[0]) > parseInt(event.data.result.split('-')[1])
                                 ? 'bg-pitch-500/30 text-pitch-300' // Win
                                 : parseInt(event.data.result?.split('-')[0]) < parseInt(event.data.result?.split('-')[1])
-                                  ? 'bg-alert-500/30 text-alert-300' // Loss
+                                  ? 'bg-status-error-tint text-status-error' // Loss
                                   : 'bg-navy-600 text-secondary' // Draw or unknown
                               : 'bg-energy-500/30 text-energy-300' // Upcoming match
                             : event.type === 'sc'
-                              ? 'bg-caution-500/30 text-caution-300'
+                              ? 'bg-status-warning-tint text-status-warning'
                               : 'bg-pitch-500/20 text-pitch-300'
                         }`}
                         title={
@@ -211,11 +211,11 @@ export default function EventCalendar({
             <span className="text-xs text-secondary">Win / Training</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-caution-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-status-warning" />
             <span className="text-xs text-secondary">S&C</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-alert-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-status-error" />
             <span className="text-xs text-secondary">Loss</span>
           </div>
         </div>

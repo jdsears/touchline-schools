@@ -307,7 +307,7 @@ export default function TeacherLounge() {
                   {user?.role === 'manager' && member.id !== user.id && (
                     <button
                       onClick={() => handleRemoveMember(member.id)}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-secondary hover:text-alert-400 transition-all"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-secondary hover:text-status-error transition-all"
                       title="Remove member"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -341,7 +341,7 @@ export default function TeacherLounge() {
                     </button>
                     <button
                       onClick={() => handleCancelInvite(invite.id)}
-                      className="p-1 text-secondary hover:text-alert-400"
+                      className="p-1 text-secondary hover:text-status-error"
                       title="Cancel invite"
                     >
                       <X className="w-4 h-4" />
@@ -417,7 +417,7 @@ export default function TeacherLounge() {
                       </button>
                       <button
                         onClick={() => handleDeleteDocument(doc.id)}
-                        className="p-1 text-secondary hover:text-alert-400"
+                        className="p-1 text-secondary hover:text-status-error"
                         title="Delete"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -440,7 +440,7 @@ export default function TeacherLounge() {
 
         {/* Team Suggestions Card */}
         <div className="card p-6">
-          <Lightbulb className="w-8 h-8 text-blue-400 mb-4" />
+          <Lightbulb className="w-8 h-8 text-status-info mb-4" />
           <h3 className="font-display font-semibold text-white mb-2">Team Suggestions</h3>
           <p className="text-sm text-secondary mb-4">Ideas from pupils and parents</p>
 
@@ -453,12 +453,12 @@ export default function TeacherLounge() {
               {/* Stats */}
               {suggestionStats && (
                 <div className="grid grid-cols-3 gap-2 mb-4">
-                  <div className="bg-caution-500/10 rounded-lg p-2 text-center">
-                    <p className="text-lg font-bold text-caution-400">{suggestionStats.pending || 0}</p>
+                  <div className="bg-status-warning-tint rounded-lg p-2 text-center">
+                    <p className="text-lg font-bold text-status-warning">{suggestionStats.pending || 0}</p>
                     <p className="text-xs text-tertiary">Pending</p>
                   </div>
-                  <div className="bg-blue-500/10 rounded-lg p-2 text-center">
-                    <p className="text-lg font-bold text-blue-400">{suggestionStats.in_review || 0}</p>
+                  <div className="bg-status-info-tint rounded-lg p-2 text-center">
+                    <p className="text-lg font-bold text-status-info">{suggestionStats.in_review || 0}</p>
                     <p className="text-xs text-tertiary">In Review</p>
                   </div>
                   <div className="bg-pitch-500/10 rounded-lg p-2 text-center">
@@ -480,8 +480,8 @@ export default function TeacherLounge() {
                         setShowSuggestionsModal(true)
                       }}
                     >
-                      <div className="w-6 h-6 rounded-full bg-caution-500/20 flex items-center justify-center flex-shrink-0">
-                        <Lightbulb className="w-3 h-3 text-caution-400" />
+                      <div className="w-6 h-6 rounded-full bg-status-warning-tint flex items-center justify-center flex-shrink-0">
+                        <Lightbulb className="w-3 h-3 text-status-warning" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm text-white truncate">{suggestion.title}</p>
@@ -598,7 +598,7 @@ export default function TeacherLounge() {
             ) : (
               <form onSubmit={handleInvite} className="space-y-4">
                 {inviteError && (
-                  <div className="flex items-center gap-2 p-3 bg-alert-500/10 border border-alert-500/30 rounded-lg text-alert-400 text-sm">
+                  <div className="flex items-center gap-2 p-3 bg-status-error-tint border border-status-error rounded-lg text-status-error text-sm">
                     <AlertCircle className="w-4 h-4 flex-shrink-0" />
                     {inviteError}
                   </div>
@@ -703,7 +703,7 @@ export default function TeacherLounge() {
                     <button
                       type="button"
                       onClick={() => setUploadFile(null)}
-                      className="p-1 text-secondary hover:text-alert-400"
+                      className="p-1 text-secondary hover:text-status-error"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -806,7 +806,7 @@ export default function TeacherLounge() {
           <div className="modal-content p-6 max-w-2xl max-h-[85vh] overflow-hidden flex flex-col" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-6">
               <h2 className="font-display text-xl font-semibold text-white flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-blue-400" />
+                <Lightbulb className="w-5 h-5 text-status-info" />
                 Team Suggestions
               </h2>
               <button
@@ -841,9 +841,9 @@ export default function TeacherLounge() {
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`text-xs px-2 py-0.5 rounded-full ${
                           selectedSuggestion.category === 'training' ? 'bg-pitch-500/20 text-pitch-400' :
-                          selectedSuggestion.category === 'communication' ? 'bg-blue-500/20 text-blue-400' :
+                          selectedSuggestion.category === 'communication' ? 'bg-status-info-tint text-status-info' :
                           selectedSuggestion.category === 'equipment' ? 'bg-energy-500/20 text-energy-400' :
-                          selectedSuggestion.category === 'schedule' ? 'bg-caution-500/20 text-caution-400' :
+                          selectedSuggestion.category === 'schedule' ? 'bg-status-warning-tint text-status-warning' :
                           'bg-navy-600 text-secondary'
                         }`}>
                           {selectedSuggestion.category}
@@ -856,11 +856,11 @@ export default function TeacherLounge() {
                       </div>
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full ${
-                      selectedSuggestion.status === 'pending' ? 'bg-caution-500/20 text-caution-400' :
-                      selectedSuggestion.status === 'in_review' ? 'bg-blue-500/20 text-blue-400' :
+                      selectedSuggestion.status === 'pending' ? 'bg-status-warning-tint text-status-warning' :
+                      selectedSuggestion.status === 'in_review' ? 'bg-status-info-tint text-status-info' :
                       selectedSuggestion.status === 'acknowledged' ? 'bg-pitch-500/20 text-pitch-400' :
                       selectedSuggestion.status === 'implemented' ? 'bg-energy-500/20 text-energy-400' :
-                      'bg-alert-500/20 text-alert-400'
+                      'bg-status-error-tint text-status-error'
                     }`}>
                       {selectedSuggestion.status === 'in_review' ? 'In Review' :
                        selectedSuggestion.status.charAt(0).toUpperCase() + selectedSuggestion.status.slice(1)}
@@ -920,7 +920,7 @@ export default function TeacherLounge() {
                   <div className="flex gap-3 mt-3">
                     <button
                       onClick={() => handleDeleteSuggestion(selectedSuggestion.id)}
-                      className="btn-secondary text-alert-400 hover:bg-alert-500/20"
+                      className="btn-secondary text-status-error hover:bg-status-error-tint"
                     >
                       <Trash2 className="w-4 h-4" />
                       Delete
@@ -962,15 +962,15 @@ export default function TeacherLounge() {
                         className="flex items-center gap-3 p-3 bg-subtle rounded-lg cursor-pointer hover:bg-subtle transition-colors"
                       >
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          suggestion.status === 'pending' ? 'bg-caution-500/20' :
-                          suggestion.status === 'in_review' ? 'bg-blue-500/20' :
+                          suggestion.status === 'pending' ? 'bg-status-warning-tint' :
+                          suggestion.status === 'in_review' ? 'bg-status-info-tint' :
                           suggestion.status === 'acknowledged' ? 'bg-pitch-500/20' :
                           suggestion.status === 'implemented' ? 'bg-energy-500/20' :
                           'bg-border-default'
                         }`}>
                           <Lightbulb className={`w-4 h-4 ${
-                            suggestion.status === 'pending' ? 'text-caution-400' :
-                            suggestion.status === 'in_review' ? 'text-blue-400' :
+                            suggestion.status === 'pending' ? 'text-status-warning' :
+                            suggestion.status === 'in_review' ? 'text-status-info' :
                             suggestion.status === 'acknowledged' ? 'text-pitch-400' :
                             suggestion.status === 'implemented' ? 'text-energy-400' :
                             'text-tertiary'
@@ -987,11 +987,11 @@ export default function TeacherLounge() {
                           </div>
                         </div>
                         <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
-                          suggestion.status === 'pending' ? 'bg-caution-500/20 text-caution-400' :
-                          suggestion.status === 'in_review' ? 'bg-blue-500/20 text-blue-400' :
+                          suggestion.status === 'pending' ? 'bg-status-warning-tint text-status-warning' :
+                          suggestion.status === 'in_review' ? 'bg-status-info-tint text-status-info' :
                           suggestion.status === 'acknowledged' ? 'bg-pitch-500/20 text-pitch-400' :
                           suggestion.status === 'implemented' ? 'bg-energy-500/20 text-energy-400' :
-                          'bg-alert-500/20 text-alert-400'
+                          'bg-status-error-tint text-status-error'
                         }`}>
                           {suggestion.status === 'in_review' ? 'In Review' :
                            suggestion.status.charAt(0).toUpperCase() + suggestion.status.slice(1)}

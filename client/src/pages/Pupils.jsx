@@ -542,7 +542,7 @@ export default function Players() {
                           setImagePreview(null)
                           if (fileInputRef.current) fileInputRef.current.value = ''
                         }}
-                        className="absolute top-2 right-2 p-1.5 bg-red-500 rounded-full hover:bg-red-600"
+                        className="absolute top-2 right-2 p-1.5 bg-status-error rounded-full hover:bg-status-error"
                       >
                         <X className="w-4 h-4 text-white" />
                       </button>
