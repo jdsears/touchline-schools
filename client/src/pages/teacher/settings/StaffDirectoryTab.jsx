@@ -15,7 +15,7 @@ function expiryStatus(dateStr) {
   const now = new Date()
   const days = Math.ceil((d - now) / 86400000)
   if (days < 0) return { label: 'Expired', color: 'text-status-error' }
-  if (days < 60) return { label: `Expires in ${days}d`, color: 'text-amber-400' }
+  if (days < 60) return { label: `Expires in ${days}d`, color: 'text-brand-accent' }
   return null
 }
 
@@ -51,7 +51,7 @@ export default function StaffDirectoryTab({ access }) {
         </div>
         {access?.isAdmin && (
           <button
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
             onClick={() => toast('Invite flow coming soon')}
           >
             <UserPlus className="w-4 h-4" />
@@ -65,7 +65,7 @@ export default function StaffDirectoryTab({ access }) {
         value={search}
         onChange={e => setSearch(e.target.value)}
         placeholder="Search by name or email..."
-        className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+        className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
       />
 
       <div className="bg-card rounded-xl border border-border-default overflow-hidden">
@@ -100,14 +100,14 @@ export default function StaffDirectoryTab({ access }) {
                   </td>
                   <td className="px-4 py-3">
                     <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                      s.status === 'active' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-border-default text-secondary'
+                      s.status === 'active' ? 'bg-brand-primary-tint text-brand-primary' : 'bg-border-default text-secondary'
                     }`}>
                       {s.status || 'active'}
                     </span>
                   </td>
                   <td className="px-4 py-3">
                     {expiring.length > 0 ? (
-                      <div className="flex items-center gap-1 text-amber-400">
+                      <div className="flex items-center gap-1 text-brand-accent">
                         <AlertTriangle className="w-3 h-3" />
                         <span className="text-xs">{expiring.length} expiring</span>
                       </div>

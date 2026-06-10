@@ -49,8 +49,8 @@ export default function ForgotPassword() {
 
         {sent ? (
           <div className="text-center py-8">
-            <div className="w-16 h-16 rounded-full bg-pitch-500/10 flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-pitch-400" />
+            <div className="w-16 h-16 rounded-full bg-brand-primary-tint flex items-center justify-center mx-auto mb-4">
+              <CheckCircle className="w-8 h-8 text-brand-primary" />
             </div>
             <h1 className="font-display text-2xl font-bold text-white mb-2">Check your email</h1>
             <p className="text-secondary mb-6">
@@ -63,7 +63,7 @@ export default function ForgotPassword() {
             <div className="space-y-3">
               <button
                 onClick={() => { setSent(false); setEmail('') }}
-                className="text-pitch-400 hover:text-pitch-300 text-sm"
+                className="text-brand-primary hover:text-brand-primary text-sm"
               >
                 Try a different email
               </button>
@@ -107,7 +107,7 @@ export default function ForgotPassword() {
             </form>
 
             <p className="text-center text-secondary mt-6">
-              <Link to="/login" className="text-pitch-400 hover:text-pitch-300 flex items-center justify-center gap-1">
+              <Link to="/login" className="text-brand-primary hover:text-brand-primary flex items-center justify-center gap-1">
                 <ArrowLeft className="w-4 h-4" /> Back to sign in
               </Link>
             </p>

@@ -30,7 +30,7 @@ function Input({ value, onChange, placeholder, type = 'text', readOnly }) {
       onChange={e => onChange(e.target.value)}
       placeholder={placeholder}
       readOnly={readOnly}
-      className={`w-full px-3 py-2 rounded-lg border text-sm text-primary placeholder:text-tertiary focus:outline-none focus:border-pitch-500 ${
+      className={`w-full px-3 py-2 rounded-lg border text-sm text-primary placeholder:text-tertiary focus:outline-none focus:border-brand-primary ${
         readOnly
           ? 'bg-subtle/40 border-border-default text-secondary cursor-default'
           : 'bg-subtle border-border-strong'
@@ -82,7 +82,7 @@ export default function SchoolProfileTab({ access }) {
         <h2 className="text-xl font-semibold text-primary">School Profile</h2>
         <p className="text-sm text-secondary mt-1">
           Core school details used across the platform.
-          {!canEdit && <span className="ml-2 text-amber-400">View only — contact your School Administrator to edit.</span>}
+          {!canEdit && <span className="ml-2 text-brand-accent">View only — contact your School Administrator to edit.</span>}
         </p>
       </div>
 
@@ -99,7 +99,7 @@ export default function SchoolProfileTab({ access }) {
                 <select
                   value={form.school_type || 'secondary'}
                   onChange={e => set('school_type')(e.target.value)}
-                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 >
                   {SCHOOL_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
@@ -172,7 +172,7 @@ export default function SchoolProfileTab({ access }) {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save School Profile

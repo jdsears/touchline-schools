@@ -7,8 +7,8 @@ import toast from 'react-hot-toast'
 const GRADES = ['emerging', 'developing', 'secure', 'excelling']
 const GRADE_COLORS = {
   emerging: 'bg-status-error-tint text-status-error border-status-error',
-  developing: 'bg-amber-400/20 text-amber-400 border-amber-400/30',
-  secure: 'bg-pitch-600/20 text-pitch-400 border-pitch-600/30',
+  developing: 'bg-brand-accent-tint text-brand-accent border-brand-accent',
+  secure: 'bg-brand-primary-tint text-brand-primary border-brand-primary',
   excelling: 'bg-status-info-tint text-status-info border-status-info',
 }
 
@@ -142,7 +142,7 @@ export default function TeacherAssessment() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg transition-colors disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span className="text-sm font-medium">{saving ? 'Saving...' : 'Save Assessments'}</span>
@@ -157,7 +157,7 @@ export default function TeacherAssessment() {
           <select
             value={selectedUnitId}
             onChange={e => setSelectedUnitId(e.target.value)}
-            className="w-full max-w-lg px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+            className="w-full max-w-lg px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
           >
             <option value="">Choose a unit...</option>
             {allUnits.map(u => (
@@ -169,7 +169,7 @@ export default function TeacherAssessment() {
         ) : (
           <p className="text-secondary text-sm">
             No sport units available.{' '}
-            <Link to="/teacher/classes" className="text-pitch-400 hover:underline">
+            <Link to="/teacher/classes" className="text-brand-primary hover:underline">
               Create a class and add sport units first.
             </Link>
           </p>

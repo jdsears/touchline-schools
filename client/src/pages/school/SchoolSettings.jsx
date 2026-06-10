@@ -99,7 +99,7 @@ export default function ClubSettings() {
               <input
                 type="text" required value={form.name}
                 onChange={(e) => updateField('name', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function ClubSettings() {
               <input
                 type="email" value={form.contact_email}
                 onChange={(e) => updateField('contact_email', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -115,7 +115,7 @@ export default function ClubSettings() {
               <input
                 type="tel" value={form.contact_phone}
                 onChange={(e) => updateField('contact_phone', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div className="sm:col-span-2">
@@ -123,7 +123,7 @@ export default function ClubSettings() {
               <input
                 type="url" value={form.website}
                 onChange={(e) => updateField('website', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="https://..."
               />
             </div>
@@ -139,7 +139,7 @@ export default function ClubSettings() {
               <input
                 type="text" value={form.address_line1}
                 onChange={(e) => updateField('address_line1', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div className="sm:col-span-2">
@@ -147,7 +147,7 @@ export default function ClubSettings() {
               <input
                 type="text" value={form.address_line2}
                 onChange={(e) => updateField('address_line2', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -155,7 +155,7 @@ export default function ClubSettings() {
               <input
                 type="text" value={form.city}
                 onChange={(e) => updateField('city', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -163,7 +163,7 @@ export default function ClubSettings() {
               <input
                 type="text" value={form.county}
                 onChange={(e) => updateField('county', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -171,7 +171,7 @@ export default function ClubSettings() {
               <input
                 type="text" value={form.postcode}
                 onChange={(e) => updateField('postcode', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
           </div>
@@ -186,7 +186,7 @@ export default function ClubSettings() {
               <input
                 type="text" value={form.fa_affiliation_number}
                 onChange={(e) => updateField('fa_affiliation_number', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -194,7 +194,7 @@ export default function ClubSettings() {
               <input
                 type="text" value={form.league}
                 onChange={(e) => updateField('league', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. Norfolk Youth League"
               />
             </div>
@@ -203,7 +203,7 @@ export default function ClubSettings() {
               <select
                 value={form.charter_standard}
                 onChange={(e) => updateField('charter_standard', e.target.value)}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="">None</option>
                 <option value="Standard">Standard</option>
@@ -229,7 +229,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={form.primary_color}
                   onChange={(e) => updateField('primary_color', e.target.value)}
-                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -244,7 +244,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={form.secondary_color}
                   onChange={(e) => updateField('secondary_color', e.target.value)}
-                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm font-mono focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
             </div>
@@ -260,7 +260,7 @@ export default function ClubSettings() {
               <select
                 value={form.season_start_month}
                 onChange={(e) => updateField('season_start_month', parseInt(e.target.value))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 {months.map((m, i) => (
                   <option key={i} value={i + 1}>{m}</option>
@@ -272,7 +272,7 @@ export default function ClubSettings() {
               <select
                 value={form.season_end_month}
                 onChange={(e) => updateField('season_end_month', parseInt(e.target.value))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 {months.map((m, i) => (
                   <option key={i} value={i + 1}>{m}</option>
@@ -286,7 +286,7 @@ export default function ClubSettings() {
           <button
             type="submit"
             disabled={saving}
-            className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
           >
             <Save className="w-4 h-4" />
             {saving ? 'Saving...' : 'Save Settings'}
@@ -309,9 +309,9 @@ export default function ClubSettings() {
                 </div>
               </div>
               {charityForm.gift_aid_enabled ? (
-                <span className="text-xs bg-pitch-600/20 text-pitch-400 px-3 py-1 rounded-full font-medium">Gift Aid Active</span>
+                <span className="text-xs bg-brand-primary-tint text-brand-primary px-3 py-1 rounded-full font-medium">Gift Aid Active</span>
               ) : (
-                <span className="text-xs bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full font-medium">Gift Aid Not Configured</span>
+                <span className="text-xs bg-brand-accent-tint text-brand-accent px-3 py-1 rounded-full font-medium">Gift Aid Not Configured</span>
               )}
             </div>
 
@@ -321,7 +321,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={charityForm.organisation_name || ''}
                   onChange={(e) => updateCharityField('organisation_name', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   required
                 />
               </div>
@@ -330,7 +330,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={charityForm.charity_number || ''}
                   onChange={(e) => updateCharityField('charity_number', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="Optional if CASC"
                 />
               </div>
@@ -339,7 +339,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={charityForm.casc_number || ''}
                   onChange={(e) => updateCharityField('casc_number', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="Community Amateur Sports School number"
                 />
               </div>
@@ -348,7 +348,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={charityForm.hmrc_reference || ''}
                   onChange={(e) => updateCharityField('hmrc_reference', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -356,7 +356,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={charityForm.authorised_official_name || ''}
                   onChange={(e) => updateCharityField('authorised_official_name', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
               <div>
@@ -364,7 +364,7 @@ export default function ClubSettings() {
                 <input
                   type="text" value={charityForm.authorised_official_position || ''}
                   onChange={(e) => updateCharityField('authorised_official_position', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   placeholder="e.g. School Secretary"
                 />
               </div>
@@ -373,7 +373,7 @@ export default function ClubSettings() {
                 <textarea
                   value={charityForm.organisation_address || ''}
                   onChange={(e) => updateCharityField('organisation_address', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                   rows={2}
                 />
               </div>
@@ -382,14 +382,14 @@ export default function ClubSettings() {
                 <input
                   type="text" value={charityForm.organisation_postcode || ''}
                   onChange={(e) => updateCharityField('organisation_postcode', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 />
               </div>
             </div>
 
             {/* Warning if no charity/CASC number */}
             {charityForm.gift_aid_enabled && !charityForm.charity_number && !charityForm.casc_number && (
-              <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg px-4 py-3 text-sm text-amber-400">
+              <div className="bg-brand-accent-tint border border-brand-accent rounded-lg px-4 py-3 text-sm text-brand-accent">
                 Neither a Charity Number nor CASC Number has been provided. At least one is recommended for HMRC Gift Aid claims.
               </div>
             )}
@@ -403,7 +403,7 @@ export default function ClubSettings() {
                 type="button"
                 onClick={() => updateCharityField('gift_aid_enabled', !charityForm.gift_aid_enabled)}
                 className={`relative w-11 h-6 rounded-full transition-colors ${
-                  charityForm.gift_aid_enabled ? 'bg-pitch-600' : 'bg-border-default'
+                  charityForm.gift_aid_enabled ? 'bg-brand-primary' : 'bg-border-default'
                 }`}
               >
                 <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-card rounded-full transition-transform ${
@@ -416,7 +416,7 @@ export default function ClubSettings() {
               href="https://www.gov.uk/claim-gift-aid"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-pitch-400 hover:text-pitch-300"
+              className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:text-brand-primary"
             >
               <ExternalLink className="w-3 h-3" />
               HMRC Gift Aid guidance
@@ -427,7 +427,7 @@ export default function ClubSettings() {
             <button
               type="submit"
               disabled={savingCharity}
-              className="flex items-center gap-2 px-6 py-2.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
+              className="flex items-center gap-2 px-6 py-2.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
             >
               <Save className="w-4 h-4" />
               {savingCharity ? 'Saving...' : 'Save Gift Aid Settings'}

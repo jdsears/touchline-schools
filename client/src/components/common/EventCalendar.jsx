@@ -132,12 +132,12 @@ export default function EventCalendar({
               }}
               className={`
                 min-h-[70px] rounded-lg p-1 flex flex-col items-stretch transition-colors relative
-                ${isCurrentDay ? 'bg-pitch-500/20 ring-2 ring-pitch-500' : ''}
+                ${isCurrentDay ? 'bg-brand-primary-tint ring-2 ring-brand-primary' : ''}
                 ${!isCurrentMonth ? 'opacity-30' : ''}
                 ${hasEvents ? 'hover:bg-subtle cursor-pointer' : onSelectDate ? 'hover:bg-subtle cursor-pointer' : 'cursor-default'}
               `}
             >
-              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-pitch-400' : 'text-secondary'}`}>
+              <span className={`text-xs font-medium text-center ${isCurrentDay ? 'text-brand-primary' : 'text-secondary'}`}>
                 {format(day, 'd')}
               </span>
 
@@ -153,14 +153,14 @@ export default function EventCalendar({
                           event.type === 'match'
                             ? event.isPast
                               ? event.data.result?.includes('-') && parseInt(event.data.result.split('-')[0]) > parseInt(event.data.result.split('-')[1])
-                                ? 'bg-pitch-500/30 text-pitch-300' // Win
+                                ? 'bg-brand-primary-tint text-brand-primary' // Win
                                 : parseInt(event.data.result?.split('-')[0]) < parseInt(event.data.result?.split('-')[1])
                                   ? 'bg-status-error-tint text-status-error' // Loss
                                   : 'bg-navy-600 text-secondary' // Draw or unknown
-                              : 'bg-energy-500/30 text-energy-300' // Upcoming match
+                              : 'bg-brand-accent-tint text-brand-accent' // Upcoming match
                             : event.type === 'sc'
                               ? 'bg-status-warning-tint text-status-warning'
-                              : 'bg-pitch-500/20 text-pitch-300'
+                              : 'bg-brand-primary-tint text-brand-primary'
                         }`}
                         title={
                           event.type === 'match'
@@ -203,11 +203,11 @@ export default function EventCalendar({
       <div className="mt-4 pt-4 border-t border-border-default">
         <div className="flex items-center justify-center gap-4 flex-wrap mb-3">
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-energy-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-accent" />
             <span className="text-xs text-secondary">Upcoming Match</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-pitch-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-primary" />
             <span className="text-xs text-secondary">Win / Training</span>
           </div>
           <div className="flex items-center gap-1.5">

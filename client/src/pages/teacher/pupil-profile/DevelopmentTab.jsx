@@ -4,8 +4,8 @@ import { Target, Award, Loader2, CheckCircle2, RotateCcw, XCircle } from 'lucide
 
 const STATUS_META = {
   in_progress: { label: 'In progress', colour: 'bg-sky-500/20 text-sky-400', icon: Target },
-  achieved:    { label: 'Achieved',    colour: 'bg-pitch-500/20 text-pitch-400', icon: CheckCircle2 },
-  revised:     { label: 'Revised',     colour: 'bg-amber-500/20 text-amber-400', icon: RotateCcw },
+  achieved:    { label: 'Achieved',    colour: 'bg-brand-primary-tint text-brand-primary', icon: CheckCircle2 },
+  revised:     { label: 'Revised',     colour: 'bg-brand-accent-tint text-brand-accent', icon: RotateCcw },
   abandoned:   { label: 'Abandoned',   colour: 'bg-border-default text-secondary', icon: XCircle },
 }
 
@@ -39,7 +39,7 @@ export default function DevelopmentTab({ pupilId }) {
       <div className="lg:col-span-2 space-y-4">
         <div className="bg-card rounded-xl border border-border-default p-5">
           <h2 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
-            <Target className="w-4 h-4 text-pitch-400" />
+            <Target className="w-4 h-4 text-brand-primary" />
             IDP Goals ({goals.length})
           </h2>
           {goals.length === 0 ? (
@@ -66,7 +66,7 @@ export default function DevelopmentTab({ pupilId }) {
       <div className="space-y-4">
         <div className="bg-card rounded-xl border border-border-default p-5">
           <h2 className="text-sm font-semibold text-primary flex items-center gap-2 mb-4">
-            <Award className="w-4 h-4 text-amber-400" />
+            <Award className="w-4 h-4 text-brand-accent" />
             Achievements ({achievements.length})
           </h2>
           {achievements.length === 0 ? (
@@ -76,7 +76,7 @@ export default function DevelopmentTab({ pupilId }) {
               {achievements.map(a => (
                 <div key={a.id} className="p-3 rounded-lg bg-subtle">
                   <div className="flex items-start gap-2">
-                    <Award className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                    <Award className="w-4 h-4 text-brand-accent mt-0.5 shrink-0" />
                     <div className="flex-1 min-w-0">
                       <div className="text-sm font-medium text-primary">{a.title}</div>
                       {a.description && <div className="text-xs text-secondary mt-0.5">{a.description}</div>}

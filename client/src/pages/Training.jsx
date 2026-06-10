@@ -654,8 +654,8 @@ export default function Training() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="card p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-              <Sparkles className="w-5 h-5 text-pitch-400" />
+            <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+              <Sparkles className="w-5 h-5 text-brand-primary" />
             </div>
             <h2 className="font-display text-lg font-semibold text-white">AI Session Generator</h2>
           </div>
@@ -670,8 +670,8 @@ export default function Training() {
 
         <div className="card p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-energy-500/10 flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-energy-400" />
+            <div className="w-10 h-10 rounded-xl bg-brand-accent-tint flex items-center justify-center">
+              <Calendar className="w-5 h-5 text-brand-accent" />
             </div>
             <h2 className="font-display text-lg font-semibold text-white">Weekly Planner</h2>
           </div>
@@ -693,7 +693,7 @@ export default function Training() {
         <button
           onClick={() => setView('list')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            view === 'list' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
+            view === 'list' ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:text-white'
           }`}
         >
           List View
@@ -701,7 +701,7 @@ export default function Training() {
         <button
           onClick={() => setView('weekly')}
           className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-            view === 'weekly' ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
+            view === 'weekly' ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:text-white'
           }`}
         >
           Weekly View
@@ -711,7 +711,7 @@ export default function Training() {
       {/* Content */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
         </div>
       ) : view === 'weekly' ? (
         /* Weekly View */
@@ -722,14 +722,14 @@ export default function Training() {
                 key={idx}
                 className={`p-3 text-center border-r border-border-default last:border-r-0 ${
                   day.date.toDateString() === new Date().toDateString()
-                    ? 'bg-pitch-500/10'
+                    ? 'bg-brand-primary-tint'
                     : ''
                 }`}
               >
                 <p className="text-xs text-tertiary uppercase">{day.dayName}</p>
                 <p className={`text-lg font-semibold ${
                   day.date.toDateString() === new Date().toDateString()
-                    ? 'text-pitch-400'
+                    ? 'text-brand-primary'
                     : 'text-white'
                 }`}>
                   {day.dayNum}
@@ -743,7 +743,7 @@ export default function Training() {
                 key={idx}
                 className={`p-2 border-r border-border-default last:border-r-0 ${
                   day.date.toDateString() === new Date().toDateString()
-                    ? 'bg-pitch-500/5'
+                    ? 'bg-brand-primary-tint'
                     : ''
                 }`}
               >
@@ -753,9 +753,9 @@ export default function Training() {
                       <button
                         key={session.id}
                         onClick={() => setSelectedSession(session)}
-                        className="w-full p-2 rounded-lg bg-pitch-500/20 border border-pitch-500/30 text-left hover:bg-pitch-500/30 transition-colors"
+                        className="w-full p-2 rounded-lg bg-brand-primary-tint border border-brand-primary text-left hover:bg-brand-primary-tint transition-colors"
                       >
-                        <p className="text-xs font-medium text-pitch-400 truncate">
+                        <p className="text-xs font-medium text-brand-primary truncate">
                           {session.focus_areas?.join(', ') || 'Training'}
                         </p>
                         <p className="text-xs text-secondary">
@@ -788,7 +788,7 @@ export default function Training() {
           {/* Upcoming Sessions */}
           <div>
             <h2 className="font-display text-xl font-semibold text-white mb-4 flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-pitch-500" />
+              <span className="w-2 h-2 rounded-full bg-brand-primary" />
               Upcoming Sessions
             </h2>
             {upcomingSessions.length > 0 ? (
@@ -806,8 +806,8 @@ export default function Training() {
                         onClick={() => setSelectedSession(session)}
                         className="card-hover p-4 w-full flex items-center gap-4 text-left"
                       >
-                        <div className={`w-12 h-12 rounded-xl ${isSC ? 'bg-energy-500/10' : 'bg-pitch-500/10'} flex flex-col items-center justify-center shrink-0`}>
-                          <span className={`text-xs ${isSC ? 'text-energy-400' : 'text-pitch-400'} uppercase`}>
+                        <div className={`w-12 h-12 rounded-xl ${isSC ? 'bg-brand-accent-tint' : 'bg-brand-primary-tint'} flex flex-col items-center justify-center shrink-0`}>
+                          <span className={`text-xs ${isSC ? 'text-brand-accent' : 'text-brand-primary'} uppercase`}>
                             {new Date(session.date).toLocaleDateString('en-GB', { weekday: 'short' })}
                           </span>
                           <span className="text-lg font-bold text-white">
@@ -856,7 +856,7 @@ export default function Training() {
                         </div>
                         <div className="text-right mr-2">
                           <p className="text-xs text-tertiary">Availability</p>
-                          <p className="text-sm font-medium text-pitch-400">
+                          <p className="text-sm font-medium text-brand-primary">
                             {parseInt(session.available_count) || 0} ready
                           </p>
                         </div>
@@ -986,7 +986,7 @@ export default function Training() {
                           onClick={() => setCreateForm(prev => ({ ...prev, session_type: 'training' }))}
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.session_type === 'training'
-                              ? 'bg-pitch-600 text-white'
+                              ? 'bg-brand-primary text-white'
                               : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
@@ -998,7 +998,7 @@ export default function Training() {
                           onClick={() => setCreateForm(prev => ({ ...prev, session_type: 's&c' }))}
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.session_type === 's&c'
-                              ? 'bg-energy-600 text-white'
+                              ? 'bg-brand-accent text-white'
                               : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
@@ -1109,7 +1109,7 @@ export default function Training() {
                           onClick={() => setCreateForm(prev => ({ ...prev, venue_type: 'outdoor' }))}
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.venue_type === 'outdoor'
-                              ? 'bg-pitch-600 text-white'
+                              ? 'bg-brand-primary text-white'
                               : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
@@ -1120,7 +1120,7 @@ export default function Training() {
                           onClick={() => setCreateForm(prev => ({ ...prev, venue_type: 'indoor' }))}
                           className={`flex-1 p-3 rounded-lg font-medium transition-colors ${
                             createForm.venue_type === 'indoor'
-                              ? 'bg-energy-600 text-white'
+                              ? 'bg-brand-accent text-white'
                               : 'bg-subtle text-secondary hover:text-white'
                           }`}
                         >
@@ -1140,7 +1140,7 @@ export default function Training() {
                           type="button"
                           onClick={() => setCreateForm(prev => ({ ...prev, recurring: !prev.recurring, recurring_end_date: '' }))}
                           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            createForm.recurring ? 'bg-pitch-500' : 'bg-border-default'
+                            createForm.recurring ? 'bg-brand-primary' : 'bg-border-default'
                           }`}
                         >
                           <span
@@ -1172,7 +1172,7 @@ export default function Training() {
                               const weeks = Math.floor((end - start) / (7 * 24 * 60 * 60 * 1000)) + 1
                               return weeks > 0 ? (
                                 <p className="text-xs text-secondary mt-2">
-                                  This will create <strong className="text-pitch-400">{weeks} session{weeks !== 1 ? 's' : ''}</strong>
+                                  This will create <strong className="text-brand-primary">{weeks} session{weeks !== 1 ? 's' : ''}</strong>
                                 </p>
                               ) : null
                             })()}
@@ -1210,7 +1210,7 @@ export default function Training() {
                                 className={`
                                   p-2 rounded-lg text-sm font-medium transition-colors text-left
                                   ${createForm.focusAreas.includes(area.value)
-                                    ? 'bg-pitch-600 text-white'
+                                    ? 'bg-brand-primary text-white'
                                     : 'bg-subtle text-secondary hover:text-white disabled:opacity-50 disabled:cursor-not-allowed'
                                   }
                                 `}
@@ -1233,13 +1233,13 @@ export default function Training() {
                                 className={`
                                   p-3 rounded-lg text-sm font-medium transition-colors text-center
                                   ${createForm.level === opt.value
-                                    ? 'bg-pitch-600 text-white ring-2 ring-pitch-400'
+                                    ? 'bg-brand-primary text-white ring-2 ring-brand-primary'
                                     : 'bg-subtle text-secondary hover:text-white'
                                   }
                                 `}
                               >
                                 <div className="font-semibold">{opt.label}</div>
-                                <div className={`text-xs mt-1 ${createForm.level === opt.value ? 'text-pitch-200' : 'text-tertiary'}`}>
+                                <div className={`text-xs mt-1 ${createForm.level === opt.value ? 'text-brand-primary' : 'text-tertiary'}`}>
                                   {opt.description}
                                 </div>
                               </button>
@@ -1285,8 +1285,8 @@ export default function Training() {
                   /* Generated Plan Display */
                   <div className="space-y-6">
                     {/* Summary */}
-                    <div className="flex items-center gap-4 p-4 rounded-lg bg-pitch-500/10 border border-pitch-500/20">
-                      <CheckCircle className="w-8 h-8 text-pitch-400 shrink-0" />
+                    <div className="flex items-center gap-4 p-4 rounded-lg bg-brand-primary-tint border border-brand-primary">
+                      <CheckCircle className="w-8 h-8 text-brand-primary shrink-0" />
                       <div>
                         <p className="font-medium text-white">Session Generated!</p>
                         <p className="text-sm text-secondary">
@@ -1521,7 +1521,7 @@ export default function Training() {
                 {selectedSession.plan && Object.keys(selectedSession.plan).length > 0 && (
                   <div>
                     <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 text-pitch-400" />
+                      <Sparkles className="w-4 h-4 text-brand-primary" />
                       AI Session Plan
                     </h3>
                     {typeof selectedSession.plan === 'string' ? (
@@ -1607,7 +1607,7 @@ export default function Training() {
                 <div className={`${selectedSession.plan && Object.keys(selectedSession.plan).length > 0 ? 'mt-6 pt-6 border-t border-border-default' : ''}`}>
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                      <PenLine className="w-4 h-4 text-energy-400" />
+                      <PenLine className="w-4 h-4 text-brand-accent" />
                       My Session Plan
                     </h3>
                     {!editingCustomPlan && (
@@ -1667,7 +1667,7 @@ export default function Training() {
                 <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                      <ImagePlus className="w-4 h-4 text-pitch-400" />
+                      <ImagePlus className="w-4 h-4 text-brand-primary" />
                       Session Images
                     </h3>
                     <label className={`btn-ghost text-sm text-secondary hover:text-white cursor-pointer ${uploadingImages ? 'opacity-50 pointer-events-none' : ''}`}>
@@ -1749,7 +1749,7 @@ export default function Training() {
                               className={`
                                 p-2 rounded-lg text-xs font-medium transition-colors text-center
                                 ${sessionPlanFocusAreas.includes(area.value)
-                                  ? 'bg-pitch-600 text-white ring-2 ring-pitch-400'
+                                  ? 'bg-brand-primary text-white ring-2 ring-brand-primary'
                                   : 'bg-subtle text-secondary hover:text-white'
                                 }
                                 disabled:opacity-50
@@ -1774,14 +1774,14 @@ export default function Training() {
                               className={`
                                 p-2 rounded-lg text-xs font-medium transition-colors text-center
                                 ${sessionPlanLevel === opt.value
-                                  ? 'bg-pitch-600 text-white ring-2 ring-pitch-400'
+                                  ? 'bg-brand-primary text-white ring-2 ring-brand-primary'
                                   : 'bg-subtle text-secondary hover:text-white'
                                 }
                                 disabled:opacity-50
                               `}
                             >
                               <div className="font-semibold">{opt.label}</div>
-                              <div className={`text-[10px] mt-0.5 ${sessionPlanLevel === opt.value ? 'text-pitch-200' : 'text-tertiary'}`}>
+                              <div className={`text-[10px] mt-0.5 ${sessionPlanLevel === opt.value ? 'text-brand-primary' : 'text-tertiary'}`}>
                                 {opt.description}
                               </div>
                             </button>
@@ -1816,7 +1816,7 @@ export default function Training() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         {selectedSession.share_plan_with_players ? (
-                          <Eye className="w-5 h-5 text-pitch-400" />
+                          <Eye className="w-5 h-5 text-brand-primary" />
                         ) : (
                           <EyeOff className="w-5 h-5 text-tertiary" />
                         )}
@@ -1836,7 +1836,7 @@ export default function Training() {
                         disabled={togglingShare}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
                           selectedSession.share_plan_with_players
-                            ? 'bg-pitch-500'
+                            ? 'bg-brand-primary'
                             : 'bg-border-default'
                         }`}
                       >
@@ -1858,7 +1858,7 @@ export default function Training() {
                 <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                      <Send className="w-4 h-4 text-pitch-400" />
+                      <Send className="w-4 h-4 text-brand-primary" />
                       Parent Summary
                     </h3>
                     {new Date(selectedSession.date) < new Date() && !selectedSession.summary && (
@@ -1883,10 +1883,10 @@ export default function Training() {
                   </div>
 
                   {selectedSession.summary ? (
-                    <div className="p-4 rounded-lg bg-pitch-500/10 border border-pitch-500/20">
+                    <div className="p-4 rounded-lg bg-brand-primary-tint border border-brand-primary">
                       <AIMarkdown>{selectedSession.summary}</AIMarkdown>
                       <p className="text-xs text-tertiary mt-3 flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3 text-pitch-400" />
+                        <CheckCircle className="w-3 h-3 text-brand-primary" />
                         This summary is visible to parents in the Pupil Zone
                       </p>
                     </div>
@@ -1911,7 +1911,7 @@ export default function Training() {
                 <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                      <UserCheck className="w-4 h-4 text-pitch-400" />
+                      <UserCheck className="w-4 h-4 text-brand-primary" />
                       Availability
                     </h3>
                     {!showAvailability ? (
@@ -2043,7 +2043,7 @@ export default function Training() {
                 <div className="mt-6 pt-6 border-t border-border-default">
                   <div className="flex items-center justify-between mb-3">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                      <Users className="w-4 h-4 text-pitch-400" />
+                      <Users className="w-4 h-4 text-brand-primary" />
                       Attendance
                     </h3>
                     {!showAttendance ? (
@@ -2089,7 +2089,7 @@ export default function Training() {
                         {attendance.map(pupil => (
                           <div key={pupil.pupil_id} className={`flex items-center gap-2 px-3 py-2 rounded-lg border transition text-sm ${
                             pupil.attended
-                              ? 'bg-pitch-500/10 border-pitch-500/30 text-white'
+                              ? 'bg-brand-primary-tint border-brand-primary text-white'
                               : 'bg-subtle border-border-strong text-secondary'
                           }`}>
                             <button
@@ -2098,7 +2098,7 @@ export default function Training() {
                             >
                               <span className="truncate">{pupil.player_name}</span>
                               {pupil.attended ? (
-                                <CheckCircle className="w-4 h-4 text-pitch-400 shrink-0" />
+                                <CheckCircle className="w-4 h-4 text-brand-primary shrink-0" />
                               ) : (
                                 <X className="w-4 h-4 text-tertiary shrink-0" />
                               )}
@@ -2112,7 +2112,7 @@ export default function Training() {
                                     onClick={() => setPlayerEffort(pupil.pupil_id, star)}
                                     className={`w-5 h-5 text-xs rounded transition ${
                                       pupil.effort_rating >= star
-                                        ? 'bg-energy-500/20 text-energy-400'
+                                        ? 'bg-brand-accent-tint text-brand-accent'
                                         : 'bg-subtle text-tertiary hover:text-secondary'
                                     }`}
                                   >
@@ -2140,12 +2140,12 @@ export default function Training() {
 function SessionSection({ title, duration, content, editing, editData, onEdit, onSave, onCancel, onChange, saving }) {
   if (editing && editData) {
     return (
-      <div className="p-4 rounded-lg bg-subtle border border-pitch-500/30">
+      <div className="p-4 rounded-lg bg-subtle border border-brand-primary">
         <div className="flex items-center justify-between mb-3">
           <h4 className="font-display font-semibold text-white">{title}</h4>
           <div className="flex items-center gap-2">
             <button onClick={onCancel} className="text-xs text-secondary hover:text-white transition-colors px-2 py-1">Cancel</button>
-            <button onClick={onSave} disabled={saving} className="flex items-center gap-1 text-xs bg-pitch-500 text-white px-3 py-1 rounded-lg hover:bg-pitch-600 transition-colors disabled:opacity-50">
+            <button onClick={onSave} disabled={saving} className="flex items-center gap-1 text-xs bg-brand-primary text-white px-3 py-1 rounded-lg hover:bg-brand-primary transition-colors disabled:opacity-50">
               {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
               Save
             </button>
@@ -2154,21 +2154,21 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
         <div className="space-y-3">
           <div>
             <label className="text-xs text-tertiary uppercase mb-1 block">Drill Name</label>
-            <input value={editData.name || ''} onChange={e => onChange({ ...editData, name: e.target.value })} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+            <input value={editData.name || ''} onChange={e => onChange({ ...editData, name: e.target.value })} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="text-xs text-tertiary uppercase mb-1 block">Duration (mins)</label>
-              <input value={editData.duration || ''} onChange={e => onChange({ ...editData, duration: e.target.value })} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+              <input value={editData.duration || ''} onChange={e => onChange({ ...editData, duration: e.target.value })} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none" />
             </div>
           </div>
           <div>
             <label className="text-xs text-tertiary uppercase mb-1 block">Description</label>
-            <textarea value={editData.description || ''} onChange={e => onChange({ ...editData, description: e.target.value })} rows={3} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+            <textarea value={editData.description || ''} onChange={e => onChange({ ...editData, description: e.target.value })} rows={3} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-tertiary uppercase mb-1 block">Setup</label>
-            <textarea value={editData.setup || ''} onChange={e => onChange({ ...editData, setup: e.target.value })} rows={2} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+            <textarea value={editData.setup || ''} onChange={e => onChange({ ...editData, setup: e.target.value })} rows={2} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-tertiary uppercase mb-1 block">Coaching Points (one per line)</label>
@@ -2176,13 +2176,13 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
               value={(editData.coachingPoints || []).join('\n')}
               onChange={e => onChange({ ...editData, coachingPoints: e.target.value.split('\n') })}
               rows={4}
-              className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none"
+              className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none"
             />
           </div>
           {editData.progression !== undefined && (
             <div>
               <label className="text-xs text-tertiary uppercase mb-1 block">Progression</label>
-              <textarea value={editData.progression || ''} onChange={e => onChange({ ...editData, progression: e.target.value })} rows={2} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-pitch-500 focus:outline-none" />
+              <textarea value={editData.progression || ''} onChange={e => onChange({ ...editData, progression: e.target.value })} rows={2} className="w-full px-3 py-2 bg-card border border-border-strong rounded-lg text-white text-sm focus:border-brand-primary focus:outline-none" />
             </div>
           )}
         </div>
@@ -2202,7 +2202,7 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
             </span>
           )}
           {onEdit && (
-            <button onClick={onEdit} className="opacity-0 group-hover:opacity-100 transition-opacity text-secondary hover:text-pitch-400 p-1" title="Edit drill">
+            <button onClick={onEdit} className="opacity-0 group-hover:opacity-100 transition-opacity text-secondary hover:text-brand-primary p-1" title="Edit drill">
               <Edit2 className="w-3.5 h-3.5" />
             </button>
           )}
@@ -2210,7 +2210,7 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
       </div>
 
       {content.name && (
-        <p className="font-medium text-pitch-400 mb-2">{content.name}</p>
+        <p className="font-medium text-brand-primary mb-2">{content.name}</p>
       )}
 
       {content.description && (
@@ -2238,7 +2238,7 @@ function SessionSection({ title, duration, content, editing, editData, onEdit, o
           <ul className="space-y-1">
             {content.coachingPoints.map((point, i) => (
               <li key={i} className="text-sm text-secondary flex items-start gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-pitch-500 mt-1.5 shrink-0" />
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-primary mt-1.5 shrink-0" />
                 {point}
               </li>
             ))}

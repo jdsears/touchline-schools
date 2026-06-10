@@ -3,7 +3,7 @@ import { pupilProfileService } from '../../../services/api'
 import { Shield, Loader2, AlertTriangle, CheckCircle2, Eye } from 'lucide-react'
 
 const FLAG_META = {
-  monitoring: { colour: 'bg-amber-500/20 text-amber-400', label: 'Monitoring' },
+  monitoring: { colour: 'bg-brand-accent-tint text-brand-accent', label: 'Monitoring' },
   concern:    { colour: 'bg-orange-500/20 text-orange-400', label: 'Concern' },
   incident:   { colour: 'bg-status-error-tint text-status-error', label: 'Incident' },
   resolved:   { colour: 'bg-border-default text-secondary', label: 'Resolved' },
@@ -47,9 +47,9 @@ export default function SafeguardingTab({ pupilId }) {
 
   return (
     <div className="space-y-4">
-      <div className="bg-amber-500/5 border border-amber-500/20 rounded-xl p-4 flex items-start gap-2">
-        <Eye className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
-        <div className="text-xs text-amber-300">
+      <div className="bg-brand-accent-tint border border-brand-accent rounded-xl p-4 flex items-start gap-2">
+        <Eye className="w-4 h-4 text-brand-accent mt-0.5 shrink-0" />
+        <div className="text-xs text-brand-accent">
           Every view of this tab is recorded in the school audit log. Share the contents with authorised colleagues only.
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function SafeguardingTab({ pupilId }) {
       {resolved.length > 0 && (
         <div className="bg-card rounded-xl border border-border-default p-5">
           <h2 className="text-sm font-semibold text-secondary flex items-center gap-2 mb-4">
-            <CheckCircle2 className="w-4 h-4 text-pitch-400" />Resolved ({resolved.length})
+            <CheckCircle2 className="w-4 h-4 text-brand-primary" />Resolved ({resolved.length})
           </h2>
           <div className="space-y-3">{resolved.map(n => <FlagCard key={n.id} n={n} />)}</div>
         </div>

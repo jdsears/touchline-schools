@@ -239,7 +239,7 @@ export default function Matches() {
   function getResultClass(result) {
     if (!result) return ''
     const [home, away] = result.split('-').map(Number)
-    if (home > away) return 'text-pitch-400 bg-pitch-500/10'
+    if (home > away) return 'text-brand-primary bg-brand-primary-tint'
     if (home < away) return 'text-status-error bg-status-error-tint'
     return 'text-status-warning bg-status-warning-tint'
   }
@@ -381,7 +381,7 @@ export default function Matches() {
                   onClick={() => setFormData(prev => ({ ...prev, isHome: true, kitType: 'home' }))}
                   className={`flex-1 py-2 rounded-lg border transition ${
                     formData.isHome
-                      ? 'bg-pitch-500/20 border-pitch-500 text-pitch-400'
+                      ? 'bg-brand-primary-tint border-brand-primary text-brand-primary'
                       : 'border-border-strong text-secondary hover:border-border-strong'
                   }`}
                 >
@@ -392,7 +392,7 @@ export default function Matches() {
                   onClick={() => setFormData(prev => ({ ...prev, isHome: false, kitType: 'away' }))}
                   className={`flex-1 py-2 rounded-lg border transition ${
                     !formData.isHome
-                      ? 'bg-pitch-500/20 border-pitch-500 text-pitch-400'
+                      ? 'bg-brand-primary-tint border-brand-primary text-brand-primary'
                       : 'border-border-strong text-secondary hover:border-border-strong'
                   }`}
                 >
@@ -411,7 +411,7 @@ export default function Matches() {
                     onClick={() => setFormData(prev => ({ ...prev, kitType: kit }))}
                     className={`flex-1 py-2 rounded-lg border transition text-sm capitalize ${
                       formData.kitType === kit
-                        ? 'bg-pitch-500/20 border-pitch-500 text-pitch-400'
+                        ? 'bg-brand-primary-tint border-brand-primary text-brand-primary'
                         : 'border-border-strong text-secondary hover:border-border-strong'
                     }`}
                   >
@@ -580,7 +580,7 @@ export default function Matches() {
         >
           <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-pitch-400" />
+              <Sparkles className="w-5 h-5 text-brand-primary" />
               <h2 className="text-xl font-display font-bold text-white">Import from Image</h2>
             </div>
             <button
@@ -642,11 +642,11 @@ export default function Matches() {
                     onDrop={handleDrop}
                     className={`block w-full p-8 border-2 border-dashed rounded-lg transition cursor-pointer text-center ${
                       isDragging
-                        ? 'border-pitch-500 bg-pitch-500/10'
-                        : 'border-border-strong hover:border-pitch-500'
+                        ? 'border-brand-primary bg-brand-primary-tint'
+                        : 'border-border-strong hover:border-brand-primary'
                     }`}
                   >
-                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-pitch-400' : 'text-tertiary'}`} />
+                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-brand-primary' : 'text-tertiary'}`} />
                     <p className="text-white font-medium">
                       {isDragging ? 'Drop image here' : 'Click or drag & drop image'}
                     </p>
@@ -673,7 +673,7 @@ export default function Matches() {
                       setImageFile(null)
                       setImagePreview(null)
                     }}
-                    className="text-sm text-pitch-400 hover:text-pitch-300"
+                    className="text-sm text-brand-primary hover:text-brand-primary"
                   >
                     Try another image
                   </button>
@@ -686,14 +686,14 @@ export default function Matches() {
                       onClick={() => toggleFixture(index)}
                       className={`p-3 rounded-lg border cursor-pointer transition ${
                         selectedFixtures.includes(index)
-                          ? 'bg-pitch-500/10 border-pitch-500'
+                          ? 'bg-brand-primary-tint border-brand-primary'
                           : 'bg-subtle border-border-strong hover:border-border-strong'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         <div className={`w-5 h-5 rounded border flex items-center justify-center ${
                           selectedFixtures.includes(index)
-                            ? 'bg-pitch-500 border-pitch-500'
+                            ? 'bg-brand-primary border-brand-primary'
                             : 'border-border-strong'
                         }`}>
                           {selectedFixtures.includes(index) && <Check className="w-3 h-3 text-white" />}
@@ -866,7 +866,7 @@ export default function Matches() {
       <motion.div
         layout
         className={`card cursor-pointer transition-all ${
-          isSelected ? 'ring-2 ring-pitch-500' : 'hover:border-border-strong'
+          isSelected ? 'ring-2 ring-brand-primary' : 'hover:border-border-strong'
         }`}
         onClick={() => {
           if (isPast || showResult) {
@@ -893,7 +893,7 @@ export default function Matches() {
                   {match.is_home ? 'H' : 'A'}
                 </span>
                 <p className="font-semibold text-white">{match.opponent}</p>
-                {match.veoLink && <Video className="w-4 h-4 text-pitch-400" />}
+                {match.veoLink && <Video className="w-4 h-4 text-brand-primary" />}
               </div>
               {match.competition && (
                 <p className="text-sm text-secondary">{match.competition}</p>
@@ -918,7 +918,7 @@ export default function Matches() {
             ) : !isPast && (
               <div className="text-right">
                 <p className="text-xs text-tertiary">Availability</p>
-                <p className="text-sm font-medium text-pitch-400">
+                <p className="text-sm font-medium text-brand-primary">
                   {parseInt(match.available_count) || 0} ready
                 </p>
               </div>
@@ -1024,7 +1024,7 @@ export default function Matches() {
         <div className="space-y-2 max-h-96 overflow-y-auto">
           {loadingAvailability ? (
             <div className="flex justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-pitch-500" />
+              <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
             </div>
           ) : (
             Object.entries(availability).map(([pupilId, data]) => {
@@ -1104,7 +1104,7 @@ export default function Matches() {
             <button
               onClick={() => setShowCalendar(false)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                !showCalendar ? 'bg-pitch-600 text-white' : 'text-secondary hover:text-white'
+                !showCalendar ? 'bg-brand-primary text-white' : 'text-secondary hover:text-white'
               }`}
             >
               <List className="w-4 h-4" />
@@ -1113,7 +1113,7 @@ export default function Matches() {
             <button
               onClick={() => setShowCalendar(true)}
               className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors flex items-center gap-1.5 ${
-                showCalendar ? 'bg-pitch-600 text-white' : 'text-secondary hover:text-white'
+                showCalendar ? 'bg-brand-primary text-white' : 'text-secondary hover:text-white'
               }`}
             >
               <CalendarDays className="w-4 h-4" />
@@ -1166,11 +1166,11 @@ export default function Matches() {
           {/* Quick Stats under calendar */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
             <div className="card p-4 text-center">
-              <p className="text-2xl font-display font-bold text-energy-400">{upcomingMatches.length}</p>
+              <p className="text-2xl font-display font-bold text-brand-accent">{upcomingMatches.length}</p>
               <p className="text-sm text-secondary">Upcoming</p>
             </div>
             <div className="card p-4 text-center">
-              <p className="text-2xl font-display font-bold text-pitch-400">
+              <p className="text-2xl font-display font-bold text-brand-primary">
                 {recentResults.filter(m => {
                   const [home, away] = (m.result || '').split('-').map(Number)
                   return home > away
@@ -1196,7 +1196,7 @@ export default function Matches() {
               onClick={() => setActiveTab('upcoming')}
               className={`px-4 py-2 rounded-lg transition ${
                 activeTab === 'upcoming'
-                  ? 'bg-pitch-500 text-white'
+                  ? 'bg-brand-primary text-white'
                   : 'bg-subtle text-secondary hover:text-white'
               }`}
             >
@@ -1206,7 +1206,7 @@ export default function Matches() {
               onClick={() => setActiveTab('results')}
               className={`px-4 py-2 rounded-lg transition ${
                 activeTab === 'results'
-                  ? 'bg-pitch-500 text-white'
+                  ? 'bg-brand-primary text-white'
                   : 'bg-subtle text-secondary hover:text-white'
               }`}
             >
@@ -1216,7 +1216,7 @@ export default function Matches() {
               onClick={() => setActiveTab('all')}
               className={`px-4 py-2 rounded-lg transition ${
                 activeTab === 'all'
-                  ? 'bg-pitch-500 text-white'
+                  ? 'bg-brand-primary text-white'
                   : 'bg-subtle text-secondary hover:text-white'
               }`}
             >

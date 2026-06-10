@@ -613,7 +613,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
           {/* Progress */}
           <div className="flex items-center gap-2 mb-8">
             {Array.from({ length: totalSteps }, (_, i) => (
-              <div key={i} className={`h-1 flex-1 rounded-full ${step >= i + 1 ? 'bg-pitch-500' : 'bg-border-default'}`} />
+              <div key={i} className={`h-1 flex-1 rounded-full ${step >= i + 1 ? 'bg-brand-primary' : 'bg-border-default'}`} />
             ))}
           </div>
 
@@ -623,13 +623,13 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 <button
                   type="button"
                   onClick={() => selectAccountType('team')}
-                  className={`w-full text-left p-5 rounded-xl border-2 transition-all hover:border-pitch-500 ${
-                    accountType === 'team' ? 'border-pitch-500 bg-pitch-500/10' : 'border-border-strong bg-card/50 hover:bg-subtle'
+                  className={`w-full text-left p-5 rounded-xl border-2 transition-all hover:border-brand-primary ${
+                    accountType === 'team' ? 'border-brand-primary bg-brand-primary-tint' : 'border-border-strong bg-card/50 hover:bg-subtle'
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-pitch-500/20 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-6 h-6 text-pitch-400" />
+                    <div className="w-12 h-12 rounded-xl bg-brand-primary-tint flex items-center justify-center flex-shrink-0">
+                      <Users className="w-6 h-6 text-brand-primary" />
                     </div>
                     <div>
                       <p className="text-white font-semibold text-lg">A Team</p>
@@ -642,13 +642,13 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 <button
                   type="button"
                   onClick={() => selectAccountType('school')}
-                  className={`w-full text-left p-5 rounded-xl border-2 transition-all hover:border-amber-500 ${
-                    accountType === 'school' ? 'border-amber-500 bg-amber-500/10' : 'border-border-strong bg-card/50 hover:bg-subtle'
+                  className={`w-full text-left p-5 rounded-xl border-2 transition-all hover:border-brand-accent ${
+                    accountType === 'school' ? 'border-brand-accent bg-brand-accent-tint' : 'border-border-strong bg-card/50 hover:bg-subtle'
                   }`}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center flex-shrink-0">
-                      <Building2 className="w-6 h-6 text-amber-400" />
+                    <div className="w-12 h-12 rounded-xl bg-brand-accent-tint flex items-center justify-center flex-shrink-0">
+                      <Building2 className="w-6 h-6 text-brand-accent" />
                     </div>
                     <div>
                       <p className="text-white font-semibold text-lg">A School</p>
@@ -724,7 +724,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       className={`
                         mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
                         ${agreedToTerms
-                          ? 'bg-pitch-500 border-pitch-500'
+                          ? 'bg-brand-primary border-brand-primary'
                           : 'border-border-strong hover:border-navy-500'
                         }
                       `}
@@ -737,7 +737,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         <Link
                           to="/terms"
                           target="_blank"
-                          className="text-pitch-400 hover:text-pitch-300 underline"
+                          className="text-brand-primary hover:text-brand-primary underline"
                         >
                           Terms of Service, Privacy Policy, Safeguarding Policy, and AI Policy
                         </Link>
@@ -759,7 +759,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                   <button
                     type="button"
                     onClick={() => setShowPromoInput(true)}
-                    className="flex items-center gap-2 text-sm text-secondary hover:text-pitch-400 transition-colors"
+                    className="flex items-center gap-2 text-sm text-secondary hover:text-brand-primary transition-colors"
                   >
                     <Ticket className="w-4 h-4" />
                     Have a promo code?
@@ -791,7 +791,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         type="button"
                         onClick={validatePromoCode}
                         disabled={promoValidating || !promoCode.trim()}
-                        className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
+                        className="px-4 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
                       >
                         {promoValidating ? (
                           <Loader2 className="w-4 h-4 animate-spin" />
@@ -801,7 +801,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       </button>
                     </div>
                     {promoResult && (
-                      <div className={`mt-2 flex items-center gap-2 text-sm ${promoResult.valid ? 'text-pitch-400' : 'text-status-error'}`}>
+                      <div className={`mt-2 flex items-center gap-2 text-sm ${promoResult.valid ? 'text-brand-primary' : 'text-status-error'}`}>
                         {promoResult.valid ? (
                           <>
                             <CheckCircle className="w-4 h-4 flex-shrink-0" />
@@ -900,7 +900,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         className={`
                           py-2.5 rounded-lg text-sm font-medium transition-all border-2
                           ${formData.teamFormat === format.value
-                            ? 'bg-pitch-600 border-pitch-500 text-white'
+                            ? 'bg-brand-primary border-brand-primary text-white'
                             : 'bg-subtle border-border-strong text-secondary hover:text-white hover:border-border-strong'
                           }
                         `}
@@ -970,7 +970,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         </button>
                       </div>
                     ) : (
-                      <label className="w-16 h-16 rounded-xl border-2 border-dashed border-border-strong flex flex-col items-center justify-center cursor-pointer hover:border-pitch-500 transition-colors">
+                      <label className="w-16 h-16 rounded-xl border-2 border-dashed border-border-strong flex flex-col items-center justify-center cursor-pointer hover:border-brand-primary transition-colors">
                         {uploadingLogo ? (
                           <Loader2 className="w-6 h-6 text-secondary animate-spin" />
                         ) : (
@@ -1067,7 +1067,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                 {accountType === 'school' && (
                   <div className="mt-6 p-4 bg-card/50 rounded-xl border border-border-default space-y-4">
                     <div className="flex items-center gap-2">
-                      <Shield className="w-5 h-5 text-amber-400" />
+                      <Shield className="w-5 h-5 text-brand-accent" />
                       <h2 className="text-sm font-semibold text-white">Data Processing Agreement</h2>
                     </div>
 
@@ -1104,7 +1104,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         className={`
                           mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 transition-all
                           ${dpaAccepted
-                            ? 'bg-amber-500 border-amber-500'
+                            ? 'bg-brand-accent border-brand-accent'
                             : 'border-border-strong hover:border-navy-500'
                           }
                         `}
@@ -1151,15 +1151,15 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
 
           <p className="text-center text-secondary mt-6">
             Already have an account?{' '}
-            <Link to="/login" className="text-pitch-400 hover:text-pitch-300">Sign in</Link>
+            <Link to="/login" className="text-brand-primary hover:text-brand-primary">Sign in</Link>
           </p>
         </motion.div>
       </div>
 
       <div className="hidden lg:flex flex-1 items-center justify-center bg-gradient-to-br from-navy-900 via-navy-900 to-pitch-950/30 border-l border-border-default relative overflow-hidden">
         {/* Background glow effects */}
-        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-pitch-500/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl" />
+        <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-brand-primary-tint rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 left-1/4 w-64 h-64 bg-brand-accent-tint rounded-full blur-3xl" />
 
         <div className="relative z-10 px-12 max-w-lg">
           {step === 4 ? (

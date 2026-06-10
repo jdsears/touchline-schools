@@ -164,7 +164,7 @@ export default function Players() {
       {/* Pupil List */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
         </div>
       ) : filteredPlayers.length === 0 ? (
         <div className="card p-12 text-center">
@@ -197,7 +197,7 @@ export default function Players() {
           ].map(group => group.pupils.length > 0 && (
             <div key={group.key}>
               <h2 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                <span className={`w-2 h-2 rounded-full ${group.key === 'UNASSIGNED' ? 'bg-navy-500' : 'bg-pitch-500'}`} />
+                <span className={`w-2 h-2 rounded-full ${group.key === 'UNASSIGNED' ? 'bg-navy-500' : 'bg-brand-primary'}`} />
                 {group.label} ({group.pupils.length})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -216,7 +216,7 @@ export default function Players() {
                         {pupil.squad_number || pupil.name.charAt(0)}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-white truncate group-hover:text-pitch-400 transition-colors">
+                        <p className="font-medium text-white truncate group-hover:text-brand-primary transition-colors">
                           {pupil.squad_number && <span className="text-secondary mr-1">#{pupil.squad_number}</span>}
                           {pupil.name}
                         </p>
@@ -317,7 +317,7 @@ export default function Players() {
                           className={`
                             px-3 py-1.5 rounded-lg text-sm font-medium transition-colors
                             ${isSelected
-                              ? 'bg-pitch-600 text-white'
+                              ? 'bg-brand-primary text-white'
                               : isDisabled
                                 ? 'bg-subtle text-tertiary cursor-not-allowed opacity-50'
                                 : 'bg-subtle text-secondary hover:text-white'
@@ -510,7 +510,7 @@ export default function Players() {
         >
           <div className="p-4 border-b border-border-default flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-pitch-400" />
+              <Sparkles className="w-5 h-5 text-brand-primary" />
               <h2 className="text-xl font-display font-bold text-white">Import Players from Image</h2>
             </div>
             <button
@@ -572,11 +572,11 @@ export default function Players() {
                     onDrop={handleDrop}
                     className={`block w-full p-8 border-2 border-dashed rounded-lg transition cursor-pointer text-center ${
                       isDragging
-                        ? 'border-pitch-500 bg-pitch-500/10'
-                        : 'border-border-strong hover:border-pitch-500'
+                        ? 'border-brand-primary bg-brand-primary-tint'
+                        : 'border-border-strong hover:border-brand-primary'
                     }`}
                   >
-                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-pitch-400' : 'text-tertiary'}`} />
+                    <Image className={`w-12 h-12 mx-auto mb-2 ${isDragging ? 'text-brand-primary' : 'text-tertiary'}`} />
                     <p className="text-white font-medium">
                       {isDragging ? 'Drop image here' : 'Click or drag & drop image'}
                     </p>
@@ -603,7 +603,7 @@ export default function Players() {
                       setImageFile(null)
                       setImagePreview(null)
                     }}
-                    className="text-sm text-pitch-400 hover:text-pitch-300"
+                    className="text-sm text-brand-primary hover:text-brand-primary"
                   >
                     Try another image
                   </button>
@@ -616,14 +616,14 @@ export default function Players() {
                       onClick={() => togglePlayer(index)}
                       className={`p-3 rounded-lg cursor-pointer transition border ${
                         selectedPlayers.includes(index)
-                          ? 'bg-pitch-600/20 border-pitch-500'
+                          ? 'bg-brand-primary-tint border-brand-primary'
                           : 'bg-subtle border-border-strong hover:border-border-strong'
                       }`}
                     >
                       <div className="flex items-start gap-3">
                         <div className={`w-5 h-5 rounded border-2 flex items-center justify-center flex-shrink-0 mt-0.5 ${
                           selectedPlayers.includes(index)
-                            ? 'bg-pitch-500 border-pitch-500'
+                            ? 'bg-brand-primary border-brand-primary'
                             : 'border-navy-500'
                         }`}>
                           {selectedPlayers.includes(index) && <Check className="w-3 h-3 text-white" />}

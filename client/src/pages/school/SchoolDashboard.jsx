@@ -62,7 +62,7 @@ export default function ClubDashboard() {
         </div>
         <button
           onClick={copyRegLink}
-          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
         >
           {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
           Copy Registration Link
@@ -73,8 +73,8 @@ export default function ClubDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
           { label: 'Teams', value: stats.total_teams, icon: Building2, href: `/school/${slug}/teams`, color: 'text-status-info' },
-          { label: 'Pupils', value: stats.total_players, icon: Users, href: `/school/${slug}/pupils`, color: 'text-pitch-400' },
-          { label: 'Classes', value: stats.total_classes, icon: GraduationCap, href: `/school/${slug}/teams`, color: 'text-amber-400' },
+          { label: 'Pupils', value: stats.total_players, icon: Users, href: `/school/${slug}/pupils`, color: 'text-brand-primary' },
+          { label: 'Classes', value: stats.total_classes, icon: GraduationCap, href: `/school/${slug}/teams`, color: 'text-brand-accent' },
           { label: 'Staff', value: stats.total_members, icon: UserCheck, href: `/school/${slug}/members`, color: 'text-purple-400' },
           { label: 'Pending', value: stats.pending_registrations, icon: ClipboardList, href: `/school/${slug}/registrations`, color: stats.pending_registrations > 0 ? 'text-status-error' : 'text-secondary' },
         ].map((stat) => (
@@ -99,15 +99,15 @@ export default function ClubDashboard() {
       {stats.pending_registrations > 0 && (
         <Link
           to={`/school/${slug}/registrations`}
-          className="flex items-center gap-3 bg-amber-500/10 border border-amber-500/30 rounded-xl p-4 hover:bg-amber-500/20 transition-colors"
+          className="flex items-center gap-3 bg-brand-accent-tint border border-brand-accent rounded-xl p-4 hover:bg-brand-accent-tint transition-colors"
         >
-          <AlertCircle className="w-5 h-5 text-amber-400 shrink-0" />
+          <AlertCircle className="w-5 h-5 text-brand-accent shrink-0" />
           <div className="flex-1">
-            <p className="text-sm font-medium text-amber-400">
+            <p className="text-sm font-medium text-brand-accent">
               {stats.pending_registrations} pending registration{stats.pending_registrations !== 1 ? 's' : ''} to review
             </p>
           </div>
-          <ChevronRight className="w-4 h-4 text-amber-400" />
+          <ChevronRight className="w-4 h-4 text-brand-accent" />
         </Link>
       )}
 
@@ -119,7 +119,7 @@ export default function ClubDashboard() {
             { label: 'Payments', description: 'Payment plans & billing', icon: CreditCard, href: `/school/${slug}/payments`, color: 'text-status-success bg-status-success-tint' },
             { label: 'Finance', description: 'Revenue & transactions', icon: TrendingUp, href: `/school/${slug}/finance`, color: 'text-status-success bg-status-success-tint', roles: ['owner', 'admin', 'treasurer'] },
             { label: 'Announcements', description: 'Notify pupils & parents', icon: Megaphone, href: `/school/${slug}/announcements`, color: 'text-status-info bg-status-info-tint' },
-            { label: 'Safeguarding', description: 'Compliance & welfare', icon: ShieldCheck, href: `/school/${slug}/safeguarding`, color: 'text-amber-400 bg-amber-500/10' },
+            { label: 'Safeguarding', description: 'Compliance & welfare', icon: ShieldCheck, href: `/school/${slug}/safeguarding`, color: 'text-brand-accent bg-brand-accent-tint' },
             { label: 'Events', description: 'School events & calendar', icon: CalendarDays, href: `/school/${slug}/events`, color: 'text-purple-400 bg-purple-500/10' },
             { label: 'Schedule', description: 'Season calendar view', icon: CalendarDays, href: `/school/${slug}/schedule`, color: 'text-cyan-400 bg-cyan-500/10' },
             { label: 'Reports', description: 'School analytics & data', icon: BarChart3, href: `/school/${slug}/reports`, color: 'text-pink-400 bg-pink-500/10', roles: ['owner', 'admin'] },
@@ -136,7 +136,7 @@ export default function ClubDashboard() {
                 <div className={`w-9 h-9 rounded-lg flex items-center justify-center mb-3 ${action.color}`}>
                   <action.icon className="w-4.5 h-4.5" />
                 </div>
-                <h3 className="font-medium text-primary text-sm group-hover:text-pitch-400 transition-colors">{action.label}</h3>
+                <h3 className="font-medium text-primary text-sm group-hover:text-brand-primary transition-colors">{action.label}</h3>
                 <p className="text-xs text-secondary mt-0.5">{action.description}</p>
               </Link>
             ))}
@@ -150,7 +150,7 @@ export default function ClubDashboard() {
             <h2 className="text-lg font-semibold text-primary">Teams</h2>
             <Link
               to={`/school/${slug}/teams`}
-              className="text-xs text-secondary hover:text-pitch-400 transition-colors flex items-center gap-1"
+              className="text-xs text-secondary hover:text-brand-primary transition-colors flex items-center gap-1"
             >
               View all <ChevronRight className="w-3 h-3" />
             </Link>
@@ -185,7 +185,7 @@ export default function ClubDashboard() {
             <h2 className="text-lg font-semibold text-primary">Recent Registrations</h2>
             <Link
               to={`/school/${slug}/registrations`}
-              className="text-xs text-secondary hover:text-pitch-400 transition-colors flex items-center gap-1"
+              className="text-xs text-secondary hover:text-brand-primary transition-colors flex items-center gap-1"
             >
               View all <ChevronRight className="w-3 h-3" />
             </Link>
@@ -208,8 +208,8 @@ export default function ClubDashboard() {
                       <td className="px-4 py-3 text-sm text-secondary">{reg.team_name}</td>
                       <td className="px-4 py-3">
                         <span className={`text-xs px-2 py-1 rounded-full ${
-                          reg.registration_status === 'registered' ? 'bg-pitch-600/20 text-pitch-400' :
-                          reg.registration_status === 'pending' ? 'bg-amber-500/20 text-amber-400' :
+                          reg.registration_status === 'registered' ? 'bg-brand-primary-tint text-brand-primary' :
+                          reg.registration_status === 'pending' ? 'bg-brand-accent-tint text-brand-accent' :
                           'bg-status-error-tint text-status-error'
                         }`}>
                           {reg.registration_status}

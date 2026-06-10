@@ -201,8 +201,8 @@ export default function Chat() {
       {/* Header */}
       <div className="flex-shrink-0 p-4 border-b border-border-default flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-            <Sparkles className="w-5 h-5 text-pitch-400" />
+          <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-brand-primary" />
           </div>
           <div>
             <h1 className="font-display font-semibold text-primary">Pep</h1>
@@ -231,8 +231,8 @@ export default function Chat() {
               className="max-w-3xl mx-auto"
             >
               <div className="text-center mb-8">
-                <div className="w-16 h-16 rounded-2xl bg-pitch-500/10 flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="w-8 h-8 text-pitch-400" />
+                <div className="w-16 h-16 rounded-2xl bg-brand-primary-tint flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="w-8 h-8 text-brand-primary" />
                 </div>
                 <h2 className="font-display text-2xl font-bold text-primary mb-2">
                   How can I help you today?
@@ -246,7 +246,7 @@ export default function Chat() {
                 {suggestedPrompts.map((category) => (
                   <div key={category.category} className="card p-4">
                     <div className="flex items-center gap-2 mb-3">
-                      <category.icon className="w-4 h-4 text-pitch-400" />
+                      <category.icon className="w-4 h-4 text-brand-primary" />
                       <span className="text-sm font-medium text-secondary">{category.category}</span>
                     </div>
                     <div className="space-y-2">
@@ -276,19 +276,19 @@ export default function Chat() {
               <div className={`flex gap-3 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
                 <div className={`
                   w-8 h-8 rounded-lg flex-shrink-0 flex items-center justify-center
-                  ${message.role === 'user' ? 'bg-pitch-600' : 'bg-subtle'}
+                  ${message.role === 'user' ? 'bg-brand-primary' : 'bg-subtle'}
                 `}>
                   {message.role === 'user' ? (
                     <User className="w-4 h-4 text-on-dark" />
                   ) : (
-                    <Sparkles className="w-4 h-4 text-pitch-400" />
+                    <Sparkles className="w-4 h-4 text-brand-primary" />
                   )}
                 </div>
                 
                 <div className={`
                   rounded-2xl p-4
                   ${message.role === 'user'
-                    ? 'bg-pitch-600 text-on-dark rounded-br-md'
+                    ? 'bg-brand-primary text-on-dark rounded-br-md'
                     : 'bg-subtle text-primary rounded-bl-md'
                   }
                 `}>
@@ -310,11 +310,11 @@ export default function Chat() {
             >
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-lg bg-subtle flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-pitch-400" />
+                  <Sparkles className="w-4 h-4 text-brand-primary" />
                 </div>
                 <div className="bg-subtle rounded-2xl rounded-bl-md p-4">
                   <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-pitch-400" />
+                    <Loader2 className="w-4 h-4 animate-spin text-brand-primary" />
                     <span className="text-secondary">Thinking...</span>
                   </div>
                 </div>
@@ -348,7 +348,7 @@ export default function Chat() {
               <button
                 onClick={() => handleSend()}
                 disabled={!input.trim() || loading}
-                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-pitch-600 text-on-dark disabled:opacity-50 disabled:cursor-not-allowed hover:bg-pitch-500 transition-colors"
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg bg-brand-primary text-on-dark disabled:opacity-50 disabled:cursor-not-allowed hover:bg-brand-primary transition-colors"
               >
                 <Send className="w-4 h-4" />
               </button>

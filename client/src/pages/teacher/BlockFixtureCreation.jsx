@@ -164,7 +164,7 @@ export default function BlockFixtureCreation() {
           <input value={defaults.competition} onChange={e => setDefaults(d => ({ ...d, competition: e.target.value }))}
             placeholder="e.g. League" className="block mt-1 bg-subtle border border-border-strong rounded px-2 py-1 text-sm text-primary w-28" />
         </label>
-        <button onClick={() => applyDefault('competition')} className="text-xs text-pitch-400 hover:text-pitch-300 mb-0.5">Apply to all</button>
+        <button onClick={() => applyDefault('competition')} className="text-xs text-brand-primary hover:text-brand-primary mb-0.5">Apply to all</button>
         <label className="text-xs text-secondary">
           Kit
           <select value={defaults.kitType} onChange={e => setDefaults(d => ({ ...d, kitType: e.target.value }))}
@@ -207,7 +207,7 @@ export default function BlockFixtureCreation() {
             {rows.map((row, idx) => {
               const rw = warningsForRow(idx)
               return (
-                <tr key={row._key} className={`border-b border-border-subtle ${rw.length ? 'bg-amber-500/5' : ''}`}>
+                <tr key={row._key} className={`border-b border-border-subtle ${rw.length ? 'bg-brand-accent-tint' : ''}`}>
                   <td className="px-2 py-1.5 text-tertiary">{idx + 1}</td>
                   <td className="px-2 py-1.5">
                     <input type="date" value={row.date} onChange={e => updateRow(idx, 'date', e.target.value)}
@@ -256,7 +256,7 @@ export default function BlockFixtureCreation() {
                       </div>
                     )}
                     {rw.map((w, wi) => (
-                      <div key={wi} className="flex items-center gap-1 text-[10px] text-amber-400 mt-0.5">
+                      <div key={wi} className="flex items-center gap-1 text-[10px] text-brand-accent mt-0.5">
                         <AlertTriangle className="w-3 h-3 shrink-0" />{w.message}
                       </div>
                     ))}
@@ -277,7 +277,7 @@ export default function BlockFixtureCreation() {
         <div className="flex items-center gap-3">
           <span className="text-sm text-secondary">{validCount} fixture{validCount !== 1 ? 's' : ''} ready</span>
           <button onClick={handleSave} disabled={saving || validCount === 0}
-            className="flex items-center gap-2 px-5 py-2 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg font-medium text-sm">
+            className="flex items-center gap-2 px-5 py-2 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg font-medium text-sm">
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             {saving ? 'Creating...' : `Create ${validCount} fixture${validCount !== 1 ? 's' : ''}`}
           </button>

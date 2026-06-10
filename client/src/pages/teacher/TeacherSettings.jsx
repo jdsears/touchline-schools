@@ -82,7 +82,7 @@ const TAB_COMPONENTS = {
 function TierHeading({ label }) {
   return (
     <div className="px-3 pt-5 pb-1">
-      <span className="text-xs font-semibold tracking-widest uppercase text-amber-400/80">
+      <span className="text-xs font-semibold tracking-widest uppercase text-brand-accent">
         {label}
       </span>
     </div>
@@ -96,7 +96,7 @@ function NavItem({ tab, active, onClick }) {
       onClick={() => onClick(tab.id)}
       className={`w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors text-left ${
         active
-          ? 'bg-pitch-600/20 text-pitch-400 font-medium'
+          ? 'bg-brand-primary-tint text-brand-primary font-medium'
           : 'text-secondary hover:text-link hover:bg-subtle'
       }`}
     >

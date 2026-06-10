@@ -68,7 +68,7 @@ export default function ClubTeams() {
         {canManage && (
           <button
             onClick={() => setShowAdd(!showAdd)}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
           >
             <Plus className="w-4 h-4" />
             Add Team
@@ -85,7 +85,7 @@ export default function ClubTeams() {
               <input
                 type="text" required value={form.name}
                 onChange={(e) => setForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="e.g. U13 Blues"
               />
             </div>
@@ -102,7 +102,7 @@ export default function ClubTeams() {
                     ...(recommendedFormat ? { team_format: recommendedFormat } : {}),
                   }))
                 }}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="">Select age group</option>
                 {['U7','U8','U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','Adult'].map(age => (
@@ -115,7 +115,7 @@ export default function ClubTeams() {
               <select
                 value={form.team_type}
                 onChange={(e) => setForm(f => ({ ...f, team_type: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="boys">Boys</option>
                 <option value="girls">Girls</option>
@@ -127,7 +127,7 @@ export default function ClubTeams() {
               <select
                 value={form.team_format}
                 onChange={(e) => setForm(f => ({ ...f, team_format: parseInt(e.target.value) }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value={11}>11-a-side</option>
                 <option value={9}>9-a-side</option>
@@ -138,7 +138,7 @@ export default function ClubTeams() {
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm">Create Team</button>
+            <button type="submit" className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm">Create Team</button>
           </div>
         </form>
       )}

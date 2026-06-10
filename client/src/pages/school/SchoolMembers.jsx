@@ -6,10 +6,10 @@ import toast from 'react-hot-toast'
 
 const ROLES = ['owner', 'admin', 'treasurer', 'secretary', 'coach']
 const ROLE_COLORS = {
-  owner: 'bg-amber-500/20 text-amber-400',
+  owner: 'bg-brand-accent-tint text-brand-accent',
   admin: 'bg-purple-500/20 text-purple-400',
   treasurer: 'bg-status-info-tint text-status-info',
-  secretary: 'bg-pitch-600/20 text-pitch-400',
+  secretary: 'bg-brand-primary-tint text-brand-primary',
   coach: 'bg-navy-600/20 text-secondary',
   parent: 'bg-border-default/20 text-secondary',
 }
@@ -93,7 +93,7 @@ export default function ClubMembers() {
         {canManage && (
           <button
             onClick={() => setShowInvite(!showInvite)}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
           >
             <UserPlus className="w-4 h-4" />
             Invite Member
@@ -112,7 +112,7 @@ export default function ClubMembers() {
                 required
                 value={inviteForm.email}
                 onChange={(e) => setInviteForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="coach@example.com"
               />
             </div>
@@ -122,7 +122,7 @@ export default function ClubMembers() {
                 type="text"
                 value={inviteForm.name}
                 onChange={(e) => setInviteForm(f => ({ ...f, name: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="John Smith"
               />
             </div>
@@ -131,7 +131,7 @@ export default function ClubMembers() {
               <select
                 value={inviteForm.role}
                 onChange={(e) => setInviteForm(f => ({ ...f, role: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 <option value="admin">Admin</option>
                 <option value="treasurer">Treasurer</option>
@@ -150,7 +150,7 @@ export default function ClubMembers() {
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+              className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
             >
               Send Invite
             </button>
@@ -188,7 +188,7 @@ export default function ClubMembers() {
                             <option key={r} value={r}>{r}</option>
                           ))}
                         </select>
-                        <button onClick={() => handleUpdateRole(m.id)} className="text-pitch-400 hover:text-pitch-300">
+                        <button onClick={() => handleUpdateRole(m.id)} className="text-brand-primary hover:text-brand-primary">
                           <Check className="w-4 h-4" />
                         </button>
                         <button onClick={() => setEditingId(null)} className="text-secondary hover:text-primary">
@@ -203,8 +203,8 @@ export default function ClubMembers() {
                   </td>
                   <td className="px-4 py-3">
                     <span className={`text-xs px-2 py-1 rounded-full ${
-                      m.status === 'active' ? 'bg-pitch-600/20 text-pitch-400' :
-                      m.status === 'invited' ? 'bg-amber-500/20 text-amber-400' :
+                      m.status === 'active' ? 'bg-brand-primary-tint text-brand-primary' :
+                      m.status === 'invited' ? 'bg-brand-accent-tint text-brand-accent' :
                       'bg-border-default text-secondary'
                     }`}>
                       {m.status}

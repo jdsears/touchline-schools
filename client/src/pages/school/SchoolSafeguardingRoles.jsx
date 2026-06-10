@@ -137,7 +137,7 @@ export default function ClubSafeguardingRoles() {
                 <div className="flex items-start gap-4">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${
                     assignment
-                      ? 'bg-pitch-600/10 text-pitch-400'
+                      ? 'bg-brand-primary-tint text-brand-primary'
                       : roleDef.required
                         ? 'bg-status-error-tint text-status-error'
                         : 'bg-subtle text-secondary'
@@ -168,8 +168,8 @@ export default function ClubSafeguardingRoles() {
                             {assignment.training_up_to_date !== undefined && (
                               <span className={`inline-flex items-center gap-1 text-xs ${
                                 assignment.training_up_to_date
-                                  ? 'text-pitch-400'
-                                  : 'text-amber-400'
+                                  ? 'text-brand-primary'
+                                  : 'text-brand-accent'
                               }`}>
                                 {assignment.training_up_to_date
                                   ? <><Check className="w-3 h-3" /> Training up to date</>
@@ -205,7 +205,7 @@ export default function ClubSafeguardingRoles() {
                             <select
                               value={selectedMember}
                               onChange={(e) => setSelectedMember(e.target.value)}
-                              className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                              className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             >
                               <option value="">Select a member...</option>
                               {members.map(m => (
@@ -216,7 +216,7 @@ export default function ClubSafeguardingRoles() {
                             </select>
                             <button
                               onClick={() => handleAssign(roleDef.key)}
-                              className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+                              className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
                             >
                               <Check className="w-4 h-4" />
                               Assign
@@ -291,7 +291,7 @@ export default function ClubSafeguardingRoles() {
       {/* Info box */}
       <div className="bg-card border border-border-default rounded-xl p-5">
         <div className="flex items-start gap-3">
-          <ShieldCheck className="w-5 h-5 text-pitch-400 mt-0.5 shrink-0" />
+          <ShieldCheck className="w-5 h-5 text-brand-primary mt-0.5 shrink-0" />
           <div>
             <h4 className="text-sm font-medium text-primary mb-1">FA Safeguarding Requirements</h4>
             <p className="text-xs text-secondary leading-relaxed">

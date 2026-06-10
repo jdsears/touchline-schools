@@ -42,7 +42,7 @@ export default function TeamsTab({ access }) {
         </div>
         <Link
           to="/teacher/teams"
-          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
         >
           <ExternalLink className="w-4 h-4" />
           Manage Teams
@@ -53,7 +53,7 @@ export default function TeamsTab({ access }) {
         <div className="bg-card rounded-xl border border-border-default p-8 text-center">
           <Trophy className="w-8 h-8 text-tertiary mx-auto mb-3" />
           <p className="text-secondary text-sm">No teams found.</p>
-          <Link to="/teacher/teams" className="text-pitch-400 hover:underline text-sm mt-2 inline-block">
+          <Link to="/teacher/teams" className="text-brand-primary hover:underline text-sm mt-2 inline-block">
             Go to Teams to create your first team
           </Link>
         </div>
@@ -83,7 +83,7 @@ export default function TeamsTab({ access }) {
 
       <p className="text-xs text-tertiary">
         To add, rename, archive, or reassign coaches, use the{' '}
-        <Link to="/teacher/teams" className="text-pitch-400 hover:underline">Teams</Link> area.
+        <Link to="/teacher/teams" className="text-brand-primary hover:underline">Teams</Link> area.
       </p>
     </div>
   )

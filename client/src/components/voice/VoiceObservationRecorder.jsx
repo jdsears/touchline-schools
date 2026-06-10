@@ -171,8 +171,8 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
         <div className="bg-card rounded-2xl border border-border-strong w-full max-w-md p-6">
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-pitch-600/20 flex items-center justify-center">
-              <Mic className="w-5 h-5 text-pitch-400" />
+            <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+              <Mic className="w-5 h-5 text-brand-primary" />
             </div>
             <h2 className="text-lg font-semibold text-primary">Voice Observations</h2>
           </div>
@@ -191,7 +191,7 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
             <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors">
               Not now
             </button>
-            <button onClick={handleConsent} className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors">
+            <button onClick={handleConsent} className="flex-1 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors">
               I understand, continue
             </button>
           </div>
@@ -217,7 +217,7 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
             <select
               value={contextType}
               onChange={e => setContextType(e.target.value)}
-              className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+              className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
             >
               {CONTEXT_OPTIONS.map(o => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -232,7 +232,7 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
             <>
               <button
                 onClick={startRecording}
-                className="w-20 h-20 rounded-full bg-pitch-600 hover:bg-pitch-700 flex items-center justify-center transition-all hover:scale-105 shadow-lg shadow-pitch-600/30"
+                className="w-20 h-20 rounded-full bg-brand-primary hover:bg-brand-primary flex items-center justify-center transition-all hover:scale-105 shadow-lg shadow-pitch-600/30"
               >
                 <Mic className="w-8 h-8 text-primary" />
               </button>
@@ -263,7 +263,7 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
           {state === 'uploading' && (
             <>
               <div className="w-20 h-20 rounded-full bg-subtle flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-pitch-400 animate-spin" />
+                <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
               </div>
               <p className="text-sm text-secondary mt-4">Uploading...</p>
             </>
@@ -272,7 +272,7 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
           {state === 'processing' && (
             <>
               <div className="w-20 h-20 rounded-full bg-subtle flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-pitch-400 animate-spin" />
+                <Loader2 className="w-8 h-8 text-brand-primary animate-spin" />
               </div>
               <p className="text-sm text-secondary mt-4">Transcribing and extracting observations...</p>
               <p className="text-xs text-tertiary mt-1">This usually takes 10-20 seconds</p>

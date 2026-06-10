@@ -40,13 +40,13 @@ const ROLE_LABELS = {
 }
 
 const ROLE_BADGE_COLORS = {
-  owner: 'bg-pitch-600/20 text-pitch-400',
-  school_admin: 'bg-amber-500/20 text-amber-400',
-  head_of_pe: 'bg-amber-500/20 text-amber-400',
+  owner: 'bg-brand-primary-tint text-brand-primary',
+  school_admin: 'bg-brand-accent-tint text-brand-accent',
+  head_of_pe: 'bg-brand-accent-tint text-brand-accent',
   head_of_sport: 'bg-status-info-tint text-status-info',
   teacher: 'bg-border-default text-secondary',
   read_only: 'bg-subtle text-tertiary',
-  admin: 'bg-amber-500/20 text-amber-400',
+  admin: 'bg-brand-accent-tint text-brand-accent',
   coach: 'bg-border-default text-secondary',
 }
 
@@ -263,7 +263,7 @@ export default function HoDTeachers() {
                 <select
                   value={assignSport}
                   onChange={e => setAssignSport(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 >
                   {SPORTS.map(s => (
                     <option key={s} value={s}>{SPORT_ICONS[s]} {s.charAt(0).toUpperCase() + s.slice(1)}</option>
@@ -275,7 +275,7 @@ export default function HoDTeachers() {
                 <select
                   value={assignRole}
                   onChange={e => setAssignRole(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                  className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 >
                   {SPORT_ROLES.map(r => (
                     <option key={r.value} value={r.value}>{r.label}</option>
@@ -291,7 +291,7 @@ export default function HoDTeachers() {
                 </button>
                 <button
                   onClick={handleAssign}
-                  className="flex-1 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors"
+                  className="flex-1 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors"
                 >
                   Assign
                 </button>
@@ -323,12 +323,12 @@ export default function HoDTeachers() {
                   onClick={() => setNewRole(r.value)}
                   className={`w-full flex items-start gap-3 px-4 py-3 rounded-lg border text-left transition-colors ${
                     newRole === r.value
-                      ? 'border-pitch-500 bg-pitch-600/10'
+                      ? 'border-brand-primary bg-brand-primary-tint'
                       : 'border-border-strong hover:border-border-strong hover:bg-subtle'
                   }`}
                 >
                   <div className={`mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
-                    newRole === r.value ? 'border-pitch-500 bg-pitch-500' : 'border-border-strong'
+                    newRole === r.value ? 'border-brand-primary bg-brand-primary' : 'border-border-strong'
                   }`}>
                     {newRole === r.value && <div className="w-1.5 h-1.5 rounded-full bg-card" />}
                   </div>
@@ -352,7 +352,7 @@ export default function HoDTeachers() {
               <button
                 onClick={handleRoleChange}
                 disabled={roleLoading || newRole === roleModal.currentRole}
-                className="flex-1 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {roleLoading ? <div className="spinner w-4 h-4" /> : <Check className="w-4 h-4" />}
                 Save Role

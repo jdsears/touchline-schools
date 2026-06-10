@@ -108,7 +108,7 @@ export default function ClubLayout() {
           {loadError === 'error' && (
             <button
               onClick={() => { setLoading(true); loadClub() }}
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+              className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
             >
               Try Again
             </button>
@@ -185,7 +185,7 @@ export default function ClubLayout() {
                   className={`
                     flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                     ${isActive
-                      ? 'bg-pitch-600/20 text-pitch-400'
+                      ? 'bg-brand-primary-tint text-brand-primary'
                       : 'text-secondary hover:text-primary hover:bg-subtle'
                     }
                   `}
@@ -202,7 +202,7 @@ export default function ClubLayout() {
           <div className="px-3 py-2 border-t border-border-default">
             <div className="bg-subtle rounded-lg p-3">
               <p className="text-xs text-secondary mb-1">Registration link</p>
-              <p className="text-xs text-pitch-400 truncate font-mono">
+              <p className="text-xs text-brand-primary truncate font-mono">
                 /school/{slug}/register
               </p>
             </div>

@@ -125,7 +125,7 @@ function ImpersonationBanner() {
   }
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-[60] bg-amber-500 text-primary px-4 py-1.5 flex items-center justify-between text-sm font-medium">
+    <div className="fixed top-0 left-0 right-0 z-[60] bg-brand-accent text-primary px-4 py-1.5 flex items-center justify-between text-sm font-medium">
       <span>Viewing as: {impersonating} (test persona)</span>
       <button
         onClick={handleEnd}
@@ -189,7 +189,7 @@ export default function PupilLayout() {
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <User className="w-5 h-5 text-amber-400" />
+            <User className="w-5 h-5 text-brand-accent" />
             <span className="text-sm font-semibold text-white">My Portal</span>
           </div>
           <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center">

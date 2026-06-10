@@ -45,7 +45,7 @@ export default function PupilClips({ pupilId }) {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loader2 className="w-6 h-6 animate-spin text-pitch-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -69,7 +69,7 @@ export default function PupilClips({ pupilId }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="card overflow-hidden cursor-pointer hover:ring-1 hover:ring-pitch-500/50 transition-all"
+            className="card overflow-hidden cursor-pointer hover:ring-1 hover:ring-brand-primary transition-all"
             onClick={() => openClip(clip)}
           >
             <div className="aspect-video bg-subtle relative">
@@ -95,10 +95,10 @@ export default function PupilClips({ pupilId }) {
               <h3 className="font-medium text-primary text-sm line-clamp-1">{clip.title}</h3>
               <p className="text-xs text-secondary mt-1">{clip.video_title}</p>
               {clip.feedback && (
-                <div className="mt-2 p-2 bg-pitch-500/10 rounded-lg">
+                <div className="mt-2 p-2 bg-brand-primary-tint rounded-lg">
                   <div className="flex items-center gap-1 mb-1">
-                    <MessageSquare className="w-3 h-3 text-pitch-400" />
-                    <span className="text-xs text-pitch-400 font-medium">Coach Feedback</span>
+                    <MessageSquare className="w-3 h-3 text-brand-primary" />
+                    <span className="text-xs text-brand-primary font-medium">Coach Feedback</span>
                   </div>
                   <p className="text-xs text-secondary line-clamp-2">{clip.feedback}</p>
                 </div>
@@ -106,7 +106,7 @@ export default function PupilClips({ pupilId }) {
               {clip.rating && (
                 <div className="mt-1 flex items-center gap-1">
                   {Array.from({ length: clip.rating }).map((_, i) => (
-                    <Star key={i} className="w-3 h-3 text-energy-400 fill-energy-400" />
+                    <Star key={i} className="w-3 h-3 text-brand-accent fill-energy-400" />
                   ))}
                 </div>
               )}
@@ -157,8 +157,8 @@ export default function PupilClips({ pupilId }) {
               {(activeClip.feedback || activeClip.description) && (
                 <div className="p-4">
                   {activeClip.feedback && (
-                    <div className="p-3 bg-pitch-500/10 rounded-lg mb-3">
-                      <p className="text-xs text-pitch-400 font-medium mb-1">Coach Feedback</p>
+                    <div className="p-3 bg-brand-primary-tint rounded-lg mb-3">
+                      <p className="text-xs text-brand-primary font-medium mb-1">Coach Feedback</p>
                       <p className="text-sm text-primary">{activeClip.feedback}</p>
                     </div>
                   )}

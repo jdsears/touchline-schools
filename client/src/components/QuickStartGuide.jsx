@@ -52,9 +52,9 @@ const steps = [
 ]
 
 const colorMap = {
-  pitch: 'bg-pitch-500/20 text-pitch-400',
+  pitch: 'bg-brand-primary-tint text-brand-primary',
   blue: 'bg-status-info-tint text-status-info',
-  energy: 'bg-energy-500/20 text-energy-400',
+  energy: 'bg-brand-accent-tint text-brand-accent',
   purple: 'bg-purple-500/20 text-purple-400',
 }
 
@@ -119,9 +119,9 @@ export default function QuickStartGuide({ isOpen, onClose }) {
               key={i}
               className={`h-1.5 rounded-full transition-all duration-300 ${
                 i === currentStep
-                  ? 'w-6 bg-pitch-500'
+                  ? 'w-6 bg-brand-primary'
                   : i < currentStep
-                    ? 'w-1.5 bg-pitch-500/40'
+                    ? 'w-1.5 bg-brand-primary-tint'
                     : 'w-1.5 bg-border-default'
               }`}
             />

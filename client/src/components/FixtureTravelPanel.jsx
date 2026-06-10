@@ -64,9 +64,9 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
       <div className="bg-subtle rounded-xl p-4 space-y-2">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-primary flex items-center gap-2">
-            <ModeIcon className="w-4 h-4 text-pitch-400" /> Travel: {mode.label}
+            <ModeIcon className="w-4 h-4 text-brand-primary" /> Travel: {mode.label}
           </h3>
-          <button onClick={() => setEditing(true)} className="text-xs text-pitch-400 hover:text-pitch-300">Edit</button>
+          <button onClick={() => setEditing(true)} className="text-xs text-brand-primary hover:text-brand-primary">Edit</button>
         </div>
         {travel.departure_time && (
           <p className="text-sm text-secondary flex items-center gap-1.5">
@@ -105,7 +105,7 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
       <div className="flex flex-wrap gap-1.5">
         {MODES.map(m => (
           <button key={m.value} onClick={() => setForm(f => ({ ...f, transportMode: m.value }))}
-            className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${form.transportMode === m.value ? 'bg-pitch-600 text-on-dark' : 'bg-border-default text-secondary hover:bg-navy-600'}`}>
+            className={`flex items-center gap-1 px-2.5 py-1 rounded text-xs ${form.transportMode === m.value ? 'bg-brand-primary text-on-dark' : 'bg-border-default text-secondary hover:bg-navy-600'}`}>
             <m.icon className="w-3 h-3" /> {m.label}
           </button>
         ))}
@@ -129,7 +129,7 @@ export default function FixtureTravelPanel({ matchId, isAway }) {
       <div className="flex justify-end gap-2 pt-1">
         <button onClick={() => setEditing(false)} className="px-3 py-1.5 text-xs text-secondary hover:text-primary">Cancel</button>
         <button onClick={handleSave} disabled={saving}
-          className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-500 disabled:opacity-50 text-on-dark rounded-lg text-xs">
+          className="flex items-center gap-1 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-xs">
           {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
           Save
         </button>

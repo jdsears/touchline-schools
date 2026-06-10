@@ -51,7 +51,7 @@ export default function FixtureDefaultsTab({ access }) {
         <h2 className="text-xl font-semibold text-primary">Fixture Defaults</h2>
         <p className="text-sm text-secondary mt-1">
           Default settings applied when creating new fixtures.
-          {!canEdit && <span className="ml-2 text-amber-400">View only.</span>}
+          {!canEdit && <span className="ml-2 text-brand-accent">View only.</span>}
         </p>
       </div>
 
@@ -64,7 +64,7 @@ export default function FixtureDefaultsTab({ access }) {
               <select
                 value={form.sport_key}
                 onChange={e => setForm(f => ({ ...f, sport_key: e.target.value }))}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500 capitalize"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary capitalize"
               >
                 {SPORTS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
               </select>
@@ -75,7 +75,7 @@ export default function FixtureDefaultsTab({ access }) {
                 type="number"
                 value={form.match_duration_minutes}
                 onChange={e => setForm(f => ({ ...f, match_duration_minutes: parseInt(e.target.value) || 90 }))}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
               />
             </div>
           </div>
@@ -86,7 +86,7 @@ export default function FixtureDefaultsTab({ access }) {
               value={form.default_home_ground_address}
               onChange={e => setForm(f => ({ ...f, default_home_ground_address: e.target.value }))}
               placeholder="e.g. School playing fields, High Street, Town"
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
             />
           </div>
           <div>
@@ -94,7 +94,7 @@ export default function FixtureDefaultsTab({ access }) {
             <select
               value={form.default_travel_arrangement}
               onChange={e => setForm(f => ({ ...f, default_travel_arrangement: e.target.value }))}
-              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-pitch-500"
+              className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
             >
               {TRAVEL.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -102,7 +102,7 @@ export default function FixtureDefaultsTab({ access }) {
           <button
             type="submit"
             disabled={!!saving}
-            className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
             Save Default

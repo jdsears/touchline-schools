@@ -197,7 +197,7 @@ export default function PupilRadarChart({ pupil, teamPlayers }) {
                 onClick={() => setView(v.id)}
                 className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors ${
                   view === v.id
-                    ? 'bg-pitch-500 text-on-dark'
+                    ? 'bg-brand-primary text-on-dark'
                     : 'text-secondary hover:text-primary'
                 }`}
               >
@@ -245,7 +245,7 @@ export default function PupilRadarChart({ pupil, teamPlayers }) {
                       value={searchTerm}
                       onChange={e => setSearchTerm(e.target.value)}
                       placeholder="Search pupils..."
-                      className="w-full pl-8 pr-3 py-1.5 text-sm bg-subtle border border-border-strong rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+                      className="w-full pl-8 pr-3 py-1.5 text-sm bg-subtle border border-border-strong rounded-lg text-primary placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
                       autoFocus
                     />
                   </div>

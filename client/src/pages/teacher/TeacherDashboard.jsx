@@ -7,8 +7,8 @@ import {
 } from 'lucide-react'
 
 const TYPE_PILL = {
-  fixture: 'bg-amber-500/20 text-amber-400',
-  training: 'bg-pitch-500/20 text-pitch-400',
+  fixture: 'bg-brand-accent-tint text-brand-accent',
+  training: 'bg-brand-primary-tint text-brand-primary',
   lesson: 'bg-sky-500/20 text-sky-400',
 }
 
@@ -27,7 +27,7 @@ function fmtDate(d) {
 function resultBadge(r) {
   if (!r || r.score_for == null) return null
   const w = r.score_for > r.score_against ? 'W' : r.score_for < r.score_against ? 'L' : 'D'
-  const c = { W: 'text-status-success', L: 'text-status-error', D: 'text-amber-400' }
+  const c = { W: 'text-status-success', L: 'text-status-error', D: 'text-brand-accent' }
   return <span className={`text-xs font-bold ${c[w]}`}>{w} {r.score_for}-{r.score_against}</span>
 }
 
@@ -57,7 +57,7 @@ export default function TeacherDashboard() {
       .finally(() => setLoading(false))
   }, [navigate])
 
-  if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-pitch-400 animate-spin" /></div>
+  if (loading) return <div className="flex items-center justify-center py-20"><Loader2 className="w-8 h-8 text-brand-primary animate-spin" /></div>
 
   const todayDate = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   const todayItems = [
@@ -76,7 +76,7 @@ export default function TeacherDashboard() {
       {/* Today strip */}
       <div className="bg-card rounded-xl border border-border-default p-5">
         <h2 className="text-base font-semibold text-primary flex items-center gap-2 mb-4">
-          <Calendar className="w-4 h-4 text-pitch-400" />Today
+          <Calendar className="w-4 h-4 text-brand-primary" />Today
         </h2>
         {todayItems.length === 0 ? (
           <p className="text-tertiary text-sm text-center py-4">Nothing scheduled today</p>
@@ -104,9 +104,9 @@ export default function TeacherDashboard() {
         <div className="bg-card rounded-xl border border-border-default p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-primary flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-pitch-400" />My Classes
+              <GraduationCap className="w-4 h-4 text-brand-primary" />My Classes
             </h2>
-            <Link to="/teacher/classes" className="text-xs text-pitch-400 hover:text-pitch-300">View all</Link>
+            <Link to="/teacher/classes" className="text-xs text-brand-primary hover:text-brand-primary">View all</Link>
           </div>
           {classes.length === 0 ? <p className="text-tertiary text-sm text-center py-6">No classes assigned yet</p> : (
             <div className="space-y-2">
@@ -137,9 +137,9 @@ export default function TeacherDashboard() {
         <div className="bg-card rounded-xl border border-border-default p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-primary flex items-center gap-2">
-              <Shield className="w-4 h-4 text-amber-400" />My Teams
+              <Shield className="w-4 h-4 text-brand-accent" />My Teams
             </h2>
-            <Link to="/teacher/teams" className="text-xs text-pitch-400 hover:text-pitch-300">View all</Link>
+            <Link to="/teacher/teams" className="text-xs text-brand-primary hover:text-brand-primary">View all</Link>
           </div>
           {teams.length === 0 ? <p className="text-tertiary text-sm text-center py-6">No teams assigned yet</p> : (
             <div className="space-y-2">
@@ -167,13 +167,13 @@ export default function TeacherDashboard() {
       {attention.length > 0 && (
         <div className="bg-card rounded-xl border border-border-default p-5">
           <h2 className="text-base font-semibold text-primary flex items-center gap-2 mb-4">
-            <AlertTriangle className="w-4 h-4 text-amber-400" />Pupils needing attention
+            <AlertTriangle className="w-4 h-4 text-brand-accent" />Pupils needing attention
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
             {attention.map(a => (
               <Link key={a.pupil_id} to={`/teacher/hod/pupils/${a.pupil_id}`} className="flex items-center gap-3 p-3 rounded-lg bg-subtle hover:bg-subtle transition-colors">
-                <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center shrink-0">
-                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <div className="w-8 h-8 rounded-full bg-brand-accent-tint flex items-center justify-center shrink-0">
+                  <AlertTriangle className="w-4 h-4 text-brand-accent" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="text-sm text-primary truncate">{a.name}</div>

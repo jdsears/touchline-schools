@@ -25,16 +25,16 @@ const SEVERITY_OPTIONS = [
 
 const SEVERITY_STYLES = {
   low: 'bg-status-info-tint text-status-info',
-  medium: 'bg-amber-500/20 text-amber-400',
+  medium: 'bg-brand-accent-tint text-brand-accent',
   high: 'bg-orange-500/20 text-orange-400',
   critical: 'bg-status-error-tint text-status-error',
 }
 
 const STATUS_STYLES = {
-  open: 'bg-amber-500/20 text-amber-400',
+  open: 'bg-brand-accent-tint text-brand-accent',
   investigating: 'bg-status-info-tint text-status-info',
   referred: 'bg-purple-500/20 text-purple-400',
-  resolved: 'bg-pitch-600/20 text-pitch-400',
+  resolved: 'bg-brand-primary-tint text-brand-primary',
   closed: 'bg-border-default text-secondary',
 }
 
@@ -231,7 +231,7 @@ export default function ClubSafeguardingIncidents() {
         </div>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
         >
           <Plus className="w-4 h-4" />
           Report New Incident
@@ -239,11 +239,11 @@ export default function ClubSafeguardingIncidents() {
       </div>
 
       {/* Confidentiality notice */}
-      <div className="flex items-start gap-3 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl">
-        <Lock className="w-5 h-5 text-amber-400 mt-0.5 shrink-0" />
+      <div className="flex items-start gap-3 p-4 bg-brand-accent-tint border border-brand-accent rounded-xl">
+        <Lock className="w-5 h-5 text-brand-accent mt-0.5 shrink-0" />
         <div>
-          <p className="text-sm font-medium text-amber-400">Confidential Records</p>
-          <p className="text-xs text-amber-400/80 mt-1">
+          <p className="text-sm font-medium text-brand-accent">Confidential Records</p>
+          <p className="text-xs text-brand-accent mt-1">
             These records are confidential and must be handled in accordance with your school's safeguarding policy
             and data protection requirements. Do not share incident details outside of authorised personnel.
           </p>
@@ -263,7 +263,7 @@ export default function ClubSafeguardingIncidents() {
                 required
                 value={form.date}
                 onChange={(e) => setForm(f => ({ ...f, date: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -272,7 +272,7 @@ export default function ClubSafeguardingIncidents() {
                 required
                 value={form.type}
                 onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 {INCIDENT_TYPES.map(t => (
                   <option key={t.value} value={t.value}>{t.label}</option>
@@ -285,7 +285,7 @@ export default function ClubSafeguardingIncidents() {
                 required
                 value={form.severity}
                 onChange={(e) => setForm(f => ({ ...f, severity: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               >
                 {SEVERITY_OPTIONS.map(s => (
                   <option key={s.value} value={s.value}>{s.label}</option>
@@ -301,7 +301,7 @@ export default function ClubSafeguardingIncidents() {
                 type="text"
                 value={form.people_involved}
                 onChange={(e) => setForm(f => ({ ...f, people_involved: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="Names of people involved"
               />
             </div>
@@ -311,7 +311,7 @@ export default function ClubSafeguardingIncidents() {
                 type="text"
                 value={form.location}
                 onChange={(e) => setForm(f => ({ ...f, location: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                 placeholder="Where did this occur?"
               />
             </div>
@@ -324,7 +324,7 @@ export default function ClubSafeguardingIncidents() {
               value={form.description}
               onChange={(e) => setForm(f => ({ ...f, description: e.target.value }))}
               rows={4}
-              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent resize-none"
+              className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent resize-none"
               placeholder="Describe the incident in detail. Include what happened, who was involved, and any immediate actions taken..."
             />
           </div>
@@ -340,7 +340,7 @@ export default function ClubSafeguardingIncidents() {
             <button
               type="submit"
               disabled={saving}
-              className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
+              className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
             >
               {saving ? 'Submitting...' : 'Submit Report'}
             </button>
@@ -488,7 +488,7 @@ export default function ClubSafeguardingIncidents() {
                             type="text"
                             value={actionText}
                             onChange={(e) => setActionText(e.target.value)}
-                            className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                            className="flex-1 bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
                             placeholder="Record an action taken..."
                             onKeyDown={(e) => {
                               if (e.key === 'Enter' && !e.shiftKey) {
@@ -500,7 +500,7 @@ export default function ClubSafeguardingIncidents() {
                           <button
                             onClick={() => handleAddAction(incident.id)}
                             disabled={saving || !actionText.trim()}
-                            className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
+                            className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors disabled:opacity-50"
                           >
                             Add
                           </button>

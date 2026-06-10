@@ -174,15 +174,15 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
         className="w-full flex items-center justify-between p-4 hover:bg-subtle transition-colors"
       >
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg bg-pitch-500/20 flex items-center justify-center">
-            <Clock className="w-4 h-4 text-pitch-400" />
+          <div className="w-9 h-9 rounded-lg bg-brand-primary-tint flex items-center justify-center">
+            <Clock className="w-4 h-4 text-brand-primary" />
           </div>
           <div className="text-left">
             <h3 className="font-display font-semibold text-primary text-sm">Playing Time Calculator</h3>
             <p className="text-xs text-secondary">
               Fair rotation plan for {squadPlayers.length} pupils
               {wasLimited && (
-                <span className="text-amber-400 ml-1">(limited from {allSelected.length} to match day {maxSquad})</span>
+                <span className="text-brand-accent ml-1">(limited from {allSelected.length} to match day {maxSquad})</span>
               )}
             </p>
           </div>
@@ -202,7 +202,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                   type="number"
                   value={matchDuration}
                   onChange={e => setMatchDuration(Math.max(1, parseInt(e.target.value) || 0))}
-                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-brand-primary focus:outline-none"
                 />
                 <span className="text-xs text-tertiary">min</span>
               </div>
@@ -213,7 +213,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                 type="number"
                 value={playersOnField}
                 onChange={e => setPlayersOnField(Math.max(1, parseInt(e.target.value) || 0))}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-brand-primary focus:outline-none"
               />
             </div>
             <div>
@@ -222,7 +222,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                 value={numPeriods}
                 onChange={e => setNumPeriods(parseInt(e.target.value))}
                 disabled={rollingSubInterval > 0}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none disabled:opacity-50"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-brand-primary focus:outline-none disabled:opacity-50"
               >
                 <option value={2}>2 halves</option>
                 <option value={4}>4 quarters</option>
@@ -233,7 +233,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
               <select
                 value={rollingSubInterval}
                 onChange={e => setRollingSubInterval(parseInt(e.target.value))}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-pitch-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:border-brand-primary focus:outline-none"
               >
                 <option value={0}>Off (breaks only)</option>
                 <option value={5}>Every 5 min</option>
@@ -257,7 +257,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                 }}
                 className={`px-2 py-1 rounded text-xs transition-colors ${
                   matchDuration === cfg.duration && numPeriods === cfg.periods && playersOnField === cfg.playersOnField
-                    ? 'bg-pitch-500/30 text-pitch-400 border border-pitch-500/30'
+                    ? 'bg-brand-primary-tint text-brand-primary border border-brand-primary'
                     : 'bg-subtle text-secondary hover:text-primary border border-border-strong'
                 }`}
               >
@@ -270,15 +270,15 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
             <>
               {/* Summary */}
               <div className={`p-3 rounded-lg flex items-center gap-3 ${
-                result.allEqual ? 'bg-status-success-tint border border-status-success' : 'bg-amber-500/10 border border-amber-500/20'
+                result.allEqual ? 'bg-status-success-tint border border-status-success' : 'bg-brand-accent-tint border border-brand-accent'
               }`}>
                 {result.allEqual ? (
                   <Check className="w-5 h-5 text-status-success flex-shrink-0" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                  <AlertCircle className="w-5 h-5 text-brand-accent flex-shrink-0" />
                 )}
                 <div className="text-sm">
-                  <p className={result.allEqual ? 'text-status-success' : 'text-amber-400'}>
+                  <p className={result.allEqual ? 'text-status-success' : 'text-brand-accent'}>
                     {result.allEqual
                       ? `Equal playing time: ~${result.idealMinutesPerPlayer} min each (${Math.round((result.idealMinutesPerPlayer / matchDuration) * 100)}%)`
                       : `Range: ${result.minMinutes}-${result.maxMinutes} min (target: ~${result.idealMinutesPerPlayer} min)`
@@ -301,7 +301,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {result.subTimes.map((t, i) => (
-                      <span key={i} className="px-2 py-1 bg-pitch-500/20 text-pitch-400 rounded text-sm font-medium">
+                      <span key={i} className="px-2 py-1 bg-brand-primary-tint text-brand-primary rounded text-sm font-medium">
                         {t}'
                       </span>
                     ))}
@@ -366,7 +366,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                         {slot.segments.map((seg, sIdx) => (
                           <div
                             key={sIdx}
-                            className="absolute top-0.5 bottom-0.5 bg-pitch-500/60 rounded-sm"
+                            className="absolute top-0.5 bottom-0.5 bg-brand-primary-tint rounded-sm"
                             style={{
                               left: `${(seg.start / matchDuration) * 100}%`,
                               width: `${((seg.end - seg.start) / matchDuration) * 100}%`,
@@ -399,7 +399,7 @@ export default function PlayingTimeCalculator({ squad, teamFormat = 11, formatio
                     <div className="col-span-2 text-center">
                       <span className={`px-1.5 py-0.5 rounded text-xs ${
                         slot.percentage >= 45 ? 'bg-status-success-tint text-status-success' :
-                        slot.percentage >= 30 ? 'bg-amber-500/20 text-amber-400' :
+                        slot.percentage >= 30 ? 'bg-brand-accent-tint text-brand-accent' :
                         'bg-status-error-tint text-status-error'
                       }`}>
                         {slot.percentage}%

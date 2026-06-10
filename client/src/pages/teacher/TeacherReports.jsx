@@ -8,12 +8,12 @@ const EFFORT_GRADES = ['needs_improvement', 'good', 'very_good', 'excellent']
 
 const GRADE_COLORS = {
   emerging: 'bg-status-error-tint text-status-error border-status-error',
-  developing: 'bg-amber-400/20 text-amber-400 border-amber-400/30',
-  secure: 'bg-pitch-600/20 text-pitch-400 border-pitch-600/30',
+  developing: 'bg-brand-accent-tint text-brand-accent border-brand-accent',
+  secure: 'bg-brand-primary-tint text-brand-primary border-brand-primary',
   excelling: 'bg-status-info-tint text-status-info border-status-info',
   needs_improvement: 'bg-status-error-tint text-status-error border-status-error',
-  good: 'bg-amber-400/20 text-amber-400 border-amber-400/30',
-  very_good: 'bg-pitch-600/20 text-pitch-400 border-pitch-600/30',
+  good: 'bg-brand-accent-tint text-brand-accent border-brand-accent',
+  very_good: 'bg-brand-primary-tint text-brand-primary border-brand-primary',
   excellent: 'bg-status-info-tint text-status-info border-status-info',
 }
 
@@ -195,7 +195,7 @@ export default function TeacherReports() {
               <span className="text-tertiary text-xs">{started - submitted} in draft · {total - started} not started</span>
             </div>
             <div className="h-2 bg-subtle rounded-full overflow-hidden">
-              <div className="h-full bg-pitch-500 rounded-full transition-all" style={{ width: `${pct}%` }} />
+              <div className="h-full bg-brand-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
             </div>
           </div>
         )
@@ -208,12 +208,12 @@ export default function TeacherReports() {
           const isSubmitted = report.status === 'submitted'
 
           return (
-            <div key={pupil.id} className={`bg-card rounded-xl border ${isSubmitted ? 'border-pitch-600/30' : 'border-border-default'} p-5`}>
+            <div key={pupil.id} className={`bg-card rounded-xl border ${isSubmitted ? 'border-brand-primary' : 'border-border-default'} p-5`}>
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-base font-semibold text-primary">
                     {pupil.last_name}, {pupil.first_name}
-                    {isSubmitted && <Check className="w-4 h-4 text-pitch-400 inline ml-2" />}
+                    {isSubmitted && <Check className="w-4 h-4 text-brand-primary inline ml-2" />}
                   </h3>
                   <div className="flex items-center gap-2 mt-0.5">
                     <span className="text-xs text-secondary">Year {pupil.year_group}</span>
@@ -285,7 +285,7 @@ export default function TeacherReports() {
                   disabled={isSubmitted}
                   placeholder="Write your report comment..."
                   rows={3}
-                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500 resize-none disabled:opacity-60"
+                  className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary resize-none disabled:opacity-60"
                 />
               </div>
 
@@ -303,7 +303,7 @@ export default function TeacherReports() {
                   <button
                     onClick={() => submitReport(pupil.id)}
                     disabled={saving[pupil.id]}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+                    className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
                   >
                     <Check className="w-3.5 h-3.5" />
                     Submit

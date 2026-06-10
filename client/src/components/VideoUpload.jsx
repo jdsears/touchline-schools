@@ -287,8 +287,8 @@ export default function VideoUpload({
           onDrop={handleDrop}
           className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-colors ${
             isDragging
-              ? 'border-pitch-500 bg-pitch-500/10'
-              : 'border-border-strong hover:border-pitch-500 hover:bg-subtle'
+              ? 'border-brand-primary bg-brand-primary-tint'
+              : 'border-border-strong hover:border-brand-primary hover:bg-subtle'
           }`}
         >
           <input
@@ -298,7 +298,7 @@ export default function VideoUpload({
             onChange={handleFileSelect}
             className="hidden"
           />
-          <Upload className={`w-12 h-12 mx-auto mb-4 ${isDragging ? 'text-pitch-400' : 'text-tertiary'}`} />
+          <Upload className={`w-12 h-12 mx-auto mb-4 ${isDragging ? 'text-brand-primary' : 'text-tertiary'}`} />
           <p className="text-primary font-medium mb-2">
             {isDragging ? 'Drop video here' : 'Drag & drop or tap to select video'}
           </p>
@@ -316,7 +316,7 @@ export default function VideoUpload({
         <div className="bg-subtle rounded-xl p-4 space-y-4">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-lg bg-border-default flex items-center justify-center shrink-0">
-              <Film className="w-6 h-6 text-pitch-400" />
+              <Film className="w-6 h-6 text-brand-primary" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-primary font-medium truncate">{file.name}</p>
@@ -416,7 +416,7 @@ export default function VideoUpload({
             <div className="w-12 h-12 rounded-lg bg-border-default flex items-center justify-center shrink-0">
               {paused
                 ? <WifiOff className="w-6 h-6 text-status-warning" />
-                : <Loader2 className="w-6 h-6 text-pitch-400 animate-spin" />
+                : <Loader2 className="w-6 h-6 text-brand-primary animate-spin" />
               }
             </div>
             <div className="flex-1 min-w-0">
@@ -428,7 +428,7 @@ export default function VideoUpload({
           </div>
           <div className="h-2 bg-border-default rounded-full overflow-hidden mb-2">
             <div
-              className={`h-full transition-all duration-300 ${paused ? 'bg-status-warning' : 'bg-pitch-500'}`}
+              className={`h-full transition-all duration-300 ${paused ? 'bg-status-warning' : 'bg-brand-primary'}`}
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -469,10 +469,10 @@ export default function VideoUpload({
 
       {/* Ready */}
       {status === 'ready' && (
-        <div className="bg-pitch-500/10 border border-pitch-500/30 rounded-xl p-4">
+        <div className="bg-brand-primary-tint border border-brand-primary rounded-xl p-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-pitch-500/20 flex items-center justify-center shrink-0">
-              <CheckCircle className="w-6 h-6 text-pitch-400" />
+            <div className="w-12 h-12 rounded-lg bg-brand-primary-tint flex items-center justify-center shrink-0">
+              <CheckCircle className="w-6 h-6 text-brand-primary" />
             </div>
             <div>
               <p className="text-primary font-medium">Video Ready</p>

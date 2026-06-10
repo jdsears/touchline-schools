@@ -334,10 +334,10 @@ export default function TeacherLounge() {
                     </div>
                     <button
                       onClick={() => copyPendingInviteLink(invite)}
-                      className="p-1 text-secondary hover:text-pitch-400"
+                      className="p-1 text-secondary hover:text-brand-primary"
                       title="Copy invite link"
                     >
-                      {copiedInviteId === invite.id ? <Check className="w-4 h-4 text-pitch-400" /> : <Copy className="w-4 h-4" />}
+                      {copiedInviteId === invite.id ? <Check className="w-4 h-4 text-brand-primary" /> : <Copy className="w-4 h-4" />}
                     </button>
                     <button
                       onClick={() => handleCancelInvite(invite.id)}
@@ -391,7 +391,7 @@ export default function TeacherLounge() {
                       <div className="flex items-center gap-2 text-xs text-tertiary">
                         <span>{formatFileSize(doc.file_size)}</span>
                         {doc.visible_to_parents && (
-                          <span className="flex items-center gap-1 text-pitch-400">
+                          <span className="flex items-center gap-1 text-brand-primary">
                             <Eye className="w-3 h-3" />
                             Parents
                           </span>
@@ -403,14 +403,14 @@ export default function TeacherLounge() {
                         href={doc.file_path}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="p-1 text-secondary hover:text-pitch-400"
+                        className="p-1 text-secondary hover:text-brand-primary"
                         title="Download"
                       >
                         <Download className="w-4 h-4" />
                       </a>
                       <button
                         onClick={() => handleToggleVisibility(doc)}
-                        className={`p-1 ${doc.visible_to_parents ? 'text-pitch-400' : 'text-secondary'} hover:text-pitch-400`}
+                        className={`p-1 ${doc.visible_to_parents ? 'text-brand-primary' : 'text-secondary'} hover:text-brand-primary`}
                         title={doc.visible_to_parents ? 'Hide from parents' : 'Show to parents'}
                       >
                         {doc.visible_to_parents ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
@@ -461,8 +461,8 @@ export default function TeacherLounge() {
                     <p className="text-lg font-bold text-status-info">{suggestionStats.in_review || 0}</p>
                     <p className="text-xs text-tertiary">In Review</p>
                   </div>
-                  <div className="bg-pitch-500/10 rounded-lg p-2 text-center">
-                    <p className="text-lg font-bold text-pitch-400">{suggestionStats.implemented || 0}</p>
+                  <div className="bg-brand-primary-tint rounded-lg p-2 text-center">
+                    <p className="text-lg font-bold text-brand-primary">{suggestionStats.implemented || 0}</p>
                     <p className="text-xs text-tertiary">Done</p>
                   </div>
                 </div>
@@ -552,9 +552,9 @@ export default function TeacherLounge() {
 
             {inviteSuccess ? (
               <div className="space-y-4">
-                <div className="flex items-center gap-3 p-4 bg-pitch-500/10 border border-pitch-500/30 rounded-lg">
-                  <Check className="w-5 h-5 text-pitch-400" />
-                  <p className="text-pitch-400">Invite sent to {inviteSuccess.invite?.email}</p>
+                <div className="flex items-center gap-3 p-4 bg-brand-primary-tint border border-brand-primary rounded-lg">
+                  <Check className="w-5 h-5 text-brand-primary" />
+                  <p className="text-brand-primary">Invite sent to {inviteSuccess.invite?.email}</p>
                 </div>
 
                 {inviteSuccess.inviteLink && (
@@ -737,7 +737,7 @@ export default function TeacherLounge() {
               <div className="flex items-center justify-between p-4 bg-subtle rounded-lg">
                 <div className="flex items-center gap-3">
                   {uploadVisibleToParents ? (
-                    <Eye className="w-5 h-5 text-pitch-400" />
+                    <Eye className="w-5 h-5 text-brand-primary" />
                   ) : (
                     <EyeOff className="w-5 h-5 text-secondary" />
                   )}
@@ -756,7 +756,7 @@ export default function TeacherLounge() {
                   onClick={() => setUploadVisibleToParents(!uploadVisibleToParents)}
                   className={`
                     relative w-12 h-6 rounded-full transition-colors
-                    ${uploadVisibleToParents ? 'bg-pitch-500' : 'bg-navy-600'}
+                    ${uploadVisibleToParents ? 'bg-brand-primary' : 'bg-navy-600'}
                   `}
                 >
                   <span
@@ -840,9 +840,9 @@ export default function TeacherLounge() {
                       <h3 className="font-semibold text-white text-lg">{selectedSuggestion.title}</h3>
                       <div className="flex items-center gap-2 mt-1">
                         <span className={`text-xs px-2 py-0.5 rounded-full ${
-                          selectedSuggestion.category === 'training' ? 'bg-pitch-500/20 text-pitch-400' :
+                          selectedSuggestion.category === 'training' ? 'bg-brand-primary-tint text-brand-primary' :
                           selectedSuggestion.category === 'communication' ? 'bg-status-info-tint text-status-info' :
-                          selectedSuggestion.category === 'equipment' ? 'bg-energy-500/20 text-energy-400' :
+                          selectedSuggestion.category === 'equipment' ? 'bg-brand-accent-tint text-brand-accent' :
                           selectedSuggestion.category === 'schedule' ? 'bg-status-warning-tint text-status-warning' :
                           'bg-navy-600 text-secondary'
                         }`}>
@@ -858,8 +858,8 @@ export default function TeacherLounge() {
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       selectedSuggestion.status === 'pending' ? 'bg-status-warning-tint text-status-warning' :
                       selectedSuggestion.status === 'in_review' ? 'bg-status-info-tint text-status-info' :
-                      selectedSuggestion.status === 'acknowledged' ? 'bg-pitch-500/20 text-pitch-400' :
-                      selectedSuggestion.status === 'implemented' ? 'bg-energy-500/20 text-energy-400' :
+                      selectedSuggestion.status === 'acknowledged' ? 'bg-brand-primary-tint text-brand-primary' :
+                      selectedSuggestion.status === 'implemented' ? 'bg-brand-accent-tint text-brand-accent' :
                       'bg-status-error-tint text-status-error'
                     }`}>
                       {selectedSuggestion.status === 'in_review' ? 'In Review' :
@@ -877,8 +877,8 @@ export default function TeacherLounge() {
 
                 {/* Previous Response */}
                 {selectedSuggestion.coach_response && (
-                  <div className="bg-pitch-500/10 border border-pitch-500/30 rounded-lg p-4 mb-4">
-                    <p className="text-xs text-pitch-400 mb-1">Previous Response:</p>
+                  <div className="bg-brand-primary-tint border border-brand-primary rounded-lg p-4 mb-4">
+                    <p className="text-xs text-brand-primary mb-1">Previous Response:</p>
                     <p className="text-secondary text-sm">{selectedSuggestion.coach_response}</p>
                     <p className="text-xs text-tertiary mt-2">
                       - {selectedSuggestion.responded_by_name}
@@ -964,15 +964,15 @@ export default function TeacherLounge() {
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
                           suggestion.status === 'pending' ? 'bg-status-warning-tint' :
                           suggestion.status === 'in_review' ? 'bg-status-info-tint' :
-                          suggestion.status === 'acknowledged' ? 'bg-pitch-500/20' :
-                          suggestion.status === 'implemented' ? 'bg-energy-500/20' :
+                          suggestion.status === 'acknowledged' ? 'bg-brand-primary-tint' :
+                          suggestion.status === 'implemented' ? 'bg-brand-accent-tint' :
                           'bg-border-default'
                         }`}>
                           <Lightbulb className={`w-4 h-4 ${
                             suggestion.status === 'pending' ? 'text-status-warning' :
                             suggestion.status === 'in_review' ? 'text-status-info' :
-                            suggestion.status === 'acknowledged' ? 'text-pitch-400' :
-                            suggestion.status === 'implemented' ? 'text-energy-400' :
+                            suggestion.status === 'acknowledged' ? 'text-brand-primary' :
+                            suggestion.status === 'implemented' ? 'text-brand-accent' :
                             'text-tertiary'
                           }`} />
                         </div>
@@ -989,8 +989,8 @@ export default function TeacherLounge() {
                         <span className={`text-xs px-2 py-0.5 rounded-full flex-shrink-0 ${
                           suggestion.status === 'pending' ? 'bg-status-warning-tint text-status-warning' :
                           suggestion.status === 'in_review' ? 'bg-status-info-tint text-status-info' :
-                          suggestion.status === 'acknowledged' ? 'bg-pitch-500/20 text-pitch-400' :
-                          suggestion.status === 'implemented' ? 'bg-energy-500/20 text-energy-400' :
+                          suggestion.status === 'acknowledged' ? 'bg-brand-primary-tint text-brand-primary' :
+                          suggestion.status === 'implemented' ? 'bg-brand-accent-tint text-brand-accent' :
                           'bg-status-error-tint text-status-error'
                         }`}>
                           {suggestion.status === 'in_review' ? 'In Review' :

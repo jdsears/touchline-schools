@@ -64,7 +64,7 @@ export default function SSOCallback() {
           <p className="text-secondary text-sm mb-6">{error}</p>
           <a
             href="/login"
-            className="inline-flex items-center gap-2 px-6 py-3 bg-pitch-600 hover:bg-pitch-700 text-white rounded-xl font-medium text-sm transition-colors"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-white rounded-xl font-medium text-sm transition-colors"
           >
             Back to sign in
           </a>
@@ -80,10 +80,10 @@ export default function SSOCallback() {
   return (
     <div className="min-h-screen bg-page flex items-center justify-center">
       <div className="text-center">
-        <div className="w-14 h-14 rounded-full bg-pitch-600/10 flex items-center justify-center mx-auto mb-4">
-          <Shield className="w-7 h-7 text-pitch-400" />
+        <div className="w-14 h-14 rounded-full bg-brand-primary-tint flex items-center justify-center mx-auto mb-4">
+          <Shield className="w-7 h-7 text-brand-primary" />
         </div>
-        <Loader2 className="w-6 h-6 text-pitch-400 animate-spin mx-auto mb-3" />
+        <Loader2 className="w-6 h-6 text-brand-primary animate-spin mx-auto mb-3" />
         <p className="text-secondary text-sm">Completing sign-in…</p>
       </div>
     </div>

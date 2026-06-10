@@ -30,7 +30,7 @@ export default function MedicalSendTab({ pupilId }) {
   if (error === 'forbidden') {
     return (
       <div className="bg-card rounded-xl border border-border-default p-8 text-center">
-        <AlertTriangle className="w-6 h-6 text-amber-400 mx-auto mb-2" />
+        <AlertTriangle className="w-6 h-6 text-brand-accent mx-auto mb-2" />
         <p className="text-sm text-secondary">You do not have permission to view medical or SEND records for this pupil.</p>
       </div>
     )
@@ -59,7 +59,7 @@ export default function MedicalSendTab({ pupilId }) {
                 <div className="text-xs text-tertiary uppercase tracking-wide mb-1.5">Emergency contact</div>
                 <div className="text-primary text-sm">{m.emergency_contact_name}</div>
                 {m.emergency_contact_phone && (
-                  <a href={`tel:${m.emergency_contact_phone}`} className="inline-flex items-center gap-1 text-pitch-400 hover:underline text-xs mt-0.5">
+                  <a href={`tel:${m.emergency_contact_phone}`} className="inline-flex items-center gap-1 text-brand-primary hover:underline text-xs mt-0.5">
                     <Phone className="w-3 h-3" />{m.emergency_contact_phone}
                   </a>
                 )}
@@ -71,7 +71,7 @@ export default function MedicalSendTab({ pupilId }) {
                 {m.last_reviewed_by_name && ` by ${m.last_reviewed_by_name}`}
               </div>
             )}
-            <p className="text-xs text-amber-400/80 italic pt-2">Verify against school nurse records before acting on clinical details.</p>
+            <p className="text-xs text-brand-accent italic pt-2">Verify against school nurse records before acting on clinical details.</p>
           </div>
         )}
       </div>

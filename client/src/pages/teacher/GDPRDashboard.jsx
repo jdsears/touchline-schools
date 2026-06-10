@@ -17,11 +17,11 @@ const CONSENT_LABELS = {
 }
 
 const STATUS_STYLES = {
-  pending: 'bg-amber-500/10 text-amber-400',
+  pending: 'bg-brand-accent-tint text-brand-accent',
   processing: 'bg-status-info-tint text-status-info',
-  ready: 'bg-pitch-500/10 text-pitch-400',
+  ready: 'bg-brand-primary-tint text-brand-primary',
   downloaded: 'bg-border-default text-secondary',
-  completed: 'bg-pitch-500/10 text-pitch-400',
+  completed: 'bg-brand-primary-tint text-brand-primary',
   failed: 'bg-status-error-tint text-status-error',
 }
 
@@ -59,7 +59,7 @@ export default function GDPRDashboard() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
-          <Shield className="w-7 h-7 text-pitch-400" />
+          <Shield className="w-7 h-7 text-brand-primary" />
           Data & Privacy (GDPR)
         </h1>
         <p className="text-secondary mt-1">
@@ -68,11 +68,11 @@ export default function GDPRDashboard() {
       </div>
 
       {/* Legal notice */}
-      <div className="bg-card rounded-xl border border-amber-400/20 p-5 mb-6">
+      <div className="bg-card rounded-xl border border-brand-accent p-5 mb-6">
         <div className="flex gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-brand-accent shrink-0 mt-0.5" />
           <div className="text-sm text-secondary space-y-1">
-            <p className="font-medium text-amber-400">UK GDPR Obligations</p>
+            <p className="font-medium text-brand-accent">UK GDPR Obligations</p>
             <p>
               Under UK GDPR, data subjects have the right to access their personal data (Article 15),
               rectify inaccurate data (Article 16), and request erasure (Article 17). Schools as data
@@ -99,7 +99,7 @@ export default function GDPRDashboard() {
             onClick={() => setActiveTab(tab.id)}
             className={`flex-1 py-2 px-4 rounded-lg text-sm font-medium transition-colors ${
               activeTab === tab.id
-                ? 'bg-pitch-600 text-on-dark'
+                ? 'bg-brand-primary text-on-dark'
                 : 'text-secondary hover:text-link hover:bg-subtle'
             }`}
           >
@@ -130,13 +130,13 @@ function OverviewTab({ overview, onRefresh }) {
           icon={User}
           label="Total Pupils"
           value={overview.total_pupils}
-          color="text-pitch-400"
+          color="text-brand-primary"
         />
         <StatCard
           icon={Clock}
           label="Pending Requests"
           value={overview.pending_requests?.reduce((s, r) => s + parseInt(r.count), 0) || 0}
-          color="text-amber-400"
+          color="text-brand-accent"
           warn={overview.pending_requests?.length > 0}
         />
         <StatCard
@@ -185,7 +185,7 @@ function OverviewTab({ overview, onRefresh }) {
                   </div>
                   <div className="h-1.5 bg-subtle rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-pitch-600 rounded-full"
+                      className="h-full bg-brand-primary rounded-full"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -201,7 +201,7 @@ function OverviewTab({ overview, onRefresh }) {
 
 function StatCard({ icon: Icon, label, value, color, warn }) {
   return (
-    <div className={`bg-card rounded-xl border p-5 ${warn ? 'border-amber-400/30' : 'border-border-default'}`}>
+    <div className={`bg-card rounded-xl border p-5 ${warn ? 'border-brand-accent' : 'border-border-default'}`}>
       <div className="flex items-center gap-3">
         <Icon className={`w-6 h-6 ${color}`} />
         <div>
@@ -290,7 +290,7 @@ function PupilsTab() {
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Search pupils..."
-          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-default rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+          className="w-full pl-10 pr-4 py-2.5 bg-card border border-border-default rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
         />
       </div>
 
@@ -456,11 +456,11 @@ function PupilGDPRRow({ pupil, expanded, onToggle, onExport, exportLoading, onDe
                       key={type}
                       className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs ${
                         granted
-                          ? 'bg-pitch-600/10 text-pitch-400'
+                          ? 'bg-brand-primary-tint text-brand-primary'
                           : 'bg-subtle text-tertiary'
                       }`}
                     >
-                      <CheckCircle className={`w-3 h-3 ${granted ? 'text-pitch-400' : 'text-tertiary'}`} />
+                      <CheckCircle className={`w-3 h-3 ${granted ? 'text-brand-primary' : 'text-tertiary'}`} />
                       {label}
                     </div>
                   )
@@ -520,7 +520,7 @@ function RequestsTab() {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     {r.request_type === 'export'
-                      ? <Download className="w-4 h-4 text-pitch-400" />
+                      ? <Download className="w-4 h-4 text-brand-primary" />
                       : <Trash2 className="w-4 h-4 text-status-error" />
                     }
                     <span className="text-sm font-medium text-primary capitalize">{r.request_type}</span>
@@ -540,7 +540,7 @@ function RequestsTab() {
                 {r.request_type === 'export' && r.status === 'ready' && (
                   <button
                     onClick={() => handleDownload(r)}
-                    className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs"
+                    className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-xs"
                   >
                     <Download className="w-3.5 h-3.5" />
                     Download

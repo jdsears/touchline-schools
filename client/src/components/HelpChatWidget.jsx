@@ -397,7 +397,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
           <div className="relative">
             <HelpCircle className="w-6 h-6 text-primary" />
             {messages.length === 0 && (
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-energy-400 rounded-full animate-pulse" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-brand-accent rounded-full animate-pulse" />
             )}
           </div>
         )}

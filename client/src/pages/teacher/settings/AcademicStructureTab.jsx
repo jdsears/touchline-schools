@@ -76,7 +76,7 @@ export default function AcademicStructureTab({ access }) {
         <h2 className="text-xl font-semibold text-primary">Academic Structure</h2>
         <p className="text-sm text-secondary mt-1">
           Year groups, house system, and term configuration for your school.
-          {!canEdit && <span className="ml-2 text-amber-400">View only.</span>}
+          {!canEdit && <span className="ml-2 text-brand-accent">View only.</span>}
         </p>
       </div>
 
@@ -94,7 +94,7 @@ export default function AcademicStructureTab({ access }) {
                 disabled={!canEdit}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm border transition-all ${
                   active
-                    ? 'border-pitch-600/50 bg-pitch-600/10 text-pitch-400'
+                    ? 'border-brand-primary bg-brand-primary-tint text-brand-primary'
                     : 'border-border-strong bg-subtle text-tertiary'
                 } ${canEdit ? 'cursor-pointer' : 'cursor-default'}`}
               >
@@ -114,7 +114,7 @@ export default function AcademicStructureTab({ access }) {
         ) : (
           <div className="flex flex-wrap gap-2 mb-3">
             {houseNames.map(h => (
-              <span key={h} className="flex items-center gap-1.5 px-2.5 py-1 bg-amber-400/10 border border-amber-400/30 text-amber-400 rounded-lg text-sm">
+              <span key={h} className="flex items-center gap-1.5 px-2.5 py-1 bg-brand-accent-tint border border-brand-accent text-brand-accent rounded-lg text-sm">
                 {h}
                 {canEdit && (
                   <button onClick={() => removeHouse(h)} className="hover:text-status-error transition-colors">
@@ -133,12 +133,12 @@ export default function AcademicStructureTab({ access }) {
               onChange={e => setNewHouse(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addHouse())}
               placeholder="Add house name..."
-              className="flex-1 px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-pitch-500"
+              className="flex-1 px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary"
             />
             <button
               type="button"
               onClick={addHouse}
-              className="px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm transition-colors"
+              className="px-3 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
             >
               <Plus className="w-4 h-4" />
             </button>
@@ -172,7 +172,7 @@ export default function AcademicStructureTab({ access }) {
                         return { ...d, term_dates: dates }
                       })
                     }}
-                    className="w-full px-2 py-1.5 bg-subtle border border-border-strong rounded-lg text-primary text-xs focus:outline-none focus:border-pitch-500"
+                    className="w-full px-2 py-1.5 bg-subtle border border-border-strong rounded-lg text-primary text-xs focus:outline-none focus:border-brand-primary"
                   />
                 </div>
                 <div>
@@ -191,7 +191,7 @@ export default function AcademicStructureTab({ access }) {
                         return { ...d, term_dates: dates }
                       })
                     }}
-                    className="w-full px-2 py-1.5 bg-subtle border border-border-strong rounded-lg text-primary text-xs focus:outline-none focus:border-pitch-500"
+                    className="w-full px-2 py-1.5 bg-subtle border border-border-strong rounded-lg text-primary text-xs focus:outline-none focus:border-brand-primary"
                   />
                 </div>
               </div>
@@ -204,7 +204,7 @@ export default function AcademicStructureTab({ access }) {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
         >
           {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
           Save Academic Structure

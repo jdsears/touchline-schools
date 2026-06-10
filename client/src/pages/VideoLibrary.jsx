@@ -129,7 +129,7 @@ export default function VideoLibrary() {
 
   const statusBadge = (status) => {
     switch (status) {
-      case 'ready': return <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded-full">Ready</span>
+      case 'ready': return <span className="px-2 py-0.5 bg-brand-primary-tint text-brand-primary text-xs rounded-full">Ready</span>
       case 'processing': return <span className="px-2 py-0.5 bg-status-warning-tint text-status-warning text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Processing</span>
       case 'waiting_upload': return <span className="px-2 py-0.5 bg-border-default text-secondary text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Uploading</span>
       case 'error': return <span className="px-2 py-0.5 bg-status-error-tint text-status-error text-xs rounded-full">Error</span>
@@ -174,7 +174,7 @@ export default function VideoLibrary() {
             key={f.key}
             onClick={() => setFilter(f.key)}
             className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors text-sm ${
-              filter === f.key ? 'bg-pitch-600 text-white' : 'bg-subtle text-secondary hover:text-white'
+              filter === f.key ? 'bg-brand-primary text-white' : 'bg-subtle text-secondary hover:text-white'
             }`}
           >
             {f.label}
@@ -184,7 +184,7 @@ export default function VideoLibrary() {
 
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+          <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
         </div>
       ) : filteredVideos.length === 0 ? (
         <div className="card p-12 text-center max-w-lg mx-auto">
@@ -258,7 +258,7 @@ export default function VideoLibrary() {
                   <span className="px-2 py-0.5 bg-border-default text-secondary text-xs rounded-full capitalize">{video.type || 'match'}</span>
                   {statusBadge(video.status)}
                   {video.match_opponent && (
-                    <span className="px-2 py-0.5 bg-energy-500/20 text-energy-400 text-xs rounded-full">
+                    <span className="px-2 py-0.5 bg-brand-accent-tint text-brand-accent text-xs rounded-full">
                       vs {video.match_opponent}
                     </span>
                   )}
@@ -272,14 +272,14 @@ export default function VideoLibrary() {
 
                 <div className="flex items-center gap-2 mt-3">
                   {video.mux_playback_id && (
-                    <Link to={`/videos/${video.id}/analysis`} className="flex items-center gap-1 text-sm text-pitch-400 hover:text-pitch-300">
+                    <Link to={`/videos/${video.id}/analysis`} className="flex items-center gap-1 text-sm text-brand-primary hover:text-brand-primary">
                       <Sparkles className="w-4 h-4" /> Analysis
                     </Link>
                   )}
                   {!video.match_id && video.status === 'ready' && (
                     <button
                       onClick={(e) => { e.stopPropagation(); setAssigningVideo(video) }}
-                      className="flex items-center gap-1 text-sm text-secondary hover:text-pitch-400"
+                      className="flex items-center gap-1 text-sm text-secondary hover:text-brand-primary"
                     >
                       <LinkIcon className="w-3.5 h-3.5" /> Assign to match
                     </button>

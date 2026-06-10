@@ -5,14 +5,14 @@ import { ArrowLeft, Search, Download } from 'lucide-react'
 
 const STATUS_BADGE = {
   draft: 'bg-border-default text-secondary',
-  submitted: 'bg-amber-400/20 text-amber-400',
+  submitted: 'bg-brand-accent-tint text-brand-accent',
   published: 'bg-status-info-tint text-status-info',
 }
 
 const WINDOW_STATUS_BADGE = {
   draft: 'bg-border-default text-secondary',
-  open: 'bg-pitch-600/20 text-pitch-400',
-  closed: 'bg-amber-400/20 text-amber-400',
+  open: 'bg-brand-primary-tint text-brand-primary',
+  closed: 'bg-brand-accent-tint text-brand-accent',
   published: 'bg-status-info-tint text-status-info',
 }
 

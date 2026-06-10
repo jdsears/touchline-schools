@@ -73,7 +73,7 @@ export default function TeacherSessions() {
           <button
             onClick={() => setSportFilter('all')}
             className={`px-3 py-1.5 rounded-lg text-sm transition-colors ${
-              sportFilter === 'all' ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+              sportFilter === 'all' ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
             }`}
           >
             All
@@ -83,7 +83,7 @@ export default function TeacherSessions() {
               key={sport}
               onClick={() => setSportFilter(sport)}
               className={`px-3 py-1.5 rounded-lg text-sm transition-colors capitalize ${
-                sportFilter === sport ? 'bg-pitch-600/20 text-pitch-400' : 'bg-subtle text-secondary hover:text-link'
+                sportFilter === sport ? 'bg-brand-primary-tint text-brand-primary' : 'bg-subtle text-secondary hover:text-link'
               }`}
             >
               {SPORT_ICONS[sport] || ''} {sport}

@@ -5,7 +5,7 @@ import { KEY_STAGES } from '../../config/nationalCurriculumPE'
 function StrandRow({ name, description }) {
   return (
     <div className="flex items-start gap-3 p-3 rounded-lg bg-subtle">
-      <div className="w-2 h-2 rounded-full bg-pitch-400 mt-1.5 shrink-0" />
+      <div className="w-2 h-2 rounded-full bg-brand-primary mt-1.5 shrink-0" />
       <div>
         <div className="text-sm font-medium text-primary">{name}</div>
         <div className="text-xs text-secondary">{description}</div>
@@ -18,14 +18,14 @@ function PathwayCard({ pathway }) {
   return (
     <div className="bg-subtle/60 rounded-xl border border-border-strong p-5">
       <div className="flex items-center gap-2 mb-3">
-        <GraduationCap className="w-4 h-4 text-amber-400" />
+        <GraduationCap className="w-4 h-4 text-brand-accent" />
         <h4 className="text-sm font-semibold text-primary">{pathway.label}</h4>
         <span className="text-xs text-tertiary ml-auto">{pathway.examBoard}</span>
       </div>
       <div className="space-y-2">
         {pathway.components.map(c => (
           <div key={c.label} className="flex items-start gap-3 text-xs">
-            <span className="px-2 py-0.5 bg-amber-400/20 text-amber-400 rounded font-medium shrink-0">{c.weight}</span>
+            <span className="px-2 py-0.5 bg-brand-accent-tint text-brand-accent rounded font-medium shrink-0">{c.weight}</span>
             <div>
               <span className="text-primary font-medium">{c.label}</span>
               <span className="text-secondary ml-1">{c.detail}</span>
@@ -56,7 +56,7 @@ export default function TeacherCurriculum() {
             onClick={() => setActiveKS(k.id)}
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeKS === k.id
-                ? 'bg-pitch-600/20 text-pitch-400'
+                ? 'bg-brand-primary-tint text-brand-primary'
                 : 'bg-subtle text-secondary hover:text-link'
             }`}
           >
@@ -84,9 +84,9 @@ export default function TeacherCurriculum() {
         {ks.activityAreas.map(area => (
           <div key={area.name} className="bg-card rounded-xl border border-border-default p-5">
             <div className={`w-10 h-10 rounded-lg flex items-center justify-center mb-3 ${
-              area.color === 'pitch' ? 'bg-pitch-600/20' : 'bg-amber-400/20'
+              area.color === 'pitch' ? 'bg-brand-primary-tint' : 'bg-brand-accent-tint'
             }`}>
-              <BookOpen className={`w-5 h-5 ${area.color === 'pitch' ? 'text-pitch-400' : 'text-amber-400'}`} />
+              <BookOpen className={`w-5 h-5 ${area.color === 'pitch' ? 'text-brand-primary' : 'text-brand-accent'}`} />
             </div>
             <h3 className="text-sm font-semibold text-primary mb-2">{area.name}</h3>
             <div className="flex flex-wrap gap-1">
@@ -101,7 +101,7 @@ export default function TeacherCurriculum() {
       {/* Assessment strands */}
       <div className="bg-card rounded-xl border border-border-default p-6 mb-6">
         <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-pitch-400" />
+          <Target className="w-5 h-5 text-brand-primary" />
           {ks.label} Assessment Strands
         </h2>
         <div className="space-y-3">
@@ -115,7 +115,7 @@ export default function TeacherCurriculum() {
       {ks.pathways && ks.pathways.length > 0 && (
         <div>
           <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-            <GraduationCap className="w-5 h-5 text-amber-400" />
+            <GraduationCap className="w-5 h-5 text-brand-accent" />
             Examination Pathways
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

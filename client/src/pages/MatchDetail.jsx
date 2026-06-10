@@ -1173,7 +1173,7 @@ export default function MatchDetail() {
   if (loading) {
     return (
       <div className="p-6 lg:p-8 flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-pitch-400" />
+        <Loader2 className="w-8 h-8 animate-spin text-brand-primary" />
       </div>
     )
   }
@@ -1285,7 +1285,7 @@ export default function MatchDetail() {
             {resultDisplay ? (
               <div className={`
                 inline-block p-4 rounded-xl relative group
-                ${resultDisplay.outcome === 'win' ? 'bg-pitch-500/10 border border-pitch-500/20' :
+                ${resultDisplay.outcome === 'win' ? 'bg-brand-primary-tint border border-brand-primary' :
                   resultDisplay.outcome === 'loss' ? 'bg-status-error-tint border border-status-error' :
                   'bg-subtle border border-border-strong'}
               `}>
@@ -1308,7 +1308,7 @@ export default function MatchDetail() {
                   <span className="text-3xl font-bold text-white">{match.is_home ? resultDisplay.goalsAgainst : resultDisplay.goalsFor}</span>
                 </div>
                 <p className={`text-sm font-medium mt-1 capitalize
-                  ${resultDisplay.outcome === 'win' ? 'text-pitch-400' :
+                  ${resultDisplay.outcome === 'win' ? 'text-brand-primary' :
                     resultDisplay.outcome === 'loss' ? 'text-status-error' :
                     'text-secondary'}
                 `}>
@@ -1339,7 +1339,7 @@ export default function MatchDetail() {
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors
                 ${activeTab === tab.id
-                  ? 'bg-pitch-600 text-white'
+                  ? 'bg-brand-primary text-white'
                   : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                 }
               `}
@@ -1375,8 +1375,8 @@ export default function MatchDetail() {
                 onClick={() => setActiveTab('prep')}
                 className="card-hover p-4 flex items-center gap-3"
               >
-                <div className="w-10 h-10 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-                  <Target className="w-5 h-5 text-pitch-400" />
+                <div className="w-10 h-10 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+                  <Target className="w-5 h-5 text-brand-primary" />
                 </div>
                 <div className="text-left flex-1">
                   <p className="font-medium text-white">Match Prep</p>
@@ -1389,8 +1389,8 @@ export default function MatchDetail() {
                 to={`/chat?q=Help me prepare for our match against ${match.opponent}`}
                 className="card-hover p-4 flex items-center gap-3"
               >
-                <div className="w-10 h-10 rounded-xl bg-energy-500/10 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-energy-400" />
+                <div className="w-10 h-10 rounded-xl bg-brand-accent-tint flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-brand-accent" />
                 </div>
                 <div className="text-left flex-1">
                   <p className="font-medium text-white">Ask AI</p>
@@ -1454,7 +1454,7 @@ export default function MatchDetail() {
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                    <Goal className="w-5 h-5 text-pitch-400" />
+                    <Goal className="w-5 h-5 text-brand-primary" />
                     Goalscorers & Assists
                   </h2>
                   {isManager && (
@@ -1473,7 +1473,7 @@ export default function MatchDetail() {
                       <div key={goal.id} className="flex items-center justify-between p-3 rounded-lg bg-subtle border border-border-strong">
                         <div className="flex items-center gap-3">
                           {goal.minute && (
-                            <span className="w-8 h-8 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center shrink-0">
+                            <span className="w-8 h-8 rounded-full bg-brand-primary-tint text-brand-primary text-xs font-bold flex items-center justify-center shrink-0">
                               {goal.minute}'
                             </span>
                           )}
@@ -1484,7 +1484,7 @@ export default function MatchDetail() {
                                 {goal.scorer_name || 'Unknown'}
                               </p>
                               {goal.goal_type && goal.goal_type !== 'open_play' && (
-                                <span className="text-xs px-1.5 py-0.5 rounded bg-energy-500/20 text-energy-400">
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-brand-accent-tint text-brand-accent">
                                   {goal.goal_type === 'penalty' ? 'Pen' : goal.goal_type === 'free_kick' ? 'FK' : goal.goal_type === 'own_goal' ? 'OG' : goal.goal_type === 'header' ? 'Header' : goal.goal_type}
                                 </span>
                               )}
@@ -1523,7 +1523,7 @@ export default function MatchDetail() {
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                    <ArrowRightLeft className="w-5 h-5 text-energy-400" />
+                    <ArrowRightLeft className="w-5 h-5 text-brand-accent" />
                     Substitutions
                   </h2>
                   {isManager && (
@@ -1542,7 +1542,7 @@ export default function MatchDetail() {
                       <div key={sub.id} className="flex items-center justify-between p-3 rounded-lg bg-subtle border border-border-strong">
                         <div className="flex items-center gap-3">
                           {sub.minute && (
-                            <span className="w-8 h-8 rounded-full bg-energy-500/20 text-energy-400 text-xs font-bold flex items-center justify-center shrink-0">
+                            <span className="w-8 h-8 rounded-full bg-brand-accent-tint text-brand-accent text-xs font-bold flex items-center justify-center shrink-0">
                               {sub.minute}'
                             </span>
                           )}
@@ -1556,10 +1556,10 @@ export default function MatchDetail() {
                             )}
                             <ArrowRightLeft className="w-3.5 h-3.5 text-tertiary" />
                             {sub.player_on_name && (
-                              <span className="text-pitch-400">
+                              <span className="text-brand-primary">
                                 <span className="text-secondary mr-1">#{sub.player_on_number}</span>
                                 {sub.player_on_name}
-                                <span className="ml-1 text-xs text-pitch-500">ON</span>
+                                <span className="ml-1 text-xs text-brand-primary">ON</span>
                               </span>
                             )}
                           </div>
@@ -1591,7 +1591,7 @@ export default function MatchDetail() {
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                    <Target className="w-5 h-5 text-pitch-400" />
+                    <Target className="w-5 h-5 text-brand-primary" />
                     Match Events
                   </h2>
                   {isManager && (
@@ -1609,13 +1609,13 @@ export default function MatchDetail() {
                         <div key={evt.id} className="flex items-center justify-between p-3 rounded-lg bg-subtle border border-border-strong">
                           <div className="flex items-center gap-3">
                             {evt.minute != null && (
-                              <span className="w-8 h-8 rounded-full bg-pitch-500/20 text-pitch-400 text-xs font-bold flex items-center justify-center shrink-0">
+                              <span className="w-8 h-8 rounded-full bg-brand-primary-tint text-brand-primary text-xs font-bold flex items-center justify-center shrink-0">
                                 {evt.minute}'
                               </span>
                             )}
                             <div>
                               <div className="flex items-center gap-2">
-                                <span className="text-xs px-1.5 py-0.5 rounded bg-pitch-500/20 text-pitch-400 font-medium">
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-brand-primary-tint text-brand-primary font-medium">
                                   {evtType?.label || evt.event_type}
                                 </span>
                                 {evt.pupil_name && (
@@ -1661,7 +1661,7 @@ export default function MatchDetail() {
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                    <Users className="w-5 h-5 text-energy-400" />
+                    <Users className="w-5 h-5 text-brand-accent" />
                     Pupil Stats
                   </h2>
                   {isManager && (
@@ -1701,7 +1701,7 @@ export default function MatchDetail() {
                               {ps.pupil_name}
                             </p>
                             {ps.rating && (
-                              <span className={`text-xs font-bold px-2 py-0.5 rounded ${ps.rating >= 8 ? 'bg-pitch-500/20 text-pitch-400' : ps.rating >= 6 ? 'bg-energy-500/20 text-energy-400' : 'bg-status-error-tint text-status-error'}`}>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded ${ps.rating >= 8 ? 'bg-brand-primary-tint text-brand-primary' : ps.rating >= 6 ? 'bg-brand-accent-tint text-brand-accent' : 'bg-status-error-tint text-status-error'}`}>
                                 {ps.rating}/10
                               </span>
                             )}
@@ -1734,7 +1734,7 @@ export default function MatchDetail() {
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                    <Award className="w-5 h-5 text-energy-400" />
+                    <Award className="w-5 h-5 text-brand-accent" />
                     Pupil of the Match
                   </h2>
                   {isManager && (
@@ -1746,7 +1746,7 @@ export default function MatchDetail() {
                         })
                         setShowPotmModal(true)
                       }}
-                      className="text-sm text-pitch-400 hover:text-pitch-300"
+                      className="text-sm text-brand-primary hover:text-brand-primary"
                     >
                       {match.player_of_match_id ? 'Change' : 'Select Pupil'}
                     </button>
@@ -1754,10 +1754,10 @@ export default function MatchDetail() {
                 </div>
 
                 {match.player_of_match_id ? (
-                  <div className="bg-gradient-to-r from-energy-500/10 to-caution-500/10 border border-energy-500/30 rounded-xl p-4">
+                  <div className="bg-gradient-to-r from-energy-500/10 to-caution-500/10 border border-brand-accent rounded-xl p-4">
                     <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-full bg-energy-500/20 flex items-center justify-center">
-                        <Star className="w-7 h-7 text-energy-400" />
+                      <div className="w-14 h-14 rounded-full bg-brand-accent-tint flex items-center justify-center">
+                        <Star className="w-7 h-7 text-brand-accent" />
                       </div>
                       <div className="flex-1">
                         <p className="font-semibold text-white text-lg">
@@ -1769,7 +1769,7 @@ export default function MatchDetail() {
                           </p>
                         )}
                       </div>
-                      <Trophy className="w-8 h-8 text-energy-400" />
+                      <Trophy className="w-8 h-8 text-brand-accent" />
                     </div>
                   </div>
                 ) : (
@@ -1794,7 +1794,7 @@ export default function MatchDetail() {
             {resultDisplay && isManager && parentVoteData?.votes?.length > 0 && (
               <div className="card p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <Heart className="w-5 h-5 text-energy-400" />
+                  <Heart className="w-5 h-5 text-brand-accent" />
                   <h2 className="font-display font-semibold text-white">Parents' Pupil of the Match</h2>
                   <span className="text-xs text-secondary ml-auto">{parentVoteData.total_votes} vote{parentVoteData.total_votes !== 1 ? 's' : ''}</span>
                 </div>
@@ -1804,14 +1804,14 @@ export default function MatchDetail() {
                       <span className="text-sm text-secondary w-5 text-right">{idx + 1}.</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <span className={`text-sm font-medium ${idx === 0 ? 'text-energy-400' : 'text-white'}`}>
+                          <span className={`text-sm font-medium ${idx === 0 ? 'text-brand-accent' : 'text-white'}`}>
                             {v.player_name}{v.squad_number ? ` #${v.squad_number}` : ''}
                           </span>
                           <span className="text-xs text-secondary">{v.vote_count} vote{v.vote_count !== 1 ? 's' : ''}</span>
                         </div>
                         <div className="h-1.5 rounded-full bg-border-default">
                           <div
-                            className={`h-full rounded-full ${idx === 0 ? 'bg-energy-400' : 'bg-energy-500/40'}`}
+                            className={`h-full rounded-full ${idx === 0 ? 'bg-brand-accent' : 'bg-brand-accent-tint'}`}
                             style={{ width: `${parentVoteData.total_votes ? (v.vote_count / parentVoteData.total_votes) * 100 : 0}%` }}
                           />
                         </div>
@@ -1850,12 +1850,12 @@ export default function MatchDetail() {
                           px-3 py-2 rounded-lg text-sm font-medium transition-colors
                           ${isSelected
                             ? formData?.priority === 'primary'
-                              ? 'bg-pitch-600 text-white'
-                              : 'bg-pitch-600/60 text-white'
+                              ? 'bg-brand-primary text-white'
+                              : 'bg-brand-primary-tint text-white'
                             : isDisabled
                               ? 'bg-card text-tertiary cursor-not-allowed'
                               : isCustom
-                                ? 'bg-energy-600/20 text-energy-400 hover:text-white hover:bg-energy-600/40 border border-energy-500/30'
+                                ? 'bg-brand-accent-tint text-brand-accent hover:text-white hover:bg-brand-accent-tint border border-brand-accent'
                                 : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                           }
                         `}
@@ -1877,7 +1877,7 @@ export default function MatchDetail() {
                     {getSortedFormations(matchFormations).map(({ formation, priority }, idx) => (
                       <span key={formation}>
                         {idx > 0 && ' → '}
-                        <span className={priority === 'primary' ? 'text-pitch-400' : 'text-secondary'}>
+                        <span className={priority === 'primary' ? 'text-brand-primary' : 'text-secondary'}>
                           {formation} ({priority === 'primary' ? 'Primary' : 'Secondary'})
                         </span>
                       </span>
@@ -1933,7 +1933,7 @@ export default function MatchDetail() {
 
             {/* Selected Squad Summary & Announce - shown at top for visibility */}
             {isManager && squad.length > 0 && (
-              <div className="card p-6 border-2 border-pitch-500/30">
+              <div className="card p-6 border-2 border-brand-primary">
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <h2 className="font-display font-semibold text-white">Selected Squad</h2>
@@ -1962,7 +1962,7 @@ export default function MatchDetail() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <h3 className="text-sm font-medium text-pitch-400 mb-2">Starting Line Up</h3>
+                    <h3 className="text-sm font-medium text-brand-primary mb-2">Starting Line Up</h3>
                     <div className="space-y-1">
                       {squad.filter(s => s.is_starting).sort((a, b) => {
                         const posOrder = { GK: 0, CB: 1, LB: 2, RB: 3, CDM: 4, CM: 5, LM: 6, RM: 7, CAM: 8, LW: 9, RW: 10, CF: 11, ST: 12 }
@@ -1973,13 +1973,13 @@ export default function MatchDetail() {
                         const playerName = s.player_name || availability.find(a => a.pupil_id === s.pupil_id)?.player_name
                         const profilePositions = s.player_positions || availability.find(a => a.pupil_id === s.pupil_id)?.positions || []
                         return (
-                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-white p-2 bg-pitch-500/10 rounded border border-pitch-500/20 gap-2">
+                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-white p-2 bg-brand-primary-tint rounded border border-brand-primary gap-2">
                             <span className="truncate">{playerName}</span>
                             <div className="flex items-center gap-2 shrink-0">
                               <select
                                 value={s.position || ''}
                                 onChange={(e) => handlePositionChange(s.pupil_id, e.target.value)}
-                                className="bg-subtle border border-border-strong text-xs text-secondary rounded px-1.5 py-0.5 focus:border-pitch-500 focus:outline-none"
+                                className="bg-subtle border border-border-strong text-xs text-secondary rounded px-1.5 py-0.5 focus:border-brand-primary focus:outline-none"
                                 title="Match-day position"
                               >
                                 <option value="">Pos</option>
@@ -1994,7 +1994,7 @@ export default function MatchDetail() {
                               </select>
                               <button
                                 onClick={() => handleToggleStarting(s.pupil_id, true)}
-                                className="text-xs text-secondary hover:text-energy-400 transition-colors whitespace-nowrap"
+                                className="text-xs text-secondary hover:text-brand-accent transition-colors whitespace-nowrap"
                                 title="Move to subs"
                               >
                                 Move to Subs
@@ -2009,7 +2009,7 @@ export default function MatchDetail() {
                     </div>
                   </div>
                   <div>
-                    <h3 className="text-sm font-medium text-energy-400 mb-2">Substitutes</h3>
+                    <h3 className="text-sm font-medium text-brand-accent mb-2">Substitutes</h3>
                     <div className="space-y-1">
                       {squad.filter(s => !s.is_starting).sort((a, b) => {
                         const posOrder = { GK: 0, CB: 1, LB: 2, RB: 3, CDM: 4, CM: 5, LM: 6, RM: 7, CAM: 8, LW: 9, RW: 10, CF: 11, ST: 12 }
@@ -2020,13 +2020,13 @@ export default function MatchDetail() {
                         const playerName = s.player_name || availability.find(a => a.pupil_id === s.pupil_id)?.player_name
                         const profilePositions = s.player_positions || availability.find(a => a.pupil_id === s.pupil_id)?.positions || []
                         return (
-                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-secondary p-2 bg-energy-500/10 rounded border border-energy-500/20 gap-2">
+                          <div key={s.pupil_id} className="flex items-center justify-between text-sm text-secondary p-2 bg-brand-accent-tint rounded border border-brand-accent gap-2">
                             <span className="truncate">{playerName}</span>
                             <div className="flex items-center gap-2 shrink-0">
                               <select
                                 value={s.position || ''}
                                 onChange={(e) => handlePositionChange(s.pupil_id, e.target.value)}
-                                className="bg-subtle border border-border-strong text-xs text-secondary rounded px-1.5 py-0.5 focus:border-energy-500 focus:outline-none"
+                                className="bg-subtle border border-border-strong text-xs text-secondary rounded px-1.5 py-0.5 focus:border-brand-accent focus:outline-none"
                                 title="Match-day position"
                               >
                                 <option value="">Pos</option>
@@ -2041,7 +2041,7 @@ export default function MatchDetail() {
                               </select>
                               <button
                                 onClick={() => handleToggleStarting(s.pupil_id, false)}
-                                className="text-xs text-secondary hover:text-pitch-400 transition-colors whitespace-nowrap"
+                                className="text-xs text-secondary hover:text-brand-primary transition-colors whitespace-nowrap"
                                 title="Move to starting"
                               >
                                 Move to Starting
@@ -2116,7 +2116,7 @@ export default function MatchDetail() {
               {/* Pupil List */}
               {loadingAvailability ? (
                 <div className="flex justify-center py-8">
-                  <Loader2 className="w-6 h-6 animate-spin text-pitch-500" />
+                  <Loader2 className="w-6 h-6 animate-spin text-brand-primary" />
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -2129,7 +2129,7 @@ export default function MatchDetail() {
                       <div
                         key={pupil.pupil_id}
                         className={`flex items-center justify-between p-3 rounded-lg border transition ${
-                          inSquad ? 'bg-pitch-500/10 border-pitch-500/30' : 'bg-subtle border-border-strong'
+                          inSquad ? 'bg-brand-primary-tint border-brand-primary' : 'bg-subtle border-border-strong'
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -2181,7 +2181,7 @@ export default function MatchDetail() {
                                 onClick={() => handleToggleSquad(pupil.pupil_id, inSquad)}
                                 className={`px-3 py-1.5 rounded text-xs font-bold transition ${
                                   inSquad
-                                    ? 'bg-pitch-500 text-white'
+                                    ? 'bg-brand-primary text-white'
                                     : 'bg-border-default text-secondary hover:bg-navy-600 hover:text-white'
                                 }`}
                               >
@@ -2192,8 +2192,8 @@ export default function MatchDetail() {
                                   onClick={() => handleToggleStarting(pupil.pupil_id, squadEntry?.is_starting)}
                                   className={`px-3 py-1.5 rounded text-xs font-bold transition ${
                                     squadEntry?.is_starting
-                                      ? 'bg-energy-500 text-white'
-                                      : 'bg-energy-500/20 text-energy-400 border border-energy-500/40 hover:bg-energy-500/30'
+                                      ? 'bg-brand-accent text-white'
+                                      : 'bg-brand-accent-tint text-brand-accent border border-brand-accent hover:bg-brand-accent-tint'
                                   }`}
                                 >
                                   {squadEntry?.is_starting ? 'Starting' : 'Sub'}
@@ -2240,13 +2240,13 @@ export default function MatchDetail() {
           >
             {/* Shared Status Banner */}
             {match.prep_notes && (
-              <div className="card p-4 bg-pitch-500/10 border-pitch-500/20">
+              <div className="card p-4 bg-brand-primary-tint border-brand-primary">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-pitch-400" />
+                    <CheckCircle className="w-5 h-5 text-brand-primary" />
                     <div>
-                      <p className="font-medium text-pitch-400">Match Prep Shared with Players</p>
-                      <p className="text-sm text-pitch-400/70">Players can see this in their Pupil Zone</p>
+                      <p className="font-medium text-brand-primary">Match Prep Shared with Players</p>
+                      <p className="text-sm text-brand-primary">Players can see this in their Pupil Zone</p>
                     </div>
                   </div>
                   <button
@@ -2371,7 +2371,7 @@ Corners, free kicks, etc...`}
               <div className="card p-6">
                 <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-default">
                   <div className="flex items-center gap-3">
-                    <CheckCircle className="w-5 h-5 text-pitch-400" />
+                    <CheckCircle className="w-5 h-5 text-brand-primary" />
                     <div>
                       <p className="font-medium text-white">AI Match Prep Ready</p>
                       <p className="text-xs text-secondary">
@@ -2425,7 +2425,7 @@ Corners, free kicks, etc...`}
               // Show saved prep_notes if no newly generated content
               <div className="card p-6">
                 <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border-default">
-                  <FileText className="w-5 h-5 text-pitch-400" />
+                  <FileText className="w-5 h-5 text-brand-primary" />
                   <div>
                     <p className="font-medium text-white">Current Match Prep</p>
                     <p className="text-xs text-secondary">Visible to pupils</p>
@@ -2607,7 +2607,7 @@ Corners, free kicks, etc...`}
                   <div className="flex items-center justify-between mb-4 pb-4 border-b border-border-default">
                     <div className="flex items-center gap-3">
                       {match.report?.published ? (
-                        <Eye className="w-5 h-5 text-pitch-400" />
+                        <Eye className="w-5 h-5 text-brand-primary" />
                       ) : (
                         <EyeOff className="w-5 h-5 text-tertiary" />
                       )}
@@ -2752,7 +2752,7 @@ Corners, free kicks, etc...`}
               <div className="card p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-medium text-white flex items-center gap-2">
-                    <Video className="w-4 h-4 text-pitch-400" />
+                    <Video className="w-4 h-4 text-brand-primary" />
                     {matchVideo.title || 'Match Video'}
                   </h3>
                   {isManager && (
@@ -2798,7 +2798,7 @@ Corners, free kicks, etc...`}
               <div className="card p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-medium text-white flex items-center gap-2">
-                    <Upload className="w-4 h-4 text-pitch-400" />
+                    <Upload className="w-4 h-4 text-brand-primary" />
                     Uploaded Video
                   </h3>
                   {isManager && (
@@ -2873,7 +2873,7 @@ Corners, free kicks, etc...`}
                   {!matchVideo?.mux_playback_id && !match.video_url && (
                     <button
                       onClick={() => setShowVideoUploadModal(true)}
-                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border-strong rounded-xl hover:border-pitch-500 hover:bg-subtle transition-all"
+                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border-strong rounded-xl hover:border-brand-primary hover:bg-subtle transition-all"
                     >
                       <Upload className="w-8 h-8 text-secondary mb-2" />
                       <span className="text-sm font-medium text-white">Upload Video File</span>
@@ -2921,8 +2921,8 @@ Corners, free kicks, etc...`}
                 to={`/matches/${id}/analysis`}
                 className="card-hover p-4 flex items-center gap-4"
               >
-                <div className="w-12 h-12 rounded-xl bg-pitch-500/10 flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-pitch-400" />
+                <div className="w-12 h-12 rounded-xl bg-brand-primary-tint flex items-center justify-center">
+                  <Sparkles className="w-6 h-6 text-brand-primary" />
                 </div>
                 <div className="flex-1">
                   <p className="font-medium text-white">AI Video Analysis</p>
@@ -2938,7 +2938,7 @@ Corners, free kicks, etc...`}
             <div className="card p-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-medium text-white flex items-center gap-2">
-                  <Play className="w-4 h-4 text-energy-400" />
+                  <Play className="w-4 h-4 text-brand-accent" />
                   Match Clips ({clips.length})
                 </h3>
                 {isManager && (
@@ -3021,7 +3021,7 @@ Corners, free kicks, etc...`}
                             <p className="text-xs text-secondary">{clip.minute}'</p>
                           )}
                           {clip.mux_playback_id && (
-                            <Link to={`/videos/${clip.id}/analysis`} className="text-xs text-pitch-400 hover:text-pitch-300 ml-auto">
+                            <Link to={`/videos/${clip.id}/analysis`} className="text-xs text-brand-primary hover:text-brand-primary ml-auto">
                               Analysis
                             </Link>
                           )}
@@ -3166,12 +3166,12 @@ Corners, free kicks, etc...`}
                             px-2 py-1 rounded text-xs font-medium transition-colors
                             ${isSelected
                               ? formData?.priority === 'primary'
-                                ? 'bg-pitch-600 text-white'
-                                : 'bg-pitch-600/60 text-white'
+                                ? 'bg-brand-primary text-white'
+                                : 'bg-brand-primary-tint text-white'
                               : isDisabled
                                 ? 'bg-card text-tertiary cursor-not-allowed'
                                 : isCustom
-                                  ? 'bg-energy-600/20 text-energy-400 hover:text-white hover:bg-energy-600/40 border border-energy-500/30'
+                                  ? 'bg-brand-accent-tint text-brand-accent hover:text-white hover:bg-brand-accent-tint border border-brand-accent'
                                   : 'bg-subtle text-secondary hover:text-white hover:bg-border-default'
                             }
                           `}
@@ -3190,7 +3190,7 @@ Corners, free kicks, etc...`}
                       {getSortedFormations(editFormations).map(({ formation, priority }, idx) => (
                         <span key={formation}>
                           {idx > 0 && ' → '}
-                          <span className={priority === 'primary' ? 'text-pitch-400' : 'text-secondary'}>
+                          <span className={priority === 'primary' ? 'text-brand-primary' : 'text-secondary'}>
                             {formation} ({priority === 'primary' ? 'Primary' : 'Secondary'})
                           </span>
                         </span>
@@ -3346,7 +3346,7 @@ Corners, free kicks, etc...`}
             >
               <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white text-center flex items-center justify-center gap-2">
-                  <Award className="w-6 h-6 text-energy-400" />
+                  <Award className="w-6 h-6 text-brand-accent" />
                   Pupil of the Match
                 </h2>
                 <p className="text-sm text-secondary text-center mt-1">
@@ -3438,7 +3438,7 @@ Corners, free kicks, etc...`}
             >
               <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white text-center flex items-center justify-center gap-2">
-                  <Goal className="w-6 h-6 text-pitch-400" />
+                  <Goal className="w-6 h-6 text-brand-primary" />
                   Add Goal
                 </h2>
               </div>
@@ -3548,7 +3548,7 @@ Corners, free kicks, etc...`}
             >
               <div className="p-6 border-b border-border-default">
                 <h2 className="font-display text-xl font-semibold text-white text-center flex items-center justify-center gap-2">
-                  <ArrowRightLeft className="w-6 h-6 text-energy-400" />
+                  <ArrowRightLeft className="w-6 h-6 text-brand-accent" />
                   Add Substitution
                 </h2>
               </div>

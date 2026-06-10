@@ -92,7 +92,7 @@ export default function WatchStream() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 animate-spin text-pitch-400 mx-auto" />
+          <Loader2 className="w-12 h-12 animate-spin text-brand-primary mx-auto" />
           <p className="text-secondary mt-4">Loading stream...</p>
         </div>
       </div>
@@ -125,7 +125,7 @@ export default function WatchStream() {
           className="card p-8 max-w-sm w-full text-center"
         >
           <div className="w-16 h-16 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
-            <Lock className="w-8 h-8 text-pitch-400" />
+            <Lock className="w-8 h-8 text-brand-primary" />
           </div>
           <h1 className="text-xl font-display font-bold text-white mb-2">Enter PIN to Watch</h1>
           <p className="text-secondary text-sm mb-6">

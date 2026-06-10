@@ -13,7 +13,7 @@ function formatDate(d) {
 function resultBadge(f) {
   if (f.score_for == null || f.score_against == null) return null
   const w = f.score_for > f.score_against ? 'W' : f.score_for < f.score_against ? 'L' : 'D'
-  const colours = { W: 'bg-status-success-tint text-status-success', L: 'bg-status-error-tint text-status-error', D: 'bg-amber-100 text-amber-800' }
+  const colours = { W: 'bg-status-success-tint text-status-success', L: 'bg-status-error-tint text-status-error', D: 'bg-brand-accent-tint text-brand-accent' }
   return { label: w, score: `${f.score_for} - ${f.score_against}`, cls: colours[w] }
 }
 
@@ -199,7 +199,7 @@ export default function PublicFixtures() {
               <p className="text-sm text-secondary flex items-center gap-1.5 mb-2"><MapPin className="w-4 h-4" />{selectedFixture.location}</p>
             )}
             {selectedFixture.potm_name && (
-              <p className="text-sm text-secondary mb-2"><Trophy className="w-4 h-4 inline text-amber-500" /> Player of the Match: {selectedFixture.potm_name}</p>
+              <p className="text-sm text-secondary mb-2"><Trophy className="w-4 h-4 inline text-brand-accent" /> Player of the Match: {selectedFixture.potm_name}</p>
             )}
             {selectedFixture.match_report_text && (
               <div className="mt-4 pt-4 border-t">

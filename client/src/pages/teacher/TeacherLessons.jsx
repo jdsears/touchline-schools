@@ -20,7 +20,7 @@ const SPORTS_EMOJI = {
 const STATUS_STYLES = {
   draft: 'bg-subtle text-secondary',
   planned: 'bg-status-info-tint text-status-info',
-  delivered: 'bg-pitch-900/40 text-pitch-400',
+  delivered: 'bg-brand-primary-tint text-brand-primary',
 }
 
 const DURATION_OPTIONS = [30, 45, 60, 75, 90]
@@ -225,7 +225,7 @@ export default function TeacherLessons() {
         </div>
         <button
           onClick={openModal}
-          className="flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors text-sm font-medium"
+          className="flex items-center gap-2 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg transition-colors text-sm font-medium"
         >
           <Plus className="w-4 h-4" />
           New Lesson
@@ -243,7 +243,7 @@ export default function TeacherLessons() {
           </p>
           <button
             onClick={openModal}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg transition-colors text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg transition-colors text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Create your first lesson
@@ -281,8 +281,8 @@ export default function TeacherLessons() {
             {/* Modal header */}
             <div className="flex items-center justify-between p-6 border-b border-border-default flex-shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg bg-pitch-600/20 flex items-center justify-center">
-                  <BookOpen className="w-5 h-5 text-pitch-400" />
+                <div className="w-9 h-9 rounded-lg bg-brand-primary-tint flex items-center justify-center">
+                  <BookOpen className="w-5 h-5 text-brand-primary" />
                 </div>
                 <h2 className="text-lg font-semibold text-primary">{editingId ? 'Edit Lesson Plan' : 'New Lesson Plan'}</h2>
               </div>
@@ -481,7 +481,7 @@ export default function TeacherLessons() {
                         onClick={() => setForm(f => ({ ...f, status: s }))}
                         className={`px-3 py-1.5 rounded-lg text-sm capitalize transition-colors border ${
                           form.status === s
-                            ? 'bg-pitch-600 text-on-dark border-pitch-600'
+                            ? 'bg-brand-primary text-on-dark border-brand-primary'
                             : 'bg-subtle text-secondary border-border-strong hover:text-link'
                         }`}
                       >
@@ -504,7 +504,7 @@ export default function TeacherLessons() {
                 <button
                   type="submit"
                   disabled={saving || !form.title.trim()}
-                  className="flex items-center gap-2 px-5 py-2.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
+                  className="flex items-center gap-2 px-5 py-2.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                 >
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
                   {saving ? (editingId ? 'Saving…' : 'Creating…') : (editingId ? 'Save Changes' : 'Create Lesson')}

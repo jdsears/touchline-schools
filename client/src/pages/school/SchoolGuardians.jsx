@@ -106,7 +106,7 @@ export default function ClubGuardians() {
               placeholder="Search..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="pl-9 pr-4 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent w-48"
+              className="pl-9 pr-4 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent w-48"
             />
           </div>
           {canManage && (
@@ -121,7 +121,7 @@ export default function ClubGuardians() {
               </button>
               <button
                 onClick={() => setShowAdd(!showAdd)}
-                className="flex items-center gap-2 px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
               >
                 <UserPlus className="w-4 h-4" />
                 Add
@@ -140,7 +140,7 @@ export default function ClubGuardians() {
               <input
                 type="text" required value={form.first_name}
                 onChange={(e) => setForm(f => ({ ...f, first_name: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -148,7 +148,7 @@ export default function ClubGuardians() {
               <input
                 type="text" required value={form.last_name}
                 onChange={(e) => setForm(f => ({ ...f, last_name: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -156,7 +156,7 @@ export default function ClubGuardians() {
               <input
                 type="email" required value={form.email}
                 onChange={(e) => setForm(f => ({ ...f, email: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
             <div>
@@ -164,13 +164,13 @@ export default function ClubGuardians() {
               <input
                 type="tel" value={form.phone}
                 onChange={(e) => setForm(f => ({ ...f, phone: e.target.value }))}
-                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
               />
             </div>
           </div>
           <div className="flex gap-2 justify-end">
             <button type="button" onClick={() => setShowAdd(false)} className="px-4 py-2 text-sm text-secondary hover:text-primary">Cancel</button>
-            <button type="submit" className="px-4 py-2 bg-pitch-600 hover:bg-pitch-500 text-on-dark rounded-lg text-sm">Add Guardian</button>
+            <button type="submit" className="px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm">Add Guardian</button>
           </div>
         </form>
       )}
@@ -232,9 +232,9 @@ export default function ClubGuardians() {
 
                   {/* Consent badges */}
                   <div className="flex gap-2 flex-wrap">
-                    {g.photo_consent && <span className="text-xs bg-pitch-600/20 text-pitch-400 px-2 py-1 rounded-full">Photo consent</span>}
-                    {g.data_consent && <span className="text-xs bg-pitch-600/20 text-pitch-400 px-2 py-1 rounded-full">Data consent</span>}
-                    {g.medical_consent && <span className="text-xs bg-pitch-600/20 text-pitch-400 px-2 py-1 rounded-full">Medical consent</span>}
+                    {g.photo_consent && <span className="text-xs bg-brand-primary-tint text-brand-primary px-2 py-1 rounded-full">Photo consent</span>}
+                    {g.data_consent && <span className="text-xs bg-brand-primary-tint text-brand-primary px-2 py-1 rounded-full">Data consent</span>}
+                    {g.medical_consent && <span className="text-xs bg-brand-primary-tint text-brand-primary px-2 py-1 rounded-full">Medical consent</span>}
                   </div>
 
                   {/* Children */}
@@ -259,14 +259,14 @@ export default function ClubGuardians() {
                       {!g.user_id && (
                         <button
                           onClick={() => handleInviteGuardian(g.id)}
-                          className="flex items-center gap-1 text-xs text-pitch-400 hover:text-pitch-300 transition-colors"
+                          className="flex items-center gap-1 text-xs text-brand-primary hover:text-brand-primary transition-colors"
                         >
                           <Link2 className="w-3 h-3" />
                           Send Account Invite
                         </button>
                       )}
                       {g.user_id && (
-                        <span className="flex items-center gap-1 text-xs text-pitch-400">
+                        <span className="flex items-center gap-1 text-xs text-brand-primary">
                           <Link2 className="w-3 h-3" />
                           Account linked
                         </span>

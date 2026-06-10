@@ -75,13 +75,13 @@ export default function ClubPlayers() {
             placeholder="Search pupils..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+            className="w-full pl-9 pr-4 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
           />
         </div>
         <select
           value={teamFilter}
           onChange={(e) => setTeamFilter(e.target.value)}
-          className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+          className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
         >
           <option value="">All Teams</option>
           {teams.map(t => (
@@ -91,7 +91,7 @@ export default function ClubPlayers() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-pitch-600 focus:border-transparent"
+          className="bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
         >
           <option value="">All Statuses</option>
           <option value="registered">Registered</option>
@@ -143,8 +143,8 @@ export default function ClubPlayers() {
                     </td>
                     <td className="px-4 py-3">
                       <span className={`text-xs px-2 py-1 rounded-full ${
-                        p.registration_status === 'registered' ? 'bg-pitch-600/20 text-pitch-400' :
-                        p.registration_status === 'pending' ? 'bg-amber-500/20 text-amber-400' :
+                        p.registration_status === 'registered' ? 'bg-brand-primary-tint text-brand-primary' :
+                        p.registration_status === 'pending' ? 'bg-brand-accent-tint text-brand-accent' :
                         'bg-status-error-tint text-status-error'
                       }`}>
                         {p.registration_status || 'registered'}

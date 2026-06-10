@@ -19,8 +19,8 @@ const SAFEGUARDING_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe', 'dsl
 
 const GRADE_COLORS = {
   emerging: 'bg-status-error-tint text-status-error',
-  developing: 'bg-amber-400/20 text-amber-400',
-  secure: 'bg-pitch-600/20 text-pitch-400',
+  developing: 'bg-brand-accent-tint text-brand-accent',
+  secure: 'bg-brand-primary-tint text-brand-primary',
   excelling: 'bg-status-info-tint text-status-info',
 }
 
@@ -150,7 +150,7 @@ export default function HoDPupilProfile() {
     return (
       <div className="p-6 text-center">
         <p className="text-secondary">Pupil not found.</p>
-        <Link to="/teacher/hod/pupils" className="text-pitch-400 hover:underline text-sm mt-2 inline-block">Back to pupils</Link>
+        <Link to="/teacher/hod/pupils" className="text-brand-primary hover:underline text-sm mt-2 inline-block">Back to pupils</Link>
       </div>
     )
   }
@@ -183,9 +183,9 @@ export default function HoDPupilProfile() {
             {editing ? (
               <div className="flex items-center gap-2">
                 <input value={editForm.first_name} onChange={e => setEditForm({ ...editForm, first_name: e.target.value })}
-                  className="px-2 py-1 bg-subtle border border-border-strong rounded text-primary text-lg font-bold w-32 focus:outline-none focus:border-pitch-500" />
+                  className="px-2 py-1 bg-subtle border border-border-strong rounded text-primary text-lg font-bold w-32 focus:outline-none focus:border-brand-primary" />
                 <input value={editForm.last_name} onChange={e => setEditForm({ ...editForm, last_name: e.target.value })}
-                  className="px-2 py-1 bg-subtle border border-border-strong rounded text-primary text-lg font-bold w-32 focus:outline-none focus:border-pitch-500" />
+                  className="px-2 py-1 bg-subtle border border-border-strong rounded text-primary text-lg font-bold w-32 focus:outline-none focus:border-brand-primary" />
               </div>
             ) : (
               <h1 className="text-2xl font-bold text-primary">{pupil.first_name} {pupil.last_name}</h1>
@@ -194,17 +194,17 @@ export default function HoDPupilProfile() {
               {editing ? (
                 <>
                   <select value={editForm.year_group} onChange={e => setEditForm({ ...editForm, year_group: e.target.value })}
-                    className="px-2 py-1 bg-subtle border border-border-strong rounded text-sm text-primary focus:outline-none focus:border-pitch-500">
+                    className="px-2 py-1 bg-subtle border border-border-strong rounded text-sm text-primary focus:outline-none focus:border-brand-primary">
                     <option value="">--</option>
                     {[2,3,4,5,6,7,8,9,10,11,12,13].map(y => <option key={y} value={y}>Year {y}</option>)}
                   </select>
                   <input value={editForm.house} onChange={e => setEditForm({ ...editForm, house: e.target.value })}
-                    placeholder="House" className="px-2 py-1 bg-subtle border border-border-strong rounded text-sm text-primary w-24 focus:outline-none focus:border-pitch-500" />
+                    placeholder="House" className="px-2 py-1 bg-subtle border border-border-strong rounded text-sm text-primary w-24 focus:outline-none focus:border-brand-primary" />
                 </>
               ) : (
                 <>
                   {pupil.year_group && <span className="text-sm text-secondary">Year {pupil.year_group}</span>}
-                  {pupil.house && <span className="px-2 py-0.5 bg-amber-400/20 text-amber-400 rounded text-xs">{pupil.house}</span>}
+                  {pupil.house && <span className="px-2 py-0.5 bg-brand-accent-tint text-brand-accent rounded text-xs">{pupil.house}</span>}
                 </>
               )}
             </div>
@@ -214,7 +214,7 @@ export default function HoDPupilProfile() {
           {editing ? (
             <>
               <button onClick={() => setEditing(false)} className="p-2 text-secondary hover:text-link"><X className="w-5 h-5" /></button>
-              <button onClick={handleSave} className="flex items-center gap-1.5 px-3 py-2 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-sm">
+              <button onClick={handleSave} className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm">
                 <Save className="w-4 h-4" /> Save
               </button>
             </>
@@ -229,8 +229,8 @@ export default function HoDPupilProfile() {
       {/* Status badges */}
       {core?.flags && (
         <div className="flex flex-wrap gap-2 mb-5">
-          {core.pupil?.gcse_pe_candidate && <Badge colour="bg-pitch-500/20 text-pitch-400" icon={GraduationCap} label="GCSE PE" />}
-          {core.pupil?.talent_pathway_flag && <Badge colour="bg-amber-500/20 text-amber-400" icon={TrendingUp} label="Talent pathway" />}
+          {core.pupil?.gcse_pe_candidate && <Badge colour="bg-brand-primary-tint text-brand-primary" icon={GraduationCap} label="GCSE PE" />}
+          {core.pupil?.talent_pathway_flag && <Badge colour="bg-brand-accent-tint text-brand-accent" icon={TrendingUp} label="Talent pathway" />}
           {core.flags.has_send && <Badge colour="bg-sky-500/20 text-sky-400" icon={Brain} label="SEND" />}
           {core.flags.has_medical && <Badge colour="bg-status-error-tint text-status-error" icon={Stethoscope} label="Medical" />}
           {core.flags.has_open_safeguarding && <Badge colour="bg-status-error-tint text-status-error" icon={AlertTriangle} label="Safeguarding open" />}
@@ -247,7 +247,7 @@ export default function HoDPupilProfile() {
               key={t.id}
               onClick={() => setActiveTab(t.id)}
               className={`flex items-center gap-1.5 px-4 py-2 text-sm transition-colors border-b-2 -mb-px whitespace-nowrap ${
-                active ? 'border-pitch-500 text-primary' : 'border-transparent text-secondary hover:text-link'
+                active ? 'border-brand-primary text-primary' : 'border-transparent text-secondary hover:text-link'
               }`}
             >
               <Icon className="w-4 h-4" />{t.label}
@@ -281,7 +281,7 @@ export default function HoDPupilProfile() {
           {/* Teaching groups */}
           <div className="bg-card rounded-xl border border-border-default p-5">
             <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-pitch-400" /> Classes
+              <GraduationCap className="w-4 h-4 text-brand-primary" /> Classes
             </h2>
             {classes.length > 0 ? (
               <div className="space-y-2">
@@ -307,7 +307,7 @@ export default function HoDPupilProfile() {
           {/* Extra-curricular teams */}
           <div className="bg-card rounded-xl border border-border-default p-5">
             <h2 className="text-sm font-semibold text-primary mb-3 flex items-center gap-2">
-              <Shield className="w-4 h-4 text-amber-400" /> Teams
+              <Shield className="w-4 h-4 text-brand-accent" /> Teams
             </h2>
             {teams.length > 0 ? (
               <div className="space-y-2">
@@ -333,7 +333,7 @@ export default function HoDPupilProfile() {
               </h2>
               <button
                 onClick={() => setShowAddObs(!showAddObs)}
-                className="flex items-center gap-1 px-2 py-1 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs transition-colors"
+                className="flex items-center gap-1 px-2 py-1 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-xs transition-colors"
               >
                 <Plus className="w-3 h-3" /> Add
               </button>
@@ -423,7 +423,7 @@ export default function HoDPupilProfile() {
                   <button type="button" onClick={() => setShowAddObs(false)}
                     className="px-3 py-1.5 text-xs text-secondary hover:text-link">Cancel</button>
                   <button type="submit" disabled={savingObs}
-                    className="flex items-center gap-1 px-3 py-1.5 bg-pitch-600 hover:bg-pitch-700 text-on-dark rounded-lg text-xs disabled:opacity-50">
+                    className="flex items-center gap-1 px-3 py-1.5 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-xs disabled:opacity-50">
                     {savingObs ? <Loader2 className="w-3 h-3 animate-spin" /> : <Save className="w-3 h-3" />}
                     Save
                   </button>
@@ -437,9 +437,9 @@ export default function HoDPupilProfile() {
                   const typeColors = {
                     technical: 'bg-status-info-tint text-status-info',
                     tactical: 'bg-purple-500/20 text-purple-400',
-                    physical: 'bg-amber-400/20 text-amber-400',
+                    physical: 'bg-brand-accent-tint text-brand-accent',
                     mental: 'bg-pink-500/20 text-pink-400',
-                    development: 'bg-pitch-600/20 text-pitch-400',
+                    development: 'bg-brand-primary-tint text-brand-primary',
                     effort: 'bg-orange-400/20 text-orange-400',
                     leadership: 'bg-indigo-400/20 text-indigo-400',
                     lesson: 'bg-teal-400/20 text-teal-400',
@@ -509,7 +509,7 @@ export default function HoDPupilProfile() {
         <div className="lg:col-span-2">
           <div className="bg-card rounded-xl border border-border-default p-5">
             <h2 className="text-sm font-semibold text-primary mb-4 flex items-center gap-2">
-              <ClipboardCheck className="w-4 h-4 text-pitch-400" /> Assessment History
+              <ClipboardCheck className="w-4 h-4 text-brand-primary" /> Assessment History
             </h2>
             {assessments.length > 0 ? (
               <div className="space-y-6">
