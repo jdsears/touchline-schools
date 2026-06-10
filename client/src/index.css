@@ -894,3 +894,19 @@
     widows: 3;
   }
 }
+
+/* ===== Marketing (Landing) ===== */
+@keyframes mb-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.mb-marquee-track {
+  animation: mb-marquee 38s linear infinite;
+  will-change: transform;
+}
+.mb-marquee:hover .mb-marquee-track {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .mb-marquee-track { animation: none; }
+}

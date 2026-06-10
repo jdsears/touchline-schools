@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import SEO from '../components/common/SEO'
-import { MarketingFooter } from './Landing'
+import { MarketingFooter, MarketingHeader } from './Landing'
 
 const CALENDLY_URL = import.meta.env.VITE_CALENDLY_URL || 'https://calendly.com/js-moonbootsconsultancy/moonboots-sports-demo'
 
@@ -30,33 +30,6 @@ const PUPIL_ROLLS = [
   '600-1000',
   'Over 1000',
 ]
-
-function Header() {
-  return (
-    <header style={{ position: 'sticky', top: 0, zIndex: 50, background: 'rgba(15, 30, 61, 0.95)', backdropFilter: 'blur(12px)' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '16px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
-          <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 32 }} />
-        </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 24 }}>
-          <Link to="/about" style={{ color: 'var(--mb-warm-white)', textDecoration: 'none', fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 500, opacity: 0.9 }}>About</Link>
-          <a
-            href={CALENDLY_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              background: 'var(--mb-gold)', color: 'var(--mb-navy)', padding: '12px 24px',
-              border: 'none', borderRadius: 4, fontFamily: 'var(--font-sans)', fontWeight: 500,
-              fontSize: 15, textDecoration: 'none', display: 'inline-block',
-            }}
-          >
-            Book a discovery call
-          </a>
-        </div>
-      </div>
-    </header>
-  )
-}
 
 const inputStyle = {
   width: '100%',
@@ -161,7 +134,7 @@ export default function RequestDemoAccess() {
     return (
       <>
         <SEO title="Request Received" path="/request-demo" noIndex />
-        <Header />
+        <MarketingHeader />
         <main style={{ background: 'var(--mb-navy)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <div style={{ maxWidth: 540, margin: '0 auto', padding: '80px 24px', textAlign: 'center' }}>
             <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(28px, 4vw, 36px)', color: 'white', fontWeight: 700, lineHeight: 1.2 }}>
@@ -192,7 +165,7 @@ export default function RequestDemoAccess() {
         description="Request 7-day demo access to MoonBoots Sports for your school. We issue access after a brief discovery call."
         path="/request-demo"
       />
-      <Header />
+      <MarketingHeader />
       <main style={{ background: 'var(--mb-navy)', minHeight: '100vh', paddingTop: 48, paddingBottom: 80 }}>
         <div style={{ maxWidth: 540, margin: '0 auto', padding: '0 24px' }}>
 
