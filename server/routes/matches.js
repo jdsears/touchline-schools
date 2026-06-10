@@ -4,6 +4,7 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { getUserTeamIds, isAllowed } from '../middleware/tenancy.js'
 import { generateMatchPrep, generateMatchReport, generatePepTalk, generatePublicMatchReport } from '../services/claudeService.js'
 import { sendPotmEmail, sendSquadAnnouncementEmail, sendAvailabilityRequestEmail, isEmailEnabled, sendBatchEmails } from '../services/emailService.js'
 import { sendPushToUser } from '../services/pushService.js'
@@ -19,6 +20,22 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const router = Router()
+
+// Confirm the caller may modify the match identified by id (team-scoped).
+// Returns true on success, or false after sending a 404.
+async function ensureMatchAccess(req, res, id) {
+  const owner = await pool.query('SELECT team_id FROM matches WHERE id = $1', [id])
+  if (!owner.rows.length) {
+    res.status(404).json({ message: 'Match not found' })
+    return false
+  }
+  const teams = await getUserTeamIds(req.user)
+  if (!isAllowed(teams, owner.rows[0].team_id)) {
+    res.status(404).json({ message: 'Match not found' })
+    return false
+  }
+  return true
+}
 
 // Configure multer for video uploads
 const videoStorage = multer.diskStorage({
@@ -75,6 +92,7 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
 router.put('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
+    if (!(await ensureMatchAccess(req, res, id))) return
     const { opponent, date, location, isHome, formations, notes,
             veoLink, videoUrl, goalsFor, goalsAgainst, kitType, meetTime } = req.body
 
@@ -121,6 +139,7 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
 router.patch('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
+    if (!(await ensureMatchAccess(req, res, id))) return
     const { team_notes, prep_notes, formations } = req.body
 
     console.log('PATCH /matches/:id - Received:', { id, userId: req.user.id, role: req.user.role, prep_notes: !!prep_notes })

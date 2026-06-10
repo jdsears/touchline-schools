@@ -1,20 +1,34 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { getUserTeamIds, isAllowed } from '../middleware/tenancy.js'
 import { generateTrainingSession } from '../services/claudeService.js'
 import { checkAndIncrementUsage, getEntitlements } from '../services/billingService.js'
 
 const router = Router()
 
+// Resolve the owning team of a session and confirm the caller may access it.
+// Returns the session row on success, or null (after sending 404) otherwise.
+async function loadOwnedSession(req, res, id) {
+  const owner = await pool.query('SELECT * FROM training_sessions WHERE id = $1', [id])
+  if (owner.rows.length === 0) {
+    res.status(404).json({ message: 'Session not found' })
+    return null
+  }
+  const teams = await getUserTeamIds(req.user)
+  if (!isAllowed(teams, owner.rows[0].team_id)) {
+    res.status(404).json({ message: 'Session not found' })
+    return null
+  }
+  return owner.rows[0]
+}
+
 // Get session
 router.get('/:id', authenticateToken, async (req, res, next) => {
   try {
-    const { id } = req.params
-    const result = await pool.query('SELECT * FROM training_sessions WHERE id = $1', [id])
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Session not found' })
-    }
-    res.json(result.rows[0])
+    const session = await loadOwnedSession(req, res, req.params.id)
+    if (!session) return
+    res.json(session)
   } catch (error) {
     next(error)
   }
@@ -25,7 +39,9 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
     const { date, duration, focusAreas, plan, notes } = req.body
-    
+
+    if (!(await loadOwnedSession(req, res, id))) return
+
     const result = await pool.query(
       `UPDATE training_sessions SET
         date = COALESCE($1, date),
@@ -37,11 +53,11 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
        WHERE id = $6 RETURNING *`,
       [date, duration, focusAreas, plan ? JSON.stringify(plan) : null, notes, id]
     )
-    
+
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Session not found' })
     }
-    
+
     res.json(result.rows[0])
   } catch (error) {
     next(error)
@@ -52,6 +68,7 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
 router.delete('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
+    if (!(await loadOwnedSession(req, res, id))) return
     const result = await pool.query('DELETE FROM training_sessions WHERE id = $1 RETURNING id', [id])
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'Session not found' })

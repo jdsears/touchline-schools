@@ -1,6 +1,23 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { getUserSchoolIds, isAllowed } from '../middleware/tenancy.js'
+
+// Confirm the caller may modify the venue identified by id (school-scoped).
+// Returns true on success, or false after sending a 404.
+async function ensureVenueAccess(req, res, id) {
+  const owner = await pool.query('SELECT school_id FROM venues WHERE id = $1', [id])
+  if (!owner.rows.length) {
+    res.status(404).json({ error: 'Venue not found' })
+    return false
+  }
+  const schools = await getUserSchoolIds(req.user)
+  if (!isAllowed(schools, owner.rows[0].school_id)) {
+    res.status(404).json({ error: 'Venue not found' })
+    return false
+  }
+  return true
+}
 
 async function geocodePostcode(postcode) {
   if (!postcode) return null
@@ -84,6 +101,7 @@ router.post('/', authenticateToken, async (req, res, next) => {
 router.put('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
+    if (!(await ensureVenueAccess(req, res, id))) return
     const { name, address, postcode, latitude, longitude, parkingNotes,
             changingRoomNotes, pitchLayoutNotes, contactName, contactPhone,
             accessibilityNotes, isSchoolVenue } = req.body
@@ -108,6 +126,7 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
 
 router.delete('/:id', authenticateToken, async (req, res, next) => {
   try {
+    if (!(await ensureVenueAccess(req, res, req.params.id))) return
     const result = await pool.query(
       `UPDATE venues SET archived_at = NOW() WHERE id = $1 RETURNING *`,
       [req.params.id]
