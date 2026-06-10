@@ -9,11 +9,11 @@ const SPORT_EMOJI = {
 
 const SPORT_GRADIENT = {
   football: 'from-green-700 to-emerald-900',
-  rugby: 'from-amber-700 to-orange-900',
+  rugby: 'from-brand-accent to-orange-900',
   cricket: 'from-sky-700 to-blue-900',
   hockey: 'from-purple-700 to-violet-900',
   netball: 'from-pink-700 to-rose-900',
-  athletics: 'from-yellow-700 to-amber-900',
+  athletics: 'from-yellow-700 to-brand-accent-hover',
   swimming: 'from-cyan-700 to-teal-900',
   tennis: 'from-lime-700 to-green-900',
   basketball: 'from-orange-700 to-red-900',

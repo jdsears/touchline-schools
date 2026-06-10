@@ -35,7 +35,7 @@ function EffortStars({ rating, size = 'sm' }) {
   return (
     <div className="flex gap-0.5" title={`${rating.toFixed(1)} avg effort`}>
       {[1,2,3,4,5].map(i => (
-        <span key={i} className={i <= stars ? 'text-brand-accent' : 'text-navy-700'}>
+        <span key={i} className={i <= stars ? 'text-brand-accent' : 'text-primary'}>
           <Flame className={sz} />
         </span>
       ))}
@@ -198,7 +198,7 @@ export default function SeasonDevelopment() {
         <button
           onClick={handleGenerateReview}
           disabled={generatingReview}
-          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-pitch-600 to-pitch-500 hover:from-pitch-500 hover:to-pitch-400 disabled:opacity-50 text-white rounded-lg text-sm font-medium transition"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-brand-primary to-brand-primary-hover hover:from-brand-primary hover:to-brand-primary-hover disabled:opacity-50 text-white rounded-lg text-sm font-medium transition"
         >
           {generatingReview ? (
             <><Loader2 className="w-4 h-4 animate-spin" /> Generating...</>

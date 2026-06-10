@@ -657,7 +657,7 @@ export default function PupilDetail() {
       <div className="card p-6 mb-6">
         <div className="flex flex-col sm:flex-row gap-6">
           {/* Avatar */}
-          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-pitch-500 to-pitch-700 flex items-center justify-center text-3xl font-bold text-white shrink-0">
+          <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-primary-hover flex items-center justify-center text-3xl font-bold text-white shrink-0">
             {pupil.squad_number || pupil.name.charAt(0)}
           </div>
 
@@ -941,7 +941,7 @@ export default function PupilDetail() {
                 to={`/pupils/${id}/assistant`}
                 className="card-hover p-4 flex items-center gap-3"
               >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pitch-500/20 to-energy-500/20 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-primary to-brand-accent-hover flex items-center justify-center">
                   <Sparkles className="w-5 h-5 text-brand-primary" />
                 </div>
                 <div className="text-left">

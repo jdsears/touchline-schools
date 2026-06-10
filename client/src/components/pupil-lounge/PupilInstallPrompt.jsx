@@ -41,7 +41,7 @@ export default function PupilInstallPrompt() {
               <div className="mt-2.5 flex gap-2">
                 <button
                   onClick={triggerInstall}
-                  className="bg-gold-500 hover:bg-gold-600 text-navy-900 px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors"
+                  className="bg-gold-500 hover:bg-gold-600 text-primary px-4 py-1.5 rounded-lg text-xs font-semibold transition-colors"
                 >
                   Install
                 </button>

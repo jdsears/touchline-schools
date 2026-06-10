@@ -223,7 +223,7 @@ export default function PupilAssistant() {
             >
               <ArrowLeft className="w-5 h-5" />
             </Link>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-pitch-500 to-pitch-700 flex items-center justify-center text-white font-bold">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-primary to-brand-primary-hover flex items-center justify-center text-white font-bold">
               {pupil.squad_number || pupil.name?.charAt(0)}
             </div>
             <div>
@@ -257,7 +257,7 @@ export default function PupilAssistant() {
               className="max-w-3xl mx-auto"
             >
               <div className="text-center mb-8">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-pitch-500/20 to-energy-500/20 flex items-center justify-center mx-auto mb-4">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-brand-primary to-brand-accent-hover flex items-center justify-center mx-auto mb-4">
                   <Sparkles className="w-10 h-10 text-brand-primary" />
                 </div>
                 <h2 className="font-display text-2xl font-bold text-white mb-2">

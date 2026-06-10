@@ -25,7 +25,7 @@ function MiniPitchView({ team, myPupilId }) {
 
   return (
     <div className="mt-4 px-4">
-      <h2 className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-2 flex items-center gap-1">
+      <h2 className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2 flex items-center gap-1">
         <Layout size={12} className="-mt-0.5" />
         Team Formation {formation && <span className="ml-1 text-navy-300">· {formation}</span>}
       </h2>
@@ -40,7 +40,7 @@ function MiniPitchView({ team, myPupilId }) {
               className="absolute flex flex-col items-center"
               style={{ left: `${pos.x}%`, top: `${pos.y}%`, transform: 'translate(-50%, -50%)' }}
             >
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md ${isMe ? 'bg-status-warning text-navy-900 ring-2 ring-white' : 'bg-white/90 text-navy-700'}`}>
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-bold shadow-md ${isMe ? 'bg-status-warning text-primary ring-2 ring-white' : 'bg-white/90 text-primary'}`}>
                 {pos.label?.charAt(0) || '?'}
               </div>
               <span className={`mt-0.5 text-[7px] font-medium px-1 rounded ${isMe ? 'text-status-warning' : 'text-white/70'}`}>{pos.label}</span>
@@ -49,7 +49,7 @@ function MiniPitchView({ team, myPupilId }) {
         })}
       </div>
       {team?.game_model?.style && (
-        <p className="text-[10px] text-navy-500 mt-1.5 text-center italic">{team.game_model.style}</p>
+        <p className="text-[10px] text-secondary mt-1.5 text-center italic">{team.game_model.style}</p>
       )}
     </div>
   )
@@ -63,7 +63,7 @@ const SPORT_EMOJI = {
 
 const SPORT_GRADIENT = {
   football: 'from-green-700 to-emerald-900',
-  rugby: 'from-amber-700 to-orange-900',
+  rugby: 'from-brand-accent to-orange-900',
   hockey: 'from-purple-700 to-violet-900',
   netball: 'from-pink-700 to-rose-900',
   cricket: 'from-sky-700 to-blue-900',
@@ -144,12 +144,12 @@ export default function SportDetailPage() {
 
       {/* Upcoming events */}
       <div className="px-4 mt-4">
-        <h2 className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-2">
+        <h2 className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2">
           <Calendar size={12} className="inline mr-1 -mt-0.5" />
           Upcoming
         </h2>
         {events.length === 0 ? (
-          <p className="text-xs text-navy-600 italic">No upcoming events for {sportKey}</p>
+          <p className="text-xs text-secondary italic">No upcoming events for {sportKey}</p>
         ) : (
           <div className="space-y-2">
             {events.map(e => {
@@ -161,10 +161,10 @@ export default function SportDetailPage() {
                     <span className="text-sm text-white font-medium">
                       {e.type === 'fixture' ? `vs ${e.title}` : e.title}
                     </span>
-                    <span className="text-[10px] text-navy-500 capitalize">{e.type}</span>
+                    <span className="text-[10px] text-secondary capitalize">{e.type}</span>
                   </div>
                   {eventDate && (
-                    <p className="text-[10px] text-navy-500 mt-0.5">
+                    <p className="text-[10px] text-secondary mt-0.5">
                       {format(eventDate, 'EEE d MMM')}
                       {e.start_time ? ` at ${e.start_time.slice(0, 5)}` : ''}
                       {extra.team_name ? ` - ${extra.team_name}` : ''}
@@ -184,18 +184,18 @@ export default function SportDetailPage() {
 
       {/* Teacher feedback for this sport */}
       <div className="px-4 mt-5">
-        <h2 className="text-xs font-semibold text-navy-400 uppercase tracking-wide mb-2">
+        <h2 className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2">
           <MessageSquare size={12} className="inline mr-1 -mt-0.5" />
           Teacher Feedback
         </h2>
         {feedback.length === 0 ? (
-          <p className="text-xs text-navy-600 italic">No feedback for {sportKey} yet</p>
+          <p className="text-xs text-secondary italic">No feedback for {sportKey} yet</p>
         ) : (
           <div className="space-y-2">
             {feedback.map(obs => (
               <div key={obs.id} className="bg-navy-900/60 border border-navy-800/50 rounded-xl px-3 py-2.5">
                 <p className="text-sm text-white leading-relaxed line-clamp-3">{obs.content}</p>
-                <p className="text-[10px] text-navy-500 mt-1.5">
+                <p className="text-[10px] text-secondary mt-1.5">
                   {obs.observer_name} - {formatDistanceToNow(new Date(obs.created_at), { addSuffix: true })}
                 </p>
               </div>

@@ -36,7 +36,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding
   return (
     <>
       {/* Header */}
-      <div className="flex items-center justify-between h-16 px-4 border-b border-navy-800">
+      <div className="flex items-center justify-between h-16 px-4 border-b border-border-strong">
         <div className="flex items-center gap-3">
           {schoolBranding?.logoUrl ? (
             <img src={schoolBranding.logoUrl} alt="" className="w-8 h-8 rounded-lg object-cover" />
@@ -47,12 +47,12 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding
           )}
           <div>
             <div className="text-sm font-semibold text-white">{schoolBranding?.schoolName || 'My Portal'}</div>
-            <div className="text-xs text-navy-400">{user?.name}</div>
+            <div className="text-xs text-secondary">{user?.name}</div>
           </div>
         </div>
         <button
           onClick={() => setSidebarOpen(false)}
-          className="lg:hidden p-1 text-navy-400 hover:text-white"
+          className="lg:hidden p-1 text-secondary hover:text-white"
         >
           <X className="w-5 h-5" />
         </button>
@@ -75,7 +75,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding
                 flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200
                 ${isActive
                   ? 'text-white'
-                  : 'text-navy-400 hover:text-white hover:bg-navy-800'
+                  : 'text-secondary hover:text-white hover:bg-navy-800'
                 }
               `}
               style={isActive ? { backgroundColor: `color-mix(in srgb, var(--school-secondary) 20%, transparent)`, color: 'var(--school-secondary)' } : undefined}
@@ -89,7 +89,7 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding
       </nav>
 
       {/* User profile + logout */}
-      <div className="border-t border-navy-800 p-4">
+      <div className="border-t border-border-strong p-4">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-navy-700 flex items-center justify-center">
             <span className="text-xs font-medium text-white">
@@ -98,11 +98,11 @@ function SidebarContent({ user, logout, setSidebarOpen, pathname, schoolBranding
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-sm font-medium text-white truncate">{user?.name}</div>
-            <div className="text-xs text-navy-400">Pupil</div>
+            <div className="text-xs text-secondary">Pupil</div>
           </div>
           <button
             onClick={logout}
-            className="p-1.5 text-navy-400 hover:text-status-error transition-colors"
+            className="p-1.5 text-secondary hover:text-status-error transition-colors"
             title="Log out"
           >
             <LogOut className="w-4 h-4" />
@@ -163,7 +163,7 @@ export default function PupilLayout() {
       {/* Sidebar */}
       <aside
         className={`
-          fixed inset-y-0 left-0 z-50 w-64 bg-navy-900 border-r border-navy-800
+          fixed inset-y-0 left-0 z-50 w-64 bg-navy-900 border-r border-border-strong
           flex flex-col transition-transform duration-300 ease-in-out
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           lg:translate-x-0
@@ -181,10 +181,10 @@ export default function PupilLayout() {
       {/* Main content */}
       <div className="lg:pl-64">
         {/* Mobile header */}
-        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-16 px-4 bg-navy-900/80 backdrop-blur-md border-b border-navy-800">
+        <header className="sticky top-0 z-30 lg:hidden flex items-center justify-between h-16 px-4 bg-navy-900/80 backdrop-blur-md border-b border-border-strong">
           <button
             onClick={() => setSidebarOpen(true)}
-            className="p-2 text-navy-400 hover:text-white"
+            className="p-2 text-secondary hover:text-white"
           >
             <Menu className="w-5 h-5" />
           </button>

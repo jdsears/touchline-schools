@@ -235,7 +235,7 @@ export default function TeacherAssessment() {
                                     px-2 py-1 rounded text-xs font-medium border transition-all capitalize
                                     ${currentGrade === g
                                       ? GRADE_COLORS[g]
-                                      : 'bg-subtle text-tertiary border-border-strong hover:border-navy-500'
+                                      : 'bg-subtle text-tertiary border-border-strong hover:border-border-strong'
                                     }
                                   `}
                                   title={g}

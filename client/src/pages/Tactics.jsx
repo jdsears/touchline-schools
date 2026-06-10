@@ -1617,8 +1617,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                         tacticalPhase === PHASES.OUT_OF_POSSESSION
                           ? 'via-alert-400/70'
                           : tacticalPhase === PHASES.IN_POSSESSION
-                            ? 'via-pitch-400/50'
-                            : 'via-energy-400/50'
+                            ? 'via-brand-primary'
+                            : 'via-brand-accent'
                       } to-transparent pointer-events-none`}
                       style={{ top: `${50 + (tacticalSettings.defensiveLine - 50) * 0.4}%` }}
                     >
@@ -1783,8 +1783,8 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                               : ''
                           }
                           ${assignedPlayer
-                            ? 'bg-card text-navy-900'
-                            : 'bg-white/90 text-tertiary border-2 border-dashed border-navy-400'
+                            ? 'bg-card text-primary'
+                            : 'bg-white/90 text-tertiary border-2 border-dashed border-border-strong'
                           }
                         `}
                         title={

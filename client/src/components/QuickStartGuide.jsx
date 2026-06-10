@@ -173,7 +173,7 @@ export default function QuickStartGuide({ isOpen, onClose }) {
               disabled={isFirst}
               className={`flex items-center gap-1 text-sm transition-colors ${
                 isFirst
-                  ? 'text-navy-700 cursor-default'
+                  ? 'text-primary cursor-default'
                   : 'text-secondary hover:text-primary'
               }`}
             >

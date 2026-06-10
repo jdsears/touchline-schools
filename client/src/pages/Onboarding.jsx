@@ -384,7 +384,7 @@ export default function Onboarding() {
                 <label className="block w-full cursor-pointer">
                   <div className={`
                     border-2 border-dashed rounded-xl p-8 text-center transition-colors
-                    ${csvFile ? 'border-brand-primary bg-brand-primary-tint' : 'border-border-strong hover:border-navy-500'}
+                    ${csvFile ? 'border-brand-primary bg-brand-primary-tint' : 'border-border-strong hover:border-border-strong'}
                   `}>
                     {csvFile ? (
                       <div className="flex items-center justify-center gap-3">

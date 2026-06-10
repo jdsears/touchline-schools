@@ -236,7 +236,7 @@ export default function TeacherReports() {
                         onClick={() => updateReport(pupil.id, 'attainment_grade', g)}
                         disabled={isSubmitted}
                         className={`flex-1 px-1 py-1.5 rounded text-xs font-medium border transition-all capitalize ${
-                          report.attainment_grade === g ? GRADE_COLORS[g] : 'bg-subtle text-tertiary border-border-strong hover:border-navy-500'
+                          report.attainment_grade === g ? GRADE_COLORS[g] : 'bg-subtle text-tertiary border-border-strong hover:border-border-strong'
                         } ${isSubmitted ? 'opacity-60' : ''}`}
                       >
                         {g.charAt(0).toUpperCase()}
@@ -255,7 +255,7 @@ export default function TeacherReports() {
                         onClick={() => updateReport(pupil.id, 'effort_grade', g)}
                         disabled={isSubmitted}
                         className={`flex-1 px-1 py-1.5 rounded text-xs font-medium border transition-all ${
-                          report.effort_grade === g ? GRADE_COLORS[g] : 'bg-subtle text-tertiary border-border-strong hover:border-navy-500'
+                          report.effort_grade === g ? GRADE_COLORS[g] : 'bg-subtle text-tertiary border-border-strong hover:border-border-strong'
                         } ${isSubmitted ? 'opacity-60' : ''}`}
                       >
                         {g === 'needs_improvement' ? 'NI' : g === 'very_good' ? 'VG' : g.charAt(0).toUpperCase()}

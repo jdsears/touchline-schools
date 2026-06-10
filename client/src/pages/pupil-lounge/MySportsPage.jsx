@@ -10,11 +10,11 @@ const SPORT_EMOJI = {
 
 const SPORT_GRADIENT = {
   football: 'from-green-700 to-emerald-900',
-  rugby: 'from-amber-700 to-orange-900',
+  rugby: 'from-brand-accent to-orange-900',
   cricket: 'from-sky-700 to-blue-900',
   hockey: 'from-purple-700 to-violet-900',
   netball: 'from-pink-700 to-rose-900',
-  athletics: 'from-yellow-700 to-amber-900',
+  athletics: 'from-yellow-700 to-brand-accent-hover',
   swimming: 'from-cyan-700 to-teal-900',
   tennis: 'from-lime-700 to-green-900',
   basketball: 'from-orange-700 to-red-900',
@@ -64,15 +64,15 @@ export default function MySportsPage() {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold text-white mb-1">My Sports</h1>
-      <p className="text-navy-400 text-xs mb-4">
+      <p className="text-secondary text-xs mb-4">
         Everything you play, all in one place
       </p>
 
       {(!sports || sports.length === 0) ? (
-        <div className="rounded-xl bg-navy-900 border border-navy-800 p-10 text-center">
-          <Trophy className="w-10 h-10 text-navy-600 mx-auto mb-3" />
+        <div className="rounded-xl bg-navy-900 border border-border-strong p-10 text-center">
+          <Trophy className="w-10 h-10 text-secondary mx-auto mb-3" />
           <h3 className="text-sm font-semibold text-white mb-1">No sports yet</h3>
-          <p className="text-xs text-navy-500">
+          <p className="text-xs text-secondary">
             Once your teachers add you to teams and classes, your sports will appear here.
           </p>
         </div>

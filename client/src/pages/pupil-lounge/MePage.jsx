@@ -13,7 +13,7 @@ function Avatar({ name }) {
   const initials = (name || '').split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
   return (
     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center">
-      <span className="text-navy-900 font-bold text-xl">{initials}</span>
+      <span className="text-primary font-bold text-xl">{initials}</span>
     </div>
   )
 }
@@ -25,12 +25,12 @@ function SettingsRow({ icon: Icon, label, value, onClick }) {
       className="w-full flex items-center justify-between px-4 py-3 hover:bg-navy-800/50 transition-colors"
     >
       <div className="flex items-center gap-3">
-        <Icon size={18} className="text-navy-400" />
+        <Icon size={18} className="text-secondary" />
         <span className="text-sm text-white">{label}</span>
       </div>
       <div className="flex items-center gap-1">
-        {value && <span className="text-xs text-navy-500">{value}</span>}
-        <ChevronRight size={16} className="text-navy-600" />
+        {value && <span className="text-xs text-secondary">{value}</span>}
+        <ChevronRight size={16} className="text-secondary" />
       </div>
     </button>
   )
@@ -63,7 +63,7 @@ export default function MePage() {
         <h1 className="text-lg font-bold text-white mt-3">{fullName}</h1>
         <div className="flex items-center gap-2 mt-1">
           {pupil?.year_group && (
-            <span className="text-xs text-navy-400">Year {pupil.year_group}</span>
+            <span className="text-xs text-secondary">Year {pupil.year_group}</span>
           )}
           {pupil?.house && (
             <span className={`text-[10px] px-2 py-0.5 rounded-full text-white font-semibold ${houseBg}`}>
@@ -95,7 +95,7 @@ export default function MePage() {
               </button>
               <button
                 onClick={() => setShowSignOutConfirm(false)}
-                className="text-navy-400 hover:text-white text-sm px-4 py-2 transition-colors"
+                className="text-secondary hover:text-white text-sm px-4 py-2 transition-colors"
               >
                 Cancel
               </button>
@@ -112,7 +112,7 @@ export default function MePage() {
         )}
       </div>
 
-      <p className="text-center text-[10px] text-navy-700 mt-6">
+      <p className="text-center text-[10px] text-primary mt-6">
         MoonBoots Sports v1.8
       </p>
     </div>

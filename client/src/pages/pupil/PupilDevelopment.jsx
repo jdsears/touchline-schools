@@ -73,14 +73,14 @@ export default function PupilDevelopment() {
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">My Development</h1>
-        <p className="text-navy-400 mt-1">Feedback and observations from your teachers</p>
+        <p className="text-secondary mt-1">Feedback and observations from your teachers</p>
       </div>
 
       {observations.length === 0 ? (
-        <div className="bg-navy-900 rounded-xl border border-navy-800 p-12 text-center">
-          <TrendingUp className="w-10 h-10 text-navy-600 mx-auto mb-3" />
+        <div className="bg-navy-900 rounded-xl border border-border-strong p-12 text-center">
+          <TrendingUp className="w-10 h-10 text-secondary mx-auto mb-3" />
           <h3 className="text-lg font-semibold text-white mb-2">No feedback yet</h3>
-          <p className="text-navy-400 text-sm">Your teachers' observations will appear here.</p>
+          <p className="text-secondary text-sm">Your teachers' observations will appear here.</p>
         </div>
       ) : (
         <>
@@ -90,7 +90,7 @@ export default function PupilDevelopment() {
               <button
                 onClick={() => setFilter('all')}
                 className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
-                  filter === 'all' ? 'bg-card text-navy-900' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
+                  filter === 'all' ? 'bg-card text-primary' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
                 }`}
               >
                 All ({observations.length})
@@ -100,7 +100,7 @@ export default function PupilDevelopment() {
                   key={sport}
                   onClick={() => setFilter(sport)}
                   className={`px-3 py-1 rounded-full text-xs font-medium capitalize transition-colors ${
-                    filter === sport ? 'bg-card text-navy-900' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
+                    filter === sport ? 'bg-card text-primary' : 'bg-navy-800 text-navy-300 hover:bg-navy-700'
                   }`}
                 >
                   {SPORT_EMOJI[sport] || ''} {sport} ({observations.filter(o => o.sport === sport).length})
@@ -124,13 +124,13 @@ export default function PupilDevelopment() {
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <span className={`text-xs font-semibold ${cfg.color}`}>{cfg.label}</span>
                         {obs.sport && (
-                          <span className="text-xs text-navy-400 capitalize">
+                          <span className="text-xs text-secondary capitalize">
                             {SPORT_EMOJI[obs.sport] || ''} {obs.sport}
                           </span>
                         )}
                       </div>
                       <p className="text-white text-sm leading-relaxed">{obs.content}</p>
-                      <p className="text-navy-500 text-xs mt-2">
+                      <p className="text-secondary text-xs mt-2">
                         {obs.observer_name} · {formatDistanceToNow(new Date(obs.created_at), { addSuffix: true })}
                       </p>
                     </div>
