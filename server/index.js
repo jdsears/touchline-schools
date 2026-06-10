@@ -122,8 +122,32 @@ app.use((req, res, next) => {
 })
 
 // Security headers
+// Content-Security-Policy ships in report-only mode by default so it cannot break
+// the app; set CSP_ENFORCE=true to switch it to enforcing once reports look clean.
+// Directives cover the app's known third parties (Stripe, Mux, OpenStreetMap).
+const cspDirectives = {
+  defaultSrc: ["'self'"],
+  baseUri: ["'self'"],
+  objectSrc: ["'none'"],
+  frameAncestors: ["'self'"],
+  fontSrc: ["'self'", 'data:'],
+  // Images/media come from R2, Mux thumbnails and OSM tiles; allow https + data/blob.
+  imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+  mediaSrc: ["'self'", 'blob:', 'https://*.mux.com'],
+  // Bundled scripts are same-origin; Stripe and Mux load their own SDKs.
+  scriptSrc: ["'self'", 'https://js.stripe.com', 'https://*.mux.com'],
+  // Tailwind / charting libraries inject inline styles.
+  styleSrc: ["'self'", "'unsafe-inline'"],
+  connectSrc: ["'self'", 'https:'],
+  frameSrc: ["'self'", 'https://js.stripe.com', 'https://*.mux.com'],
+  workerSrc: ["'self'", 'blob:'],
+}
 app.use(helmet({
-  contentSecurityPolicy: false, // CSP can break inline scripts; enable and configure when ready
+  contentSecurityPolicy: {
+    useDefaults: true,
+    directives: cspDirectives,
+    reportOnly: process.env.CSP_ENFORCE !== 'true',
+  },
   crossOriginEmbedderPolicy: false, // Required for Mux video embeds
   crossOriginResourcePolicy: { policy: 'cross-origin' }, // Allow frontend (moonbootssports.com) to load images/assets from Railway
 }))
