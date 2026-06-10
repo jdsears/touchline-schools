@@ -51,6 +51,11 @@ function slugify(text) {
     .replace(/(^-|-$)/g, '')
 }
 
+// Minimum password policy, shared across registration, reset and invite flows
+function isValidPassword(pw) {
+  return typeof pw === 'string' && pw.length >= 8
+}
+
 // Register new user with team (and optionally a school)
 router.post('/register', async (req, res, next) => {
   try {
@@ -81,6 +86,9 @@ router.post('/register', async (req, res, next) => {
     // Validate
     if (!name || !email || !password || !teamName) {
       return res.status(400).json({ message: 'All fields are required' })
+    }
+    if (!isValidPassword(password)) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters' })
     }
 
     // Validate school-specific fields
@@ -947,6 +955,9 @@ router.post('/invite/accept', async (req, res, next) => {
       }
     } else {
       // New user - create account
+      if (!isValidPassword(password)) {
+        return res.status(400).json({ message: 'Password must be at least 8 characters' })
+      }
       const passwordHash = await bcrypt.hash(password, 10)
 
       const userResult = await pool.query(
