@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { loadSchool, requireSchoolRole, requireSchoolFeature } from '../middleware/schoolAuth.js'
+import { loadSchool, requireSchoolRole } from '../middleware/schoolAuth.js'
 import { sendEmail, isEmailEnabled } from '../services/emailService.js'
 
 const router = Router()
@@ -18,7 +18,7 @@ if (process.env.STRIPE_SECRET_KEY) {
 // ==========================================
 
 // List all events for a school
-router.get('/:schoolId/events', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin', 'secretary', 'coach', 'treasurer'), async (req, res, next) => {
+router.get('/:schoolId/events', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary', 'coach', 'treasurer'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const { status, upcoming } = req.query
@@ -52,7 +52,7 @@ router.get('/:schoolId/events', authenticateToken, loadSchool, requireSchoolFeat
 })
 
 // Create a new event
-router.post('/:schoolId/events', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin'), async (req, res, next) => {
+router.post('/:schoolId/events', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const {
@@ -123,7 +123,7 @@ router.post('/:schoolId/events', authenticateToken, loadSchool, requireSchoolFea
 })
 
 // Get event detail with registration count
-router.get('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin', 'secretary', 'coach', 'treasurer'), async (req, res, next) => {
+router.get('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary', 'coach', 'treasurer'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -148,7 +148,7 @@ router.get('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchool
 })
 
 // Update event
-router.put('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin'), async (req, res, next) => {
+router.put('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
     const {
@@ -213,7 +213,7 @@ router.put('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchool
 })
 
 // Cancel event (soft delete - set status to cancelled)
-router.delete('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin'), async (req, res, next) => {
+router.delete('/:schoolId/events/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -270,7 +270,7 @@ router.delete('/:schoolId/events/:id', authenticateToken, loadSchool, requireSch
 })
 
 // Get all registrations for an event
-router.get('/:schoolId/events/:id/registrations', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.get('/:schoolId/events/:id/registrations', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -294,7 +294,7 @@ router.get('/:schoolId/events/:id/registrations', authenticateToken, loadSchool,
 })
 
 // CSV export of registrations
-router.get('/:schoolId/events/:id/export', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.get('/:schoolId/events/:id/export', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -361,7 +361,7 @@ router.get('/:schoolId/events/:id/export', authenticateToken, loadSchool, requir
 })
 
 // Bulk update attendance for an event
-router.put('/:schoolId/events/:id/attendance', authenticateToken, loadSchool, requireSchoolFeature('events'), requireSchoolRole('owner', 'admin', 'coach'), async (req, res, next) => {
+router.put('/:schoolId/events/:id/attendance', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'coach'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
     const { attendance } = req.body

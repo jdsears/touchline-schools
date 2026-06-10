@@ -5,7 +5,7 @@ import fs from 'fs'
 import { fileURLToPath } from 'url'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { loadSchool, requireSchoolRole, requireSchoolFeature } from '../middleware/schoolAuth.js'
+import { loadSchool, requireSchoolRole } from '../middleware/schoolAuth.js'
 import { sendNotificationEmail, isEmailEnabled, sendEmail } from '../services/emailService.js'
 import { uploadFile } from '../services/storageService.js'
 
@@ -106,7 +106,7 @@ async function requireSafeguardingAccess(req, res, next) {
 // ==========================================
 
 // List all compliance records for a school
-router.get('/:schoolId/compliance', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.get('/:schoolId/compliance', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const { search } = req.query
@@ -136,7 +136,7 @@ router.get('/:schoolId/compliance', authenticateToken, loadSchool, requireSchool
 })
 
 // Compliance overview / dashboard stats + alerts
-router.get('/:schoolId/compliance/overview', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.get('/:schoolId/compliance/overview', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const now = new Date()
@@ -212,7 +212,7 @@ router.get('/:schoolId/compliance/overview', authenticateToken, loadSchool, requ
 })
 
 // Add a compliance record
-router.post('/:schoolId/compliance', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.post('/:schoolId/compliance', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const {
@@ -259,7 +259,7 @@ router.post('/:schoolId/compliance', authenticateToken, loadSchool, requireSchoo
 })
 
 // Get a single compliance record
-router.get('/:schoolId/compliance/:id', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.get('/:schoolId/compliance/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -282,7 +282,7 @@ router.get('/:schoolId/compliance/:id', authenticateToken, loadSchool, requireSc
 })
 
 // Update a compliance record
-router.put('/:schoolId/compliance/:id', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.put('/:schoolId/compliance/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
     const {
@@ -330,7 +330,7 @@ router.put('/:schoolId/compliance/:id', authenticateToken, loadSchool, requireSc
 })
 
 // Upload document to a compliance record
-router.post('/:schoolId/compliance/:id/documents', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), upload.single('document'), async (req, res, next) => {
+router.post('/:schoolId/compliance/:id/documents', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), upload.single('document'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -388,7 +388,7 @@ router.post('/:schoolId/compliance/:id/documents', authenticateToken, loadSchool
 // ==========================================
 
 // List safeguarding roles for a school
-router.get('/:schoolId/safeguarding/roles', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.get('/:schoolId/safeguarding/roles', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
 
@@ -408,7 +408,7 @@ router.get('/:schoolId/safeguarding/roles', authenticateToken, loadSchool, requi
 })
 
 // Assign a safeguarding role
-router.post('/:schoolId/safeguarding/roles', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.post('/:schoolId/safeguarding/roles', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const { user_id, role_type, qualifications, dbs_number, dbs_expiry } = req.body
@@ -475,7 +475,7 @@ router.post('/:schoolId/safeguarding/roles', authenticateToken, loadSchool, requ
 })
 
 // Remove a safeguarding role
-router.delete('/:schoolId/safeguarding/roles/:id', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.delete('/:schoolId/safeguarding/roles/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -499,7 +499,7 @@ router.delete('/:schoolId/safeguarding/roles/:id', authenticateToken, loadSchool
 // ==========================================
 
 // List incidents (welfare officers + owners only)
-router.get('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
+router.get('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const { status, severity } = req.query
@@ -537,7 +537,7 @@ router.get('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, r
 })
 
 // Report an incident (any school member can report)
-router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), async (req, res, next) => {
+router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const {
@@ -623,7 +623,7 @@ router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, 
 })
 
 // View a single incident (logs audit trail)
-router.get('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
+router.get('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -666,7 +666,7 @@ router.get('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchoo
 })
 
 // Update an incident
-router.put('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
+router.put('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
     const {
@@ -727,7 +727,7 @@ router.put('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchoo
 // ==========================================
 
 // List active alerts
-router.get('/:schoolId/compliance/alerts', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.get('/:schoolId/compliance/alerts', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const { status } = req.query
@@ -759,7 +759,7 @@ router.get('/:schoolId/compliance/alerts', authenticateToken, loadSchool, requir
 })
 
 // Acknowledge or resolve an alert
-router.put('/:schoolId/compliance/alerts/:id', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.put('/:schoolId/compliance/alerts/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
     const { status, notes } = req.body
@@ -792,7 +792,7 @@ router.put('/:schoolId/compliance/alerts/:id', authenticateToken, loadSchool, re
 })
 
 // Manually trigger alert generation scan
-router.post('/:schoolId/compliance/alerts/generate', authenticateToken, loadSchool, requireSchoolFeature('safeguarding'), requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
+router.post('/:schoolId/compliance/alerts/generate', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'secretary'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const now = new Date()
