@@ -1,8 +1,8 @@
-# Touchline for Schools
+# MoonBoots Sports
 
 A multi-sport platform for UK secondary school PE departments. Built with React, Node.js, PostgreSQL, and Claude AI.
 
-Touchline for Schools gives PE departments and sports staff a single platform to run every team sport across the school. Teachers plan sessions, manage fixtures, track attendance, and report on pupil development. Pupils get a personal portal to track their own progress across every sport they play.
+MoonBoots Sports gives PE departments and sports staff a single platform to run every team sport across the school. Teachers plan sessions, manage fixtures, track attendance, and report on pupil development. Pupils get a personal portal to track their own progress across every sport they play.
 
 ## Sports Supported
 
@@ -113,10 +113,10 @@ See `server/.env.example` and `client/.env.example` for all required configurati
 
 ## Deployment
 
-Touchline for Schools runs on its own Railway project, separate from the main Touchline product.
+MoonBoots Sports runs on its own Railway project, separate from the legacy Touchline product it grew out of.
 
 - Separate Railway project and PostgreSQL database
-- Domain: `schools.touchline.xyz` (placeholder)
+- Domain: `app.moonbootssports.com` (matches the server's default `CANONICAL_HOST`)
 - Cloudflare DNS and CDN
 - Separate Anthropic API key, Mux project, and Resend domain
 
