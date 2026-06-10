@@ -654,26 +654,36 @@ async function fixPupilTeamIds() {
   }
 }
 
+// Ensure configured admin users exist and (in demo mode) are linked to the demo school.
+// Admin identities come from ADMIN_EMAILS (same list used by the auth middleware to
+// auto-grant admin on login). New accounts are only created when SEED_ADMIN_PASSWORD is
+// set — there is no hardcoded fallback password.
 async function seedAdminUsersAndLink() {
-  const admins = [
-    { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
-    { name: 'Peter Taylor', email: 'petertaylor1983@gmail.com' },
-  ]
-  const pw = 'MoonBoots2026!'
-  for (const a of admins) {
+  const adminEmails = (process.env.ADMIN_EMAILS || '')
+    .split(',').map(e => e.trim()).filter(Boolean)
+  if (adminEmails.length === 0) {
+    console.log('[Admin] ADMIN_EMAILS not set — skipping admin seeding')
+    return
+  }
+  const seedPassword = process.env.SEED_ADMIN_PASSWORD || null
+  for (const email of adminEmails) {
     try {
       let userId
-      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [a.email.toLowerCase()])
+      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [email.toLowerCase()])
       if (exists.rows.length > 0) {
         userId = exists.rows[0].id
         if (!exists.rows[0].is_admin) await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [userId])
       } else {
-        const hash = await bcrypt.hash(pw, 10)
-        const r = await pool.query(`INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true) RETURNING id`, [a.name, a.email.toLowerCase(), hash])
+        if (!seedPassword) {
+          console.warn(`[Admin] ${email} not found and SEED_ADMIN_PASSWORD not set — skipping account creation`)
+          continue
+        }
+        const hash = await bcrypt.hash(seedPassword, 10)
+        const r = await pool.query(`INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true) RETURNING id`, [email.split('@')[0], email.toLowerCase(), hash])
         userId = r.rows[0].id
-        console.log(`[Admin] Created: ${a.email}`)
+        console.log(`[Admin] Created: ${email}`)
       }
-      // Try to link to demo school
+      // Link to demo school (demo environments only — the demo school may not exist elsewhere)
       try {
         const school = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo' LIMIT 1`)
         if (school.rows.length > 0) {
@@ -689,42 +699,8 @@ async function seedAdminUsersAndLink() {
             }
           }
         }
-      } catch (linkErr) { console.warn(`[Admin] Link failed for ${a.email}:`, linkErr.message) }
-    } catch (err) { console.error(`[Admin] Failed ${a.email}:`, err.message) }
-  }
-}
-
-// Ensure admin users exist (runs independently of migrations)
-async function seedAdminUsers() {
-  const admins = [
-    { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
-    { name: 'Peter Taylor', email: 'petertaylor1983@gmail.com' },
-  ]
-  const defaultPassword = 'MoonBoots2026!'
-
-  for (const admin of admins) {
-    try {
-      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [admin.email.toLowerCase()])
-      let userId
-      if (exists.rows.length > 0) {
-        userId = exists.rows[0].id
-        if (!exists.rows[0].is_admin) {
-          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [userId])
-          console.log(`[Admin] Promoted ${admin.email} to admin`)
-        }
-      } else {
-        const hash = await bcrypt.hash(defaultPassword, 10)
-        const result = await pool.query(
-          `INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true) RETURNING id`,
-          [admin.name, admin.email.toLowerCase(), hash]
-        )
-        userId = result.rows[0].id
-        console.log(`[Admin] Created admin: ${admin.email}`)
-      }
-
-    } catch (err) {
-      console.error(`[Admin] Failed to seed ${admin.email}:`, err.message)
-    }
+      } catch (linkErr) { console.warn(`[Admin] Link failed for ${email}:`, linkErr.message) }
+    } catch (err) { console.error(`[Admin] Failed ${email}:`, err.message) }
   }
 }
 
@@ -744,11 +720,14 @@ runMigrations().then(() => {
     console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`)
     console.log(`⏱️  Upload timeout: 30 minutes`)
 
-    // Seed demo school then link admin users (all errors caught internally)
-    ensureDemoSchool()
-      .then(() => seedAdminUsersAndLink())
+    // Demo data seeding + admin linking run only in demo environments (SEED_DEMO_DATA=true).
+    // The pupil data-repair pass is idempotent and only fills NULLs, so it runs everywhere.
+    const seedDemo = process.env.SEED_DEMO_DATA === 'true'
+      ? ensureDemoSchool().then(() => seedAdminUsersAndLink())
+      : Promise.resolve()
+    seedDemo
       .then(() => fixPupilTeamIds())
-      .catch(err => console.error('[Startup] Seed error:', err))
+      .catch(err => console.error('[Startup] Seed/data-fix error:', err))
 
     // Run lifecycle scanners on startup (delayed 30s to let DB settle),
     // then every 24 hours
