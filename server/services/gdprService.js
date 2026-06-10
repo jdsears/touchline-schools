@@ -286,6 +286,7 @@ export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason
   const client = await pool.connect()
   const tablesPurged = []
   const filesDeleted = []
+  const retained = []
 
   try {
     await client.query('BEGIN')
@@ -408,9 +409,13 @@ export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason
     const a20 = await client.query(`DELETE FROM parent_potm_votes WHERE pupil_id = $1`, [pupilId])
     if (a20.rowCount > 0) tablesPurged.push(`parent_potm_votes (${a20.rowCount})`)
 
-    // Safeguarding incidents (pupil as subject)
-    const a21 = await client.query(`DELETE FROM safeguarding_incidents WHERE pupil_id = $1`, [pupilId])
-    if (a21.rowCount > 0) tablesPurged.push(`safeguarding_incidents (${a21.rowCount})`)
+    // Safeguarding incidents are intentionally RETAINED, not erased.
+    // UK GDPR Art. 17(3)(b)/(e) disapplies the right to erasure where processing
+    // is necessary to comply with a legal obligation (safeguarding duties under
+    // Keeping Children Safe in Education) or for the establishment/defence of
+    // legal claims. These records also have no direct pupil_id link (people are
+    // recorded in involved_parties), so removing the pupil does not orphan them.
+    retained.push('safeguarding_incidents (retained: legal obligation / safeguarding)')
 
     // Team memberships
     const a22 = await client.query(`DELETE FROM team_memberships WHERE pupil_id = $1`, [pupilId])
@@ -437,6 +442,7 @@ export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason
         JSON.stringify({
           tables_purged_count: tablesPurged.length,
           files_deleted_count: filesToDelete.length,
+          retained,
           deleted_at: new Date().toISOString(),
         }),
       ]
@@ -468,6 +474,7 @@ export async function deletePupilData(pupilId, schoolId, deletedByUserId, reason
       pupil_reference: pupilRef,
       tables_purged: tablesPurged,
       files_deleted: filesDeleted,
+      retained,
     }
   } catch (error) {
     await client.query('ROLLBACK')
