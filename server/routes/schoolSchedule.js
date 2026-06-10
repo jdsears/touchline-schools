@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { loadSchool, requireSchoolRole, requireSchoolFeature } from '../middleware/schoolAuth.js'
+import { loadSchool, requireSchoolRole } from '../middleware/schoolAuth.js'
 import { sendEmail, isEmailEnabled } from '../services/emailService.js'
 
 const router = Router()
@@ -563,7 +563,7 @@ router.put('/:teamId/schedule/:id/attendance', authenticateToken, loadTeamAndClu
 // ==========================================
 
 // Attendance trends across teams for a school
-router.get('/schools/:schoolId/attendance/stats', authenticateToken, loadSchool, requireSchoolFeature('attendance_tracking'), requireSchoolRole('owner', 'admin'), async (req, res, next) => {
+router.get('/schools/:schoolId/attendance/stats', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const { from, to, team_id } = req.query

@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { loadSchool, requireSchoolRole, requireSchoolFeature } from '../middleware/schoolAuth.js'
+import { loadSchool, requireSchoolRole } from '../middleware/schoolAuth.js'
 import {
   generateParentMatchReport,
   generateAttendanceInsights,
@@ -90,7 +90,6 @@ router.post(
   authenticateToken,
   loadSchool,
   requireSchoolRole('owner', 'admin', 'coach'),
-  requireSchoolFeature('ai_match_reports'),
   async (req, res) => {
     try {
       const { schoolId, matchId } = req.params
@@ -240,7 +239,6 @@ router.post(
   authenticateToken,
   loadSchool,
   requireSchoolRole('owner', 'admin', 'coach'),
-  requireSchoolFeature('ai_match_reports'),
   async (req, res) => {
     try {
       const { schoolId, matchId } = req.params
@@ -456,7 +454,6 @@ router.post(
   authenticateToken,
   loadSchool,
   requireSchoolRole('owner', 'admin'),
-  requireSchoolFeature('ai_season_report'),
   async (req, res) => {
     try {
       const { schoolId } = req.params
@@ -628,7 +625,6 @@ router.post(
   authenticateToken,
   loadSchool,
   requireSchoolRole('owner', 'admin', 'secretary'),
-  requireSchoolFeature('ai_grant_helper'),
   async (req, res) => {
     try {
       const { schoolId } = req.params
@@ -792,7 +788,6 @@ router.post(
   authenticateToken,
   loadSchool,
   requireSchoolRole('owner', 'admin'),
-  requireSchoolFeature('ai_compliance_analysis'),
   async (req, res) => {
     try {
       const { schoolId } = req.params
@@ -948,7 +943,6 @@ router.get(
   authenticateToken,
   loadSchool,
   requireSchoolRole('owner', 'admin', 'coach'),
-  requireSchoolFeature('ai_coach_development'),
   async (req, res) => {
     try {
       const { schoolId, userId } = req.params
@@ -1129,7 +1123,6 @@ router.post(
   authenticateToken,
   loadSchool,
   requireSchoolRole('owner', 'admin', 'coach'),
-  requireSchoolFeature('ai_attendance_insights'),
   async (req, res) => {
     try {
       const { schoolId, teamId } = req.params
