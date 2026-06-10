@@ -1131,7 +1131,7 @@ export default function PupilDetail() {
                     className="sr-only"
                   />
                   <div className={`w-9 h-5 rounded-full transition-colors ${idpAutoReview ? 'bg-pitch-500' : 'bg-border-default'}`}>
-                    <div className={`w-4 h-4 rounded-full bg-white shadow-sm transform transition-transform mt-0.5 ${idpAutoReview ? 'translate-x-4.5 ml-[18px]' : 'translate-x-0.5 ml-[2px]'}`} />
+                    <div className={`w-4 h-4 rounded-full bg-card shadow-sm transform transition-transform mt-0.5 ${idpAutoReview ? 'translate-x-4.5 ml-[18px]' : 'translate-x-0.5 ml-[2px]'}`} />
                   </div>
                 </div>
                 <span className="text-sm text-secondary">Auto-generate after review period</span>

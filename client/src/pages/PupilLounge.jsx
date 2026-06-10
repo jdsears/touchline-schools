@@ -3974,7 +3974,7 @@ export default function PupilLounge() {
                     }`}
                   >
                     <span
-                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${
+                      className={`absolute top-0.5 w-4 h-4 rounded-full bg-card transition-transform ${
                         suggestionForm.is_anonymous ? 'left-5' : 'left-0.5'
                       }`}
                     />

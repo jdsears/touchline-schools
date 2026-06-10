@@ -817,7 +817,7 @@ export default function LeagueTable() {
             </a>
           </div>
 
-          <div className="aspect-video bg-white rounded-lg overflow-hidden">
+          <div className="aspect-video bg-card rounded-lg overflow-hidden">
             <iframe
               src={settings.fa_fulltime_table_url}
               className="w-full h-full border-0"

@@ -10,7 +10,7 @@ function Toggle({ checked, onChange }) {
       onClick={() => onChange(!checked)}
       className={`w-10 h-5 rounded-full transition-colors relative flex-shrink-0 ${checked ? 'bg-pitch-600' : 'bg-border-default'}`}
     >
-      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
+      <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-card transition-transform ${checked ? 'translate-x-5' : 'translate-x-0.5'}`} />
     </button>
   )
 }

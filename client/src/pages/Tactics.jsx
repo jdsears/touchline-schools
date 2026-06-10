@@ -1648,7 +1648,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                     onPointerDown={(e) => handlePointerDown(e, 'ball', ballPosition.x, ballPosition.y)}
                   >
                     {/* Football ball with realistic pattern */}
-                    <div className="w-7 h-7 rounded-full bg-white shadow-xl relative overflow-hidden">
+                    <div className="w-7 h-7 rounded-full bg-card shadow-xl relative overflow-hidden">
                       {/* Pentagon pattern */}
                       <svg viewBox="0 0 28 28" className="w-full h-full">
                         <circle cx="14" cy="14" r="13" fill="white" stroke="#e5e7eb" strokeWidth="1"/>
@@ -1783,7 +1783,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                               : ''
                           }
                           ${assignedPlayer
-                            ? 'bg-white text-navy-900'
+                            ? 'bg-card text-navy-900'
                             : 'bg-white/90 text-tertiary border-2 border-dashed border-navy-400'
                           }
                         `}
