@@ -1,7 +1,12 @@
 /**
- * Create admin users for MoonBoots Sports.
+ * Create or promote admin users for MoonBoots Sports.
  *
- * Usage: node scripts/create-admins.js
+ * Identities come from ADMIN_EMAILS (comma-separated). New accounts are created
+ * with SEED_ADMIN_PASSWORD; existing accounts are promoted to admin and, if a
+ * password is provided, have their password reset to it.
+ *
+ * Usage:
+ *   ADMIN_EMAILS="a@x.com,b@y.com" SEED_ADMIN_PASSWORD="..." node scripts/create-admins.js
  */
 
 import bcrypt from 'bcryptjs'
@@ -10,22 +15,19 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
-const ADMINS = [
-  {
-    name: 'John Sears',
-    email: 'js@moonbootsconsultancy.net',
-    password: 'MoonBoots2026!',
-  },
-  {
-    name: 'Peter Taylor',
-    email: 'petertaylor1983@gmail.com',
-    password: 'MoonBoots2026!',
-  },
-]
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
+  .split(',').map(e => e.trim()).filter(Boolean)
+const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD || ''
 
 async function createAdmins() {
-  for (const admin of ADMINS) {
-    const normalizedEmail = admin.email.trim().toLowerCase()
+  if (ADMIN_EMAILS.length === 0) {
+    console.error('ADMIN_EMAILS is not set. Aborting.')
+    process.exit(1)
+  }
+
+  for (const email of ADMIN_EMAILS) {
+    const normalizedEmail = email.trim().toLowerCase()
+    const name = normalizedEmail.split('@')[0]
 
     // Check if user already exists
     const existing = await pool.query(
@@ -37,30 +39,36 @@ async function createAdmins() {
       const user = existing.rows[0]
       if (!user.is_admin) {
         await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [user.id])
-        console.log(`Updated ${admin.name} (${admin.email}) to admin.`)
+        console.log(`Promoted ${normalizedEmail} to admin.`)
       } else {
-        console.log(`${admin.name} (${admin.email}) already exists as admin.`)
+        console.log(`${normalizedEmail} already exists as admin.`)
       }
-      // Reset password to the specified one
-      const passwordHash = await bcrypt.hash(admin.password, 10)
-      await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, user.id])
-      console.log(`  Password reset for ${admin.email}`)
+      // Optionally reset password when one is supplied
+      if (ADMIN_PASSWORD) {
+        const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10)
+        await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [passwordHash, user.id])
+        console.log(`  Password reset for ${normalizedEmail}`)
+      }
       continue
     }
 
-    // Create new admin user
-    const passwordHash = await bcrypt.hash(admin.password, 10)
+    // Create new admin user (requires a password)
+    if (!ADMIN_PASSWORD) {
+      console.warn(`${normalizedEmail} not found and SEED_ADMIN_PASSWORD not set — skipping creation.`)
+      continue
+    }
+    const passwordHash = await bcrypt.hash(ADMIN_PASSWORD, 10)
     const result = await pool.query(
       `INSERT INTO users (name, email, password_hash, role, is_admin)
        VALUES ($1, $2, $3, 'manager', true)
        RETURNING id, email, name, role, is_admin`,
-      [admin.name, normalizedEmail, passwordHash]
+      [name, normalizedEmail, passwordHash]
     )
 
-    console.log(`Created admin: ${result.rows[0].name} (${result.rows[0].email})`)
+    console.log(`Created admin: ${result.rows[0].email}`)
   }
 
-  console.log('\nDone. Both admins can log in at /login with their credentials.')
+  console.log('\nDone.')
   process.exit(0)
 }
 

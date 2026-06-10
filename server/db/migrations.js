@@ -3830,32 +3830,23 @@ export async function runMigrations() {
     console.log('Phase 17b: Calendar tokens migration complete')
 
     // ==========================================
-    // PHASE 18: Seed admin users
+    // PHASE 18: Promote configured admin users
     // ==========================================
-    const adminUsers = [
-      { name: 'John Sears', email: 'js@moonbootsconsultancy.net' },
-      { name: 'Peter Taylor', email: 'petertaylor1983@gmail.com' },
-    ]
-    // bcrypt hash of 'MoonBoots2026!' with 10 salt rounds
-    const adminPasswordHash = '$2a$10$8Q9TztHyoY5vkS5FlqX0h.C.8p26vcjcFBU78unFIRqwVe5Dt/wpe'
-
-    for (const admin of adminUsers) {
-      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [admin.email.toLowerCase()])
-      if (exists.rows.length > 0) {
-        if (!exists.rows[0].is_admin) {
-          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [exists.rows[0].id])
-          console.log(`  Promoted ${admin.email} to admin`)
-        }
-      } else {
-        await pool.query(
-          `INSERT INTO users (name, email, password_hash, role, is_admin) VALUES ($1, $2, $3, 'manager', true)`,
-          [admin.name, admin.email.toLowerCase(), adminPasswordHash]
-        )
-        console.log(`  Created admin: ${admin.email}`)
+    // Migrations must not introduce login credentials. Users listed in
+    // ADMIN_EMAILS are promoted to admin if they already exist; account
+    // creation (demo environments only) happens at startup via
+    // seedAdminUsersAndLink using SEED_ADMIN_PASSWORD. No hardcoded passwords.
+    const adminEmails = (process.env.ADMIN_EMAILS || '')
+      .split(',').map(e => e.trim()).filter(Boolean)
+    for (const email of adminEmails) {
+      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [email.toLowerCase()])
+      if (exists.rows.length > 0 && !exists.rows[0].is_admin) {
+        await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [exists.rows[0].id])
+        console.log(`  Promoted ${email} to admin`)
       }
     }
 
-    console.log('Phase 18: Admin users seeded')
+    console.log('Phase 18: Admin promotion complete')
 
     // ================================================
     // PHASE 19: Pupil-facing visibility on observations
