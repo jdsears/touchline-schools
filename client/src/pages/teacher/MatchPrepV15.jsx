@@ -131,7 +131,7 @@ export default function MatchPrepV15() {
     setBriefingOpen(true)
     setBriefingText('')
     try {
-      const token = localStorage.getItem('token')
+      const token = localStorage.getItem('fam_token')
       const res = await fetch(`${window.location.origin}/api/matches/${id}/prep/generate`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
