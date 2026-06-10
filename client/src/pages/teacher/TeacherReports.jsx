@@ -7,14 +7,14 @@ const ATTAINMENT_GRADES = ['emerging', 'developing', 'secure', 'excelling']
 const EFFORT_GRADES = ['needs_improvement', 'good', 'very_good', 'excellent']
 
 const GRADE_COLORS = {
-  emerging: 'bg-alert-600/20 text-alert-400 border-alert-600/30',
+  emerging: 'bg-status-error-tint text-status-error border-status-error',
   developing: 'bg-amber-400/20 text-amber-400 border-amber-400/30',
   secure: 'bg-pitch-600/20 text-pitch-400 border-pitch-600/30',
-  excelling: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  needs_improvement: 'bg-alert-600/20 text-alert-400 border-alert-600/30',
+  excelling: 'bg-status-info-tint text-status-info border-status-info',
+  needs_improvement: 'bg-status-error-tint text-status-error border-status-error',
   good: 'bg-amber-400/20 text-amber-400 border-amber-400/30',
   very_good: 'bg-pitch-600/20 text-pitch-400 border-pitch-600/30',
-  excellent: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  excellent: 'bg-status-info-tint text-status-info border-status-info',
 }
 
 export default function TeacherReports() {

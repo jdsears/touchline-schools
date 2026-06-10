@@ -8,7 +8,7 @@ const STATUS_BADGES = {
   draft: { label: 'Draft', color: 'bg-border-default text-secondary' },
   open: { label: 'Open', color: 'bg-pitch-600/20 text-pitch-400' },
   closed: { label: 'Closed', color: 'bg-amber-400/20 text-amber-400' },
-  published: { label: 'Published', color: 'bg-blue-500/20 text-blue-400' },
+  published: { label: 'Published', color: 'bg-status-info-tint text-status-info' },
 }
 
 const currentAcademicYear = () => {
@@ -172,7 +172,7 @@ export default function HoDReporting() {
                     {w.status === 'closed' && (
                       <button
                         onClick={() => requestAction(w, 'publish')}
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-on-dark rounded-lg text-sm transition-colors"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-status-info hover:bg-status-info text-on-dark rounded-lg text-sm transition-colors"
                       >
                         <Check className="w-3.5 h-3.5" />
                         Publish
@@ -211,7 +211,7 @@ export default function HoDReporting() {
             }
             warning={drafts > 0 ? `${drafts} report${drafts !== 1 ? 's are' : ' is'} still in draft and will not be included. Continue without them?` : null}
             confirmLabel={`Publish ${total} report${total !== 1 ? 's' : ''}`}
-            confirmClass="bg-blue-600 hover:bg-blue-700 text-on-dark"
+            confirmClass="bg-status-info hover:bg-status-info text-on-dark"
             onConfirm={() => updateStatus(w.id, 'published')}
             onCancel={() => setConfirm(null)}
           />

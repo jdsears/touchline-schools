@@ -139,7 +139,7 @@ export default function ClubSafeguardingRoles() {
                     assignment
                       ? 'bg-pitch-600/10 text-pitch-400'
                       : roleDef.required
-                        ? 'bg-red-600/10 text-red-400'
+                        ? 'bg-status-error-tint text-status-error'
                         : 'bg-subtle text-secondary'
                   }`}>
                     <RoleIcon className="w-6 h-6" />
@@ -148,7 +148,7 @@ export default function ClubSafeguardingRoles() {
                     <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="text-lg font-semibold text-primary">{roleDef.title}</h3>
                       {roleDef.required && !assignment && (
-                        <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400 border border-red-500/30">
+                        <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-status-error-tint text-status-error border border-status-error">
                           <AlertTriangle className="w-3 h-3" />
                           Required
                         </span>
@@ -191,7 +191,7 @@ export default function ClubSafeguardingRoles() {
                               roleDef.title,
                               assignment.member_name || assignment.name
                             )}
-                            className="p-2 text-secondary hover:text-red-400 transition-colors"
+                            className="p-2 text-secondary hover:text-status-error transition-colors"
                             title="Remove from role"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -276,7 +276,7 @@ export default function ClubSafeguardingRoles() {
                         assignment.role || assignment.role_type,
                         assignment.member_name || assignment.name
                       )}
-                      className="p-2 text-secondary hover:text-red-400 transition-colors"
+                      className="p-2 text-secondary hover:text-status-error transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>

@@ -53,7 +53,7 @@ const steps = [
 
 const colorMap = {
   pitch: 'bg-pitch-500/20 text-pitch-400',
-  blue: 'bg-blue-500/20 text-blue-400',
+  blue: 'bg-status-info-tint text-status-info',
   energy: 'bg-energy-500/20 text-energy-400',
   purple: 'bg-purple-500/20 text-purple-400',
 }

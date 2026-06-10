@@ -94,7 +94,7 @@ export default function VenuesTab() {
             <div className="flex gap-1 shrink-0">
               <button onClick={() => setViewing(v)} title="View" className="p-1.5 text-tertiary hover:text-pitch-400"><Eye className="w-4 h-4" /></button>
               <button onClick={() => openEdit(v)} title="Edit" className="p-1.5 text-tertiary hover:text-link"><Edit2 className="w-4 h-4" /></button>
-              <button onClick={() => handleArchive(v.id)} title="Archive" className="p-1.5 text-tertiary hover:text-alert-400"><Archive className="w-4 h-4" /></button>
+              <button onClick={() => handleArchive(v.id)} title="Archive" className="p-1.5 text-tertiary hover:text-status-error"><Archive className="w-4 h-4" /></button>
             </div>
           </div>
         ))}

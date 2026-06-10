@@ -230,8 +230,8 @@ export default function Dashboard() {
     if (!result) return ''
     const [home, away] = result.split('-').map(Number)
     if (home > away) return 'text-pitch-400'
-    if (home < away) return 'text-alert-400'
-    return 'text-caution-400'
+    if (home < away) return 'text-status-error'
+    return 'text-status-warning'
   }
   
   if (loading) {
@@ -321,8 +321,8 @@ export default function Dashboard() {
               w-12 h-12 rounded-xl flex items-center justify-center transition-transform group-hover:scale-110
               ${action.color === 'pitch' ? 'bg-pitch-500/10 text-pitch-400' : ''}
               ${action.color === 'energy' ? 'bg-energy-500/10 text-energy-400' : ''}
-              ${action.color === 'blue' ? 'bg-blue-500/10 text-blue-400' : ''}
-              ${action.color === 'caution' ? 'bg-caution-500/10 text-caution-400' : ''}
+              ${action.color === 'blue' ? 'bg-status-info-tint text-status-info' : ''}
+              ${action.color === 'caution' ? 'bg-status-warning-tint text-status-warning' : ''}
             `}>
               <action.icon className="w-6 h-6" />
             </div>
@@ -390,7 +390,7 @@ export default function Dashboard() {
           <div className="card h-full flex flex-col">
             <div className="p-4 border-b border-border-default flex items-center justify-between">
               <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                <Megaphone className="w-5 h-5 text-alert-400" />
+                <Megaphone className="w-5 h-5 text-status-error" />
                 Team Announcements
               </h2>
               <button
@@ -531,8 +531,8 @@ export default function Dashboard() {
                   <div
                     key={announcement.id}
                     className={`p-4 cursor-pointer hover:bg-subtle transition-colors ${
-                      announcement.priority === 'high' ? 'bg-alert-500/5' :
-                      announcement.priority === 'urgent' ? 'bg-alert-500/10' : ''
+                      announcement.priority === 'high' ? 'bg-status-error-tint' :
+                      announcement.priority === 'urgent' ? 'bg-status-error-tint' : ''
                     }`}
                     onClick={() => openAnnouncementView(announcement)}
                   >
@@ -563,7 +563,7 @@ export default function Dashboard() {
                         </button>
                         <button
                           onClick={() => handleDeleteAnnouncement(announcement.id)}
-                          className="text-tertiary hover:text-alert-400 p-1"
+                          className="text-tertiary hover:text-status-error p-1"
                           title="Delete"
                         >
                           <X className="w-4 h-4" />
@@ -587,7 +587,7 @@ export default function Dashboard() {
                 <div className="card w-full max-w-lg max-h-[80vh] overflow-auto" onClick={e => e.stopPropagation()}>
                   <div className="p-4 border-b border-border-default flex items-center justify-between">
                     <h3 className="font-display font-semibold text-white flex items-center gap-2">
-                      <Megaphone className="w-5 h-5 text-alert-400" />
+                      <Megaphone className="w-5 h-5 text-status-error" />
                       {editingAnnouncement ? 'Edit Announcement' : 'Announcement Details'}
                     </h3>
                     <button
@@ -679,7 +679,7 @@ export default function Dashboard() {
                         </button>
                         <button
                           onClick={() => handleDeleteAnnouncement(viewingAnnouncement.id)}
-                          className="btn-ghost text-alert-400 hover:bg-alert-500/10 flex-1"
+                          className="btn-ghost text-status-error hover:bg-status-error-tint flex-1"
                         >
                           <X className="w-4 h-4" />
                           Delete
@@ -788,7 +788,7 @@ export default function Dashboard() {
           <div className="card">
             <div className="p-4 border-b border-border-default flex items-center justify-between">
               <h2 className="font-display font-semibold text-white flex items-center gap-2">
-                <Trophy className="w-5 h-5 text-caution-400" />
+                <Trophy className="w-5 h-5 text-status-warning" />
                 Recent Results
               </h2>
               {recentResults.length > 3 && (

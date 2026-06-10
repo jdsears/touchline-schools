@@ -24,15 +24,15 @@ const SEVERITY_OPTIONS = [
 ]
 
 const SEVERITY_STYLES = {
-  low: 'bg-blue-500/20 text-blue-400',
+  low: 'bg-status-info-tint text-status-info',
   medium: 'bg-amber-500/20 text-amber-400',
   high: 'bg-orange-500/20 text-orange-400',
-  critical: 'bg-red-500/20 text-red-400',
+  critical: 'bg-status-error-tint text-status-error',
 }
 
 const STATUS_STYLES = {
   open: 'bg-amber-500/20 text-amber-400',
-  investigating: 'bg-blue-500/20 text-blue-400',
+  investigating: 'bg-status-info-tint text-status-info',
   referred: 'bg-purple-500/20 text-purple-400',
   resolved: 'bg-pitch-600/20 text-pitch-400',
   closed: 'bg-border-default text-secondary',

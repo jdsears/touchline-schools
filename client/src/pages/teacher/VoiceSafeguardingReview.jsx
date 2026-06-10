@@ -40,7 +40,7 @@ export default function VoiceSafeguardingReview() {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
-          <Shield className="w-7 h-7 text-alert-400" />
+          <Shield className="w-7 h-7 text-status-error" />
           Voice Observation Safeguarding Review
         </h1>
         <p className="text-secondary mt-1">Observations flagged by the AI as potentially safeguarding-relevant</p>
@@ -84,12 +84,12 @@ function FlaggedCard({ item, onReview }) {
   const details = typeof item.details === 'string' ? JSON.parse(item.details) : item.details || {}
 
   return (
-    <div className="bg-card rounded-xl border border-alert-600/30 p-5">
+    <div className="bg-card rounded-xl border border-status-error p-5">
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <Mic className="w-4 h-4 text-alert-400" />
+            <Mic className="w-4 h-4 text-status-error" />
             <span className="text-sm font-medium text-primary">{item.teacher_name}</span>
             <span className="px-2 py-0.5 bg-subtle rounded text-xs text-secondary capitalize">
               {CONTEXT_LABELS[item.context_type] || item.context_type}
@@ -117,8 +117,8 @@ function FlaggedCard({ item, onReview }) {
 
       {/* Why flagged */}
       {details.reason && (
-        <div className="bg-alert-600/10 rounded-lg px-3 py-2 mb-3">
-          <span className="text-xs font-medium text-alert-400">Flagged reason: </span>
+        <div className="bg-status-error-tint rounded-lg px-3 py-2 mb-3">
+          <span className="text-xs font-medium text-status-error">Flagged reason: </span>
           <span className="text-xs text-secondary">{details.reason}</span>
         </div>
       )}
@@ -170,7 +170,7 @@ function FlaggedCard({ item, onReview }) {
         </button>
         <button
           onClick={() => onReview(item.observation_id, 'escalate', notes)}
-          className="flex items-center gap-1.5 px-4 py-2 bg-alert-600 hover:bg-alert-700 text-on-dark rounded-lg text-xs transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2 bg-status-error hover:bg-status-error text-on-dark rounded-lg text-xs transition-colors"
         >
           <AlertTriangle className="w-3.5 h-3.5" />
           Escalate to incident

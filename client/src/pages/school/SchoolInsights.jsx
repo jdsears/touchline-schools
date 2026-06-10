@@ -16,9 +16,9 @@ const FILTER_TABS = [
 ]
 
 const TYPE_CONFIG = {
-  attendance: { icon: Users, color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', label: 'Attendance' },
+  attendance: { icon: Users, color: 'bg-status-info-tint text-status-info border-status-info', label: 'Attendance' },
   compliance: { icon: Shield, color: 'bg-amber-500/20 text-amber-400 border-amber-500/30', label: 'Compliance' },
-  financial: { icon: DollarSign, color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', label: 'Financial' },
+  financial: { icon: DollarSign, color: 'bg-status-success-tint text-status-success border-status-success', label: 'Financial' },
   performance: { icon: TrendingUp, color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', label: 'Performance' },
   general: { icon: Sparkles, color: 'bg-pitch-600/20 text-pitch-400 border-pitch-500/30', label: 'General' },
 }
@@ -253,7 +253,7 @@ function InsightCard({ insight, onMarkActioned, onDismiss, isActioning }) {
                 {typeConfig.label}
               </span>
               {insight.priority === 'high' && (
-                <span className="text-xs text-red-400 flex items-center gap-1">
+                <span className="text-xs text-status-error flex items-center gap-1">
                   <AlertTriangle className="w-3 h-3" /> High priority
                 </span>
               )}

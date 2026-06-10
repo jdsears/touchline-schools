@@ -415,7 +415,7 @@ export default function VideoUpload({
           <div className="flex items-center gap-4 mb-4">
             <div className="w-12 h-12 rounded-lg bg-border-default flex items-center justify-center shrink-0">
               {paused
-                ? <WifiOff className="w-6 h-6 text-caution-400" />
+                ? <WifiOff className="w-6 h-6 text-status-warning" />
                 : <Loader2 className="w-6 h-6 text-pitch-400 animate-spin" />
               }
             </div>
@@ -428,13 +428,13 @@ export default function VideoUpload({
           </div>
           <div className="h-2 bg-border-default rounded-full overflow-hidden mb-2">
             <div
-              className={`h-full transition-all duration-300 ${paused ? 'bg-caution-500' : 'bg-pitch-500'}`}
+              className={`h-full transition-all duration-300 ${paused ? 'bg-status-warning' : 'bg-pitch-500'}`}
               style={{ width: `${progress}%` }}
             />
           </div>
           <p className="text-sm text-secondary text-center">{progress}%</p>
           {paused && (
-            <p className="text-xs text-caution-400 text-center mt-2">
+            <p className="text-xs text-status-warning text-center mt-2">
               Keep this screen open - upload resumes when connection returns
             </p>
           )}
@@ -445,8 +445,8 @@ export default function VideoUpload({
       {status === 'processing' && (
         <div className="bg-subtle rounded-xl p-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-caution-500/20 flex items-center justify-center shrink-0">
-              <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
+            <div className="w-12 h-12 rounded-lg bg-status-warning-tint flex items-center justify-center shrink-0">
+              <Loader2 className="w-6 h-6 text-status-warning animate-spin" />
             </div>
             <div className="flex-1">
               <p className="text-primary font-medium">Processing video</p>
@@ -484,14 +484,14 @@ export default function VideoUpload({
 
       {/* Error */}
       {status === 'error' && (
-        <div className="bg-alert-500/10 border border-alert-500/30 rounded-xl p-4">
+        <div className="bg-status-error-tint border border-status-error rounded-xl p-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-alert-500/20 flex items-center justify-center shrink-0">
-              <AlertCircle className="w-6 h-6 text-alert-400" />
+            <div className="w-12 h-12 rounded-lg bg-status-error-tint flex items-center justify-center shrink-0">
+              <AlertCircle className="w-6 h-6 text-status-error" />
             </div>
             <div className="flex-1">
               <p className="text-primary font-medium">Upload Failed</p>
-              <p className="text-sm text-alert-400">{error}</p>
+              <p className="text-sm text-status-error">{error}</p>
             </div>
           </div>
           {error?.toLowerCase().includes('process') && (

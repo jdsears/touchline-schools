@@ -145,7 +145,7 @@ export default function ClubPlayers() {
                       <span className={`text-xs px-2 py-1 rounded-full ${
                         p.registration_status === 'registered' ? 'bg-pitch-600/20 text-pitch-400' :
                         p.registration_status === 'pending' ? 'bg-amber-500/20 text-amber-400' :
-                        'bg-alert-400/20 text-alert-400'
+                        'bg-status-error-tint text-status-error'
                       }`}>
                         {p.registration_status || 'registered'}
                       </span>

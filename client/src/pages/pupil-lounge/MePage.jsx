@@ -5,7 +5,7 @@ import { useAuth } from '../../context/AuthContext'
 import { usePupilProfile } from '../../hooks/usePupilProfile'
 
 const HOUSE_COLOURS = {
-  elm: 'bg-green-600', oak: 'bg-amber-600', maple: 'bg-red-600',
+  elm: 'bg-status-success', oak: 'bg-amber-600', maple: 'bg-status-error',
   birch: 'bg-sky-600', willow: 'bg-purple-600', ash: 'bg-slate-600',
 }
 
@@ -89,7 +89,7 @@ export default function MePage() {
             <div className="flex gap-3 justify-center">
               <button
                 onClick={handleSignOut}
-                className="bg-red-600 hover:bg-red-700 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
+                className="bg-status-error hover:bg-status-error text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
               >
                 {impersonating ? 'End session' : 'Sign out'}
               </button>
@@ -104,7 +104,7 @@ export default function MePage() {
         ) : (
           <button
             onClick={() => setShowSignOutConfirm(true)}
-            className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300 py-3 text-sm transition-colors"
+            className="w-full flex items-center justify-center gap-2 text-status-error hover:text-status-error py-3 text-sm transition-colors"
           >
             <LogOut size={16} />
             {impersonating ? 'End impersonation' : 'Sign out'}

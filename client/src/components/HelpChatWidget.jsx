@@ -192,13 +192,13 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
             <div className="flex border-b border-border-default">
               <button
                 onClick={() => setTab('chat')}
-                className={`flex-1 py-2 text-xs font-medium transition-colors ${tab === 'chat' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-secondary hover:text-primary'}`}
+                className={`flex-1 py-2 text-xs font-medium transition-colors ${tab === 'chat' ? 'text-status-info border-b-2 border-status-info' : 'text-secondary hover:text-primary'}`}
               >
                 App Guide
               </button>
               <button
                 onClick={switchToSupport}
-                className={`flex-1 py-2 text-xs font-medium transition-colors ${tab === 'support' ? 'text-blue-400 border-b-2 border-blue-400' : 'text-secondary hover:text-primary'}`}
+                className={`flex-1 py-2 text-xs font-medium transition-colors ${tab === 'support' ? 'text-status-info border-b-2 border-status-info' : 'text-secondary hover:text-primary'}`}
               >
                 Submit a Ticket
               </button>
@@ -210,7 +210,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                 <div className="h-[310px] overflow-y-auto p-4 space-y-4">
                   {messages.length === 0 ? (
                     <div className="text-center py-4">
-                      <BookOpen className="w-10 h-10 text-blue-400 mx-auto mb-3" />
+                      <BookOpen className="w-10 h-10 text-status-info mx-auto mb-3" />
                       <p className="text-secondary text-sm mb-4">
                         Hi! I can help you learn how to use MoonBoots Sports. What would you like to know?
                       </p>
@@ -236,19 +236,19 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                           <div className={`flex gap-2 max-w-[85%] ${message.role === 'user' ? 'flex-row-reverse' : ''}`}>
                             <div className={`
                               w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center
-                              ${message.role === 'user' ? 'bg-blue-600' : 'bg-border-default'}
+                              ${message.role === 'user' ? 'bg-status-info' : 'bg-border-default'}
                             `}>
                               {message.role === 'user' ? (
                                 <User className="w-3 h-3 text-primary" />
                               ) : (
-                                <BookOpen className="w-3 h-3 text-blue-400" />
+                                <BookOpen className="w-3 h-3 text-status-info" />
                               )}
                             </div>
 
                             <div className={`
                               rounded-2xl px-3 py-2 text-sm
                               ${message.role === 'user'
-                                ? 'bg-blue-600 text-on-dark rounded-br-md'
+                                ? 'bg-status-info text-on-dark rounded-br-md'
                                 : 'bg-subtle text-primary rounded-bl-md'
                               }
                             `}>
@@ -266,10 +266,10 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                         <div className="flex justify-start">
                           <div className="flex gap-2">
                             <div className="w-6 h-6 rounded-full bg-border-default flex items-center justify-center">
-                              <BookOpen className="w-3 h-3 text-blue-400" />
+                              <BookOpen className="w-3 h-3 text-status-info" />
                             </div>
                             <div className="bg-subtle rounded-2xl rounded-bl-md px-3 py-2">
-                              <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+                              <Loader2 className="w-4 h-4 animate-spin text-status-info" />
                             </div>
                           </div>
                         </div>
@@ -289,12 +289,12 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                       onChange={(e) => setInput(e.target.value)}
                       onKeyDown={handleKeyDown}
                       placeholder="Ask about features..."
-                      className="flex-1 bg-subtle border border-border-strong rounded-xl px-3 py-2 text-sm text-primary placeholder:text-tertiary focus:outline-none focus:border-blue-500"
+                      className="flex-1 bg-subtle border border-border-strong rounded-xl px-3 py-2 text-sm text-primary placeholder:text-tertiary focus:outline-none focus:border-status-info"
                     />
                     <button
                       onClick={() => handleSend()}
                       disabled={!input.trim() || loading}
-                      className="p-2 rounded-xl bg-blue-600 text-on-dark disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-500 transition-colors"
+                      className="p-2 rounded-xl bg-status-info text-on-dark disabled:opacity-50 disabled:cursor-not-allowed hover:bg-status-info transition-colors"
                     >
                       <Send className="w-4 h-4" />
                     </button>
@@ -306,7 +306,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
               <div className="h-[350px] overflow-y-auto">
                 {submitted ? (
                   <div className="p-6 text-center">
-                    <CheckCircle className="w-12 h-12 text-emerald-400 mx-auto mb-3" />
+                    <CheckCircle className="w-12 h-12 text-status-success mx-auto mb-3" />
                     <h3 className="text-primary font-semibold text-lg mb-1">Request received</h3>
                     <p className="text-secondary text-sm mb-4">
                       We'll get back to you as soon as possible.
@@ -328,7 +328,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                         value={supportForm.email}
                         onChange={(e) => setSupportForm({ ...supportForm, email: e.target.value })}
                         placeholder="your@email.com"
-                        className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder-navy-500 focus:outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder-navy-500 focus:outline-none focus:border-status-info"
                       />
                     </div>
 
@@ -337,7 +337,7 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                       <select
                         value={supportForm.subject}
                         onChange={(e) => setSupportForm({ ...supportForm, subject: e.target.value })}
-                        className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-status-info"
                       >
                         {SUBJECTS.map(s => (
                           <option key={s} value={s}>{s}</option>
@@ -354,18 +354,18 @@ export default function HelpChatWidget({ userRole = 'coach' }) {
                         value={supportForm.message}
                         onChange={(e) => setSupportForm({ ...supportForm, message: e.target.value })}
                         placeholder="Describe your issue or question..."
-                        className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder-navy-500 focus:outline-none focus:border-blue-500 resize-none"
+                        className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder-navy-500 focus:outline-none focus:border-status-info resize-none"
                       />
                     </div>
 
                     {supportError && (
-                      <p className="text-red-400 text-xs">{supportError}</p>
+                      <p className="text-status-error text-xs">{supportError}</p>
                     )}
 
                     <button
                       type="submit"
                       disabled={submitting}
-                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-on-dark rounded-lg text-sm font-medium transition-colors"
+                      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-status-info hover:bg-status-info disabled:opacity-50 text-on-dark rounded-lg text-sm font-medium transition-colors"
                     >
                       {submitting ? 'Sending...' : <><Send className="w-4 h-4" /> Send</>}
                     </button>

@@ -700,7 +700,7 @@ export default function PupilDetail() {
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="btn-ghost text-alert-400 hover:text-alert-300"
+                  className="btn-ghost text-status-error hover:text-status-error"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -828,9 +828,9 @@ export default function PupilDetail() {
             {pupil.discreet_notes && (
               <div className="card p-6 border border-border-strong bg-card/50">
                 <h2 className="font-display font-semibold text-white mb-2 flex items-center gap-2">
-                  <Lock className="w-5 h-5 text-caution-400" />
+                  <Lock className="w-5 h-5 text-status-warning" />
                   Discreet Notes
-                  <span className="text-xs font-normal text-caution-400 bg-caution-500/10 px-2 py-0.5 rounded-full">
+                  <span className="text-xs font-normal text-status-warning bg-status-warning-tint px-2 py-0.5 rounded-full">
                     Coach Only
                   </span>
                 </h2>
@@ -866,7 +866,7 @@ export default function PupilDetail() {
                     >
                       <button
                         onClick={() => handleDeleteAchievement(achievement.id)}
-                        className="absolute top-1 right-1 p-1 rounded-full bg-border-default text-secondary hover:text-alert-400 hover:bg-alert-500/20 opacity-0 group-hover:opacity-100 transition-opacity"
+                        className="absolute top-1 right-1 p-1 rounded-full bg-border-default text-secondary hover:text-status-error hover:bg-status-error-tint opacity-0 group-hover:opacity-100 transition-opacity"
                         title="Remove badge"
                       >
                         <X className="w-3 h-3" />
@@ -1028,7 +1028,7 @@ export default function PupilDetail() {
                               </span>
                             )}
                             {obs.context_type === 'training' && obs.training_date && (
-                              <span className="inline-flex items-center gap-1 text-xs bg-blue-500/10 text-blue-400 px-2 py-0.5 rounded-full">
+                              <span className="inline-flex items-center gap-1 text-xs bg-status-info-tint text-status-info px-2 py-0.5 rounded-full">
                                 <Activity className="w-3 h-3" />
                                 Training {new Date(obs.training_date).toLocaleDateString()}
                               </span>
@@ -1061,7 +1061,7 @@ export default function PupilDetail() {
                                   setDeletingObsId(obs.id)
                                   setConfirmDeleteObs(true)
                                 }}
-                                className="p-1.5 text-tertiary hover:text-alert-400 hover:bg-alert-500/10 rounded-lg transition-colors"
+                                className="p-1.5 text-tertiary hover:text-status-error hover:bg-status-error-tint rounded-lg transition-colors"
                                 title="Delete observation"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
@@ -1180,7 +1180,7 @@ export default function PupilDetail() {
                     {idp.goals && idp.goals.length > 0 && (
                       <div>
                         <h3 className="font-display font-semibold text-white mb-2 flex items-center gap-2">
-                          <span className="w-2 h-2 rounded-full bg-blue-500" />
+                          <span className="w-2 h-2 rounded-full bg-status-info" />
                           Development Goals
                         </h3>
                         <ul className="space-y-1 text-secondary">
@@ -1212,7 +1212,7 @@ export default function PupilDetail() {
                 <p className="text-secondary mb-4 max-w-md mx-auto">
                   Generate an AI-powered Individual Development Plan based on observations and pupil data.
                   {observations.length === 0 && (
-                    <span className="block mt-2 text-caution-400">
+                    <span className="block mt-2 text-status-warning">
                       Tip: Add some observations first for a more detailed plan.
                     </span>
                   )}
@@ -1378,7 +1378,7 @@ export default function PupilDetail() {
                                 parent_contact: updated.length > 0 ? JSON.stringify(updated) : null
                               }))
                             }}
-                            className="p-1 text-tertiary hover:text-alert-400 hover:bg-alert-500/10 rounded transition-colors"
+                            className="p-1 text-tertiary hover:text-status-error hover:bg-status-error-tint rounded transition-colors"
                             title="Remove contact"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
@@ -1452,9 +1452,9 @@ export default function PupilDetail() {
 
                 <div className="p-4 bg-subtle rounded-lg border border-border-strong">
                   <label className="label flex items-center gap-2">
-                    <Lock className="w-4 h-4 text-caution-400" />
+                    <Lock className="w-4 h-4 text-status-warning" />
                     Discreet Notes
-                    <span className="text-xs font-normal text-caution-400 bg-caution-500/10 px-2 py-0.5 rounded-full">
+                    <span className="text-xs font-normal text-status-warning bg-status-warning-tint px-2 py-0.5 rounded-full">
                       Private
                     </span>
                   </label>
@@ -1676,8 +1676,8 @@ export default function PupilDetail() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <div className="w-12 h-12 rounded-full bg-alert-500/10 flex items-center justify-center mx-auto mb-4">
-                  <Trash2 className="w-6 h-6 text-alert-400" />
+                <div className="w-12 h-12 rounded-full bg-status-error-tint flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-6 h-6 text-status-error" />
                 </div>
                 <h2 className="font-display text-xl font-semibold text-white text-center mb-2">
                   Delete Pupil?
@@ -1696,7 +1696,7 @@ export default function PupilDetail() {
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="btn-primary bg-alert-600 hover:bg-alert-500 flex-1"
+                    className="btn-primary bg-status-error hover:bg-status-error flex-1"
                   >
                     {deleting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Delete'}
                   </button>
@@ -1805,7 +1805,7 @@ export default function PupilDetail() {
                     </p>
 
                     {parentInviteError && (
-                      <div className="flex items-center gap-2 p-3 bg-alert-500/10 border border-alert-500/30 rounded-lg text-alert-400 text-sm">
+                      <div className="flex items-center gap-2 p-3 bg-status-error-tint border border-status-error rounded-lg text-status-error text-sm">
                         <AlertCircle className="w-4 h-4 flex-shrink-0" />
                         {parentInviteError}
                       </div>
@@ -2156,8 +2156,8 @@ export default function PupilDetail() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <div className="w-12 h-12 rounded-full bg-alert-500/10 flex items-center justify-center mx-auto mb-4">
-                  <Trash2 className="w-6 h-6 text-alert-400" />
+                <div className="w-12 h-12 rounded-full bg-status-error-tint flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-6 h-6 text-status-error" />
                 </div>
                 <h2 className="font-display text-xl font-semibold text-white text-center mb-2">
                   Delete Observation?
@@ -2177,7 +2177,7 @@ export default function PupilDetail() {
                   </button>
                   <button
                     onClick={handleDeleteObservation}
-                    className="btn-primary bg-alert-600 hover:bg-alert-500 flex-1"
+                    className="btn-primary bg-status-error hover:bg-status-error flex-1"
                   >
                     Delete
                   </button>

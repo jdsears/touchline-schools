@@ -5,14 +5,14 @@ import { Trophy, Calendar as CalIcon, List, MapPin, ChevronLeft, ChevronRight, X
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, addMonths, subMonths, isToday, isWeekend } from 'date-fns'
 
 const SPORT_ICONS = { football: '\u26BD', rugby: '\uD83C\uDFC9', cricket: '\uD83C\uDFCF', hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E' }
-const SPORT_DOT = { football: 'bg-navy-300', rugby: 'bg-amber-500', cricket: 'bg-emerald-500', hockey: 'bg-sky-500', netball: 'bg-purple-500' }
+const SPORT_DOT = { football: 'bg-navy-300', rugby: 'bg-amber-500', cricket: 'bg-status-success', hockey: 'bg-sky-500', netball: 'bg-purple-500' }
 
 function resultBadge(m) {
   const gf = parseInt(m.score_for ?? m.goals_for)
   const ga = parseInt(m.score_against ?? m.goals_against)
   if (isNaN(gf) || isNaN(ga)) return null
   const w = gf > ga ? 'W' : gf < ga ? 'L' : 'D'
-  const c = { W: 'bg-pitch-600/20 text-pitch-400', L: 'bg-alert-600/20 text-alert-400', D: 'bg-amber-400/20 text-amber-400' }
+  const c = { W: 'bg-pitch-600/20 text-pitch-400', L: 'bg-status-error-tint text-status-error', D: 'bg-amber-400/20 text-amber-400' }
   return { label: w, score: `${gf}-${ga}`, color: c[w] }
 }
 

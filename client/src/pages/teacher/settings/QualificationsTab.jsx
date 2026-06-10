@@ -165,7 +165,7 @@ export default function QualificationsTab() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-primary">{q.qualification_name}</span>
                   {(expired || expiring) && (
-                    <span className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${expired ? 'bg-red-500/20 text-red-400' : 'bg-amber-400/20 text-amber-400'}`}>
+                    <span className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded ${expired ? 'bg-status-error-tint text-status-error' : 'bg-amber-400/20 text-amber-400'}`}>
                       <AlertTriangle className="w-2.5 h-2.5" />
                       {expired ? 'Expired' : `${days}d left`}
                     </span>
@@ -180,7 +180,7 @@ export default function QualificationsTab() {
               <button
                 onClick={() => handleDelete(q.id)}
                 disabled={deleting === q.id}
-                className="opacity-0 group-hover:opacity-100 p-1.5 text-tertiary hover:text-red-400 transition-all ml-3 flex-shrink-0"
+                className="opacity-0 group-hover:opacity-100 p-1.5 text-tertiary hover:text-status-error transition-all ml-3 flex-shrink-0"
               >
                 {deleting === q.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
               </button>

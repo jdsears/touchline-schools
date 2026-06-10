@@ -211,7 +211,7 @@ export default function TeacherClassDetail() {
         </div>
         <button
           onClick={handleDeleteGroup}
-          className="p-2 text-tertiary hover:text-alert-400 transition-colors"
+          className="p-2 text-tertiary hover:text-status-error transition-colors"
           title="Delete teaching group"
         >
           <Trash2 className="w-5 h-5" />
@@ -259,7 +259,7 @@ export default function TeacherClassDetail() {
                       </Link>
                       <button
                         onClick={() => handleDeleteUnit(unit.id, unit.unit_name)}
-                        className="p-1.5 text-tertiary hover:text-alert-400 transition-colors"
+                        className="p-1.5 text-tertiary hover:text-status-error transition-colors"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -316,7 +316,7 @@ export default function TeacherClassDetail() {
                     <button
                       onClick={() => handleRemovePupil(pupil.id, pupil.name || `${pupil.first_name} ${pupil.last_name}`)}
                       disabled={removingPupilId === pupil.id}
-                      className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-red-400 transition-all ml-2 flex-shrink-0"
+                      className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-status-error transition-all ml-2 flex-shrink-0"
                       title="Remove from class"
                     >
                       {removingPupilId === pupil.id

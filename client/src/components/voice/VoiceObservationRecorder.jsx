@@ -244,16 +244,16 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
             <>
               {/* Pulsing indicator */}
               <div className="relative">
-                <div className="absolute inset-0 w-20 h-20 rounded-full bg-alert-600/30 animate-ping" />
+                <div className="absolute inset-0 w-20 h-20 rounded-full bg-status-error-tint animate-ping" />
                 <button
                   onClick={stopRecording}
-                  className="relative w-20 h-20 rounded-full bg-alert-600 hover:bg-alert-700 flex items-center justify-center transition-all shadow-lg shadow-alert-600/30"
+                  className="relative w-20 h-20 rounded-full bg-status-error hover:bg-status-error flex items-center justify-center transition-all shadow-lg shadow-alert-600/30"
                 >
                   <Square className="w-6 h-6 text-primary" />
                 </button>
               </div>
               <div className="flex items-center gap-2 mt-4">
-                <div className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
+                <div className="w-2 h-2 rounded-full bg-status-error animate-pulse" />
                 <span className="text-lg font-mono text-primary">{formatTime(duration)}</span>
               </div>
               <p className="text-xs text-secondary mt-2">Tap to stop recording</p>

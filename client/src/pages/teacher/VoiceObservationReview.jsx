@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 
 const OBS_TYPE_LABELS = {
   development: { label: 'Development', color: 'bg-pitch-600/20 text-pitch-400' },
-  skill: { label: 'Skill', color: 'bg-blue-500/20 text-blue-400' },
+  skill: { label: 'Skill', color: 'bg-status-info-tint text-status-info' },
   tactical: { label: 'Tactical', color: 'bg-purple-500/20 text-purple-400' },
   behaviour: { label: 'Behaviour', color: 'bg-amber-400/20 text-amber-400' },
   training_implication: { label: 'Training', color: 'bg-cyan-500/20 text-cyan-400' },
@@ -175,11 +175,11 @@ export default function VoiceObservationReview() {
       {/* Safeguarding-flagged observations */}
       {safeguardingObs.length > 0 && (
         <div className="mb-6">
-          <div className="bg-alert-600/10 border border-alert-600/30 rounded-xl p-4 mb-3">
+          <div className="bg-status-error-tint border border-status-error rounded-xl p-4 mb-3">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-alert-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-status-error shrink-0 mt-0.5" />
               <div>
-                <h3 className="text-sm font-semibold text-alert-400">Safeguarding content detected</h3>
+                <h3 className="text-sm font-semibold text-status-error">Safeguarding content detected</h3>
                 <p className="text-xs text-secondary mt-1">
                   The following observations have been flagged as potentially safeguarding-relevant.
                   If confirmed, they will be routed to the Designated Safeguarding Lead rather than
@@ -241,7 +241,7 @@ export default function VoiceObservationReview() {
         <button
           onClick={handleDiscard}
           disabled={discarding}
-          className="flex items-center gap-1.5 px-4 py-2.5 text-secondary hover:text-alert-400 text-sm transition-colors"
+          className="flex items-center gap-1.5 px-4 py-2.5 text-secondary hover:text-status-error text-sm transition-colors"
         >
           <Trash2 className="w-4 h-4" />
           Discard everything
@@ -267,7 +267,7 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
   const [showFragment, setShowFragment] = useState(false)
 
   return (
-    <div className={`bg-card rounded-xl border ${isSafeguarding ? 'border-alert-600/30' : 'border-border-default'} p-4`}>
+    <div className={`bg-card rounded-xl border ${isSafeguarding ? 'border-status-error' : 'border-border-default'} p-4`}>
       {/* Pupil and type */}
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
@@ -291,7 +291,7 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
             {typeConfig.label}
           </span>
           {isSafeguarding && (
-            <span className="px-2 py-0.5 bg-alert-600/20 text-alert-400 rounded text-xs font-medium flex items-center gap-1">
+            <span className="px-2 py-0.5 bg-status-error-tint text-status-error rounded text-xs font-medium flex items-center gap-1">
               <Shield className="w-3 h-3" /> DSL Review
             </span>
           )}
@@ -345,7 +345,7 @@ function ObservationCard({ obs, isSafeguarding, editingId, editContent, onStartE
           </button>
           <button
             onClick={() => onReject(obs.id)}
-            className="flex items-center gap-1 px-2.5 py-1 bg-subtle hover:bg-border-default text-secondary hover:text-alert-400 rounded text-xs transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1 bg-subtle hover:bg-border-default text-secondary hover:text-status-error rounded text-xs transition-colors"
           >
             <X className="w-3 h-3" /> Remove
           </button>

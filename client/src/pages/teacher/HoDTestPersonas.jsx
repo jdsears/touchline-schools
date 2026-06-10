@@ -10,16 +10,16 @@ import {
 import toast from 'react-hot-toast'
 
 const YEAR_COLORS = {
-  7: 'bg-blue-500/20 text-blue-400',
+  7: 'bg-status-info-tint text-status-info',
   9: 'bg-purple-500/20 text-purple-400',
   11: 'bg-amber-500/20 text-amber-400',
-  13: 'bg-emerald-500/20 text-emerald-400',
+  13: 'bg-status-success-tint text-status-success',
 }
 
 const HOUSE_COLORS = {
-  Elm: 'bg-green-500/20 text-green-400',
-  Oak: 'bg-yellow-500/20 text-yellow-400',
-  Maple: 'bg-red-500/20 text-red-400',
+  Elm: 'bg-status-success-tint text-status-success',
+  Oak: 'bg-status-warning-tint text-status-warning',
+  Maple: 'bg-status-error-tint text-status-error',
 }
 
 function StatBadge({ icon: Icon, label, value, color = 'text-secondary' }) {
@@ -100,7 +100,7 @@ export default function HoDTestPersonas() {
 
       {/* Error */}
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-xl p-4 text-sm text-red-400">
+        <div className="bg-status-error-tint border border-status-error rounded-xl p-4 text-sm text-status-error">
           {error}
         </div>
       )}
@@ -177,10 +177,10 @@ export default function HoDTestPersonas() {
 
               {/* Stats row */}
               <div className="flex flex-wrap gap-4 pl-13">
-                <StatBadge icon={ClipboardCheck} label="Observations" value={p.observation_count} color="text-blue-400" />
+                <StatBadge icon={ClipboardCheck} label="Observations" value={p.observation_count} color="text-status-info" />
                 <StatBadge icon={Trophy} label="Teams" value={p.team_count} color="text-amber-400" />
                 <StatBadge icon={GraduationCap} label="Classes" value={p.class_count} color="text-purple-400" />
-                <StatBadge icon={BookOpen} label="Assessments" value={p.assessment_count} color="text-emerald-400" />
+                <StatBadge icon={BookOpen} label="Assessments" value={p.assessment_count} color="text-status-success" />
                 {p.sports && (
                   <div className="flex items-center gap-1.5 text-xs">
                     <Shield className="w-3.5 h-3.5 text-secondary" />

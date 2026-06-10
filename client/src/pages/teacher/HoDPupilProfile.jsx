@@ -18,10 +18,10 @@ const MEDICAL_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe', 'head_of_
 const SAFEGUARDING_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe', 'dsl', 'deputy_dsl']
 
 const GRADE_COLORS = {
-  emerging: 'bg-alert-600/20 text-alert-400',
+  emerging: 'bg-status-error-tint text-status-error',
   developing: 'bg-amber-400/20 text-amber-400',
   secure: 'bg-pitch-600/20 text-pitch-400',
-  excelling: 'bg-blue-500/20 text-blue-400',
+  excelling: 'bg-status-info-tint text-status-info',
 }
 
 const SPORT_ICONS = {
@@ -232,8 +232,8 @@ export default function HoDPupilProfile() {
           {core.pupil?.gcse_pe_candidate && <Badge colour="bg-pitch-500/20 text-pitch-400" icon={GraduationCap} label="GCSE PE" />}
           {core.pupil?.talent_pathway_flag && <Badge colour="bg-amber-500/20 text-amber-400" icon={TrendingUp} label="Talent pathway" />}
           {core.flags.has_send && <Badge colour="bg-sky-500/20 text-sky-400" icon={Brain} label="SEND" />}
-          {core.flags.has_medical && <Badge colour="bg-rose-500/20 text-rose-400" icon={Stethoscope} label="Medical" />}
-          {core.flags.has_open_safeguarding && <Badge colour="bg-red-500/20 text-red-400" icon={AlertTriangle} label="Safeguarding open" />}
+          {core.flags.has_medical && <Badge colour="bg-status-error-tint text-status-error" icon={Stethoscope} label="Medical" />}
+          {core.flags.has_open_safeguarding && <Badge colour="bg-status-error-tint text-status-error" icon={AlertTriangle} label="Safeguarding open" />}
         </div>
       )}
 
@@ -329,7 +329,7 @@ export default function HoDPupilProfile() {
           <div className="bg-card rounded-xl border border-border-default p-5">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-semibold text-primary flex items-center gap-2">
-                <MessageSquare className="w-4 h-4 text-blue-400" /> Observations ({observations.length})
+                <MessageSquare className="w-4 h-4 text-status-info" /> Observations ({observations.length})
               </h2>
               <button
                 onClick={() => setShowAddObs(!showAddObs)}
@@ -435,7 +435,7 @@ export default function HoDPupilProfile() {
               <div className="space-y-2 max-h-[400px] overflow-y-auto">
                 {observations.map(obs => {
                   const typeColors = {
-                    technical: 'bg-blue-500/20 text-blue-400',
+                    technical: 'bg-status-info-tint text-status-info',
                     tactical: 'bg-purple-500/20 text-purple-400',
                     physical: 'bg-amber-400/20 text-amber-400',
                     mental: 'bg-pink-500/20 text-pink-400',
@@ -443,11 +443,11 @@ export default function HoDPupilProfile() {
                     effort: 'bg-orange-400/20 text-orange-400',
                     leadership: 'bg-indigo-400/20 text-indigo-400',
                     lesson: 'bg-teal-400/20 text-teal-400',
-                    match: 'bg-green-400/20 text-green-400',
+                    match: 'bg-status-success-tint text-status-success',
                     training: 'bg-cyan-400/20 text-cyan-400',
                     extracurricular: 'bg-violet-400/20 text-violet-400',
-                    wellbeing: 'bg-rose-400/20 text-rose-400',
-                    safeguarding: 'bg-red-500/20 text-red-400',
+                    wellbeing: 'bg-status-error-tint text-status-error',
+                    safeguarding: 'bg-status-error-tint text-status-error',
                   }
                   const typeLabels = {
                     mental: 'Mental / Character',
@@ -484,7 +484,7 @@ export default function HoDPupilProfile() {
                         <button
                           onClick={() => handleDeleteObs(obs.id)}
                           disabled={deletingObsId === obs.id}
-                          className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-red-400 transition-all"
+                          className="opacity-0 group-hover:opacity-100 p-1 text-tertiary hover:text-status-error transition-all"
                         >
                           {deletingObsId === obs.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3 h-3" />}
                         </button>

@@ -19,7 +19,7 @@ const SPORTS_EMOJI = {
 
 const STATUS_STYLES = {
   draft: 'bg-subtle text-secondary',
-  planned: 'bg-blue-900/40 text-blue-400',
+  planned: 'bg-status-info-tint text-status-info',
   delivered: 'bg-pitch-900/40 text-pitch-400',
 }
 
@@ -570,7 +570,7 @@ function LessonCard({ lesson, onDelete, onEdit, deletingId }) {
       <button
         onClick={(e) => { e.stopPropagation(); onDelete(lesson) }}
         disabled={deletingId === lesson.id}
-        className="p-2 mr-3 text-tertiary hover:text-red-400 transition-colors flex-shrink-0"
+        className="p-2 mr-3 text-tertiary hover:text-status-error transition-colors flex-shrink-0"
         title="Delete lesson"
       >
         {deletingId === lesson.id

@@ -6,10 +6,10 @@ import toast from 'react-hot-toast'
 
 const GRADES = ['emerging', 'developing', 'secure', 'excelling']
 const GRADE_COLORS = {
-  emerging: 'bg-alert-600/20 text-alert-400 border-alert-600/30',
+  emerging: 'bg-status-error-tint text-status-error border-status-error',
   developing: 'bg-amber-400/20 text-amber-400 border-amber-400/30',
   secure: 'bg-pitch-600/20 text-pitch-400 border-pitch-600/30',
-  excelling: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  excelling: 'bg-status-info-tint text-status-info border-status-info',
 }
 
 export default function TeacherAssessment() {

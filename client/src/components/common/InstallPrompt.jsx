@@ -49,8 +49,8 @@ export default function InstallPrompt() {
         <X size={18} />
       </button>
       <div className="flex items-start gap-3">
-        <div className="bg-green-500/20 p-2 rounded-lg">
-          <Download size={20} className="text-green-400" />
+        <div className="bg-status-success-tint p-2 rounded-lg">
+          <Download size={20} className="text-status-success" />
         </div>
         <div>
           <p className="font-semibold">Install Touchline</p>
@@ -58,7 +58,7 @@ export default function InstallPrompt() {
           <div className="mt-3 flex gap-2">
             <button
               onClick={handleInstall}
-              className="bg-green-500 hover:bg-green-600 text-primary px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
+              className="bg-status-success hover:bg-status-success text-primary px-4 py-1.5 rounded-lg text-sm font-medium transition-colors"
             >
               Install
             </button>

@@ -209,8 +209,8 @@ const statusIcons = {
 const statusColors = {
   active: 'text-pitch-400',
   pending: 'text-amber-400',
-  past_due: 'text-alert-400',
-  overdue: 'text-alert-400',
+  past_due: 'text-status-error',
+  overdue: 'text-status-error',
   cancelled: 'text-tertiary',
 }
 

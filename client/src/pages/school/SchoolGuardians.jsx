@@ -273,7 +273,7 @@ export default function ClubGuardians() {
                       )}
                       <button
                         onClick={() => handleDelete(g.id, `${g.first_name} ${g.last_name}`)}
-                        className="flex items-center gap-1 text-xs text-alert-400 hover:text-alert-300 transition-colors"
+                        className="flex items-center gap-1 text-xs text-status-error hover:text-status-error transition-colors"
                       >
                         <Trash2 className="w-3 h-3" />
                         Remove

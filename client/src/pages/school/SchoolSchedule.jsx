@@ -10,9 +10,9 @@ import {
 import toast from 'react-hot-toast'
 
 const SESSION_TYPES = [
-  { value: 'training', label: 'Training', icon: Dumbbell, color: 'bg-emerald-600/20 text-emerald-400' },
-  { value: 'match', label: 'Match', icon: Swords, color: 'bg-red-500/20 text-red-400' },
-  { value: 'friendly', label: 'Friendly', icon: HeartHandshake, color: 'bg-blue-600/20 text-blue-400' },
+  { value: 'training', label: 'Training', icon: Dumbbell, color: 'bg-status-success-tint text-status-success' },
+  { value: 'match', label: 'Match', icon: Swords, color: 'bg-status-error-tint text-status-error' },
+  { value: 'friendly', label: 'Friendly', icon: HeartHandshake, color: 'bg-status-info-tint text-status-info' },
   { value: 'cup', label: 'Cup Match', icon: Trophy, color: 'bg-amber-600/20 text-amber-400' },
   { value: 'other', label: 'Other', icon: Calendar, color: 'bg-border-default text-secondary' },
 ]
@@ -22,7 +22,7 @@ const DAYS_FULL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Satu
 
 const AVAILABILITY_COLORS = {
   available: 'bg-pitch-500',
-  unavailable: 'bg-red-500',
+  unavailable: 'bg-status-error',
   maybe: 'bg-amber-500',
   pending: 'bg-navy-600',
 }
@@ -600,7 +600,7 @@ function SessionCard({
               {typeConfig.label}
             </span>
             {isCancelled && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-red-500/20 text-red-400">Cancelled</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-status-error-tint text-status-error">Cancelled</span>
             )}
           </div>
           <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 mt-0.5 text-xs text-secondary">
@@ -683,7 +683,7 @@ function SessionCard({
             <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-400">
               <AlertCircle className="w-3 h-3" /> {summary.maybe} maybe
             </span>
-            <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-red-500/20 text-red-400">
+            <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-status-error-tint text-status-error">
               <X className="w-3 h-3" /> {summary.unavailable} unavailable
             </span>
             <span className="flex items-center gap-1 text-xs px-2.5 py-1 rounded-full bg-border-default text-secondary">
@@ -731,8 +731,8 @@ function SessionCard({
                               onClick={() => onAttendanceToggle(a.pupil_id, 'absent')}
                               className={`p-1 rounded transition-colors ${
                                 a.attendance === 'absent'
-                                  ? 'bg-red-500/20 text-red-400'
-                                  : 'text-tertiary hover:text-red-400'
+                                  ? 'bg-status-error-tint text-status-error'
+                                  : 'text-tertiary hover:text-status-error'
                               }`}
                               title="Absent"
                             >
@@ -759,7 +759,7 @@ function SessionCard({
               </button>
               <button
                 onClick={onCancel}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-red-600/20 text-secondary hover:text-red-400 rounded-lg text-xs transition-colors"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-status-error-tint text-secondary hover:text-status-error rounded-lg text-xs transition-colors"
               >
                 <X className="w-3.5 h-3.5" /> Cancel Session
               </button>
@@ -774,7 +774,7 @@ function SessionCard({
 function ResponseBadge({ response }) {
   const styles = {
     available: { className: 'bg-pitch-600/20 text-pitch-400', icon: Check, label: 'Available' },
-    unavailable: { className: 'bg-red-500/20 text-red-400', icon: X, label: 'Unavailable' },
+    unavailable: { className: 'bg-status-error-tint text-status-error', icon: X, label: 'Unavailable' },
     maybe: { className: 'bg-amber-500/20 text-amber-400', icon: AlertCircle, label: 'Maybe' },
     pending: { className: 'bg-border-default text-secondary', icon: Minus, label: 'Pending' },
   }

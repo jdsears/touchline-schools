@@ -9,9 +9,9 @@ import {
 import toast from 'react-hot-toast'
 
 const SEVERITY_STYLES = {
-  critical: 'bg-red-500/20 text-red-400 border-red-500/30',
+  critical: 'bg-status-error-tint text-status-error border-status-error',
   warning: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  info: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
+  info: 'bg-status-info-tint text-status-info border-status-info',
 }
 
 const SEVERITY_ICONS = {
@@ -23,7 +23,7 @@ const SEVERITY_ICONS = {
 const DBS_STATUS_DISPLAY = {
   valid: { icon: Check, color: 'text-pitch-400', bg: 'bg-pitch-600/20' },
   expiring: { icon: Clock, color: 'text-amber-400', bg: 'bg-amber-500/20' },
-  expired: { icon: X, color: 'text-red-400', bg: 'bg-red-500/20' },
+  expired: { icon: X, color: 'text-status-error', bg: 'bg-status-error-tint' },
   pending: { icon: Minus, color: 'text-secondary', bg: 'bg-border-default' },
   none: { icon: Minus, color: 'text-tertiary', bg: 'bg-subtle' },
 }
@@ -170,7 +170,7 @@ export default function ClubSafeguarding() {
           <div className="bg-card border border-border-default rounded-xl p-4">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                (overview.dbs_expired || 0) > 0 ? 'bg-red-600/10 text-red-400' : 'bg-subtle text-secondary'
+                (overview.dbs_expired || 0) > 0 ? 'bg-status-error-tint text-status-error' : 'bg-subtle text-secondary'
               }`}>
                 <ShieldX className="w-5 h-5" />
               </div>
@@ -183,7 +183,7 @@ export default function ClubSafeguarding() {
           <div className="bg-card border border-border-default rounded-xl p-4">
             <div className="flex items-center gap-3">
               <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                overview.welfare_officer ? 'bg-pitch-600/10 text-pitch-400' : 'bg-red-600/10 text-red-400'
+                overview.welfare_officer ? 'bg-pitch-600/10 text-pitch-400' : 'bg-status-error-tint text-status-error'
               }`}>
                 <UserCheck className="w-5 h-5" />
               </div>
@@ -245,7 +245,7 @@ export default function ClubSafeguarding() {
             onClick={() => navigate(basePath + '/roles')}
             className="flex items-center gap-3 p-4 bg-card border border-border-default rounded-xl hover:bg-subtle/70 transition-colors text-left"
           >
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-blue-600/10 text-blue-400">
+            <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-status-info-tint text-status-info">
               <UserCheck className="w-5 h-5" />
             </div>
             <div>

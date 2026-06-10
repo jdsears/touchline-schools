@@ -282,7 +282,7 @@ export default function PupilAssistant() {
                   <p className="font-semibold text-white">{pupil.squad_number || '-'}</p>
                 </div>
                 <div className="card p-4 text-center">
-                  <Brain className="w-6 h-6 text-blue-400 mx-auto mb-2" />
+                  <Brain className="w-6 h-6 text-status-info mx-auto mb-2" />
                   <p className="text-xs text-secondary">Focus</p>
                   <p className="font-semibold text-white">Development</p>
                 </div>

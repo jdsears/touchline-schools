@@ -72,11 +72,11 @@ export default function ClubDashboard() {
       {/* Stat cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: 'Teams', value: stats.total_teams, icon: Building2, href: `/school/${slug}/teams`, color: 'text-blue-400' },
+          { label: 'Teams', value: stats.total_teams, icon: Building2, href: `/school/${slug}/teams`, color: 'text-status-info' },
           { label: 'Pupils', value: stats.total_players, icon: Users, href: `/school/${slug}/pupils`, color: 'text-pitch-400' },
           { label: 'Classes', value: stats.total_classes, icon: GraduationCap, href: `/school/${slug}/teams`, color: 'text-amber-400' },
           { label: 'Staff', value: stats.total_members, icon: UserCheck, href: `/school/${slug}/members`, color: 'text-purple-400' },
-          { label: 'Pending', value: stats.pending_registrations, icon: ClipboardList, href: `/school/${slug}/registrations`, color: stats.pending_registrations > 0 ? 'text-alert-400' : 'text-secondary' },
+          { label: 'Pending', value: stats.pending_registrations, icon: ClipboardList, href: `/school/${slug}/registrations`, color: stats.pending_registrations > 0 ? 'text-status-error' : 'text-secondary' },
         ].map((stat) => (
           <Link
             key={stat.label}
@@ -86,7 +86,7 @@ export default function ClubDashboard() {
             <div className="flex items-center justify-between mb-2">
               <stat.icon className={`w-5 h-5 ${stat.color}`} />
               {stat.value > 0 && stat.label === 'Pending' && (
-                <span className="w-2 h-2 rounded-full bg-alert-400 animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-status-error animate-pulse" />
               )}
             </div>
             <p className="text-2xl font-bold text-primary">{stat.value ?? 0}</p>
@@ -116,9 +116,9 @@ export default function ClubDashboard() {
         <h2 className="text-lg font-semibold text-primary mb-3">Quick Actions</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
           {[
-            { label: 'Payments', description: 'Payment plans & billing', icon: CreditCard, href: `/school/${slug}/payments`, color: 'text-green-400 bg-green-500/10' },
-            { label: 'Finance', description: 'Revenue & transactions', icon: TrendingUp, href: `/school/${slug}/finance`, color: 'text-emerald-400 bg-emerald-500/10', roles: ['owner', 'admin', 'treasurer'] },
-            { label: 'Announcements', description: 'Notify pupils & parents', icon: Megaphone, href: `/school/${slug}/announcements`, color: 'text-blue-400 bg-blue-500/10' },
+            { label: 'Payments', description: 'Payment plans & billing', icon: CreditCard, href: `/school/${slug}/payments`, color: 'text-status-success bg-status-success-tint' },
+            { label: 'Finance', description: 'Revenue & transactions', icon: TrendingUp, href: `/school/${slug}/finance`, color: 'text-status-success bg-status-success-tint', roles: ['owner', 'admin', 'treasurer'] },
+            { label: 'Announcements', description: 'Notify pupils & parents', icon: Megaphone, href: `/school/${slug}/announcements`, color: 'text-status-info bg-status-info-tint' },
             { label: 'Safeguarding', description: 'Compliance & welfare', icon: ShieldCheck, href: `/school/${slug}/safeguarding`, color: 'text-amber-400 bg-amber-500/10' },
             { label: 'Events', description: 'School events & calendar', icon: CalendarDays, href: `/school/${slug}/events`, color: 'text-purple-400 bg-purple-500/10' },
             { label: 'Schedule', description: 'Season calendar view', icon: CalendarDays, href: `/school/${slug}/schedule`, color: 'text-cyan-400 bg-cyan-500/10' },
@@ -210,7 +210,7 @@ export default function ClubDashboard() {
                         <span className={`text-xs px-2 py-1 rounded-full ${
                           reg.registration_status === 'registered' ? 'bg-pitch-600/20 text-pitch-400' :
                           reg.registration_status === 'pending' ? 'bg-amber-500/20 text-amber-400' :
-                          'bg-alert-400/20 text-alert-400'
+                          'bg-status-error-tint text-status-error'
                         }`}>
                           {reg.registration_status}
                         </span>

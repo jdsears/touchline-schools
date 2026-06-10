@@ -130,9 +130,9 @@ export default function VideoLibrary() {
   const statusBadge = (status) => {
     switch (status) {
       case 'ready': return <span className="px-2 py-0.5 bg-pitch-500/20 text-pitch-400 text-xs rounded-full">Ready</span>
-      case 'processing': return <span className="px-2 py-0.5 bg-caution-500/20 text-caution-400 text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Processing</span>
+      case 'processing': return <span className="px-2 py-0.5 bg-status-warning-tint text-status-warning text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Processing</span>
       case 'waiting_upload': return <span className="px-2 py-0.5 bg-border-default text-secondary text-xs rounded-full flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin" />Uploading</span>
-      case 'error': return <span className="px-2 py-0.5 bg-alert-500/20 text-alert-400 text-xs rounded-full">Error</span>
+      case 'error': return <span className="px-2 py-0.5 bg-status-error-tint text-status-error text-xs rounded-full">Error</span>
       default: return null
     }
   }
@@ -220,7 +220,7 @@ export default function VideoLibrary() {
                   <div className="absolute inset-0 flex items-center justify-center">
                     {(video.status === 'processing' || video.status === 'waiting_upload') ? (
                       <div className="text-center">
-                        <Loader2 className="w-8 h-8 text-caution-400 animate-spin mx-auto" />
+                        <Loader2 className="w-8 h-8 text-status-warning animate-spin mx-auto" />
                         <p className="text-xs text-secondary mt-2">
                           {video.status === 'waiting_upload' ? 'Uploading...' : 'Processing...'}
                         </p>
@@ -249,7 +249,7 @@ export default function VideoLibrary() {
                     <button onClick={(e) => { e.stopPropagation(); openEditModal(video) }} className="p-1 text-tertiary hover:text-white" title="Edit">
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={(e) => handleDelete(e, video.id)} className="p-1 text-tertiary hover:text-alert-400" title="Delete">
+                    <button onClick={(e) => handleDelete(e, video.id)} className="p-1 text-tertiary hover:text-status-error" title="Delete">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>

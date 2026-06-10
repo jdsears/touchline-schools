@@ -9,14 +9,14 @@ const GRADE_LABELS = {
 }
 
 const GRADE_COLORS = {
-  emerging: 'bg-red-500/20 text-red-400',
+  emerging: 'bg-status-error-tint text-status-error',
   developing: 'bg-amber-500/20 text-amber-400',
   secure: 'bg-pitch-500/20 text-pitch-400',
-  excelling: 'bg-blue-500/20 text-blue-400',
-  needs_improvement: 'bg-red-500/20 text-red-400',
+  excelling: 'bg-status-info-tint text-status-info',
+  needs_improvement: 'bg-status-error-tint text-status-error',
   good: 'bg-amber-500/20 text-amber-400',
   very_good: 'bg-pitch-500/20 text-pitch-400',
-  excellent: 'bg-blue-500/20 text-blue-400',
+  excellent: 'bg-status-info-tint text-status-info',
 }
 
 export default function ReportDetail() {
@@ -62,7 +62,7 @@ export default function ReportDetail() {
             </p>
           </div>
           <span className={`ml-auto px-2 py-0.5 rounded text-xs font-medium capitalize ${
-            report.status === 'published' ? 'bg-blue-500/20 text-blue-400' :
+            report.status === 'published' ? 'bg-status-info-tint text-status-info' :
             report.status === 'submitted' ? 'bg-amber-400/20 text-amber-400' :
             'bg-border-default text-secondary'
           }`}>{report.status}</span>

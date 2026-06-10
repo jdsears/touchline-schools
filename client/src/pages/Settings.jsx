@@ -462,7 +462,7 @@ function KnowledgeBaseTab({ teamId }) {
                 <button
                   onClick={() => handleDelete(doc.id)}
                   disabled={deleting === doc.id}
-                  className="text-tertiary hover:text-alert-400 transition-colors ml-2 flex-shrink-0"
+                  className="text-tertiary hover:text-status-error transition-colors ml-2 flex-shrink-0"
                   title="Remove from knowledge base"
                 >
                   {deleting === doc.id ? (
@@ -788,7 +788,7 @@ function UsageBar({ label, current, limit, billingExempt }) {
       <div className="flex items-center justify-between mb-1">
         <span className="text-sm text-secondary">{label}</span>
         <span className={`text-sm font-medium ${
-          isAtLimit ? 'text-alert-400' : isNearLimit ? 'text-amber-400' : 'text-white'
+          isAtLimit ? 'text-status-error' : isNearLimit ? 'text-amber-400' : 'text-white'
         }`}>
           {current} / {billingExempt || limit === Infinity ? '∞' : limit}
         </span>
@@ -796,7 +796,7 @@ function UsageBar({ label, current, limit, billingExempt }) {
       <div className="h-2 bg-subtle rounded-full overflow-hidden">
         <div
           className={`h-full rounded-full transition-all ${
-            isAtLimit ? 'bg-alert-500' : isNearLimit ? 'bg-amber-500' : 'bg-pitch-500'
+            isAtLimit ? 'bg-status-error' : isNearLimit ? 'bg-amber-500' : 'bg-pitch-500'
           }`}
           style={{ width: `${percentage}%` }}
         />
@@ -1110,11 +1110,11 @@ function StreamingTab({ teamId, userRole, teamName }) {
             </p>
 
             {showRegenerateConfirm ? (
-              <div className="p-4 bg-alert-500/10 border border-alert-500/30 rounded-lg mb-4">
+              <div className="p-4 bg-status-error-tint border border-status-error rounded-lg mb-4">
                 <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-alert-400 flex-shrink-0 mt-0.5" />
+                  <AlertTriangle className="w-5 h-5 text-status-error flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-alert-400 font-medium">Are you sure?</p>
+                    <p className="text-status-error font-medium">Are you sure?</p>
                     <p className="text-sm text-secondary mt-1">
                       This will invalidate your current stream key. You'll need to update
                       the key in your camera's streaming settings.
@@ -1131,7 +1131,7 @@ function StreamingTab({ teamId, userRole, teamName }) {
                   <button
                     onClick={handleRegenerate}
                     disabled={saving}
-                    className="btn-primary bg-alert-500 hover:bg-alert-600 flex-1"
+                    className="btn-primary bg-status-error hover:bg-status-error flex-1"
                   >
                     {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <RefreshCw className="w-4 h-4" />}
                     Regenerate Key
@@ -1152,8 +1152,8 @@ function StreamingTab({ teamId, userRole, teamName }) {
           {/* Guest Sharing */}
           <div className="card p-6">
             <div className="flex items-start gap-4 mb-6">
-              <div className="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center flex-shrink-0">
-                <Share2 className="w-5 h-5 text-blue-400" />
+              <div className="w-10 h-10 rounded-lg bg-status-info-tint flex items-center justify-center flex-shrink-0">
+                <Share2 className="w-5 h-5 text-status-info" />
               </div>
               <div>
                 <h3 className="font-medium text-white">Share with Friends & Family</h3>
@@ -1709,7 +1709,7 @@ export default function Settings() {
                           <button
                             type="button"
                             onClick={() => setTeamFormations(teamFormations.filter((_, i) => i !== index))}
-                            className="text-secondary hover:text-alert-400 transition-colors"
+                            className="text-secondary hover:text-status-error transition-colors"
                           >
                             <X className="w-4 h-4" />
                           </button>
@@ -2035,7 +2035,7 @@ export default function Settings() {
                     </div>
                     <button
                       onClick={() => removeQualification(index)}
-                      className="mt-6 p-1 text-tertiary hover:text-alert-400 transition-colors"
+                      className="mt-6 p-1 text-tertiary hover:text-status-error transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -2122,7 +2122,7 @@ export default function Settings() {
                   <button
                     onClick={handleToggleGaffer}
                     disabled={saving}
-                    className={`w-full ${gafferDisabled ? 'btn-primary' : 'btn-ghost text-alert-400 hover:bg-alert-500/10'}`}
+                    className={`w-full ${gafferDisabled ? 'btn-primary' : 'btn-ghost text-status-error hover:bg-status-error-tint'}`}
                   >
                     {saving ? (
                       <Loader2 className="w-4 h-4 animate-spin" />

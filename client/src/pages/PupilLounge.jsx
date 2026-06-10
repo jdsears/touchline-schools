@@ -897,7 +897,7 @@ export default function PupilLounge() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center p-4">
         <div className="card p-8 text-center max-w-md">
-          <AlertCircle className="w-12 h-12 text-alert-400 mx-auto mb-4" />
+          <AlertCircle className="w-12 h-12 text-status-error mx-auto mb-4" />
           <h2 className="font-display text-xl font-bold text-white mb-2">
             {errorObj.type === 'no_player_link' ? 'Account Not Linked' : 'Oops!'}
           </h2>
@@ -1041,7 +1041,7 @@ export default function PupilLounge() {
               {announcements.length > 0 && (
                 <div className="card p-4">
                   <h3 className="font-display font-semibold text-white mb-3 flex items-center gap-2">
-                    <Megaphone className="w-5 h-5 text-alert-400" />
+                    <Megaphone className="w-5 h-5 text-status-error" />
                     Team Announcements
                   </h3>
                   <div className="space-y-3">
@@ -1049,8 +1049,8 @@ export default function PupilLounge() {
                       <div
                         key={announcement.id}
                         className={`p-3 rounded-lg ${
-                          announcement.priority === 'high' ? 'bg-alert-500/10 border border-alert-500/30' :
-                          announcement.priority === 'urgent' ? 'bg-alert-500/20 border border-alert-500/50' :
+                          announcement.priority === 'high' ? 'bg-status-error-tint border border-status-error' :
+                          announcement.priority === 'urgent' ? 'bg-status-error-tint border border-status-error' :
                           'bg-subtle'
                         }`}
                       >
@@ -1120,7 +1120,7 @@ export default function PupilLounge() {
                   </div>
                 </div>
                 <div className="card p-3 text-center">
-                  <div className="text-xl font-bold text-blue-400">{observations?.length || 0}</div>
+                  <div className="text-xl font-bold text-status-info">{observations?.length || 0}</div>
                   <div className="text-xs text-secondary">Notes</div>
                 </div>
               </div>
@@ -1188,7 +1188,7 @@ export default function PupilLounge() {
                             <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
                               upcomingMatches[0].is_home
                                 ? 'bg-pitch-500/20 text-pitch-400'
-                                : 'bg-blue-500/20 text-blue-400'
+                                : 'bg-status-info-tint text-status-info'
                             }`}>
                               {upcomingMatches[0].is_home ? '🏠 HOME KIT' : '👕 AWAY KIT'}
                             </span>
@@ -1409,7 +1409,7 @@ export default function PupilLounge() {
                   setShowSuggestionModal(true)
                   if (mySuggestions.length === 0) loadMySuggestions()
                 }}
-                className="card p-4 w-full text-left hover:scale-[1.01] transition-all duration-200 bg-gradient-to-r from-blue-900/40 via-navy-900 to-blue-900/40 border-blue-500/20 hover:border-blue-500/40"
+                className="card p-4 w-full text-left hover:scale-[1.01] transition-all duration-200 bg-gradient-to-r from-blue-900/40 via-navy-900 to-blue-900/40 border-status-info hover:border-status-info"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -1724,8 +1724,8 @@ export default function PupilLounge() {
                       <p className="text-xs text-secondary">
                         {streamCredentials?.status === 'active' ? (
                           <span className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
-                            <span className="text-alert-400">LIVE NOW</span>
+                            <span className="w-2 h-2 rounded-full bg-status-error animate-pulse" />
+                            <span className="text-status-error">LIVE NOW</span>
                           </span>
                         ) : 'Watch live training and matches'}
                       </p>
@@ -1782,8 +1782,8 @@ export default function PupilLounge() {
                   <div className="p-3 bg-subtle border-t border-border-strong">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <span className="w-2 h-2 rounded-full bg-alert-500 animate-pulse" />
-                        <span className="text-sm text-alert-400 font-medium">Live</span>
+                        <span className="w-2 h-2 rounded-full bg-status-error animate-pulse" />
+                        <span className="text-sm text-status-error font-medium">Live</span>
                         <span className="text-sm text-secondary">• {streamCredentials.streamName}</span>
                       </div>
                       {streamCredentials.shareCode && (
@@ -1946,8 +1946,8 @@ export default function PupilLounge() {
                     )}
 
                     {!streamCredentials.guestPin && (
-                      <div className="p-3 bg-caution-500/10 border border-caution-500/30 rounded-lg mb-4">
-                        <p className="text-caution-400 text-sm">
+                      <div className="p-3 bg-status-warning-tint border border-status-warning rounded-lg mb-4">
+                        <p className="text-status-warning text-sm">
                           No PIN set. Ask your coach to set one in Settings.
                         </p>
                       </div>
@@ -2054,13 +2054,13 @@ export default function PupilLounge() {
                               <td className="px-3 py-3 text-center text-secondary">{team.played}</td>
                               <td className="px-3 py-3 text-center text-pitch-400">{team.won}</td>
                               <td className="px-3 py-3 text-center text-secondary">{team.drawn}</td>
-                              <td className="px-3 py-3 text-center text-alert-400">{team.lost}</td>
+                              <td className="px-3 py-3 text-center text-status-error">{team.lost}</td>
                               <td className="px-3 py-3 text-center text-secondary hidden sm:table-cell">{team.goals_for}</td>
                               <td className="px-3 py-3 text-center text-secondary hidden sm:table-cell">{team.goals_against}</td>
                               <td className="px-3 py-3 text-center">
                                 <span className={
                                   team.goal_difference > 0 ? 'text-pitch-400' :
-                                  team.goal_difference < 0 ? 'text-alert-400' : 'text-secondary'
+                                  team.goal_difference < 0 ? 'text-status-error' : 'text-secondary'
                                 }>
                                   {team.goal_difference > 0 ? '+' : ''}{team.goal_difference}
                                 </span>
@@ -2139,13 +2139,13 @@ export default function PupilLounge() {
                       )}
                       {developmentPlan.goals?.length > 0 && (
                         <div>
-                          <h4 className="text-sm font-medium text-blue-400 mb-2 flex items-center gap-1">
+                          <h4 className="text-sm font-medium text-status-info mb-2 flex items-center gap-1">
                             <Trophy className="w-4 h-4" /> Goals
                           </h4>
                           <ul className="space-y-1">
                             {developmentPlan.goals.map((g, i) => (
                               <li key={i} className="text-sm text-secondary flex items-start gap-2">
-                                <Circle className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
+                                <Circle className="w-4 h-4 text-status-info shrink-0 mt-0.5" />
                                 {g}
                               </li>
                             ))}
@@ -2501,18 +2501,18 @@ export default function PupilLounge() {
                 {/* Urgent Announcements */}
                 {announcements?.filter(a => a.priority === 'urgent' || a.priority === 'high').length > 0 && (
                   <div className="mb-3">
-                    <p className="text-xs text-alert-400 px-2 py-1 font-semibold flex items-center gap-1">
+                    <p className="text-xs text-status-error px-2 py-1 font-semibold flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
                       IMPORTANT
                     </p>
                     {announcements.filter(a => a.priority === 'urgent' || a.priority === 'high').slice(0, 2).map(announcement => (
                       <div
                         key={announcement.id}
-                        className="p-3 rounded-lg bg-alert-500/10 border border-alert-500/20 mb-2"
+                        className="p-3 rounded-lg bg-status-error-tint border border-status-error mb-2"
                       >
                         <div className="flex items-start gap-3">
-                          <div className="w-8 h-8 rounded-lg bg-alert-500/20 flex items-center justify-center flex-shrink-0">
-                            <Megaphone className="w-4 h-4 text-alert-400" />
+                          <div className="w-8 h-8 rounded-lg bg-status-error-tint flex items-center justify-center flex-shrink-0">
+                            <Megaphone className="w-4 h-4 text-status-error" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-sm text-white font-medium">{announcement.title}</p>
@@ -2686,8 +2686,8 @@ export default function PupilLounge() {
                   {/* Result Header */}
                   <div className={`text-center p-4 rounded-xl ${
                     selectedMatch.goals_for > selectedMatch.goals_against ? 'bg-pitch-500/20 border border-pitch-500/30' :
-                    selectedMatch.goals_for < selectedMatch.goals_against ? 'bg-alert-500/20 border border-alert-500/30' :
-                    'bg-caution-500/20 border border-caution-500/30'
+                    selectedMatch.goals_for < selectedMatch.goals_against ? 'bg-status-error-tint border border-status-error' :
+                    'bg-status-warning-tint border border-status-warning'
                   }`}>
                     <p className="text-sm text-secondary mb-1">
                       {selectedMatch.is_home ? 'HOME' : 'AWAY'} • {formatDate(selectedMatch.date)}
@@ -2706,7 +2706,7 @@ export default function PupilLounge() {
                     </div>
                     <p className={`text-sm font-semibold ${
                       selectedMatch.goals_for > selectedMatch.goals_against ? 'text-pitch-400' :
-                      selectedMatch.goals_for < selectedMatch.goals_against ? 'text-alert-400' : 'text-caution-400'
+                      selectedMatch.goals_for < selectedMatch.goals_against ? 'text-status-error' : 'text-status-warning'
                     }`}>
                       {selectedMatch.goals_for > selectedMatch.goals_against ? '🏆 Victory!' :
                        selectedMatch.goals_for < selectedMatch.goals_against ? 'Defeat' : 'Draw'}
@@ -2800,7 +2800,7 @@ export default function PupilLounge() {
                               {isOwn && (
                                 <button
                                   onClick={() => handleDeleteMedia(selectedMatch.id, media.id)}
-                                  className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-alert-600"
+                                  className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-status-error"
                                 >
                                   <X className="w-3.5 h-3.5 text-white" />
                                 </button>
@@ -3177,7 +3177,7 @@ export default function PupilLounge() {
                               {isOwn && (
                                 <button
                                   onClick={() => handleDeleteMedia(selectedMatch.id, media.id)}
-                                  className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-alert-600"
+                                  className="absolute top-1 right-1 w-6 h-6 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-status-error"
                                 >
                                   <X className="w-3.5 h-3.5 text-white" />
                                 </button>
@@ -3580,8 +3580,8 @@ export default function PupilLounge() {
                   <div className="text-3xl font-bold text-energy-400">{(achievements?.length || 0) + (potmAwards?.length || 0)}</div>
                   <div className="text-xs text-secondary mt-1">Total Awards</div>
                 </div>
-                <div className="bg-gradient-to-br from-caution-900/40 to-navy-900 rounded-xl p-4 text-center border border-caution-500/20">
-                  <div className="text-3xl font-bold text-caution-400">{potmAwards?.length || 0}</div>
+                <div className="bg-gradient-to-br from-caution-900/40 to-navy-900 rounded-xl p-4 text-center border border-status-warning">
+                  <div className="text-3xl font-bold text-status-warning">{potmAwards?.length || 0}</div>
                   <div className="text-xs text-secondary mt-1 flex items-center justify-center gap-1">
                     <Award className="w-3 h-3" /> POTM
                   </div>
@@ -3857,7 +3857,7 @@ export default function PupilLounge() {
                   </div>
                   <div className={`mt-3 text-xs px-2 py-1 rounded inline-block ${
                     gafferDisabled
-                      ? 'bg-alert-500/20 text-alert-400'
+                      ? 'bg-status-error-tint text-status-error'
                       : 'bg-pitch-500/20 text-pitch-400'
                   }`}>
                     {gafferDisabled ? 'Disabled' : 'Enabled'}
@@ -3906,7 +3906,7 @@ export default function PupilLounge() {
             >
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-display font-bold text-lg text-white flex items-center gap-2">
-                  <Lightbulb className="w-5 h-5 text-blue-400" />
+                  <Lightbulb className="w-5 h-5 text-status-info" />
                   Make a Suggestion
                 </h2>
                 <button
@@ -3923,7 +3923,7 @@ export default function PupilLounge() {
                   <select
                     value={suggestionForm.category}
                     onChange={e => setSuggestionForm(prev => ({ ...prev, category: e.target.value }))}
-                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white focus:outline-none focus:border-blue-500"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white focus:outline-none focus:border-status-info"
                   >
                     <option value="general">General</option>
                     <option value="training">Training</option>
@@ -3941,7 +3941,7 @@ export default function PupilLounge() {
                     value={suggestionForm.title}
                     onChange={e => setSuggestionForm(prev => ({ ...prev, title: e.target.value }))}
                     placeholder="Brief summary of your suggestion"
-                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-blue-500"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-status-info"
                     maxLength={255}
                   />
                 </div>
@@ -3953,7 +3953,7 @@ export default function PupilLounge() {
                     onChange={e => setSuggestionForm(prev => ({ ...prev, content: e.target.value }))}
                     placeholder="Share your idea or feedback in detail..."
                     rows={4}
-                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-blue-500 resize-none"
+                    className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-white placeholder-navy-500 focus:outline-none focus:border-status-info resize-none"
                   />
                 </div>
 
@@ -3962,7 +3962,7 @@ export default function PupilLounge() {
                     {suggestionForm.is_anonymous ? (
                       <EyeOff className="w-4 h-4 text-secondary" />
                     ) : (
-                      <Eye className="w-4 h-4 text-blue-400" />
+                      <Eye className="w-4 h-4 text-status-info" />
                     )}
                     <span className="text-sm text-secondary">Submit anonymously</span>
                   </div>
@@ -3970,7 +3970,7 @@ export default function PupilLounge() {
                     type="button"
                     onClick={() => setSuggestionForm(prev => ({ ...prev, is_anonymous: !prev.is_anonymous }))}
                     className={`relative w-10 h-5 rounded-full transition-colors ${
-                      suggestionForm.is_anonymous ? 'bg-blue-500' : 'bg-navy-600'
+                      suggestionForm.is_anonymous ? 'bg-status-info' : 'bg-navy-600'
                     }`}
                   >
                     <span
@@ -3992,7 +3992,7 @@ export default function PupilLounge() {
                   <button
                     type="submit"
                     disabled={submittingSuggestion || !suggestionForm.title.trim() || !suggestionForm.content.trim()}
-                    className="flex-1 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    className="flex-1 px-4 py-2 bg-status-info text-white rounded-lg hover:bg-status-info transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   >
                     {submittingSuggestion ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -4024,8 +4024,8 @@ export default function PupilLounge() {
                             <p className="text-sm font-medium text-white truncate">{suggestion.title}</p>
                             <div className="flex items-center gap-2 mt-1">
                               <span className={`text-xs px-2 py-0.5 rounded-full ${
-                                suggestion.status === 'pending' ? 'bg-caution-500/20 text-caution-400' :
-                                suggestion.status === 'in_review' ? 'bg-blue-500/20 text-blue-400' :
+                                suggestion.status === 'pending' ? 'bg-status-warning-tint text-status-warning' :
+                                suggestion.status === 'in_review' ? 'bg-status-info-tint text-status-info' :
                                 suggestion.status === 'acknowledged' ? 'bg-pitch-500/20 text-pitch-400' :
                                 suggestion.status === 'implemented' ? 'bg-energy-500/20 text-energy-400' :
                                 'bg-navy-600 text-secondary'
@@ -4108,7 +4108,7 @@ function AvailabilityButtons({ match, onUpdate, updating }) {
 function ResultBadge({ goalsFor, goalsAgainst }) {
   const config = {
     W: { bg: 'bg-pitch-500/20', text: 'text-pitch-400', label: 'W' },
-    L: { bg: 'bg-alert-500/20', text: 'text-alert-400', label: 'L' },
+    L: { bg: 'bg-status-error-tint', text: 'text-status-error', label: 'L' },
     D: { bg: 'bg-navy-600/50', text: 'text-secondary', label: 'D' },
   }
   const resultKey = goalsFor > goalsAgainst ? 'W' : goalsFor < goalsAgainst ? 'L' : 'D'
@@ -4317,7 +4317,7 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
                               ? 'bg-navy-600 text-secondary'
                               : 'bg-energy-500/30 text-energy-300'
                             : event.type === 'sc'
-                              ? 'bg-caution-500/30 text-caution-300'
+                              ? 'bg-status-warning-tint text-status-warning'
                               : 'bg-pitch-500/20 text-pitch-300'
                         }`}
                         title={
@@ -4369,7 +4369,7 @@ function ScheduleCalendar({ currentMonth, onMonthChange, matches, recentMatches,
             <span className="text-xs text-secondary">Training</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-caution-400" />
+            <span className="w-2.5 h-2.5 rounded-full bg-status-warning" />
             <span className="text-xs text-secondary">S&C</span>
           </div>
           <div className="flex items-center gap-1.5">

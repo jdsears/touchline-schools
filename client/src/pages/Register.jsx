@@ -801,7 +801,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                       </button>
                     </div>
                     {promoResult && (
-                      <div className={`mt-2 flex items-center gap-2 text-sm ${promoResult.valid ? 'text-pitch-400' : 'text-red-400'}`}>
+                      <div className={`mt-2 flex items-center gap-2 text-sm ${promoResult.valid ? 'text-pitch-400' : 'text-status-error'}`}>
                         {promoResult.valid ? (
                           <>
                             <CheckCircle className="w-4 h-4 flex-shrink-0" />
@@ -964,7 +964,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
                         <button
                           type="button"
                           onClick={removeLogo}
-                          className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center hover:bg-red-600 transition-colors"
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-status-error rounded-full flex items-center justify-center hover:bg-status-error transition-colors"
                         >
                           <X className="w-4 h-4 text-white" />
                         </button>

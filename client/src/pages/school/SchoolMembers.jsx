@@ -8,7 +8,7 @@ const ROLES = ['owner', 'admin', 'treasurer', 'secretary', 'coach']
 const ROLE_COLORS = {
   owner: 'bg-amber-500/20 text-amber-400',
   admin: 'bg-purple-500/20 text-purple-400',
-  treasurer: 'bg-blue-500/20 text-blue-400',
+  treasurer: 'bg-status-info-tint text-status-info',
   secretary: 'bg-pitch-600/20 text-pitch-400',
   coach: 'bg-navy-600/20 text-secondary',
   parent: 'bg-border-default/20 text-secondary',
@@ -224,7 +224,7 @@ export default function ClubMembers() {
                             </button>
                             <button
                               onClick={() => handleRemove(m.id, m.name)}
-                              className="p-1.5 text-secondary hover:text-alert-400 transition-colors"
+                              className="p-1.5 text-secondary hover:text-status-error transition-colors"
                               title="Remove member"
                             >
                               <Trash2 className="w-4 h-4" />

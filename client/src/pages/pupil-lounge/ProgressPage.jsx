@@ -4,12 +4,12 @@ import api from '../../services/api'
 import { useAgeMode } from '../../hooks/useAgeMode'
 
 const GRADE_COLOURS = {
-  'Exc': { bg: 'bg-green-500', w: '100%', label: 'Exceeding' },
-  'Sec': { bg: 'bg-blue-500', w: '75%', label: 'Secure' },
+  'Exc': { bg: 'bg-status-success', w: '100%', label: 'Exceeding' },
+  'Sec': { bg: 'bg-status-info', w: '75%', label: 'Secure' },
   'Dev': { bg: 'bg-amber-500', w: '50%', label: 'Developing' },
   'Eme': { bg: 'bg-orange-500', w: '30%', label: 'Emerging' },
-  'A': { bg: 'bg-green-500', w: '90%', label: 'Grade A' },
-  'B': { bg: 'bg-blue-500', w: '75%', label: 'Grade B' },
+  'A': { bg: 'bg-status-success', w: '90%', label: 'Grade A' },
+  'B': { bg: 'bg-status-info', w: '75%', label: 'Grade B' },
   'C': { bg: 'bg-amber-500', w: '55%', label: 'Grade C' },
 }
 

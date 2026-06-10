@@ -86,7 +86,7 @@ export default function CalendarExportTab() {
             <div key={t.id} className="bg-card border border-border-default rounded-xl p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-primary">{SCOPE_LABELS[t.scope] || t.scope}</span>
-                <button onClick={() => revokeToken(t.id)} className="p-1.5 text-tertiary hover:text-red-400 transition-colors" title="Revoke">
+                <button onClick={() => revokeToken(t.id)} className="p-1.5 text-tertiary hover:text-status-error transition-colors" title="Revoke">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>

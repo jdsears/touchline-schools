@@ -18,11 +18,11 @@ const CONSENT_LABELS = {
 
 const STATUS_STYLES = {
   pending: 'bg-amber-500/10 text-amber-400',
-  processing: 'bg-blue-500/10 text-blue-400',
+  processing: 'bg-status-info-tint text-status-info',
   ready: 'bg-pitch-500/10 text-pitch-400',
   downloaded: 'bg-border-default text-secondary',
   completed: 'bg-pitch-500/10 text-pitch-400',
-  failed: 'bg-alert-500/10 text-alert-400',
+  failed: 'bg-status-error-tint text-status-error',
 }
 
 export default function GDPRDashboard() {
@@ -143,7 +143,7 @@ function OverviewTab({ overview, onRefresh }) {
           icon={Trash2}
           label="Deletions This Year"
           value={overview.recent_deletions?.length || 0}
-          color="text-alert-400"
+          color="text-status-error"
         />
       </div>
 
@@ -318,9 +318,9 @@ function PupilsTab() {
       {/* Delete confirmation modal */}
       {deleteConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-card rounded-2xl border border-alert-600/40 p-6 w-full max-w-md">
+          <div className="bg-card rounded-2xl border border-status-error p-6 w-full max-w-md">
             <div className="flex items-start gap-3 mb-4">
-              <Trash2 className="w-6 h-6 text-alert-400 shrink-0 mt-0.5" />
+              <Trash2 className="w-6 h-6 text-status-error shrink-0 mt-0.5" />
               <div>
                 <h3 className="text-lg font-bold text-primary">Permanently Delete All Data</h3>
                 <p className="text-sm text-secondary mt-1">
@@ -333,14 +333,14 @@ function PupilsTab() {
 
             <div className="mb-4">
               <label className="block text-sm text-secondary mb-1">
-                Reason for deletion <span className="text-alert-400">*</span>
+                Reason for deletion <span className="text-status-error">*</span>
               </label>
               <textarea
                 value={deleteReason}
                 onChange={e => setDeleteReason(e.target.value)}
                 placeholder="e.g. Pupil has left the school and parent has submitted Right to Erasure request"
                 rows={3}
-                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-alert-500 resize-none"
+                className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-status-error resize-none"
               />
               <p className="text-xs text-tertiary mt-1">Required for audit log purposes.</p>
             </div>
@@ -355,7 +355,7 @@ function PupilsTab() {
               <button
                 onClick={handleDelete}
                 disabled={!deleteReason.trim() || deleteLoading}
-                className="flex-1 py-2.5 bg-alert-600 hover:bg-alert-700 text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                className="flex-1 py-2.5 bg-status-error hover:bg-status-error text-on-dark rounded-lg text-sm font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 {deleteLoading ? <div className="spinner w-4 h-4" /> : <Trash2 className="w-4 h-4" />}
                 Delete All Data
@@ -434,7 +434,7 @@ function PupilGDPRRow({ pupil, expanded, onToggle, onExport, exportLoading, onDe
             </button>
             <button
               onClick={onDelete}
-              className="flex items-center gap-1.5 px-3 py-2 bg-alert-600/10 hover:bg-alert-600/20 text-alert-400 rounded-lg text-xs transition-colors"
+              className="flex items-center gap-1.5 px-3 py-2 bg-status-error-tint hover:bg-status-error-tint text-status-error rounded-lg text-xs transition-colors"
             >
               <Trash2 className="w-3.5 h-3.5" />
               Delete All Data
@@ -521,7 +521,7 @@ function RequestsTab() {
                   <div className="flex items-center gap-2 mb-1">
                     {r.request_type === 'export'
                       ? <Download className="w-4 h-4 text-pitch-400" />
-                      : <Trash2 className="w-4 h-4 text-alert-400" />
+                      : <Trash2 className="w-4 h-4 text-status-error" />
                     }
                     <span className="text-sm font-medium text-primary capitalize">{r.request_type}</span>
                     <span className={`px-2 py-0.5 rounded text-xs ${STATUS_STYLES[r.status] || ''}`}>
@@ -598,7 +598,7 @@ function DeletionLogTab() {
           {log.map(entry => (
             <div key={entry.id} className="bg-card rounded-xl border border-border-default p-4">
               <div className="flex items-start gap-3">
-                <Trash2 className="w-4 h-4 text-alert-400 mt-0.5 shrink-0" />
+                <Trash2 className="w-4 h-4 text-status-error mt-0.5 shrink-0" />
                 <div className="flex-1">
                   <p className="text-sm font-medium text-primary">{entry.pupil_reference}</p>
                   <p className="text-xs text-secondary mt-0.5">

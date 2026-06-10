@@ -1468,7 +1468,7 @@ export default function Training() {
                   <button
                     onClick={() => handleDeleteSession(selectedSession.id)}
                     disabled={deletingSession}
-                    className="btn-ghost text-alert-400 hover:text-alert-300"
+                    className="btn-ghost text-status-error hover:text-status-error"
                   >
                     {deletingSession ? (
                       <Loader2 className="w-4 h-4 animate-spin" />
@@ -1704,7 +1704,7 @@ export default function Training() {
                             <button
                               onClick={() => handleDeleteImage(selectedSession, img.id)}
                               disabled={deletingImageId === img.id}
-                              className="p-2 bg-alert-500/80 rounded-lg text-white hover:bg-alert-500 transition-colors"
+                              className="p-2 bg-status-error-tint rounded-lg text-white hover:bg-status-error transition-colors"
                             >
                               {deletingImageId === img.id ? (
                                 <Loader2 className="w-4 h-4 animate-spin" />
@@ -1965,17 +1965,17 @@ export default function Training() {
                           const summary = getAvailabilitySummary()
                           return (
                             <div className="grid grid-cols-4 gap-2 mb-3">
-                              <div className="text-center p-2 rounded-lg bg-green-500/10 border border-green-500/20">
-                                <p className="text-lg font-bold text-green-400">{summary.available}</p>
-                                <p className="text-xs text-green-400/70">Yes</p>
+                              <div className="text-center p-2 rounded-lg bg-status-success-tint border border-status-success">
+                                <p className="text-lg font-bold text-status-success">{summary.available}</p>
+                                <p className="text-xs text-status-success">Yes</p>
                               </div>
-                              <div className="text-center p-2 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                                <p className="text-lg font-bold text-yellow-400">{summary.maybe}</p>
-                                <p className="text-xs text-yellow-400/70">Maybe</p>
+                              <div className="text-center p-2 rounded-lg bg-status-warning-tint border border-status-warning">
+                                <p className="text-lg font-bold text-status-warning">{summary.maybe}</p>
+                                <p className="text-xs text-status-warning">Maybe</p>
                               </div>
-                              <div className="text-center p-2 rounded-lg bg-red-500/10 border border-red-500/20">
-                                <p className="text-lg font-bold text-red-400">{summary.unavailable}</p>
-                                <p className="text-xs text-red-400/70">No</p>
+                              <div className="text-center p-2 rounded-lg bg-status-error-tint border border-status-error">
+                                <p className="text-lg font-bold text-status-error">{summary.unavailable}</p>
+                                <p className="text-xs text-status-error">No</p>
                               </div>
                               <div className="text-center p-2 rounded-lg bg-border-default/50 border border-border-strong">
                                 <p className="text-lg font-bold text-secondary">{summary.pending}</p>
@@ -2004,10 +2004,10 @@ export default function Training() {
                                   {['available', 'maybe', 'unavailable'].map(status => {
                                     const Icon = status === 'available' ? Check : status === 'maybe' ? HelpCircle : X
                                     const colors = status === 'available'
-                                      ? 'bg-green-500/20 text-green-400 border-green-500/30'
+                                      ? 'bg-status-success-tint text-status-success border-status-success'
                                       : status === 'maybe'
-                                        ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30'
-                                        : 'bg-red-500/20 text-red-400 border-red-500/30'
+                                        ? 'bg-status-warning-tint text-status-warning border-status-warning'
+                                        : 'bg-status-error-tint text-status-error border-status-error'
                                     return (
                                       <button
                                         key={status}
@@ -2023,9 +2023,9 @@ export default function Training() {
                                 </div>
                               ) : (
                                 <span className={`px-2 py-1 rounded text-xs border ${
-                                  pupil.status === 'available' ? 'bg-green-500/20 text-green-400 border-green-500/30' :
-                                  pupil.status === 'maybe' ? 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30' :
-                                  pupil.status === 'unavailable' ? 'bg-red-500/20 text-red-400 border-red-500/30' :
+                                  pupil.status === 'available' ? 'bg-status-success-tint text-status-success border-status-success' :
+                                  pupil.status === 'maybe' ? 'bg-status-warning-tint text-status-warning border-status-warning' :
+                                  pupil.status === 'unavailable' ? 'bg-status-error-tint text-status-error border-status-error' :
                                   'bg-border-default text-secondary border-border-strong'
                                 }`}>
                                   {pupil.status}

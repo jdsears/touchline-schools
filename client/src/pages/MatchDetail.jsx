@@ -98,9 +98,9 @@ const FORMATIONS_BY_FORMAT = {
 const FORMATIONS = FORMATIONS_11
 
 const statusColors = {
-  available: 'bg-green-500/20 text-green-400 border-green-500/30',
-  unavailable: 'bg-red-500/20 text-red-400 border-red-500/30',
-  maybe: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
+  available: 'bg-status-success-tint text-status-success border-status-success',
+  unavailable: 'bg-status-error-tint text-status-error border-status-error',
+  maybe: 'bg-status-warning-tint text-status-warning border-status-warning',
   pending: 'bg-border-default text-secondary border-border-strong'
 }
 
@@ -1264,7 +1264,7 @@ export default function MatchDetail() {
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
-                  className="btn-ghost text-alert-400 hover:text-alert-300"
+                  className="btn-ghost text-status-error hover:text-status-error"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -1286,7 +1286,7 @@ export default function MatchDetail() {
               <div className={`
                 inline-block p-4 rounded-xl relative group
                 ${resultDisplay.outcome === 'win' ? 'bg-pitch-500/10 border border-pitch-500/20' :
-                  resultDisplay.outcome === 'loss' ? 'bg-alert-500/10 border border-alert-500/20' :
+                  resultDisplay.outcome === 'loss' ? 'bg-status-error-tint border border-status-error' :
                   'bg-subtle border border-border-strong'}
               `}>
                 {isManager && (
@@ -1309,7 +1309,7 @@ export default function MatchDetail() {
                 </div>
                 <p className={`text-sm font-medium mt-1 capitalize
                   ${resultDisplay.outcome === 'win' ? 'text-pitch-400' :
-                    resultDisplay.outcome === 'loss' ? 'text-alert-400' :
+                    resultDisplay.outcome === 'loss' ? 'text-status-error' :
                     'text-secondary'}
                 `}>
                   {resultDisplay.outcome}
@@ -1403,8 +1403,8 @@ export default function MatchDetail() {
                 onClick={() => setActiveTab('video')}
                 className="card-hover p-4 flex items-center gap-3"
               >
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                  <Video className="w-5 h-5 text-blue-400" />
+                <div className="w-10 h-10 rounded-xl bg-status-info-tint flex items-center justify-center">
+                  <Video className="w-5 h-5 text-status-info" />
                 </div>
                 <div className="text-left flex-1">
                   <p className="font-medium text-white">Video Analysis</p>
@@ -1497,7 +1497,7 @@ export default function MatchDetail() {
                           </div>
                         </div>
                         {isManager && (
-                          <button onClick={() => handleDeleteGoal(goal.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove goal">
+                          <button onClick={() => handleDeleteGoal(goal.id)} className="p-1 text-tertiary hover:text-status-error transition-colors" title="Remove goal">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
@@ -1548,10 +1548,10 @@ export default function MatchDetail() {
                           )}
                           <div className="flex items-center gap-2 text-sm">
                             {sub.player_off_name && (
-                              <span className="text-alert-400">
+                              <span className="text-status-error">
                                 <span className="text-secondary mr-1">#{sub.player_off_number}</span>
                                 {sub.player_off_name}
-                                <span className="ml-1 text-xs text-alert-500">OFF</span>
+                                <span className="ml-1 text-xs text-status-error">OFF</span>
                               </span>
                             )}
                             <ArrowRightLeft className="w-3.5 h-3.5 text-tertiary" />
@@ -1565,7 +1565,7 @@ export default function MatchDetail() {
                           </div>
                         </div>
                         {isManager && (
-                          <button onClick={() => handleDeleteSub(sub.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove substitution">
+                          <button onClick={() => handleDeleteSub(sub.id)} className="p-1 text-tertiary hover:text-status-error transition-colors" title="Remove substitution">
                             <Trash2 className="w-4 h-4" />
                           </button>
                         )}
@@ -1634,7 +1634,7 @@ export default function MatchDetail() {
                             </div>
                           </div>
                           {isManager && (
-                            <button onClick={() => handleDeleteEvent(evt.id)} className="p-1 text-tertiary hover:text-alert-400 transition-colors" title="Remove event">
+                            <button onClick={() => handleDeleteEvent(evt.id)} className="p-1 text-tertiary hover:text-status-error transition-colors" title="Remove event">
                               <Trash2 className="w-4 h-4" />
                             </button>
                           )}
@@ -1701,7 +1701,7 @@ export default function MatchDetail() {
                               {ps.pupil_name}
                             </p>
                             {ps.rating && (
-                              <span className={`text-xs font-bold px-2 py-0.5 rounded ${ps.rating >= 8 ? 'bg-pitch-500/20 text-pitch-400' : ps.rating >= 6 ? 'bg-energy-500/20 text-energy-400' : 'bg-alert-500/20 text-alert-400'}`}>
+                              <span className={`text-xs font-bold px-2 py-0.5 rounded ${ps.rating >= 8 ? 'bg-pitch-500/20 text-pitch-400' : ps.rating >= 6 ? 'bg-energy-500/20 text-energy-400' : 'bg-status-error-tint text-status-error'}`}>
                                 {ps.rating}/10
                               </span>
                             )}
@@ -1908,16 +1908,16 @@ export default function MatchDetail() {
           >
             {/* Squad Announcement Status */}
             {match.squad_announced && (
-              <div className="card p-4 bg-green-500/10 border-green-500/20">
+              <div className="card p-4 bg-status-success-tint border-status-success">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-400" />
+                  <CheckCircle className="w-5 h-5 text-status-success" />
                   <div className="flex-1">
-                    <p className="font-medium text-green-400">Squad Announced</p>
-                    <p className="text-sm text-green-400/70">
+                    <p className="font-medium text-status-success">Squad Announced</p>
+                    <p className="text-sm text-status-success">
                       Players were notified on {new Date(match.squad_announced_at).toLocaleDateString('en-GB')}
                     </p>
                     {(match.meetup_time || match.meetup_location) && (
-                      <div className="mt-2 pt-2 border-t border-green-500/20 text-sm text-green-400/70">
+                      <div className="mt-2 pt-2 border-t border-status-success text-sm text-status-success">
                         {match.meetup_time && (
                           <p>Meet-up: {new Date(match.meetup_time).toLocaleString('en-GB', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: teamTz })}</p>
                         )}
@@ -2087,23 +2087,23 @@ export default function MatchDetail() {
 
               {/* Summary Stats */}
               <div className="grid grid-cols-4 gap-3 mb-4">
-                <div className="text-center p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-                  <p className="text-2xl font-bold text-green-400">
+                <div className="text-center p-3 rounded-lg bg-status-success-tint border border-status-success">
+                  <p className="text-2xl font-bold text-status-success">
                     {availability.filter(a => a.status === 'available').length}
                   </p>
-                  <p className="text-xs text-green-400/70">Available</p>
+                  <p className="text-xs text-status-success">Available</p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-                  <p className="text-2xl font-bold text-yellow-400">
+                <div className="text-center p-3 rounded-lg bg-status-warning-tint border border-status-warning">
+                  <p className="text-2xl font-bold text-status-warning">
                     {availability.filter(a => a.status === 'maybe').length}
                   </p>
-                  <p className="text-xs text-yellow-400/70">Maybe</p>
+                  <p className="text-xs text-status-warning">Maybe</p>
                 </div>
-                <div className="text-center p-3 rounded-lg bg-red-500/10 border border-red-500/20">
-                  <p className="text-2xl font-bold text-red-400">
+                <div className="text-center p-3 rounded-lg bg-status-error-tint border border-status-error">
+                  <p className="text-2xl font-bold text-status-error">
                     {availability.filter(a => a.status === 'unavailable').length}
                   </p>
-                  <p className="text-xs text-red-400/70">Unavailable</p>
+                  <p className="text-xs text-status-error">Unavailable</p>
                 </div>
                 <div className="text-center p-3 rounded-lg bg-subtle border border-border-strong">
                   <p className="text-2xl font-bold text-secondary">
@@ -2252,7 +2252,7 @@ export default function MatchDetail() {
                   <button
                     onClick={handleClearPrepFromPlayers}
                     disabled={savingPrep}
-                    className="btn-ghost text-sm text-alert-400 hover:bg-alert-500/10"
+                    className="btn-ghost text-sm text-status-error hover:bg-status-error-tint"
                   >
                     <X className="w-4 h-4" />
                     Remove
@@ -2765,7 +2765,7 @@ Corners, free kicks, etc...`}
                           toast.success('Video deleted')
                         } catch { toast.error('Failed to delete video') }
                       }}
-                      className="btn-ghost text-alert-400 hover:bg-alert-500/10 p-2"
+                      className="btn-ghost text-status-error hover:bg-status-error-tint p-2"
                       title="Delete video"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -2785,7 +2785,7 @@ Corners, free kicks, etc...`}
             {/* Processing Mux Video */}
             {matchVideo && !matchVideo.mux_playback_id && (matchVideo.status === 'processing' || matchVideo.status === 'waiting_upload') && (
               <div className="card p-4 flex items-center gap-4">
-                <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
+                <Loader2 className="w-6 h-6 text-status-warning animate-spin" />
                 <div>
                   <p className="text-white font-medium">Video processing</p>
                   <p className="text-sm text-secondary">Your video is being transcoded - check back shortly</p>
@@ -2805,7 +2805,7 @@ Corners, free kicks, etc...`}
                     <button
                       onClick={handleDeleteVideo}
                       disabled={deletingVideo}
-                      className="btn-ghost text-alert-400 hover:bg-alert-500/10 p-2"
+                      className="btn-ghost text-status-error hover:bg-status-error-tint p-2"
                       title="Delete video"
                     >
                       {deletingVideo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Trash2 className="w-4 h-4" />}
@@ -2830,7 +2830,7 @@ Corners, free kicks, etc...`}
               <div className="card p-4">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="font-medium text-white flex items-center gap-2">
-                    <LinkIcon className="w-4 h-4 text-blue-400" />
+                    <LinkIcon className="w-4 h-4 text-status-info" />
                     Video Link
                   </h3>
                   <div className="flex gap-2">
@@ -2891,7 +2891,7 @@ Corners, free kicks, etc...`}
                           document.getElementById('veo-link-input')?.focus()
                         }, 100)
                       }}
-                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border-strong rounded-xl hover:border-blue-500 hover:bg-subtle transition-all"
+                      className="flex flex-col items-center justify-center p-6 border-2 border-dashed border-border-strong rounded-xl hover:border-status-info hover:bg-subtle transition-all"
                     >
                       <LinkIcon className="w-8 h-8 text-secondary mb-2" />
                       <span className="text-sm font-medium text-white">Add Video Link</span>
@@ -2989,7 +2989,7 @@ Corners, free kicks, etc...`}
                         ) : (
                           <div className="w-full h-full flex items-center justify-center">
                             {clip.status === 'processing' || clip.status === 'waiting_upload' ? (
-                              <Loader2 className="w-6 h-6 text-caution-400 animate-spin" />
+                              <Loader2 className="w-6 h-6 text-status-warning animate-spin" />
                             ) : (
                               <Play className="w-8 h-8 text-tertiary" />
                             )}
@@ -3004,7 +3004,7 @@ Corners, free kicks, etc...`}
                                 }).catch(() => toast.error('Failed to delete'))
                               : handleDeleteClip(clip.id)
                             }
-                            className="absolute top-2 right-2 p-1.5 bg-alert-500/80 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                            className="absolute top-2 right-2 p-1.5 bg-status-error-tint rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                             title="Delete clip"
                           >
                             <Trash2 className="w-3 h-3 text-white" />
@@ -3771,8 +3771,8 @@ Corners, free kicks, etc...`}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6">
-                <div className="w-12 h-12 rounded-full bg-alert-500/10 flex items-center justify-center mx-auto mb-4">
-                  <Trash2 className="w-6 h-6 text-alert-400" />
+                <div className="w-12 h-12 rounded-full bg-status-error-tint flex items-center justify-center mx-auto mb-4">
+                  <Trash2 className="w-6 h-6 text-status-error" />
                 </div>
                 <h2 className="font-display text-xl font-semibold text-white text-center mb-2">
                   Delete Match?
@@ -3791,7 +3791,7 @@ Corners, free kicks, etc...`}
                   <button
                     onClick={handleDelete}
                     disabled={deleting}
-                    className="btn-primary bg-alert-600 hover:bg-alert-500 flex-1"
+                    className="btn-primary bg-status-error hover:bg-status-error flex-1"
                   >
                     {deleting ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Delete'}
                   </button>

@@ -227,7 +227,7 @@ export default function BlockFixtureCreation() {
                   </td>
                   <td className="px-2 py-1.5 text-center">
                     <button onClick={() => updateRow(idx, 'isHome', !row.isHome)}
-                      className={`px-2 py-1 rounded text-xs font-medium ${row.isHome ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                      className={`px-2 py-1 rounded text-xs font-medium ${row.isHome ? 'bg-status-success-tint text-status-success' : 'bg-status-info-tint text-status-info'}`}>
                       {row.isHome ? 'H' : 'A'}
                     </button>
                   </td>
@@ -248,7 +248,7 @@ export default function BlockFixtureCreation() {
                   <td className="px-2 py-1.5">
                     <div className="flex gap-1">
                       <button onClick={() => duplicateRow(idx)} title="Duplicate" className="p-1 text-tertiary hover:text-secondary"><Copy className="w-3.5 h-3.5" /></button>
-                      <button onClick={() => removeRow(idx)} title="Remove" className="p-1 text-tertiary hover:text-alert-400"><Trash2 className="w-3.5 h-3.5" /></button>
+                      <button onClick={() => removeRow(idx)} title="Remove" className="p-1 text-tertiary hover:text-status-error"><Trash2 className="w-3.5 h-3.5" /></button>
                     </div>
                     {row._assumption && (
                       <div className="text-[10px] text-purple-400 mt-0.5 flex items-center gap-1">

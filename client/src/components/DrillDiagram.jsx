@@ -231,16 +231,16 @@ export default function DrillDiagram({ diagram, className = '' }) {
       {/* Legend */}
       <div className="flex items-center gap-4 mt-2 text-[10px] text-secondary">
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-blue-500 inline-block" /> Team A
+          <span className="w-2.5 h-2.5 rounded-full bg-status-info inline-block" /> Team A
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-2.5 h-2.5 rounded-full bg-red-500 inline-block" /> Team B
+          <span className="w-2.5 h-2.5 rounded-full bg-status-error inline-block" /> Team B
         </span>
         <span className="flex items-center gap-1">
           <svg width="10" height="10"><polygon points="5,1 1,9 9,9" fill="#f97316" /></svg> Cone
         </span>
         <span className="flex items-center gap-1">
-          <span className="w-4 border-t-2 border-dashed border-yellow-400 inline-block" /> Pass
+          <span className="w-4 border-t-2 border-dashed border-status-warning inline-block" /> Pass
         </span>
         <span className="flex items-center gap-1">
           <span className="w-4 border-t-2 border-white inline-block" /> Run

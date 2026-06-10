@@ -145,7 +145,7 @@ export default function HoDVoiceSettings() {
         {/* Safeguarding info */}
         <div className="bg-card rounded-xl border border-border-default p-6">
           <h3 className="text-base font-semibold text-primary mb-1 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-alert-400" />
+            <Shield className="w-5 h-5 text-status-error" />
             Safeguarding
           </h3>
           <div className="space-y-2 text-sm text-secondary">

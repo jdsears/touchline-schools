@@ -13,14 +13,14 @@ const SYMPTOMS = [
 const SEVERITY_OPTS = [
   { value: 'mild', label: 'Mild', cls: 'bg-amber-500/20 text-amber-400' },
   { value: 'moderate', label: 'Moderate', cls: 'bg-orange-500/20 text-orange-400' },
-  { value: 'severe', label: 'Severe', cls: 'bg-red-500/20 text-red-400' },
+  { value: 'severe', label: 'Severe', cls: 'bg-status-error-tint text-status-error' },
   { value: 'awaiting_assessment', label: 'Awaiting Assessment', cls: 'bg-border-default text-secondary' },
 ]
 
 const STATUS_LABELS = {
-  excluded: { label: 'Excluded from contact sport', cls: 'bg-red-500/20 text-red-400' },
+  excluded: { label: 'Excluded from contact sport', cls: 'bg-status-error-tint text-status-error' },
   graduated_return: { label: 'Graduated return in progress', cls: 'bg-amber-500/20 text-amber-400' },
-  fully_cleared: { label: 'Fully cleared', cls: 'bg-green-500/20 text-green-400' },
+  fully_cleared: { label: 'Fully cleared', cls: 'bg-status-success-tint text-status-success' },
 }
 
 export default function ConcussionPanel({ pupilId, matchId }) {
@@ -84,18 +84,18 @@ export default function ConcussionPanel({ pupilId, matchId }) {
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold text-primary flex items-center gap-2">
-          <Shield className="w-4 h-4 text-red-400" /> Concussion History
+          <Shield className="w-4 h-4 text-status-error" /> Concussion History
         </h3>
         {!showForm && (
           <button onClick={() => setShowForm(true)}
-            className="flex items-center gap-1 px-2.5 py-1 bg-red-600 hover:bg-red-500 text-on-dark rounded text-xs">
+            className="flex items-center gap-1 px-2.5 py-1 bg-status-error hover:bg-status-error text-on-dark rounded text-xs">
             <Plus className="w-3 h-3" /> Log Incident
           </button>
         )}
       </div>
 
       {activeIncident && (
-        <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 flex items-center gap-2 text-sm text-red-400">
+        <div className="bg-status-error-tint border border-status-error rounded-lg p-3 flex items-center gap-2 text-sm text-status-error">
           <AlertTriangle className="w-4 h-4 shrink-0" />
           <span className="font-medium">Active concussion protocol - do not select for contact sport</span>
         </div>
@@ -117,7 +117,7 @@ export default function ConcussionPanel({ pupilId, matchId }) {
             <div className="flex flex-wrap gap-1">
               {SYMPTOMS.map(s => (
                 <button key={s} onClick={() => setForm(f => ({ ...f, symptoms: f.symptoms.includes(s) ? f.symptoms.filter(x => x !== s) : [...f.symptoms, s] }))}
-                  className={`px-2 py-0.5 rounded text-[11px] ${form.symptoms.includes(s) ? 'bg-red-500/20 text-red-400' : 'bg-border-default text-secondary'}`}>
+                  className={`px-2 py-0.5 rounded text-[11px] ${form.symptoms.includes(s) ? 'bg-status-error-tint text-status-error' : 'bg-border-default text-secondary'}`}>
                   {s}
                 </button>
               ))}
@@ -130,13 +130,13 @@ export default function ConcussionPanel({ pupilId, matchId }) {
           <div className="flex justify-between items-center">
             <label className="flex items-center gap-2 text-xs text-secondary">
               <input type="checkbox" checked={form.doctorRequired} onChange={e => setForm(f => ({ ...f, doctorRequired: e.target.checked }))}
-                className="rounded border-border-strong bg-subtle text-red-500" />
+                className="rounded border-border-strong bg-subtle text-status-error" />
               Doctor assessment required
             </label>
             <div className="flex gap-2">
               <button onClick={() => setShowForm(false)} className="px-3 py-1.5 text-xs text-secondary">Cancel</button>
               <button onClick={handleCreate} disabled={saving}
-                className="px-3 py-1.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-on-dark rounded text-xs">
+                className="px-3 py-1.5 bg-status-error hover:bg-status-error disabled:opacity-50 text-on-dark rounded text-xs">
                 {saving ? 'Logging...' : 'Log Incident'}
               </button>
             </div>
@@ -161,7 +161,7 @@ export default function ConcussionPanel({ pupilId, matchId }) {
                 {detail.incident.symptoms_observed?.length > 0 && (
                   <div className="flex flex-wrap gap-1 mt-2">
                     {(Array.isArray(detail.incident.symptoms_observed) ? detail.incident.symptoms_observed : JSON.parse(detail.incident.symptoms_observed || '[]')).map(s => (
-                      <span key={s} className="text-[10px] bg-red-500/10 text-red-400 px-1.5 py-0.5 rounded">{s}</span>
+                      <span key={s} className="text-[10px] bg-status-error-tint text-status-error px-1.5 py-0.5 rounded">{s}</span>
                     ))}
                   </div>
                 )}
@@ -173,7 +173,7 @@ export default function ConcussionPanel({ pupilId, matchId }) {
                     return (
                       <div key={f.stage} className="flex items-center gap-2 text-xs py-1">
                         {f.completed_at
-                          ? <CheckCircle className="w-3.5 h-3.5 text-green-400 shrink-0" />
+                          ? <CheckCircle className="w-3.5 h-3.5 text-status-success shrink-0" />
                           : <Clock className="w-3.5 h-3.5 text-tertiary shrink-0" />}
                         <span className={f.completed_at ? 'text-secondary' : 'text-tertiary'}>
                           Stage {f.stage}: {stageDef?.name}

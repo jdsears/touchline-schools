@@ -37,8 +37,8 @@ export default function MagicLinkVerify() {
     return (
       <div className="min-h-screen bg-page flex items-center justify-center p-8">
         <div className="text-center max-w-md">
-          <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8 text-red-400" />
+          <div className="w-16 h-16 rounded-full bg-status-error-tint flex items-center justify-center mx-auto mb-4">
+            <AlertCircle className="w-8 h-8 text-status-error" />
           </div>
           <h1 className="font-display text-2xl font-bold text-white mb-2">Link expired</h1>
           <p className="text-secondary mb-6">

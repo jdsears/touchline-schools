@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 const STATUS_CONFIG = {
   active: { label: 'Active', color: 'bg-pitch-600/20 text-pitch-400', icon: Check },
   trial: { label: 'Trial', color: 'bg-amber-400/20 text-amber-400', icon: Clock },
-  suspended: { label: 'Suspended', color: 'bg-alert-600/20 text-alert-400', icon: Pause },
+  suspended: { label: 'Suspended', color: 'bg-status-error-tint text-status-error', icon: Pause },
   cancelled: { label: 'Cancelled', color: 'bg-border-default text-secondary', icon: XCircle },
 }
 

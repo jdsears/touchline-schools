@@ -20,15 +20,15 @@ const TERMS = [
 function gradeColor(average, keyStage) {
   if (average === null || average === undefined) return 'bg-subtle text-tertiary'
   if (keyStage === 'KS4') {
-    if (average >= 7) return 'bg-blue-500/25 text-blue-300 border border-blue-500/30'
+    if (average >= 7) return 'bg-status-info-tint text-status-info border border-status-info'
     if (average >= 5.5) return 'bg-pitch-600/25 text-pitch-300 border border-pitch-600/30'
     if (average >= 4.5) return 'bg-amber-400/25 text-amber-300 border border-amber-400/30'
-    return 'bg-alert-600/25 text-alert-300 border border-alert-600/30'
+    return 'bg-status-error-tint text-status-error border border-status-error'
   }
-  if (average >= 3.5) return 'bg-blue-500/25 text-blue-300 border border-blue-500/30'
+  if (average >= 3.5) return 'bg-status-info-tint text-status-info border border-status-info'
   if (average >= 2.5) return 'bg-pitch-600/25 text-pitch-300 border border-pitch-600/30'
   if (average >= 1.5) return 'bg-amber-400/25 text-amber-300 border border-amber-400/30'
-  return 'bg-alert-600/25 text-alert-300 border border-alert-600/30'
+  return 'bg-status-error-tint text-status-error border border-status-error'
 }
 
 function averageLabel(average, keyStage) {
@@ -52,8 +52,8 @@ function GradeDistributionBar({ grades, keyStage }) {
   if (total === 0) return null
 
   const colors = keyStage === 'KS4'
-    ? { D: 'bg-alert-500', C: 'bg-amber-400', B: 'bg-pitch-500', A: 'bg-blue-400', 'A*': 'bg-blue-300' }
-    : { Beg: 'bg-alert-500', Dev: 'bg-amber-400', Sec: 'bg-pitch-500', Exc: 'bg-blue-400' }
+    ? { D: 'bg-status-error', C: 'bg-amber-400', B: 'bg-pitch-500', A: 'bg-status-info', 'A*': 'bg-status-info' }
+    : { Beg: 'bg-status-error', Dev: 'bg-amber-400', Sec: 'bg-pitch-500', Exc: 'bg-status-info' }
 
   return (
     <div className="flex rounded-full overflow-hidden h-2 w-full">
@@ -224,10 +224,10 @@ export default function HoDAssessmentOverview() {
           <span className="text-xs text-secondary font-medium">KS3 Scale:</span>
           <div className="flex items-center gap-3">
             {[
-              { label: 'Beginning', color: 'bg-alert-500' },
+              { label: 'Beginning', color: 'bg-status-error' },
               { label: 'Developing', color: 'bg-amber-400' },
               { label: 'Secure', color: 'bg-pitch-500' },
-              { label: 'Exceeding', color: 'bg-blue-400' },
+              { label: 'Exceeding', color: 'bg-status-info' },
             ].map(g => (
               <div key={g.label} className="flex items-center gap-1.5">
                 <div className={`w-2.5 h-2.5 rounded-full ${g.color}`} />
@@ -238,11 +238,11 @@ export default function HoDAssessmentOverview() {
           <span className="text-xs text-secondary font-medium ml-4">KS4 Scale:</span>
           <div className="flex items-center gap-3">
             {[
-              { label: 'D', color: 'bg-alert-500' },
+              { label: 'D', color: 'bg-status-error' },
               { label: 'C', color: 'bg-amber-400' },
               { label: 'B', color: 'bg-pitch-500' },
-              { label: 'A', color: 'bg-blue-400' },
-              { label: 'A*', color: 'bg-blue-300' },
+              { label: 'A', color: 'bg-status-info' },
+              { label: 'A*', color: 'bg-status-info' },
             ].map(g => (
               <div key={g.label} className="flex items-center gap-1.5">
                 <div className={`w-2.5 h-2.5 rounded-full ${g.color}`} />
