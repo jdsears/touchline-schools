@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { getUserSchoolIds, isAllowed, hasNoTenantAccess } from '../middleware/tenancy.js'
 
 const router = Router()
 
@@ -132,7 +133,14 @@ router.get('/pupil/:pupilId', authenticateToken, async (req, res, next) => {
 router.post('/grant', authenticateToken, async (req, res, next) => {
   try {
     const { pupilId, consentTypeId, parentEmail, signatureText, consentTextVersion, ipAddress } = req.body
-    const ct = await pool.query('SELECT expiry_period_months FROM consent_types WHERE id = $1', [consentTypeId])
+    const schools = await getUserSchoolIds(req.user)
+    if (hasNoTenantAccess(schools)) return res.status(403).json({ error: 'No school access' })
+    // The consent type is school-scoped; only allow granting against your own school's types
+    const ct = await pool.query('SELECT school_id, expiry_period_months FROM consent_types WHERE id = $1', [consentTypeId])
+    if (!ct.rows.length) return res.status(404).json({ error: 'Consent type not found' })
+    if (!isAllowed(schools, ct.rows[0].school_id)) {
+      return res.status(403).json({ error: 'Consent type is not in your school' })
+    }
     const months = ct.rows[0]?.expiry_period_months || 12
     const expiresAt = new Date()
     expiresAt.setMonth(expiresAt.getMonth() + months)

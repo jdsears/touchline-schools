@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { getUserSchoolIds, isAllowed, hasNoTenantAccess } from '../middleware/tenancy.js'
 
 const router = Router()
 
@@ -28,15 +29,20 @@ const RTP_STAGES = [
 
 router.get('/pupil/:pupilId', authenticateToken, async (req, res, next) => {
   try {
+    const schools = await getUserSchoolIds(req.user)
+    if (hasNoTenantAccess(schools)) return res.status(403).json({ error: 'No school access' })
+    const params = [req.params.pupilId]
+    let scope = ''
+    if (schools !== '*') { params.push(schools); scope = 'AND ci.school_id = ANY($2)' }
     const result = await pool.query(
       `SELECT ci.*, u.name AS reported_by_name,
               m.opponent AS match_opponent, COALESCE(m.date, m.match_date) AS match_date
        FROM concussion_incidents ci
        LEFT JOIN users u ON u.id = ci.reported_by_user_id
        LEFT JOIN matches m ON m.id = ci.match_id
-       WHERE ci.pupil_id = $1
+       WHERE ci.pupil_id = $1 ${scope}
        ORDER BY ci.occurred_at DESC`,
-      [req.params.pupilId]
+      params
     )
     res.json(result.rows)
   } catch (error) { next(error) }
@@ -54,6 +60,10 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
        WHERE ci.id = $1`, [req.params.id]
     )
     if (!incident.rows.length) return res.status(404).json({ error: 'Incident not found' })
+    const schools = await getUserSchoolIds(req.user)
+    if (!isAllowed(schools, incident.rows[0].school_id)) {
+      return res.status(404).json({ error: 'Incident not found' })
+    }
     const followups = await pool.query(
       `SELECT cf.*, u.name AS completed_by_name
        FROM concussion_followups cf
@@ -72,6 +82,13 @@ router.post('/', authenticateToken, async (req, res, next) => {
     const { pupilId, matchId, severity, symptomsObserved, immediateActionTaken,
             doctorAssessmentRequired, notes } = req.body
     if (!pupilId) return res.status(400).json({ error: 'Pupil ID required' })
+
+    // Ensure the pupil belongs to the reporting user's school (when school is recorded)
+    const pupilOwner = await pool.query('SELECT school_id FROM pupils WHERE id = $1', [pupilId])
+    if (!pupilOwner.rows.length) return res.status(404).json({ error: 'Pupil not found' })
+    if (pupilOwner.rows[0].school_id && pupilOwner.rows[0].school_id !== schoolId) {
+      return res.status(403).json({ error: 'Pupil is not in your school' })
+    }
 
     const result = await pool.query(
       `INSERT INTO concussion_incidents (pupil_id, match_id, school_id, reported_by_user_id,
@@ -107,6 +124,12 @@ router.post('/:id/followup/:stage/complete', authenticateToken, async (req, res,
   try {
     const { id, stage } = req.params
     const { notes } = req.body
+    const owner = await pool.query('SELECT school_id FROM concussion_incidents WHERE id = $1', [id])
+    if (!owner.rows.length) return res.status(404).json({ error: 'Incident not found' })
+    const schools = await getUserSchoolIds(req.user)
+    if (!isAllowed(schools, owner.rows[0].school_id)) {
+      return res.status(404).json({ error: 'Incident not found' })
+    }
     await pool.query(
       `UPDATE concussion_followups SET completed_at = NOW(), completed_by_user_id = $1, notes = $2
        WHERE incident_id = $3 AND stage = $4`,
