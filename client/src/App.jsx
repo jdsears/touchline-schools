@@ -75,7 +75,6 @@ const SchoolPlayers = lazy(() => import('./pages/school/SchoolPlayers'))
 const SchoolMembers = lazy(() => import('./pages/school/SchoolMembers'))
 const SchoolSettings = lazy(() => import('./pages/school/SchoolSettings'))
 const SchoolBilling = lazy(() => import('./pages/school/SchoolBilling'))
-const SchoolSubscriptions = lazy(() => import('./pages/school/SchoolSubscriptions'))
 const SchoolAnnouncements = lazy(() => import('./pages/school/SchoolAnnouncements'))
 const CreateSchool = lazy(() => import('./pages/school/CreateSchool'))
 const SchoolSafeguarding = lazy(() => import('./pages/school/SchoolSafeguarding'))
@@ -273,7 +272,6 @@ export default function App() {
           <Route path="teams" element={<SchoolTeams />} />
           <Route path="pupils" element={<SchoolPlayers />} />
           <Route path="members" element={<SchoolMembers />} />
-          <Route path="subscriptions" element={<SchoolSubscriptions />} />
           <Route path="announcements" element={<SchoolAnnouncements />} />
           <Route path="billing" element={<SchoolBilling />} />
           <Route path="settings" element={<SchoolSettings />} />

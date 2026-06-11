@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useOutletContext } from 'react-router-dom'
-import { clubService, giftAidService } from '../../services/api'
+import { clubService } from '../../services/api'
 import { Save, Heart, ExternalLink } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -8,37 +8,6 @@ export default function ClubSettings() {
   const { school, myRole, refreshClub } = useOutletContext()
   const [form, setForm] = useState({})
   const [saving, setSaving] = useState(false)
-  const [charityForm, setCharityForm] = useState({})
-  const [savingCharity, setSavingCharity] = useState(false)
-  const [charityLoaded, setCharityLoaded] = useState(false)
-
-  useEffect(() => {
-    if (school?.id && !charityLoaded) {
-      giftAidService.getCharitySettings(school.id).then(res => {
-        if (res.data) setCharityForm(res.data)
-        setCharityLoaded(true)
-      }).catch(() => setCharityLoaded(true))
-    }
-  }, [school?.id])
-
-  async function handleSaveCharity(e) {
-    e.preventDefault()
-    setSavingCharity(true)
-    try {
-      const res = await giftAidService.updateCharitySettings(school.id, charityForm)
-      setCharityForm(res.data)
-      toast.success('Gift Aid settings saved')
-    } catch (err) {
-      toast.error(err.response?.data?.error || 'Failed to save Gift Aid settings')
-    } finally {
-      setSavingCharity(false)
-    }
-  }
-
-  function updateCharityField(field, value) {
-    setCharityForm(f => ({ ...f, [field]: value }))
-  }
-
   useEffect(() => {
     if (school) {
       setForm({
@@ -294,147 +263,6 @@ export default function ClubSettings() {
         </div>
       </form>
 
-      {/* Gift Aid & Charity Settings */}
-      {(myRole === 'owner' || myRole === 'admin') && (
-        <form onSubmit={handleSaveCharity} className="space-y-6 mt-8">
-          <section className="bg-card border border-border-default rounded-xl p-5 space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-lg flex items-center justify-center bg-pink-600/10">
-                  <Heart className="w-4.5 h-4.5 text-pink-400" />
-                </div>
-                <div>
-                  <h2 className="text-lg font-semibold text-primary">Gift Aid & Charity</h2>
-                  <p className="text-secondary text-xs mt-0.5">HMRC charity details for Gift Aid claims</p>
-                </div>
-              </div>
-              {charityForm.gift_aid_enabled ? (
-                <span className="text-xs bg-brand-primary-tint text-brand-primary px-3 py-1 rounded-full font-medium">Gift Aid Active</span>
-              ) : (
-                <span className="text-xs bg-brand-accent-tint text-brand-accent px-3 py-1 rounded-full font-medium">Gift Aid Not Configured</span>
-              )}
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div className="sm:col-span-2">
-                <label className="block text-xs text-secondary mb-1">Organisation Name (for Gift Aid) *</label>
-                <input
-                  type="text" value={charityForm.organisation_name || ''}
-                  onChange={(e) => updateCharityField('organisation_name', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-secondary mb-1">Registered Charity Number</label>
-                <input
-                  type="text" value={charityForm.charity_number || ''}
-                  onChange={(e) => updateCharityField('charity_number', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                  placeholder="Optional if CASC"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-secondary mb-1">CASC Number</label>
-                <input
-                  type="text" value={charityForm.casc_number || ''}
-                  onChange={(e) => updateCharityField('casc_number', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                  placeholder="Community Amateur Sports School number"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-secondary mb-1">HMRC Gift Aid Reference</label>
-                <input
-                  type="text" value={charityForm.hmrc_reference || ''}
-                  onChange={(e) => updateCharityField('hmrc_reference', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-secondary mb-1">Authorised Official Name</label>
-                <input
-                  type="text" value={charityForm.authorised_official_name || ''}
-                  onChange={(e) => updateCharityField('authorised_official_name', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-secondary mb-1">Authorised Official Position</label>
-                <input
-                  type="text" value={charityForm.authorised_official_position || ''}
-                  onChange={(e) => updateCharityField('authorised_official_position', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                  placeholder="e.g. School Secretary"
-                />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-xs text-secondary mb-1">Organisation Address</label>
-                <textarea
-                  value={charityForm.organisation_address || ''}
-                  onChange={(e) => updateCharityField('organisation_address', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                  rows={2}
-                />
-              </div>
-              <div>
-                <label className="block text-xs text-secondary mb-1">Postcode</label>
-                <input
-                  type="text" value={charityForm.organisation_postcode || ''}
-                  onChange={(e) => updateCharityField('organisation_postcode', e.target.value)}
-                  className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
-                />
-              </div>
-            </div>
-
-            {/* Warning if no charity/CASC number */}
-            {charityForm.gift_aid_enabled && !charityForm.charity_number && !charityForm.casc_number && (
-              <div className="bg-brand-accent-tint border border-brand-accent rounded-lg px-4 py-3 text-sm text-brand-accent">
-                Neither a Charity Number nor CASC Number has been provided. At least one is recommended for HMRC Gift Aid claims.
-              </div>
-            )}
-
-            <div className="flex items-center justify-between pt-2 border-t border-border-default">
-              <div>
-                <label className="text-sm text-primary font-medium">Enable Gift Aid for this school</label>
-                <p className="text-xs text-secondary mt-0.5">Parents will be offered Gift Aid opt-in during payment</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => updateCharityField('gift_aid_enabled', !charityForm.gift_aid_enabled)}
-                className={`relative w-11 h-6 rounded-full transition-colors ${
-                  charityForm.gift_aid_enabled ? 'bg-brand-primary' : 'bg-border-default'
-                }`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-5 h-5 bg-card rounded-full transition-transform ${
-                  charityForm.gift_aid_enabled ? 'translate-x-5' : ''
-                }`} />
-              </button>
-            </div>
-
-            <a
-              href="https://www.gov.uk/claim-gift-aid"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-xs text-brand-primary hover:text-brand-primary"
-            >
-              <ExternalLink className="w-3 h-3" />
-              HMRC Gift Aid guidance
-            </a>
-          </section>
-
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={savingCharity}
-              className="flex items-center gap-2 px-6 py-2.5 bg-brand-primary hover:bg-brand-primary disabled:opacity-50 text-on-dark rounded-lg text-sm transition-colors"
-            >
-              <Save className="w-4 h-4" />
-              {savingCharity ? 'Saving...' : 'Save Gift Aid Settings'}
-            </button>
-          </div>
-        </form>
-      )}
     </div>
   )
 }

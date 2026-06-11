@@ -49,15 +49,6 @@ export default function StaffDirectoryTab({ access }) {
           <h2 className="text-xl font-semibold text-primary">Staff Directory</h2>
           <p className="text-sm text-secondary mt-1">{staff.length} staff members in your school.</p>
         </div>
-        {access?.isAdmin && (
-          <button
-            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:bg-brand-primary text-on-dark rounded-lg text-sm transition-colors"
-            onClick={() => toast('Invite flow coming soon')}
-          >
-            <UserPlus className="w-4 h-4" />
-            Invite Staff
-          </button>
-        )}
       </div>
 
       <input

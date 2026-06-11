@@ -2159,9 +2159,9 @@ export default function PupilLounge() {
               ) : (
                 <div className="card p-6 text-center">
                   <Target className="w-10 h-10 text-tertiary mx-auto mb-3" />
-                  <h3 className="font-display font-semibold text-white mb-2">Development Plan Coming Soon</h3>
+                  <h3 className="font-display font-semibold text-white mb-2">No Development Plan Yet</h3>
                   <p className="text-secondary text-sm">
-                    Your coach is working on your personalized development plan.
+                    Your teacher hasn't published a development plan for you yet. It will appear here as soon as they do.
                   </p>
                 </div>
               )}

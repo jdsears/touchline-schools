@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Lock, Shield, Monitor, LogOut, Loader2 } from 'lucide-react'
+import { Lock, Monitor, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { profileService } from '../../../services/api'
 
@@ -87,21 +87,6 @@ export default function SecurityTab({ user }) {
         ) : (
           <p className="text-xs text-tertiary">Last changed: unknown</p>
         )}
-      </div>
-
-      {/* 2FA placeholder */}
-      <div className="bg-card rounded-xl border border-border-default p-5">
-        <div className="flex items-center gap-2 mb-2">
-          <Shield className="w-4 h-4 text-secondary" />
-          <span className="text-sm font-medium text-primary">Two-factor Authentication</span>
-        </div>
-        <p className="text-xs text-tertiary mb-3">Add an extra layer of security to your account.</p>
-        <button
-          onClick={() => toast('2FA setup coming soon')}
-          className="px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-xs transition-colors"
-        >
-          Set up 2FA
-        </button>
       </div>
 
       {/* Active sessions placeholder */}

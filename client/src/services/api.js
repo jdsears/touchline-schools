@@ -439,41 +439,6 @@ export const clubService = {
   reviewRegistration: (schoolId, pupilId, status) => api.put(`/schools/${schoolId}/registrations/${pupilId}`, { status }),
 }
 
-// School payments service (Stripe Connect + payment plans + subscriptions)
-export const clubPaymentService = {
-  // Stripe Connect
-  startStripeConnect: (schoolId) => api.post(`/school-payments/${schoolId}/stripe/connect`),
-  getStripeAccount: (schoolId) => api.get(`/school-payments/${schoolId}/stripe/account`),
-  getStripeDashboardLink: (schoolId) => api.post(`/school-payments/${schoolId}/stripe/dashboard-link`),
-
-  // Payment plans
-  getPaymentPlans: (schoolId, includeArchived) => api.get(`/school-payments/${schoolId}/payment-plans`, { params: { include_archived: includeArchived } }),
-  createPaymentPlan: (schoolId, data) => api.post(`/school-payments/${schoolId}/payment-plans`, data),
-  updatePaymentPlan: (schoolId, planId, data) => api.put(`/school-payments/${schoolId}/payment-plans/${planId}`, data),
-  archivePaymentPlan: (schoolId, planId) => api.delete(`/school-payments/${schoolId}/payment-plans/${planId}`),
-
-  // Subscriptions
-  getSubscriptions: (schoolId, params) => api.get(`/school-payments/${schoolId}/subscriptions`, { params }),
-  getOverdueSubscriptions: (schoolId) => api.get(`/school-payments/${schoolId}/subscriptions/overdue`),
-  createSubscription: (schoolId, data) => api.post(`/school-payments/${schoolId}/subscriptions`, data),
-  bulkAssign: (schoolId, data) => api.post(`/school-payments/${schoolId}/subscriptions/bulk`, data),
-  sendReminder: (schoolId, subscriptionId) => api.post(`/school-payments/${schoolId}/subscriptions/${subscriptionId}/remind`),
-
-  // Finance
-  getFinanceSummary: (schoolId) => api.get(`/school-payments/${schoolId}/finance/summary`),
-  getTransactions: (schoolId, params) => api.get(`/school-payments/${schoolId}/finance/transactions`, { params }),
-  exportTransactions: (schoolId) => api.get(`/school-payments/${schoolId}/finance/export`, { responseType: 'blob' }),
-  getForecast: (schoolId) => api.get(`/school-payments/${schoolId}/finance/forecast`),
-
-  // Overview
-  getPaymentsOverview: (schoolId) => api.get(`/school-payments/${schoolId}/payments/overview`),
-
-  // Portal (public, no auth)
-  getPortalInfo: (token) => api.get(`/school-payments/portal/${token}`),
-  createPortalPayment: (token) => api.post(`/school-payments/portal/${token}/pay`),
-  getPortalHistory: (token) => api.get(`/school-payments/portal/${token}/history`),
-}
-
 // School communications service (announcements, bulk email, guardian invites)
 export const clubCommsService = {
   // Announcements
@@ -581,52 +546,6 @@ export const clubIntelligenceService = {
 
   // Coach development
   getCoachSuggestions: (schoolId, userId) => api.get(`/school-intelligence/${schoolId}/coaches/${userId}/development-suggestions`),
-}
-
-// Gift Aid service
-export const giftAidService = {
-  // School charity settings (admin)
-  getCharitySettings: (schoolId) => api.get(`/gift-aid/${schoolId}/charity-settings`),
-  updateCharitySettings: (schoolId, data) => api.put(`/gift-aid/${schoolId}/charity-settings`, data),
-
-  // Parent declarations
-  getDeclaration: (schoolId) => api.get(`/gift-aid/${schoolId}/declaration`),
-  saveDeclaration: (schoolId, data) => api.post(`/gift-aid/${schoolId}/declaration`, data),
-  getMyDeclarations: () => api.get('/gift-aid/my-declarations'),
-
-  // Receipts
-  getMyReceipts: () => api.get('/gift-aid/my-receipts'),
-  downloadReceipt: (receiptId) => api.get(`/gift-aid/receipts/${receiptId}/pdf`, { responseType: 'arraybuffer' }),
-
-  // School dashboard
-  getDashboard: (schoolId, taxYear) => api.get(`/gift-aid/${schoolId}/dashboard`, { params: { tax_year: taxYear } }),
-
-  // Exports
-  exportHMRC: (schoolId, taxYear) => api.get(`/gift-aid/${schoolId}/export/hmrc`, { params: { tax_year: taxYear }, responseType: 'blob' }),
-  exportAudit: (schoolId, taxYear) => api.get(`/gift-aid/${schoolId}/export/audit`, { params: { tax_year: taxYear }, responseType: 'blob' }),
-}
-
-
-// Blog service
-export const blogService = {
-  // Public
-  getPosts: (params) => api.get('/blog/posts', { params }),
-  getPostBySlug: (slug) => api.get(`/blog/posts/slug/${slug}`),
-  // Admin
-  getAdminPosts: () => api.get('/blog/admin/posts'),
-  getAdminPost: (id) => api.get(`/blog/admin/posts/${id}`),
-  createPost: (data) => api.post('/blog/admin/posts', data),
-  updatePost: (id, data) => api.put(`/blog/admin/posts/${id}`, data),
-  deletePost: (id) => api.delete(`/blog/admin/posts/${id}`),
-  generatePost: (data) => api.post('/blog/admin/generate', data),
-  generateImagePrompt: (data) => api.post('/blog/admin/generate-image-prompt', data),
-  uploadImage: (file) => {
-    const formData = new FormData()
-    formData.append('image', file)
-    return api.post('/blog/admin/upload-image', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
-  },
 }
 
 // Season Development service
