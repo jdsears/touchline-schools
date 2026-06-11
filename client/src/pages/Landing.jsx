@@ -230,12 +230,12 @@ export function AuroraBackdrop() {
 
 function UnderlineFlourish() {
   return (
-    <svg viewBox="0 0 220 12" className="absolute -bottom-2 left-0 w-full" aria-hidden>
+    <svg viewBox="0 0 220 12" className="absolute -bottom-5 left-[2%] w-[96%]" aria-hidden>
       <motion.path
         d="M3 9 C 60 2, 160 2, 217 7"
         fill="none"
         stroke={GOLD}
-        strokeWidth="3.5"
+        strokeWidth="3"
         strokeLinecap="round"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
@@ -374,7 +374,7 @@ function Hero() {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
             <Eyebrow light>MoonBoots Sports</Eyebrow>
           </motion.div>
-          <h1 className="mt-7 font-serif text-[clamp(42px,5.6vw,68px)] font-bold leading-[1.06] text-white">
+          <h1 className="mt-7 font-serif text-[clamp(42px,5.6vw,68px)] font-bold leading-[1.12] text-white">
             {lines.map((line, i) => (
               <span key={line} className="block overflow-hidden">
                 <motion.span
@@ -387,7 +387,7 @@ function Hero() {
                 </motion.span>
               </span>
             ))}
-            <span className="block overflow-hidden pb-3">
+            <span className="block overflow-hidden pb-7">
               <motion.span
                 className="relative inline-block"
                 initial={{ y: '110%' }}
