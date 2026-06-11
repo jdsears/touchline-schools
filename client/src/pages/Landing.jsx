@@ -32,7 +32,7 @@ const stagger = {
   show: { transition: { staggerChildren: 0.12 } },
 }
 
-function Reveal({ children, className = '', delay = 0, ...rest }) {
+export function Reveal({ children, className = '', delay = 0, ...rest }) {
   return (
     <motion.div
       className={className}
@@ -50,7 +50,7 @@ function Reveal({ children, className = '', delay = 0, ...rest }) {
   )
 }
 
-function Eyebrow({ children, light = false }) {
+export function Eyebrow({ children, light = false }) {
   return (
     <div className="flex items-center gap-3">
       <span className={`h-px w-8 ${light ? 'bg-[#C9A961]' : 'bg-[#C9A961]'}`} />
@@ -81,7 +81,7 @@ function CountUp({ value, suffix = '' }) {
 // Buttons
 // ---------------------------------------------------------------------------
 
-function PrimaryCTA({ href, to, children, large = false }) {
+export function PrimaryCTA({ href, to, children, large = false }) {
   const cls = `group inline-flex items-center justify-center gap-2 rounded-lg bg-[#C9A961] font-body font-semibold text-[#0F1E3D] transition-colors hover:bg-[#E2C97A] ${large ? 'px-7 py-4 text-base' : 'px-6 py-3 text-[15px]'}`
   const inner = (
     <>
@@ -94,7 +94,7 @@ function PrimaryCTA({ href, to, children, large = false }) {
   return <motion.span {...hover} className="inline-block"><Link to={to} className={cls}>{inner}</Link></motion.span>
 }
 
-function GhostCTA({ to, children, light = true, large = false }) {
+export function GhostCTA({ to, children, light = true, large = false }) {
   const cls = `inline-flex items-center justify-center gap-2 rounded-lg border font-body font-semibold transition-colors ${large ? 'px-7 py-4 text-base' : 'px-6 py-3 text-[15px]'} ${
     light
       ? 'border-[#C9A961]/60 text-[#E2C97A] hover:border-[#C9A961] hover:bg-[#C9A961]/10'
@@ -188,7 +188,7 @@ export function MarketingHeader() {
 // Hero
 // ---------------------------------------------------------------------------
 
-function AuroraBackdrop() {
+export function AuroraBackdrop() {
   const reduce = useReducedMotion()
   const drift = (xRange, yRange, duration) =>
     reduce
