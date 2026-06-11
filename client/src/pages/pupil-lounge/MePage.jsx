@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { LogOut, Bell, HelpCircle, ChevronRight } from 'lucide-react'
+import { LogOut, HelpCircle, ChevronRight } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { usePupilProfile } from '../../hooks/usePupilProfile'
@@ -75,8 +75,12 @@ export default function MePage() {
 
       {/* Settings sections */}
       <div className="mx-4 bg-navy-900/60 rounded-2xl border border-navy-800/50 overflow-hidden divide-y divide-navy-800/30">
-        <SettingsRow icon={Bell} label="Notifications" value="" onClick={() => {}} />
-        <SettingsRow icon={HelpCircle} label="Help" value="" onClick={() => {}} />
+        <SettingsRow
+          icon={HelpCircle}
+          label="Help"
+          value=""
+          onClick={() => { window.location.href = 'mailto:support@moonbootssports.com' }}
+        />
       </div>
 
       {/* Sign out */}

@@ -713,9 +713,12 @@ function BillingTab({ teamId, userEmail }) {
                 Manage Subscription
               </button>
             )}
-            <Link to="/pricing" className="btn-primary w-full block text-center">
-              {entitlements?.status === 'active' ? 'Change Plan' : 'View Plans & Upgrade'}
-            </Link>
+            <a
+              href="mailto:hello@moonbootssports.com?subject=Plan%20enquiry"
+              className="btn-primary w-full block text-center"
+            >
+              {entitlements?.status === 'active' ? 'Discuss Your Plan' : 'Talk to Us About Upgrading'}
+            </a>
           </div>
         )}
       </div>

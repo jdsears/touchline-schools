@@ -3997,6 +3997,70 @@ export async function runMigrations() {
 
     console.log('Phase 21: pupil profile expansion (medical, SEND, safeguarding, IDP goals, identity cols)')
 
+    // --- Phase 22a: lesson_plans table (queried by routes/lessons.js but never created) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS lesson_plans (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE SET NULL,
+      sport_unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL,
+      teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      title TEXT NOT NULL,
+      lesson_date DATE,
+      duration INTEGER DEFAULT 60,
+      learning_objectives TEXT,
+      activities TEXT,
+      equipment TEXT,
+      differentiation TEXT,
+      homework TEXT,
+      status TEXT DEFAULT 'draft',
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_lesson_plans_teacher ON lesson_plans(teacher_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_lesson_plans_group ON lesson_plans(teaching_group_id) WHERE teaching_group_id IS NOT NULL`)
+
+    // --- Phase 22b: widen sport CHECK constraints to every supported sport ---
+    // (was hard-limited to the original 5; the AI layer, fixtures defaults and
+    // marketing all cover the full list)
+    const allSports = [
+      'football', 'rugby', 'cricket', 'hockey', 'netball',
+      'athletics', 'basketball', 'swimming', 'gymnastics', 'tennis',
+      'badminton', 'rounders', 'dance', 'volleyball', 'cross-country',
+    ]
+    const sportList = allSports.map((x) => `'${x}'`).join(', ')
+    for (const tbl of ['teams', 'pupil_sports', 'teacher_sports']) {
+      await pool.query(`DO $$
+        DECLARE cname text;
+        BEGIN
+          FOR cname IN
+            SELECT conname FROM pg_constraint
+            WHERE conrelid = '${tbl}'::regclass AND contype = 'c'
+              AND (pg_get_constraintdef(oid) ILIKE '%(sport =%' OR pg_get_constraintdef(oid) ILIKE '%(sport IN%')
+          LOOP
+            EXECUTE format('ALTER TABLE ${tbl} DROP CONSTRAINT %I', cname);
+          END LOOP;
+          ALTER TABLE ${tbl} ADD CONSTRAINT ${tbl}_sport_allowed CHECK (sport IN (${sportList}));
+        EXCEPTION WHEN others THEN NULL;
+        END $$`)
+    }
+
+    // --- Phase 22c: widen pupils.year_group to cover primary years ---
+    // (was CHECK BETWEEN 7 AND 13; the product supports Year 2 through Year 13)
+    await pool.query(`DO $$
+      DECLARE cname text;
+      BEGIN
+        FOR cname IN
+          SELECT conname FROM pg_constraint
+          WHERE conrelid = 'pupils'::regclass AND contype = 'c'
+            AND pg_get_constraintdef(oid) ILIKE '%year_group%'
+        LOOP
+          EXECUTE format('ALTER TABLE pupils DROP CONSTRAINT %I', cname);
+        END LOOP;
+        ALTER TABLE pupils ADD CONSTRAINT pupils_year_group_allowed CHECK (year_group BETWEEN 1 AND 13);
+      EXCEPTION WHEN others THEN NULL;
+      END $$`)
+
+    console.log('Phase 22: lesson_plans table, sport + year-group constraint widening')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)

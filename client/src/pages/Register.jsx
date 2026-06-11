@@ -502,7 +502,7 @@ This AI Policy is reviewed annually and whenever new AI features are introduced 
       if (result.school?.slug) {
         navigate(`/school/${result.school.slug}/billing`)
       } else {
-        navigate('/pricing')
+        navigate('/dashboard')
       }
     }
 

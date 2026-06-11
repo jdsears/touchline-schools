@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { SUPPORTED_SPORTS, sportLabel } from '../../constants/sports'
 import { useOutletContext } from 'react-router-dom'
 import { clubService } from '../../services/api'
 import { Plus, Users, Building2 } from 'lucide-react'
@@ -18,7 +19,7 @@ export default function ClubTeams() {
   const [teams, setTeams] = useState([])
   const [loading, setLoading] = useState(true)
   const [showAdd, setShowAdd] = useState(false)
-  const [form, setForm] = useState({ name: '', age_group: '', team_type: 'boys', team_format: 11 })
+  const [form, setForm] = useState({ name: '', age_group: '', team_type: 'boys', team_format: 11, sport: 'football' })
 
   useEffect(() => {
     if (school?.id) loadTeams()
@@ -41,7 +42,7 @@ export default function ClubTeams() {
       await clubService.createTeam(school.id, form)
       toast.success('Team created')
       setShowAdd(false)
-      setForm({ name: '', age_group: '', team_type: 'boys', team_format: 11 })
+      setForm({ name: '', age_group: '', team_type: 'boys', team_format: 11, sport: 'football' })
       loadTeams()
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to create team')
@@ -107,6 +108,18 @@ export default function ClubTeams() {
                 <option value="">Select age group</option>
                 {['U7','U8','U9','U10','U11','U12','U13','U14','U15','U16','U17','U18','Adult'].map(age => (
                   <option key={age} value={age}>{age}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-xs text-secondary mb-1">Sport</label>
+              <select
+                value={form.sport}
+                onChange={(e) => setForm(f => ({ ...f, sport: e.target.value }))}
+                className="w-full bg-subtle border border-border-strong rounded-lg px-3 py-2 text-primary text-sm focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+              >
+                {SUPPORTED_SPORTS.map(sp => (
+                  <option key={sp} value={sp}>{sportLabel(sp)}</option>
                 ))}
               </select>
             </div>

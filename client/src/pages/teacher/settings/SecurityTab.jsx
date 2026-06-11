@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Lock, Shield, Monitor, LogOut, Loader2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { profileService } from '../../../services/api'
 
 export default function SecurityTab({ user }) {
   const [changingPassword, setChangingPassword] = useState(false)
@@ -13,13 +14,12 @@ export default function SecurityTab({ user }) {
     if (pwForm.next.length < 8) return toast.error('Password must be at least 8 characters')
     setSaving(true)
     try {
-      // TODO: wire to /api/auth/change-password when implemented
-      await new Promise(r => setTimeout(r, 600))
+      await profileService.changePassword(pwForm.current, pwForm.next)
       toast.success('Password updated')
       setChangingPassword(false)
       setPwForm({ current: '', next: '', confirm: '' })
-    } catch {
-      toast.error('Failed to change password')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to change password')
     } finally {
       setSaving(false)
     }

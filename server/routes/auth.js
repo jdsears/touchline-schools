@@ -415,6 +415,36 @@ router.post('/login', async (req, res, next) => {
 })
 
 // Get current user with all team memberships
+// Change password (requires current password)
+router.post('/change-password', authenticateToken, async (req, res, next) => {
+  try {
+    const { current_password, new_password } = req.body
+    if (!current_password || !new_password) {
+      return res.status(400).json({ error: 'Current and new password are required' })
+    }
+    if (new_password.length < 8) {
+      return res.status(400).json({ error: 'New password must be at least 8 characters' })
+    }
+
+    const result = await pool.query('SELECT id, password_hash FROM users WHERE id = $1', [req.user.id])
+    const user = result.rows[0]
+    if (!user || !user.password_hash) {
+      return res.status(400).json({ error: 'Password sign-in is not enabled for this account' })
+    }
+
+    const valid = await bcrypt.compare(current_password, user.password_hash)
+    if (!valid) {
+      return res.status(401).json({ error: 'Current password is incorrect' })
+    }
+
+    const newHash = await bcrypt.hash(new_password, 10)
+    await pool.query('UPDATE users SET password_hash = $1 WHERE id = $2', [newHash, user.id])
+    res.json({ success: true })
+  } catch (error) {
+    next(error)
+  }
+})
+
 router.get('/me', authenticateToken, async (req, res, next) => {
   try {
     // Get all team memberships for this user

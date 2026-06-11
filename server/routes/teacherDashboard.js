@@ -27,7 +27,7 @@ router.get('/today', async (req, res) => {
                 (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count
          FROM training_sessions ts
          JOIN teams t ON t.id = ts.team_id
-         WHERE t.manager_id = $1 AND ts.date = $2
+         WHERE (t.owner_id = $1 OR EXISTS (SELECT 1 FROM team_memberships tm WHERE tm.team_id = t.id AND tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))) AND ts.date = $2
          ORDER BY ts.time NULLS LAST`,
         [userId, today]
       ),
@@ -37,7 +37,7 @@ router.get('/today', async (req, res) => {
                 (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count
          FROM matches m
          JOIN teams t ON t.id = m.team_id
-         WHERE t.manager_id = $1 AND m.match_date = $2
+         WHERE (t.owner_id = $1 OR EXISTS (SELECT 1 FROM team_memberships tm WHERE tm.team_id = t.id AND tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))) AND m.match_date = $2
          ORDER BY m.match_time NULLS LAST`,
         [userId, today]
       ),
@@ -105,7 +105,7 @@ router.get('/my-teams', async (req, res) => {
                ORDER BY ts.date ASC LIMIT 1
               ) AS next_training
        FROM teams t
-       WHERE t.manager_id = $1
+       WHERE (t.owner_id = $1 OR EXISTS (SELECT 1 FROM team_memberships tm WHERE tm.team_id = t.id AND tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
        ORDER BY t.sport, t.name`,
       [userId]
     )

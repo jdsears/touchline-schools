@@ -188,6 +188,8 @@ export const notificationService = {
 export const profileService = {
   getQualifications: () => api.get('/auth/me/qualifications'),
   updateQualifications: (qualifications) => api.put('/auth/me/qualifications', { qualifications }),
+  changePassword: (currentPassword, newPassword) =>
+    api.post('/auth/change-password', { current_password: currentPassword, new_password: newPassword }),
 }
 
 // Training service
@@ -604,15 +606,6 @@ export const giftAidService = {
   exportAudit: (schoolId, taxYear) => api.get(`/gift-aid/${schoolId}/export/audit`, { params: { tax_year: taxYear }, responseType: 'blob' }),
 }
 
-// Parent portal service (authenticated parent dashboard)
-export const parentService = {
-  getDashboard: () => api.get('/parent/dashboard'),
-  getChildren: () => api.get('/parent/children'),
-  getPayments: () => api.get('/parent/payments'),
-  getAnnouncements: () => api.get('/parent/announcements'),
-  getChildSchedule: (pupilId) => api.get(`/parent/children/${pupilId}/schedule`),
-  updateNotificationPreferences: (preferences) => api.put('/parent/notification-preferences', { preferences }),
-}
 
 // Blog service
 export const blogService = {
