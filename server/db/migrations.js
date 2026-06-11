@@ -4061,6 +4061,13 @@ export async function runMigrations() {
 
     console.log('Phase 22: lesson_plans table, sport + year-group constraint widening')
 
+    // --- Phase 23: sport-specific result details (innings, event results, rubbers) ---
+    await pool.query(`DO $$ BEGIN
+      ALTER TABLE matches ADD COLUMN IF NOT EXISTS result_data JSONB;
+    EXCEPTION WHEN others THEN NULL;
+    END $$`)
+    console.log('Phase 23: matches.result_data')
+
     console.log('Migrations completed')
   } catch (error) {
     console.error('Migration error:', error)

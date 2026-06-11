@@ -3,6 +3,8 @@ import RugbyPitch from './RugbyPitch'
 import HockeyPitch from './HockeyPitch'
 import NetballCourt from './NetballCourt'
 import CricketField from './CricketField'
+import BasketballCourt from './BasketballCourt'
+import VolleyballCourt from './VolleyballCourt'
 
 const PITCH_COMPONENTS = {
   football: FootballPitch,
@@ -10,6 +12,8 @@ const PITCH_COMPONENTS = {
   hockey: HockeyPitch,
   netball: NetballCourt,
   cricket: CricketField,
+  basketball: BasketballCourt,
+  volleyball: VolleyballCourt,
 }
 
 // Background gradients per sport
@@ -19,6 +23,8 @@ export const PITCH_BACKGROUNDS = {
   hockey: `linear-gradient(to bottom, #0c4a6e 0%, #0369a1 20%, #0284c7 50%, #0369a1 80%, #0c4a6e 100%)`,
   netball: `linear-gradient(to bottom, #1e1b4b 0%, #2e1065 30%, #1e1b4b 100%)`,
   cricket: `linear-gradient(to bottom, #14532d 0%, #16a34a 40%, #15803d 60%, #14532d 100%)`,
+  basketball: `linear-gradient(to bottom, #7c2d12 0%, #9a3412 30%, #b45309 50%, #9a3412 70%, #7c2d12 100%)`,
+  volleyball: `linear-gradient(to bottom, #0c4a6e 0%, #075985 30%, #b45309 50%, #075985 70%, #0c4a6e 100%)`,
 }
 
 // Aspect ratios per sport
@@ -28,6 +34,8 @@ export const PITCH_ASPECT_RATIOS = {
   hockey: '3/4',
   netball: '5/8',
   cricket: '1/1',
+  basketball: '9/16',
+  volleyball: '1/2',
 }
 
 export default function PitchRenderer({ sport = 'football', teamFormat, children }) {

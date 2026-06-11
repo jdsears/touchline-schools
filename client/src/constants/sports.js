@@ -68,3 +68,99 @@ export const SPORT_BADGE_CLASSES = {
 }
 
 export const DEFAULT_SPORT_BADGE = 'bg-subtle text-secondary'
+
+// Sport-specific result detail schemas. null = plain score is enough.
+// types: 'innings' (per-side fields), 'event-list' / 'score-list' /
+// 'rubber-list' / 'set-list' (row-based with columns)
+export const RESULT_SCHEMAS = {
+  cricket: {
+    type: 'innings',
+    fields: [
+      { key: 'runs', label: 'Runs', type: 'number' },
+      { key: 'wickets', label: 'Wickets', type: 'number' },
+      { key: 'overs', label: 'Overs', type: 'text', placeholder: 'e.g. 20' },
+    ],
+    summarise: (side) => side?.runs != null ? `${side.runs}${side.wickets != null ? `/${side.wickets}` : ''}${side.overs ? ` (${side.overs} ov)` : ''}` : null,
+  },
+  rounders: {
+    type: 'innings',
+    fields: [
+      { key: 'rounders', label: 'Rounders', type: 'number', step: '0.5' },
+    ],
+    summarise: (side) => side?.rounders != null ? `${side.rounders} rounders` : null,
+  },
+  athletics: {
+    type: 'event-list',
+    rowsLabel: 'Event results',
+    columns: [
+      { key: 'event', label: 'Event', type: 'text', placeholder: '100m / Long jump' },
+      { key: 'pupil', label: 'Athlete', type: 'text' },
+      { key: 'result', label: 'Result', type: 'text', placeholder: '13.2s / 4.10m' },
+      { key: 'position', label: 'Pos', type: 'text', placeholder: '1st' },
+    ],
+  },
+  swimming: {
+    type: 'event-list',
+    rowsLabel: 'Race results',
+    columns: [
+      { key: 'event', label: 'Event', type: 'text', placeholder: '50m Freestyle' },
+      { key: 'pupil', label: 'Swimmer', type: 'text' },
+      { key: 'result', label: 'Time', type: 'text', placeholder: '34.5s' },
+      { key: 'position', label: 'Pos', type: 'text', placeholder: '2nd' },
+    ],
+  },
+  'cross-country': {
+    type: 'event-list',
+    rowsLabel: 'Finishers',
+    columns: [
+      { key: 'pupil', label: 'Runner', type: 'text' },
+      { key: 'result', label: 'Time', type: 'text', placeholder: '14:02' },
+      { key: 'position', label: 'Pos', type: 'text', placeholder: '5th' },
+    ],
+  },
+  gymnastics: {
+    type: 'score-list',
+    rowsLabel: 'Scores',
+    columns: [
+      { key: 'item', label: 'Apparatus / Routine', type: 'text', placeholder: 'Floor' },
+      { key: 'pupil', label: 'Gymnast', type: 'text' },
+      { key: 'score', label: 'Score', type: 'text', placeholder: '8.4' },
+    ],
+  },
+  dance: {
+    type: 'score-list',
+    rowsLabel: 'Pieces',
+    columns: [
+      { key: 'item', label: 'Piece', type: 'text' },
+      { key: 'score', label: 'Score / Award', type: 'text' },
+    ],
+  },
+  tennis: {
+    type: 'rubber-list',
+    rowsLabel: 'Rubbers',
+    columns: [
+      { key: 'pairing', label: 'Rubber', type: 'text', placeholder: '1st singles' },
+      { key: 'score', label: 'Score', type: 'text', placeholder: '6-3 6-4' },
+    ],
+  },
+  badminton: {
+    type: 'rubber-list',
+    rowsLabel: 'Rubbers',
+    columns: [
+      { key: 'pairing', label: 'Rubber', type: 'text', placeholder: '1st singles' },
+      { key: 'score', label: 'Score', type: 'text', placeholder: '21-15 21-18' },
+    ],
+  },
+  volleyball: {
+    type: 'set-list',
+    rowsLabel: 'Sets',
+    columns: [
+      { key: 'set', label: 'Set', type: 'text', placeholder: 'Set 1' },
+      { key: 'score', label: 'Score', type: 'text', placeholder: '25-21' },
+    ],
+  },
+}
+
+export function getResultSchema(sport) {
+  return RESULT_SCHEMAS[sport] || null
+}

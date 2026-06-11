@@ -1,5 +1,6 @@
 // MatchDetail.jsx
 import '@mux/mux-player'
+import { ResultDetailsEditor, ResultDetailsSummary } from '../components/MatchResultDetails'
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -180,6 +181,7 @@ export default function MatchDetail() {
   // Result entry
   const [showResultModal, setShowResultModal] = useState(false)
   const [resultData, setResultData] = useState({ goalsFor: '', goalsAgainst: '' })
+  const [resultDetails, setResultDetails] = useState(null)
   const [savingResult, setSavingResult] = useState(false)
 
   // AI generation
@@ -653,7 +655,8 @@ export default function MatchDetail() {
     const result = await updateMatch(id, {
       result: resultString,
       goalsFor: parseInt(resultData.goalsFor, 10),
-      goalsAgainst: parseInt(resultData.goalsAgainst, 10)
+      goalsAgainst: parseInt(resultData.goalsAgainst, 10),
+      resultData: resultDetails,
     })
 
     if (result.success) {
@@ -662,6 +665,7 @@ export default function MatchDetail() {
         result: resultString,
         goals_for: parseInt(resultData.goalsFor, 10),
         goals_against: parseInt(resultData.goalsAgainst, 10),
+        result_data: resultDetails || prev.result_data,
       }))
       setShowResultModal(false)
       toast.success('Result saved!')
@@ -1293,6 +1297,7 @@ export default function MatchDetail() {
                   <button
                     onClick={() => {
                       setResultData({ goalsFor: String(resultDisplay.goalsFor), goalsAgainst: String(resultDisplay.goalsAgainst) })
+                      setResultDetails(match.result_data || null)
                       setShowResultModal(true)
                     }}
                     className="absolute top-2 right-2 p-1.5 rounded-lg bg-subtle/80 text-secondary hover:text-white hover:bg-border-default transition-colors opacity-0 group-hover:opacity-100"
@@ -1307,6 +1312,16 @@ export default function MatchDetail() {
                   <span className="text-xl text-tertiary">-</span>
                   <span className="text-3xl font-bold text-white">{match.is_home ? resultDisplay.goalsAgainst : resultDisplay.goalsFor}</span>
                 </div>
+                {match.result_data && (
+                  <div className="mt-2">
+                    <ResultDetailsSummary
+                      sport={team?.sport}
+                      data={match.result_data}
+                      usLabel={team?.name || 'Us'}
+                      themLabel={match.opponent}
+                    />
+                  </div>
+                )}
                 <p className={`text-sm font-medium mt-1 capitalize
                   ${resultDisplay.outcome === 'win' ? 'text-brand-primary' :
                     resultDisplay.outcome === 'loss' ? 'text-status-error' :
@@ -3305,6 +3320,16 @@ Corners, free kicks, etc...`}
                     />
                   </div>
                 </div>
+              </div>
+
+              <div className="px-6 pb-2">
+                <ResultDetailsEditor
+                  sport={team?.sport}
+                  value={resultDetails}
+                  onChange={setResultDetails}
+                  usLabel={team?.name || 'Us'}
+                  themLabel={match.opponent}
+                />
               </div>
 
               <div className="p-6 border-t border-border-default flex gap-3">

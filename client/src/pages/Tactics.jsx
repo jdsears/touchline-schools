@@ -14,6 +14,8 @@ import RugbyPitch from '../components/tactics/pitches/RugbyPitch'
 import HockeyPitch from '../components/tactics/pitches/HockeyPitch'
 import NetballCourt from '../components/tactics/pitches/NetballCourt'
 import CricketField from '../components/tactics/pitches/CricketField'
+import BasketballCourt from '../components/tactics/pitches/BasketballCourt'
+import VolleyballCourt from '../components/tactics/pitches/VolleyballCourt'
 
 const PITCH_COMPONENTS = {
   football: FootballPitch,
@@ -21,6 +23,8 @@ const PITCH_COMPONENTS = {
   hockey: HockeyPitch,
   netball: NetballCourt,
   cricket: CricketField,
+  basketball: BasketballCourt,
+  volleyball: VolleyballCourt,
 }
 
 // Tactical phases
@@ -1209,7 +1213,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
           No tactics board for {sportLabel(sportKey)}
         </h2>
         <p className="text-secondary text-sm leading-relaxed">
-          Interactive tactics boards currently cover football, rugby, hockey, netball and cricket.
+          Interactive tactics boards currently cover {Object.keys(PITCH_COMPONENTS).map(sportLabel).join(', ')}.
           For {sportLabel(sportKey)}, manage your squad and {`${sportKey === 'athletics' || sportKey === 'swimming' ? 'event or relay order' : 'playing order'}`} from
           the team's fixture screens instead.
         </p>
