@@ -32,7 +32,7 @@ const stagger = {
   show: { transition: { staggerChildren: 0.12 } },
 }
 
-function Reveal({ children, className = '', delay = 0, ...rest }) {
+export function Reveal({ children, className = '', delay = 0, ...rest }) {
   return (
     <motion.div
       className={className}
@@ -50,7 +50,7 @@ function Reveal({ children, className = '', delay = 0, ...rest }) {
   )
 }
 
-function Eyebrow({ children, light = false }) {
+export function Eyebrow({ children, light = false }) {
   return (
     <div className="flex items-center gap-3">
       <span className={`h-px w-8 ${light ? 'bg-[#C9A961]' : 'bg-[#C9A961]'}`} />
@@ -81,7 +81,7 @@ function CountUp({ value, suffix = '' }) {
 // Buttons
 // ---------------------------------------------------------------------------
 
-function PrimaryCTA({ href, to, children, large = false }) {
+export function PrimaryCTA({ href, to, children, large = false }) {
   const cls = `group inline-flex items-center justify-center gap-2 rounded-lg bg-[#C9A961] font-body font-semibold text-[#0F1E3D] transition-colors hover:bg-[#E2C97A] ${large ? 'px-7 py-4 text-base' : 'px-6 py-3 text-[15px]'}`
   const inner = (
     <>
@@ -94,7 +94,7 @@ function PrimaryCTA({ href, to, children, large = false }) {
   return <motion.span {...hover} className="inline-block"><Link to={to} className={cls}>{inner}</Link></motion.span>
 }
 
-function GhostCTA({ to, children, light = true, large = false }) {
+export function GhostCTA({ to, children, light = true, large = false }) {
   const cls = `inline-flex items-center justify-center gap-2 rounded-lg border font-body font-semibold transition-colors ${large ? 'px-7 py-4 text-base' : 'px-6 py-3 text-[15px]'} ${
     light
       ? 'border-[#C9A961]/60 text-[#E2C97A] hover:border-[#C9A961] hover:bg-[#C9A961]/10'
@@ -188,7 +188,7 @@ export function MarketingHeader() {
 // Hero
 // ---------------------------------------------------------------------------
 
-function AuroraBackdrop() {
+export function AuroraBackdrop() {
   const reduce = useReducedMotion()
   const drift = (xRange, yRange, duration) =>
     reduce
@@ -230,12 +230,12 @@ function AuroraBackdrop() {
 
 function UnderlineFlourish() {
   return (
-    <svg viewBox="0 0 220 12" className="absolute -bottom-2 left-0 w-full" aria-hidden>
+    <svg viewBox="0 0 220 12" className="absolute -bottom-5 left-[2%] w-[96%]" aria-hidden>
       <motion.path
         d="M3 9 C 60 2, 160 2, 217 7"
         fill="none"
         stroke={GOLD}
-        strokeWidth="3.5"
+        strokeWidth="3"
         strokeLinecap="round"
         initial={{ pathLength: 0 }}
         animate={{ pathLength: 1 }}
@@ -374,7 +374,7 @@ function Hero() {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: easeOut }}>
             <Eyebrow light>MoonBoots Sports</Eyebrow>
           </motion.div>
-          <h1 className="mt-7 font-serif text-[clamp(42px,5.6vw,68px)] font-bold leading-[1.06] text-white">
+          <h1 className="mt-7 font-serif text-[clamp(42px,5.6vw,68px)] font-bold leading-[1.12] text-white">
             {lines.map((line, i) => (
               <span key={line} className="block overflow-hidden">
                 <motion.span
@@ -387,7 +387,7 @@ function Hero() {
                 </motion.span>
               </span>
             ))}
-            <span className="block overflow-hidden pb-3">
+            <span className="block overflow-hidden pb-7">
               <motion.span
                 className="relative inline-block"
                 initial={{ y: '110%' }}
