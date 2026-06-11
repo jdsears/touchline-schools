@@ -137,7 +137,17 @@ export function MarketingHeader() {
       }}
     >
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link to="/" className="flex shrink-0 items-center">
+        <Link
+          to="/"
+          aria-label="MoonBoots Sports — home"
+          className="flex shrink-0 items-center"
+          onClick={(e) => {
+            if (window.location.pathname === '/') {
+              e.preventDefault()
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }
+          }}
+        >
           <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" className="h-8" />
         </Link>
         <nav className="hidden items-center gap-7 lg:flex">
@@ -1078,6 +1088,9 @@ export function MarketingFooter() {
 // ---------------------------------------------------------------------------
 
 export default function Landing() {
+  useEffect(() => {
+    if (!window.location.hash) window.scrollTo(0, 0)
+  }, [])
   return (
     <div className="bg-[#0F1E3D]">
       <SEO

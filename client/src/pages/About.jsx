@@ -1,4 +1,5 @@
 import SEO from '../components/common/SEO'
+import { useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   Check, Mail, MapPin, Sparkles, ClipboardList, Trophy, GraduationCap,
@@ -370,6 +371,9 @@ function GetInTouch() {
 // ---------------------------------------------------------------------------
 
 export default function About() {
+  useEffect(() => {
+    if (!window.location.hash) window.scrollTo(0, 0)
+  }, [])
   return (
     <div className="bg-[#0F1E3D]">
       <SEO
