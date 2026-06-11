@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { SUPPORTED_SPORTS, SPORT_LABELS, SPORT_ICONS } from '../constants/sports'
 import { useNavigate } from 'react-router-dom'
 import { onboardingService } from '../services/api'
 import {
@@ -25,13 +26,11 @@ const SCHOOL_TYPES = [
   { value: 'middle', label: 'Middle School' },
 ]
 
-const SPORTS = [
-  { value: 'football', label: 'Football', icon: '\u26BD' },
-  { value: 'rugby', label: 'Rugby', icon: '\uD83C\uDFC9' },
-  { value: 'cricket', label: 'Cricket', icon: '\uD83C\uDFCF' },
-  { value: 'hockey', label: 'Hockey', icon: '\uD83C\uDFD1' },
-  { value: 'netball', label: 'Netball', icon: '\uD83E\uDD3E' },
-]
+const SPORTS = SUPPORTED_SPORTS.map((value) => ({
+  value,
+  label: SPORT_LABELS[value],
+  icon: SPORT_ICONS[value],
+}))
 
 export default function Onboarding() {
   const navigate = useNavigate()

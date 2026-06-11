@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
+import { SUPPORTED_SPORTS, sportLabel } from '../../../constants/sports'
 import { settingsService } from '../../../services/api'
 import { Save, Loader2, Plus } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const SPORTS = ['football','rugby','cricket','hockey','netball','basketball','athletics','swimming']
+const SPORTS = SUPPORTED_SPORTS
 const TRAVEL = ['Coach','Minibus','Parent lifts','Public transport','Walking distance']
 
 export default function FixtureDefaultsTab({ access }) {
@@ -66,7 +67,7 @@ export default function FixtureDefaultsTab({ access }) {
                 onChange={e => setForm(f => ({ ...f, sport_key: e.target.value }))}
                 className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary capitalize"
               >
-                {SPORTS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
+                {SPORTS.map(s => <option key={s} value={s}>{sportLabel(s)}</option>)}
               </select>
             </div>
             <div>

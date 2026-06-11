@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react'
+import { SUPPORTED_SPORTS, SPORT_ICONS, sportLabel } from '../../constants/sports'
 import { hodService } from '../../services/api'
 import { UserCog, Plus, X, Shield, GraduationCap, ChevronDown, Edit2, Check } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const SPORTS = ['football', 'rugby', 'cricket', 'hockey', 'netball']
-const SPORT_ICONS = {
-  football: '\u26BD', rugby: '\uD83C\uDFC9', cricket: '\uD83C\uDFCF',
-  hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E',
-}
+const SPORTS = SUPPORTED_SPORTS
 const SPORT_ROLES = [
   { value: 'head_of_sport', label: 'Head of Sport' },
   { value: 'coach', label: 'Coach' },
@@ -266,7 +263,7 @@ export default function HoDTeachers() {
                   className="w-full px-3 py-2.5 bg-subtle border border-border-strong rounded-lg text-primary text-sm focus:outline-none focus:border-brand-primary"
                 >
                   {SPORTS.map(s => (
-                    <option key={s} value={s}>{SPORT_ICONS[s]} {s.charAt(0).toUpperCase() + s.slice(1)}</option>
+                    <option key={s} value={s}>{SPORT_ICONS[s]} {sportLabel(s)}</option>
                   ))}
                 </select>
               </div>
