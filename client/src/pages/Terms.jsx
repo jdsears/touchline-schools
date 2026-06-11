@@ -1,8 +1,12 @@
+import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import SEO from '../components/common/SEO'
 import { AlertTriangle, ArrowLeft } from 'lucide-react'
 
 export default function Terms() {
+  useEffect(() => {
+    if (!window.location.hash) window.scrollTo(0, 0)
+  }, [])
   return (
     <>
       <SEO

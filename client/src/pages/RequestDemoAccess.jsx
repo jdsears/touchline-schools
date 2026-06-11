@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import SEO from '../components/common/SEO'
 import { MarketingFooter, MarketingHeader } from './Landing'
@@ -61,6 +61,9 @@ const errorStyle = {
 }
 
 export default function RequestDemoAccess() {
+  useEffect(() => {
+    if (!window.location.hash) window.scrollTo(0, 0)
+  }, [])
   const [form, setForm] = useState({
     name: '',
     role_at_school: '',
