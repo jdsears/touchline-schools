@@ -5,9 +5,23 @@ import { ASSISTANT_NAME } from './assistantIdentity.js'
 
 dotenv.config()
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+// Guarded client: without ANTHROPIC_API_KEY the server must still boot;
+// any AI call then fails with a clear, mappable 503 error instead.
+function makeAnthropicClient(options = {}) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Proxy({}, {
+      get() {
+        const err = new Error('AI features are not configured on this server. Set ANTHROPIC_API_KEY to enable them.')
+        err.status = 503
+        err.code = 'AI_NOT_CONFIGURED'
+        throw err
+      },
+    })
+  }
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, ...options })
+}
+
+const anthropic = makeAnthropicClient()
 
 // Helper: wrap system prompt string as cacheable array for prompt caching
 function cacheableSystem(systemPrompt) {
@@ -1442,6 +1456,7 @@ ${knowledgeBaseContext.context}`
       usage: response.usage,
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Claude API error:', error.status, error.message)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -1636,6 +1651,7 @@ Diagram rules:
 
     return { raw: text }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Training generation error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY')
@@ -1951,6 +1967,7 @@ One short, inspiring sentence for the team.`
 
     return stream
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Match prep generation error:', error)
     throw new Error('Failed to generate match preparation')
   }
@@ -2056,6 +2073,7 @@ Start with a one-line header: "**Individual Development Plan: ${pupil.name}**" f
 
     return stream
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('IDP generation error:', error?.status, error?.message || error)
     throw new Error(error?.message || 'Failed to generate development plan')
   }
@@ -2113,6 +2131,7 @@ Generate analysis covering:
 
     return response.content[0].text
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Video analysis generation error:', error)
     throw new Error('Failed to generate video analysis')
   }
@@ -2206,6 +2225,7 @@ If no matches are found, return an empty array: []`
     const fixtures = JSON.parse(jsonMatch[0])
     return fixtures
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Fixture extraction error:', error)
     if (error.status === 401) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY')
@@ -2292,6 +2312,7 @@ If no table is found, return an empty array: []`
     const table = JSON.parse(jsonMatch[0])
     return table
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('League table extraction error:', error)
     if (error.status === 401) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY')
@@ -2408,6 +2429,7 @@ If no table is found, return an empty array: []`
     const table = JSON.parse(jsonMatch[0])
     return table
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Detailed league table extraction error:', error)
     if (error.status === 401) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY')
@@ -2630,6 +2652,7 @@ ${playerContext.idp.generated_content || playerContext.idp.notes || 'Development
       usage: response.usage,
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Pupil chat error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -2712,6 +2735,7 @@ If no pupils are found, return an empty array: []`
     const pupils = JSON.parse(jsonMatch[0])
     return pupils
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Pupil extraction error:', error)
     if (error.status === 401) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY')
@@ -2840,6 +2864,7 @@ FORMAT YOUR RESPONSE IN CLEAN MARKDOWN:
 
     return response.content[0].text
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Match report generation error:', error)
     throw new Error('Failed to generate match report')
   }
@@ -2884,6 +2909,7 @@ FORMAT YOUR RESPONSE IN CLEAN MARKDOWN:
 
     return response.content[0].text
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Training summary generation error:', error)
     throw new Error('Failed to generate training summary')
   }
@@ -2944,6 +2970,7 @@ FORMAT YOUR RESPONSE:
 
     return response.content[0].text
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Pep talk generation error:', error)
     throw new Error('Failed to generate pep talk')
   }
@@ -2975,6 +3002,7 @@ export async function sendPublicChatMessage(message, conversationHistory = []) {
       usage: response.usage,
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Public chat error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured')
@@ -3018,6 +3046,7 @@ export async function sendHelpChatMessage(message, conversationHistory = [], use
       usage: response.usage,
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Help chat error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured')
@@ -3142,6 +3171,7 @@ One paragraph summarising the pupil's attribute profile and development outlook.
 
     return response.content[0].text
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Attribute analysis error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3269,6 +3299,7 @@ Rules:
       mental_traits: cleanAttributes(attributes.mental_traits || {}),
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Attribute extraction error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3323,6 +3354,7 @@ Guidelines:
       },
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Parent match report generation error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3399,6 +3431,7 @@ Return your analysis as a JSON object with this structure:
       },
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Attendance insights generation error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3482,6 +3515,7 @@ Return a JSON object:
       },
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Season summary generation error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3543,6 +3577,7 @@ Guidelines:
       },
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Grant draft generation error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3622,6 +3657,7 @@ Return a JSON object:
       },
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Compliance analysis generation error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3699,6 +3735,7 @@ Return a JSON object:
       },
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Coach development generation error:', error)
     if (error.status === 401 || error.message?.includes('API key')) {
       throw new Error('AI service not configured - please set ANTHROPIC_API_KEY environment variable')
@@ -3783,6 +3820,7 @@ Rules:
 
     return { raw: text }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Lesson plan generation error:', {
       status: error.status,
       message: error.message,
@@ -3878,6 +3916,7 @@ Rules:
     })
     return response.content[0]?.text?.trim() || ''
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Public match report generation failed:', error.message)
     throw new Error('Failed to generate match report: ' + error.message)
   }
@@ -3944,6 +3983,7 @@ Return ONLY valid JSON. Array of fixture objects:
     const jsonMatch = text.match(/\[[\s\S]*\]/)
     return JSON.parse(jsonMatch?.[0] || '[]')
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('AI fixture generation failed:', error.message)
     throw new Error('Failed to generate fixtures: ' + error.message)
   }

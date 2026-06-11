@@ -3,7 +3,23 @@ import pool from '../config/database.js'
 import { getTaxonomy } from '../constants/sportTaxonomy.js'
 import { ASSISTANT_NAME } from './assistantIdentity.js'
 
-const anthropic = new Anthropic()
+// Guarded client: without ANTHROPIC_API_KEY the server must still boot;
+// any AI call then fails with a clear, mappable 503 error instead.
+function makeAnthropicClient(options = {}) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Proxy({}, {
+      get() {
+        const err = new Error('AI features are not configured on this server. Set ANTHROPIC_API_KEY to enable them.')
+        err.status = 503
+        err.code = 'AI_NOT_CONFIGURED'
+        throw err
+      },
+    })
+  }
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, ...options })
+}
+
+const anthropic = makeAnthropicClient()
 
 // Helper: wrap system prompt string as cacheable array for prompt caching
 function cacheableSystem(systemPrompt) {
@@ -70,6 +86,7 @@ async function callClaudeWithRetry(params, maxRetries = 3, timeoutMs = CLAUDE_CA
         `Claude API call (attempt ${attempt + 1})`
       )
     } catch (err) {
+      if (err?.code === 'AI_NOT_CONFIGURED' || err?.code === 'VIDEO_NOT_CONFIGURED') throw err
       const status = err?.status || err?.error?.status
       const isTimeout = err?.message?.includes('timed out')
       const retryable = isTimeout || [429, 500, 529].includes(status) || err?.message?.includes('overloaded')

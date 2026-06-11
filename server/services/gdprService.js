@@ -272,7 +272,7 @@ export async function collectPupilData(pupilId, schoolId) {
     pupil_id: pupilId,
     data_categories: Object.keys(data).filter(k => !k.startsWith('_')),
     format_version: '1.0',
-    note: 'This export contains all personal data held by Touchline for Schools for the named pupil. Data is provided in compliance with UK GDPR Article 15 (Right of Access).',
+    note: 'This export contains all personal data held by MoonBoots Sports for the named pupil. Data is provided in compliance with UK GDPR Article 15 (Right of Access).',
   }
 
   return data

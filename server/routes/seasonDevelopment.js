@@ -420,6 +420,12 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
 
     // Import Claude service dynamically to avoid circular dependency
     const { default: Anthropic } = await import('@anthropic-ai/sdk')
+    if (!process.env.ANTHROPIC_API_KEY) {
+      const err = new Error('AI features are not configured on this server. Set ANTHROPIC_API_KEY to enable them.')
+      err.status = 503
+      err.code = 'AI_NOT_CONFIGURED'
+      throw err
+    }
     const client = new Anthropic()
 
     const message = await client.messages.create({

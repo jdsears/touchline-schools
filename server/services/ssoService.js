@@ -8,7 +8,7 @@
  *  2. Provider redirects back      → /api/sso/:provider/callback
  *  3. Exchange code, validate      → get user info (email, name, sub)
  *  4. Find or create user account  → match by sso_sub, then email, then create
- *  5. Issue Touchline JWT          → redirect to /sso-callback?token=...
+ *  5. Issue platform JWT          → redirect to /sso-callback?token=...
  *
  * School-level SSO config is stored in schools.sso_config (JSONB):
  *   { tenant_id: '...', hd: '...', allowed_domains: [...] }
