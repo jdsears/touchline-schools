@@ -7,9 +7,23 @@ import { buildExtractionPrompt, EXTRACTION_PROMPT_VERSION } from '../prompts/voi
 
 dotenv.config()
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+// Guarded client: without ANTHROPIC_API_KEY the server must still boot;
+// any AI call then fails with a clear, mappable 503 error instead.
+function makeAnthropicClient(options = {}) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Proxy({}, {
+      get() {
+        const err = new Error('AI features are not configured on this server. Set ANTHROPIC_API_KEY to enable them.')
+        err.status = 503
+        err.code = 'AI_NOT_CONFIGURED'
+        throw err
+      },
+    })
+  }
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, ...options })
+}
+
+const anthropic = makeAnthropicClient()
 
 /**
  * Extract observations from a voice transcript using Claude.
@@ -75,6 +89,7 @@ export async function extractObservations({ transcript, teacherName, sport, cont
       output_tokens: response.usage?.output_tokens,
     }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Voice extraction error:', error)
     throw new Error(`Extraction failed: ${error.message}`)
   }

@@ -73,6 +73,7 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
     const result = await pool.query(
       `SELECT m.*,
         (m.home_away = 'home') AS is_home,
+        m.result_data,
         m.score_for AS goals_for,
         m.score_against AS goals_against,
         m.team_notes AS notes,
@@ -94,7 +95,7 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
     const { id } = req.params
     if (!(await ensureMatchAccess(req, res, id))) return
     const { opponent, date, location, isHome, formations, notes,
-            veoLink, videoUrl, goalsFor, goalsAgainst, kitType, meetTime } = req.body
+            veoLink, videoUrl, goalsFor, goalsAgainst, kitType, meetTime, resultData } = req.body
 
     const homeAway = isHome === undefined ? undefined : (isHome ? 'home' : 'away')
     const dbResult = await pool.query(
@@ -112,6 +113,7 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
         score_against = COALESCE($10, score_against),
         kit_type = COALESCE($11, kit_type),
         meet_time = $12,
+        result_data = COALESCE($14::jsonb, result_data),
         updated_at = NOW()
        WHERE id = $13
        RETURNING *,
@@ -122,7 +124,8 @@ router.put('/:id', authenticateToken, async (req, res, next) => {
         CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
           THEN score_for || ' - ' || score_against ELSE NULL END AS result`,
       [opponent, date, location, homeAway, notes, veoLink, videoUrl,
-       formations ? JSON.stringify(formations) : null, goalsFor, goalsAgainst, kitType || null, meetTime || null, id]
+       formations ? JSON.stringify(formations) : null, goalsFor, goalsAgainst, kitType || null, meetTime || null, id,
+       resultData ? JSON.stringify(resultData) : null]
     )
 
     if (dbResult.rows.length === 0) {

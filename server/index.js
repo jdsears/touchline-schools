@@ -93,6 +93,13 @@ import bcrypt from 'bcryptjs'
 // Middleware
 import { errorHandler } from './middleware/errorHandler.js'
 
+// Surface missing optional service credentials loudly at boot (the
+// features degrade to clear 503s rather than crashing, but operators
+// should know what is switched off)
+if (!process.env.ANTHROPIC_API_KEY) console.warn('[BOOT] ANTHROPIC_API_KEY is not set - all AI features will return 503')
+if (!process.env.RESEND_API_KEY) console.warn('[BOOT] RESEND_API_KEY is not set - emails (invites, demo confirmations, trial reminders) will not send')
+if (!process.env.MUX_TOKEN_ID || !process.env.MUX_TOKEN_SECRET) console.warn('[BOOT] MUX credentials are not set - video upload/streaming will return 503')
+
 dotenv.config()
 
 // Fail fast if critical environment variables are missing

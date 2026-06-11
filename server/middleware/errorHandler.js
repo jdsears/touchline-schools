@@ -28,6 +28,17 @@ export function errorHandler(err, req, res, next) {
     })
   }
   
+  // Service-not-configured errors (AI / video) -> 503 with a clear message,
+  // including when services have wrapped the original error message
+  if (err.code === 'AI_NOT_CONFIGURED' || err.code === 'VIDEO_NOT_CONFIGURED' ||
+      /not configured on this server/i.test(err.message || '')) {
+    return res.status(503).json({
+      message: (err.message || '').match(/[A-Za-z].*not configured on this server[^.]*\./)?.[0]
+        || 'This feature is not configured on this server.',
+      code: err.code || 'SERVICE_NOT_CONFIGURED',
+    })
+  }
+
   // Default error
   res.status(err.status || 500).json({
     message: err.message || 'Internal server error',

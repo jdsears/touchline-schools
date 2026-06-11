@@ -3,6 +3,8 @@ import rugby from './rugby'
 import hockey from './hockey'
 import netball from './netball'
 import cricket from './cricket'
+import basketball from './basketball'
+import volleyball from './volleyball'
 
 const sportConfigs = {
   football,
@@ -10,11 +12,13 @@ const sportConfigs = {
   hockey,
   netball,
   cricket,
+  basketball,
+  volleyball,
 }
 
 export default sportConfigs
 
-export { football, rugby, hockey, netball, cricket }
+export { football, rugby, hockey, netball, cricket, basketball, volleyball }
 
 /**
  * Get sport config by key, falling back to football if unknown.

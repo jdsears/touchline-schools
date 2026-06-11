@@ -25,7 +25,7 @@ export const PLANS = {
     },
     flags: {
       aiChat: true,      // Enabled but limited to 20 msgs/month
-      exportBranding: true, // "Powered by Touchline" on exports
+      exportBranding: true, // "Powered by MoonBoots Sports" on exports
     },
   },
 

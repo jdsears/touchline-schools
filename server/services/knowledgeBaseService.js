@@ -6,9 +6,23 @@ import { getSportFramework, getSportAgeGuidance, getSportGoverningBody } from '.
 
 dotenv.config()
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-})
+// Guarded client: without ANTHROPIC_API_KEY the server must still boot;
+// any AI call then fails with a clear, mappable 503 error instead.
+function makeAnthropicClient(options = {}) {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    return new Proxy({}, {
+      get() {
+        const err = new Error('AI features are not configured on this server. Set ANTHROPIC_API_KEY to enable them.')
+        err.status = 503
+        err.code = 'AI_NOT_CONFIGURED'
+        throw err
+      },
+    })
+  }
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY, ...options })
+}
+
+const anthropic = makeAnthropicClient()
 
 // Categories for coaching knowledge
 const CATEGORIES = {
@@ -196,6 +210,7 @@ export async function ingestDocument({
 
     return { ...document, chunk_count: chunks.length, status: 'ready' }
   } catch (error) {
+    if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     await client.query('ROLLBACK')
     console.error('Knowledge base ingestion error:', error)
     throw error
