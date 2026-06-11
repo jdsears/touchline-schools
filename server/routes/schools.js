@@ -540,16 +540,16 @@ router.get('/:schoolId/teams', authenticateToken, loadSchool, requireSchoolRole(
 router.post('/:schoolId/teams', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin'), async (req, res, next) => {
   try {
     const { schoolId } = req.params
-    const { name, age_group, team_type, team_format } = req.body
+    const { name, age_group, team_type, team_format, sport } = req.body
 
     if (!name) {
       return res.status(400).json({ error: 'Team name is required' })
     }
 
     const result = await pool.query(
-      `INSERT INTO teams (name, school_id, age_group, team_type, team_format, primary_color, secondary_color)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [name, schoolId, age_group, team_type || 'boys', team_format || 11, req.school.primary_color, req.school.secondary_color]
+      `INSERT INTO teams (name, school_id, age_group, team_type, team_format, sport, primary_color, secondary_color)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [name, schoolId, age_group, team_type || 'boys', team_format || 11, sport || 'football', req.school.primary_color, req.school.secondary_color]
     )
 
     res.status(201).json(result.rows[0])

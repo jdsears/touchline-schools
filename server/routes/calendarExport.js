@@ -87,7 +87,7 @@ async function getTeacherScheduleEvents(userId) {
   const fixtures = await pool.query(
     `SELECT m.id, m.match_date, m.match_time, m.opponent, m.location, m.home_away, m.kit_type,
             m.score_for, m.score_against, t.name AS team_name, t.sport
-     FROM matches m JOIN teams t ON t.id = m.team_id WHERE t.manager_id = $1 ORDER BY m.match_date`, [userId])
+     FROM matches m JOIN teams t ON t.id = m.team_id WHERE (t.owner_id = $1 OR EXISTS (SELECT 1 FROM team_memberships tm WHERE tm.team_id = t.id AND tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))) ORDER BY m.match_date`, [userId])
   for (const f of fixtures.rows) {
     const desc = [f.home_away === 'home' ? 'Home' : 'Away', f.kit_type ? `Kit: ${f.kit_type}` : ''].filter(Boolean).join('. ')
     events.push(buildVEvent(
@@ -99,7 +99,7 @@ async function getTeacherScheduleEvents(userId) {
   }
   const training = await pool.query(
     `SELECT ts.id, ts.date, ts.time, ts.location, ts.duration, t.name AS team_name, t.sport
-     FROM training_sessions ts JOIN teams t ON t.id = ts.team_id WHERE t.manager_id = $1 ORDER BY ts.date`, [userId])
+     FROM training_sessions ts JOIN teams t ON t.id = ts.team_id WHERE (t.owner_id = $1 OR EXISTS (SELECT 1 FROM team_memberships tm WHERE tm.team_id = t.id AND tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))) ORDER BY ts.date`, [userId])
   for (const s of training.rows) {
     const dur = s.duration || 90
     events.push(buildVEvent(
