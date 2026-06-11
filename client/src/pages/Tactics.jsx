@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import { sportLabel } from '../constants/sports'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Target, Save, RotateCcw, Users, Loader2, X, UserMinus, ArrowRightLeft, Plus, Trash2, Clock, BookmarkPlus, Bookmark, Shield, Swords, Zap, Circle, ChevronUp, ChevronDown, Move, Eye, EyeOff, Grid3x3, Layers, Printer } from 'lucide-react'
 import PlayingTimeCalculator from '../components/PlayingTimeCalculator'
@@ -1197,6 +1198,24 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
     // Reset drag ref
     dragRef.current = { active: false, pointerId: null, targetId: null, startX: 0, startY: 0, origPctX: 0, origPctY: 0, el: null }
   }, [])
+
+
+  // Interactive boards exist for pitch/court invasion sports only.
+  // Other sports get an honest explanation instead of a football pitch.
+  if (!PITCH_COMPONENTS[sportKey]) {
+    return (
+      <div className="max-w-xl mx-auto mt-16 card p-10 text-center">
+        <h2 className="font-display text-xl font-semibold text-primary mb-3">
+          No tactics board for {sportLabel(sportKey)}
+        </h2>
+        <p className="text-secondary text-sm leading-relaxed">
+          Interactive tactics boards currently cover football, rugby, hockey, netball and cricket.
+          For {sportLabel(sportKey)}, manage your squad and {`${sportKey === 'athletics' || sportKey === 'swimming' ? 'event or relay order' : 'playing order'}`} from
+          the team's fixture screens instead.
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="p-6 lg:p-8">

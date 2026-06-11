@@ -24,7 +24,7 @@ export default function BattingOrderEditor({ squad = [], format }) {
   const issues = []
 
   if (order.length < (format?.playerCount || 11)) {
-    issues.push(`${(format?.playerCount || 11) - order.length} batting positions empty`)
+    issues.push(`${(format?.playerCount || 11) - order.length} positions empty`)
   }
   if (!wkId && order.length > 0) {
     issues.push('No wicketkeeper designated')
@@ -59,7 +59,7 @@ export default function BattingOrderEditor({ squad = [], format }) {
     <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-[var(--shadow-sm)] overflow-hidden">
       <div className="px-[18px] py-[14px] flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-subtle)' }}>
         <div>
-          <div className="text-[14.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>Batting Order</div>
+          <div className="text-[14.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>{format?.orderLabel || 'Batting Order'}</div>
           <div className="text-[11.5px]" style={{ color: 'var(--text-tertiary)' }}>{order.length}/{format?.playerCount || 11} placed</div>
         </div>
       </div>

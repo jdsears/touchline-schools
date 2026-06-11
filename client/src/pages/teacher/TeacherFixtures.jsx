@@ -1,10 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
+import { SPORT_ICONS } from '../../constants/sports'
 import { Link } from 'react-router-dom'
 import { teacherService } from '../../services/api'
 import { Trophy, Calendar as CalIcon, List, MapPin, ChevronLeft, ChevronRight, X, Clock, Shirt, CalendarPlus } from 'lucide-react'
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, startOfWeek, endOfWeek, isSameMonth, isSameDay, addMonths, subMonths, isToday, isWeekend } from 'date-fns'
 
-const SPORT_ICONS = { football: '\u26BD', rugby: '\uD83C\uDFC9', cricket: '\uD83C\uDFCF', hockey: '\uD83C\uDFD1', netball: '\uD83E\uDD3E' }
 const SPORT_DOT = { football: 'bg-navy-300', rugby: 'bg-brand-accent', cricket: 'bg-status-success', hockey: 'bg-sky-500', netball: 'bg-purple-500' }
 
 function resultBadge(m) {

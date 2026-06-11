@@ -1,14 +1,8 @@
 import { useState, useEffect } from 'react'
+import { SPORT_ICONS } from '../../constants/sports'
 import { teacherService } from '../../services/api'
 import { Calendar, Clock, Target, Filter, Users } from 'lucide-react'
 
-const SPORT_ICONS = {
-  football: '\u26BD',
-  rugby: '\uD83C\uDFC9',
-  cricket: '\uD83C\uDFCF',
-  hockey: '\uD83C\uDFD1',
-  netball: '\uD83E\uDD3E',
-}
 
 function formatDate(dateStr) {
   if (!dateStr) return ''

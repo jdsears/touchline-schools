@@ -1,23 +1,10 @@
 import { useState, useEffect } from 'react'
+import { SPORT_ICONS, SPORT_BADGE_CLASSES as SPORT_COLORS } from '../../constants/sports'
 import { Link } from 'react-router-dom'
 import { teacherService } from '../../services/api'
 import { Shield, Users, Trophy, Calendar, Filter } from 'lucide-react'
 
-const SPORT_ICONS = {
-  football: '\u26BD',
-  rugby: '\uD83C\uDFC9',
-  cricket: '\uD83C\uDFCF',
-  hockey: '\uD83C\uDFD1',
-  netball: '\uD83E\uDD3E',
-}
 
-const SPORT_COLORS = {
-  football: 'bg-brand-primary-tint text-brand-primary',
-  rugby: 'bg-brand-accent-tint text-brand-accent',
-  cricket: 'bg-status-info-tint text-status-info',
-  hockey: 'bg-purple-500/20 text-purple-400',
-  netball: 'bg-pink-500/20 text-pink-400',
-}
 
 export default function TeacherTeams() {
   const [teams, setTeams] = useState([])
