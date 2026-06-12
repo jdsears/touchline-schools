@@ -616,6 +616,7 @@ export const teacherService = {
   getDashboardToday: () => api.get('/teacher-dashboard/today'),
   getDashboardClasses: () => api.get('/teacher-dashboard/my-classes'),
   getDashboardTeams: () => api.get('/teacher-dashboard/my-teams'),
+  getDevelopment: () => api.get('/teacher-dashboard/development'),
   getDashboardAttention: () => api.get('/teacher-dashboard/attention'),
 }
 

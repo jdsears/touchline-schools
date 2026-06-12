@@ -118,6 +118,47 @@ router.get('/my-teams', async (req, res) => {
 })
 
 // GET /attention - Pupils needing teacher attention
+// GET /development - pupils across the teacher's teams with their
+// development footprint (observations, IDP goals, latest activity)
+router.get('/development', async (req, res) => {
+  try {
+    const userId = req.user.id
+    const result = await pool.query(
+      `WITH my_teams AS (
+         SELECT DISTINCT t.id, t.sport
+         FROM teams t
+         LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
+         WHERE t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout'))
+       ),
+       team_pupils AS (
+         SELECT DISTINCT p.id AS pupil_id, mt.sport
+         FROM my_teams mt
+         JOIN pupils p ON p.team_id = mt.id
+         UNION
+         SELECT DISTINCT tm.pupil_id, mt.sport
+         FROM my_teams mt
+         JOIN team_memberships tm ON tm.team_id = mt.id AND tm.pupil_id IS NOT NULL
+       )
+       SELECT p.id,
+              COALESCE(NULLIF(TRIM(p.name), ''), TRIM(CONCAT(p.first_name, ' ', p.last_name))) AS name,
+              p.year_group,
+              ARRAY_AGG(DISTINCT tp.sport) AS sports,
+              (SELECT COUNT(*)::int FROM observations o WHERE o.pupil_id = p.id) AS observation_count,
+              (SELECT COUNT(*)::int FROM pupil_idp_goals g WHERE g.pupil_id = p.id) AS goal_count,
+              (SELECT MAX(o.created_at) FROM observations o WHERE o.pupil_id = p.id) AS last_observation_at
+       FROM team_pupils tp
+       JOIN pupils p ON p.id = tp.pupil_id
+       GROUP BY p.id, p.name, p.first_name, p.last_name, p.year_group
+       ORDER BY observation_count DESC, name ASC`,
+      [userId]
+    )
+    res.json(result.rows)
+  } catch (error) {
+    console.error('Teacher development roster error:', error)
+    res.status(500).json({ message: 'Failed to load pupil development' })
+  }
+})
+
 router.get('/attention', async (req, res) => {
   try {
     const userId = req.user.id
