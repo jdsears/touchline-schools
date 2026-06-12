@@ -1,7 +1,8 @@
-const CACHE_NAME = 'moonboots-v1';
+const CACHE_NAME = 'moonboots-v2';
+const PUPIL_CACHE = 'moonboots-pupil-v1';
+// Never pre-cache '/' or index.html: a cached shell can pin users to a
+// stale bundle after deploys. The browser/CDN handles those.
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
   '/manifest.json',
 ];
 
@@ -19,9 +20,10 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
+      const keep = [CACHE_NAME, PUPIL_CACHE];
       return Promise.all(
         cacheNames
-          .filter((name) => name !== CACHE_NAME)
+          .filter((name) => !keep.includes(name))
           .map((name) => caches.delete(name))
       );
     })
@@ -69,7 +71,6 @@ self.addEventListener('notificationclick', (event) => {
 });
 
 // Pupil API endpoints safe to cache for offline viewing
-const PUPIL_CACHE = 'moonboots-pupil-v1';
 const CACHEABLE_API = ['/api/pupils/me', '/api/pupils/me/development', '/api/pupils/me/quote'];
 
 // Cache pupil API responses (network first, stale fallback)

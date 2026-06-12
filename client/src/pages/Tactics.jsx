@@ -1227,7 +1227,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
-            <h1 className="font-display text-2xl lg:text-3xl font-bold text-white mb-1">
+            <h1 className="font-display text-2xl lg:text-3xl font-bold text-primary mb-1">
               {team?.name ? `${team.name} — Tactics` : 'Tactics'}
             </h1>
             <p className="text-secondary capitalize">
@@ -1257,7 +1257,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
             <div className="card p-4">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <h2 className="font-display font-semibold text-white">Formation</h2>
+                  <h2 className="font-display font-semibold text-primary">Formation</h2>
                   {formatSizes.length > 1 && (
                     <div className="flex items-center gap-1">
                       {formatSizes.map(size => (

@@ -291,24 +291,46 @@ router.post('/:teamId/message', authenticateToken, async (req, res, next) => {
       console.error('Knowledge base retrieval failed (non-blocking):', kbError.message)
     }
 
-    // Send to Claude with knowledge base context
-    const response = await sendChatMessage(message, fullContext, conversationHistory, knowledgeBaseContext)
-
-    // Save messages to database
+    // Persist the user message up front, then stream the reply so the
+    // client can render the assistant typing in real time
     await pool.query(
       `INSERT INTO messages (team_id, user_id, role, content, context) VALUES ($1, $2, 'user', $3, $4)`,
       [teamId, req.user.id, message, JSON.stringify(fullContext)]
     )
-    
-    await pool.query(
-      `INSERT INTO messages (team_id, user_id, role, content) VALUES ($1, $2, 'assistant', $3)`,
-      [teamId, req.user.id, response.message]
-    )
-    
-    res.json({ 
-      message: response.message,
-      usage: response.usage,
-    })
+
+    res.setHeader('Content-Type', 'text/event-stream')
+    res.setHeader('Cache-Control', 'no-cache')
+    res.setHeader('Connection', 'keep-alive')
+    res.flushHeaders()
+
+    try {
+      const stream = await sendChatMessage(message, fullContext, conversationHistory, knowledgeBaseContext, { stream: true })
+
+      let fullText = ''
+      stream.on('text', (text) => {
+        fullText += text
+        res.write(`data: ${JSON.stringify({ type: 'text', text })}\n\n`)
+      })
+
+      await stream.finalMessage()
+
+      if (fullText) {
+        await pool.query(
+          `INSERT INTO messages (team_id, user_id, role, content) VALUES ($1, $2, 'assistant', $3)`,
+          [teamId, req.user.id, fullText]
+        )
+      }
+
+      res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`)
+      res.end()
+    } catch (streamError) {
+      console.error('Chat stream error:', streamError)
+      const message503 = /not configured on this server/i.test(streamError.message || '')
+        ? streamError.message
+        : 'Failed to get response. Please try again.'
+      res.write(`data: ${JSON.stringify({ type: 'error', message: message503 })}\n\n`)
+      res.end()
+    }
   } catch (error) {
     next(error)
   }

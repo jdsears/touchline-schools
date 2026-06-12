@@ -2,30 +2,48 @@ import { useState, useEffect } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, Loader2, GraduationCap, Trophy, Users, Eye, EyeOff, AlertTriangle } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Loader2, GraduationCap, Trophy, Users, Eye, EyeOff, AlertTriangle, Check } from 'lucide-react'
 import SEO from '../components/common/SEO'
 import api from '../services/api'
+import { AuroraBackdrop, Eyebrow } from './Landing'
 
-const inputStyle = {
-  width: '100%',
-  padding: '12px 14px 12px 42px',
-  background: 'var(--color-bg-input)',
-  border: '1px solid var(--color-border-default)',
-  borderRadius: 'var(--radius-md)',
-  color: 'var(--color-text-primary)',
-  fontFamily: 'var(--font-sans)',
-  fontSize: 15,
-  outline: 'none',
-  boxSizing: 'border-box',
+const easeOut = [0.22, 1, 0.36, 1]
+
+const inputCls =
+  'w-full rounded-lg border border-[#0F1E3D]/15 bg-white py-3 pl-11 pr-4 font-body text-[15px] text-[#0F1E3D] placeholder:text-[#0F1E3D]/35 outline-none transition-colors focus:border-[#C9A961] focus:ring-2 focus:ring-[#C9A961]/30'
+
+function Field({ label, icon: Icon, action, children }) {
+  return (
+    <div>
+      <div className="mb-1.5 flex items-center justify-between">
+        <label className="font-body text-[13px] font-semibold text-[#0F1E3D]/80">{label}</label>
+        {action}
+      </div>
+      <div className="relative">
+        <Icon size={17} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#0F1E3D]/35" />
+        {children}
+      </div>
+    </div>
+  )
 }
 
-const labelStyle = {
-  display: 'block',
-  fontFamily: 'var(--font-sans)',
-  fontSize: 13,
-  fontWeight: 500,
-  color: 'var(--color-text-primary)',
-  marginBottom: 6,
+function SubmitButton({ loading, children }) {
+  return (
+    <button
+      type="submit"
+      disabled={loading}
+      className="group flex w-full items-center justify-center gap-2 rounded-lg bg-[#0F1E3D] py-3.5 font-body text-[15px] font-semibold text-[#FAFAF7] transition-all hover:bg-[#1a2f55] disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {loading ? (
+        <Loader2 size={18} className="animate-spin" />
+      ) : (
+        <>
+          {children}
+          <ArrowRight size={17} className="text-[#E2C97A] transition-transform duration-300 group-hover:translate-x-1" />
+        </>
+      )}
+    </button>
+  )
 }
 
 export default function Login() {
@@ -88,40 +106,8 @@ export default function Login() {
     setLoading(false)
   }
 
-  const goldBtnStyle = {
-    width: '100%',
-    padding: '14px 24px',
-    background: loading ? 'rgba(15, 30, 61, 0.5)' : 'var(--color-brand-navy)',
-    color: 'var(--color-text-on-dark)',
-    border: 'none',
-    borderRadius: 'var(--radius-md)',
-    fontFamily: 'var(--font-sans)',
-    fontWeight: 600,
-    fontSize: 15,
-    cursor: loading ? 'not-allowed' : 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    transition: 'background 0.15s ease',
-  }
-
-  const tabStyle = (active) => ({
-    flex: 1,
-    padding: '10px 16px',
-    borderRadius: 'var(--radius-md)',
-    fontFamily: 'var(--font-sans)',
-    fontSize: 14,
-    fontWeight: 500,
-    border: 'none',
-    cursor: 'pointer',
-    transition: 'all 0.15s ease',
-    background: active ? 'var(--color-brand-navy)' : 'transparent',
-    color: active ? 'var(--color-text-on-dark)' : 'var(--color-text-secondary)',
-  })
-
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', background: 'var(--color-bg-page)' }}>
+    <div className="flex min-h-screen bg-[#FAFAF7]">
       <SEO
         title="Login"
         path="/login"
@@ -129,153 +115,160 @@ export default function Login() {
         noIndex={true}
       />
 
-      {/* Left: Login form */}
-      <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 32 }}>
+      {/* Left: sign-in form */}
+      <div className="flex flex-1 items-center justify-center px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          style={{ width: '100%', maxWidth: 420 }}
+          transition={{ duration: 0.6, ease: easeOut }}
+          className="w-full max-w-[420px]"
         >
-          <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: 10, textDecoration: 'none', marginBottom: 40 }}>
-            <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 28 }} />
+          <Link to="/" className="mb-12 inline-flex items-center" aria-label="MoonBoots Sports — home">
+            <img src="/moonboots-sports-logo.svg" alt="MoonBoots Sports" className="h-8" />
           </Link>
 
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 32, fontWeight: 700, color: 'var(--color-text-primary)', marginBottom: 8 }}>
-            Welcome back
+          <h1 className="font-serif text-[34px] font-bold leading-tight text-[#0F1E3D]">
+            Welcome back<span className="text-[#C9A961]">.</span>
           </h1>
-          <p style={{ fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--color-text-secondary)', marginBottom: 32 }}>
-            Sign in to your account to continue
+          <p className="mt-2 font-body text-[15px] text-[#0F1E3D]/60">
+            Sign in to your school's platform to continue.
           </p>
 
-          {/* Tabs */}
-          <div style={{ display: 'flex', gap: 4, padding: 4, background: 'var(--color-bg-subtle)', borderRadius: 6, marginBottom: 24 }}>
-            <button onClick={() => setMode('password')} style={tabStyle(mode === 'password')}>Password</button>
-            <button onClick={() => setMode('magic')} style={tabStyle(mode === 'magic')}>Magic Link</button>
+          {/* Mode tabs */}
+          <div className="mt-8 flex gap-1 rounded-xl bg-[#0F1E3D]/[0.06] p-1">
+            {[
+              { id: 'password', label: 'Password' },
+              { id: 'magic', label: 'Magic Link' },
+            ].map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                onClick={() => setMode(t.id)}
+                className={`flex-1 rounded-lg px-4 py-2.5 font-body text-sm font-semibold transition-colors ${
+                  mode === t.id
+                    ? 'bg-[#0F1E3D] text-[#FAFAF7] shadow-sm'
+                    : 'text-[#0F1E3D]/55 hover:text-[#0F1E3D]'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
           </div>
 
-          {mode === 'password' ? (
-            <form onSubmit={handlePasswordLogin} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              <div>
-                <label style={labelStyle}>Email</label>
-                <div style={{ position: 'relative' }}>
-                  <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
+          <div className="mt-6">
+            {mode === 'password' ? (
+              <form onSubmit={handlePasswordLogin} className="flex flex-col gap-5">
+                <Field label="Email" icon={Mail}>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    style={inputStyle}
+                    className={inputCls}
                     placeholder="name@school.ac.uk"
                     required
                   />
-                </div>
-              </div>
+                </Field>
 
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                  <label style={labelStyle}>Password</label>
-                  <Link to="/forgot-password" style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: 'var(--color-text-link)', textDecoration: 'none' }}>
-                    Forgot password?
-                  </Link>
-                </div>
-                <div style={{ position: 'relative' }}>
-                  <Lock size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
+                <Field
+                  label="Password"
+                  icon={Lock}
+                  action={
+                    <Link to="/forgot-password" className="font-body text-[13px] font-medium text-[#8a6d2f] hover:underline">
+                      Forgot password?
+                    </Link>
+                  }
+                >
                   <input
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    style={{ ...inputStyle, paddingRight: 42 }}
+                    className={`${inputCls} pr-11`}
                     placeholder="••••••••"
                     required
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: 'var(--color-text-tertiary)' }}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#0F1E3D]/35 transition-colors hover:text-[#0F1E3D]/70"
                     tabIndex={-1}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
                   >
-                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
                   </button>
-                </div>
-              </div>
+                </Field>
 
-              <button type="submit" disabled={loading} style={goldBtnStyle}>
-                {loading ? <Loader2 size={18} className="animate-spin" /> : (
-                  <>Sign In <ArrowRight size={18} /></>
-                )}
-              </button>
-            </form>
-          ) : (
-            <form onSubmit={handleMagicLink} style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
-              {magicLinkSent ? (
-                <div style={{ textAlign: 'center', padding: '32px 0' }}>
-                  <div style={{ width: 56, height: 56, borderRadius: '50%', background: 'var(--color-bg-subtle)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
-                    <Mail size={24} style={{ color: 'var(--color-brand-navy)' }} />
-                  </div>
-                  <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 22, fontWeight: 700, color: 'white', marginBottom: 8 }}>Check your email</h3>
-                  <p style={{ fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-text-secondary)', marginBottom: 16 }}>
-                    We have sent a magic link to <span style={{ color: 'white' }}>{email}</span>
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setMagicLinkSent(false)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-brand-navy)' }}
+                <SubmitButton loading={loading}>Sign In</SubmitButton>
+              </form>
+            ) : (
+              <form onSubmit={handleMagicLink} className="flex flex-col gap-5">
+                {magicLinkSent ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.97 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="rounded-2xl border border-[#C9A961]/40 bg-[#C9A961]/10 px-6 py-10 text-center"
                   >
-                    Try a different email
-                  </button>
-                </div>
-              ) : (
-                <>
-                  <div>
-                    <label style={labelStyle}>Email</label>
-                    <div style={{ position: 'relative' }}>
-                      <Mail size={18} style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', color: 'var(--color-text-tertiary)' }} />
+                    <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#0F1E3D]">
+                      <Mail size={22} className="text-[#E2C97A]" />
+                    </div>
+                    <h3 className="font-serif text-[22px] font-bold text-[#0F1E3D]">Check your email</h3>
+                    <p className="mt-2 font-body text-sm text-[#0F1E3D]/65">
+                      We have sent a magic link to{' '}
+                      <span className="font-semibold text-[#0F1E3D]">{email}</span>
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setMagicLinkSent(false)}
+                      className="mt-4 font-body text-sm font-medium text-[#8a6d2f] hover:underline"
+                    >
+                      Try a different email
+                    </button>
+                  </motion.div>
+                ) : (
+                  <>
+                    <Field label="Email" icon={Mail}>
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        style={inputStyle}
+                        className={inputCls}
                         placeholder="name@school.ac.uk"
                         required
                       />
-                    </div>
-                  </div>
-                  <button type="submit" disabled={loading} style={goldBtnStyle}>
-                    {loading ? <Loader2 size={18} className="animate-spin" /> : (
-                      <>Send Magic Link <ArrowRight size={18} /></>
-                    )}
-                  </button>
-                </>
-              )}
-            </form>
-          )}
+                    </Field>
+                    <p className="-mt-2 font-body text-[13px] leading-relaxed text-[#0F1E3D]/50">
+                      No password needed — we'll email you a secure one-time sign-in link.
+                    </p>
+                    <SubmitButton loading={loading}>Send Magic Link</SubmitButton>
+                  </>
+                )}
+              </form>
+            )}
+          </div>
 
           {/* SSO error */}
           {ssoError && (
-            <div style={{ marginTop: 16, display: 'flex', alignItems: 'flex-start', gap: 10, padding: 12, background: 'rgba(239, 68, 68, 0.08)', border: '1px solid rgba(239, 68, 68, 0.25)', borderRadius: 4 }}>
-              <AlertTriangle size={16} style={{ color: '#ef4444', flexShrink: 0, marginTop: 2 }} />
-              <p style={{ fontFamily: 'var(--font-sans)', fontSize: 13, color: '#ef4444' }}>{ssoError}</p>
+            <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-red-300 bg-red-50 p-3.5">
+              <AlertTriangle size={16} className="mt-0.5 shrink-0 text-red-600" />
+              <p className="font-body text-[13px] leading-relaxed text-red-700">{ssoError}</p>
             </div>
           )}
 
           {/* SSO providers */}
           {ssoProviders.length > 0 && (
-            <div style={{ marginTop: 24 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                <div style={{ flex: 1, height: 1, background: 'var(--color-border-subtle)' }} />
-                <span style={{ fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-text-tertiary)' }}>or sign in with</span>
-                <div style={{ flex: 1, height: 1, background: 'var(--color-border-subtle)' }} />
+            <div className="mt-7">
+              <div className="mb-4 flex items-center gap-3">
+                <div className="h-px flex-1 bg-[#0F1E3D]/10" />
+                <span className="font-body text-[11px] font-semibold uppercase tracking-[0.15em] text-[#0F1E3D]/40">
+                  or sign in with
+                </span>
+                <div className="h-px flex-1 bg-[#0F1E3D]/10" />
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <div className="flex flex-col gap-2.5">
                 {ssoProviders.map(p => (
                   <button
                     key={p.id}
                     onClick={() => handleSsoLogin(p.id)}
-                    style={{
-                      width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10,
-                      padding: '12px 16px', background: 'var(--color-bg-subtle)', border: '1px solid var(--color-border-default)',
-                      borderRadius: 4, cursor: 'pointer', fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 500,
-                      color: 'white', transition: 'background 0.15s ease',
-                    }}
+                    className="flex w-full items-center justify-center gap-2.5 rounded-lg border border-[#0F1E3D]/15 bg-white px-4 py-3 font-body text-sm font-semibold text-[#0F1E3D] transition-colors hover:border-[#0F1E3D]/35 hover:bg-[#0F1E3D]/[0.03]"
                   >
                     {p.id === 'microsoft' && (
                       <svg viewBox="0 0 21 21" width="16" height="16" xmlns="http://www.w3.org/2000/svg">
@@ -300,34 +293,43 @@ export default function Login() {
             </div>
           )}
 
-          <p style={{ textAlign: 'center', fontFamily: 'var(--font-sans)', fontSize: 14, color: 'var(--color-text-secondary)', marginTop: 24 }}>
+          <p className="mt-8 text-center font-body text-sm text-[#0F1E3D]/55">
             Don't have an account?{' '}
-            <Link to="/register" style={{ color: 'var(--color-text-link)', textDecoration: 'none' }}>Sign up</Link>
+            <Link to="/register" className="font-semibold text-[#8a6d2f] hover:underline">Sign up</Link>
           </p>
         </motion.div>
       </div>
 
-      {/* Right: Brand panel (desktop only) */}
-      <div className="hidden lg:flex" style={{ flex: 1, alignItems: 'center', justifyContent: 'center', borderLeft: '1px solid var(--color-border-subtle)', position: 'relative', overflow: 'hidden', background: 'var(--color-brand-navy)' }}>
-        <div style={{ position: 'absolute', top: '20%', right: '20%', width: 384, height: 384, borderRadius: '50%', filter: 'blur(120px)', background: 'rgba(201, 169, 97, 0.06)' }} />
-        <div style={{ position: 'absolute', bottom: '25%', left: '25%', width: 256, height: 256, borderRadius: '50%', filter: 'blur(120px)', background: 'rgba(201, 169, 97, 0.04)' }} />
+      {/* Right: brand panel (desktop only) */}
+      <div className="relative hidden flex-1 items-center justify-center overflow-hidden bg-[#0F1E3D] lg:flex">
+        <AuroraBackdrop />
 
-        <div style={{ position: 'relative', zIndex: 1, padding: '0 48px', maxWidth: 480 }}>
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }} style={{ marginBottom: 40 }}>
-            <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" style={{ height: 36 }} />
+        <div className="relative z-10 max-w-[480px] px-12">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-10"
+          >
+            <img src="/moonboots-sports-logo-white.svg" alt="MoonBoots Sports" className="h-9" />
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} style={{ marginBottom: 32 }}>
-            <div style={{ width: 48, height: 2, background: 'var(--color-brand-gold)', marginBottom: 20 }} />
-            <h2 style={{ fontFamily: 'var(--font-serif, "Crimson Pro", Georgia, serif)', fontSize: 32, fontWeight: 700, lineHeight: 1.2, color: 'white' }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15, duration: 0.6, ease: easeOut }}
+            className="mb-9"
+          >
+            <Eyebrow light>Your whole department, one platform</Eyebrow>
+            <h2 className="mt-5 font-serif text-[32px] font-bold leading-tight text-white">
               The PE department platform for UK schools.
             </h2>
-            <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 15, color: 'var(--color-text-secondary)', lineHeight: 1.6, marginTop: 16 }}>
+            <p className="mt-4 font-body text-[15px] leading-relaxed text-[#FAFAF7]/75">
               Curriculum PE and extra-curricular sport, in one bespoke platform per school.
             </p>
           </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="flex flex-col gap-3.5">
             {[
               { icon: GraduationCap, label: 'Curriculum PE', desc: 'Teaching groups, assessment, AI-drafted reports' },
               { icon: Trophy, label: 'Extra-Curricular Sport', desc: 'Teams, fixtures, sessions, NGB-aligned AI coaching' },
@@ -335,39 +337,35 @@ export default function Login() {
             ].map(({ icon: Icon, label, desc }, i) => (
               <motion.div
                 key={label}
-                initial={{ opacity: 0, x: -10 }}
+                initial={{ opacity: 0, x: -12 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 + i * 0.1 }}
-                style={{
-                  display: 'flex', alignItems: 'flex-start', gap: 14,
-                  padding: '16px 18px', borderRadius: 6,
-                  background: 'var(--color-bg-subtle)',
-                  border: '1px solid var(--color-border-default)',
-                }}
+                transition={{ delay: 0.35 + i * 0.12, duration: 0.5, ease: easeOut }}
+                className="flex items-start gap-3.5 rounded-xl bg-white/[0.05] p-4 ring-1 ring-white/10"
               >
-                <div style={{
-                  width: 36, height: 36, borderRadius: 6, flexShrink: 0,
-                  background: 'rgba(201, 169, 97, 0.12)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                }}>
-                  <Icon size={18} style={{ color: 'var(--color-text-link)' }} />
-                </div>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#C9A961]/15">
+                  <Icon size={17} className="text-[#E2C97A]" />
+                </span>
                 <div>
-                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 14, fontWeight: 600, color: 'white' }}>{label}</p>
-                  <p style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 13, color: 'var(--color-text-secondary)', marginTop: 2 }}>{desc}</p>
+                  <p className="font-body text-sm font-semibold text-white">{label}</p>
+                  <p className="mt-0.5 font-body text-[13px] leading-relaxed text-[#FAFAF7]/60">{desc}</p>
                 </div>
               </motion.div>
             ))}
-          </motion.div>
+          </div>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
-            style={{ fontFamily: 'var(--font-sans, Poppins, sans-serif)', fontSize: 12, color: 'var(--color-text-tertiary)', marginTop: 32 }}
+            className="mt-9 flex flex-wrap gap-x-6 gap-y-2 border-t border-[#C9A961]/20 pt-6"
           >
-            Bespoke deployments for primary, prep, secondary, all-through, and multi-academy trusts.
-          </motion.p>
+            {['Primary & prep', 'Secondary', 'All-through', 'Multi-academy trusts'].map((t) => (
+              <span key={t} className="flex items-center gap-1.5 font-body text-[12px] text-[#FAFAF7]/55">
+                <Check size={12} className="text-[#C9A961]" />
+                {t}
+              </span>
+            ))}
+          </motion.div>
         </div>
       </div>
     </div>
