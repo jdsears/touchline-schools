@@ -123,7 +123,8 @@ router.get('/my-teams', async (req, res) => {
 router.get('/development', async (req, res) => {
   try {
     const userId = req.user.id
-    const result = await pool.query(
+    const goalCountSql = `(SELECT COUNT(*)::int FROM pupil_idp_goals g WHERE g.pupil_id = p.id)`
+    const runQuery = (withGoals) => pool.query(
       `WITH my_teams AS (
          SELECT DISTINCT t.id, t.sport
          FROM teams t
@@ -144,7 +145,7 @@ router.get('/development', async (req, res) => {
               p.year_group,
               ARRAY_AGG(DISTINCT tp.sport) AS sports,
               (SELECT COUNT(*)::int FROM observations o WHERE o.pupil_id = p.id) AS observation_count,
-              (SELECT COUNT(*)::int FROM pupil_idp_goals g WHERE g.pupil_id = p.id) AS goal_count,
+              ${withGoals ? goalCountSql : '0'} AS goal_count,
               (SELECT MAX(o.created_at) FROM observations o WHERE o.pupil_id = p.id) AS last_observation_at
        FROM team_pupils tp
        JOIN pupils p ON p.id = tp.pupil_id
@@ -152,6 +153,19 @@ router.get('/development', async (req, res) => {
        ORDER BY observation_count DESC, name ASC`,
       [userId]
     )
+
+    let result
+    try {
+      result = await runQuery(true)
+    } catch (err) {
+      // 42P01 = undefined table; environments without the IDP goals
+      // migration still get the roster, with goal counts at zero
+      if (err.code === '42P01') {
+        result = await runQuery(false)
+      } else {
+        throw err
+      }
+    }
     res.json(result.rows)
   } catch (error) {
     console.error('Teacher development roster error:', error)

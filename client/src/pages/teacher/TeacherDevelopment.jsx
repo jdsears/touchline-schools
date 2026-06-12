@@ -33,14 +33,18 @@ function lastSeen(d) {
 export default function TeacherDevelopment() {
   const [pupils, setPupils] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(false)
   const [search, setSearch] = useState('')
 
-  useEffect(() => {
+  function load() {
+    setLoading(true)
+    setError(false)
     teacherService.getDevelopment()
       .then(res => setPupils(Array.isArray(res.data) ? res.data : []))
-      .catch(() => {})
+      .catch(() => setError(true))
       .finally(() => setLoading(false))
-  }, [])
+  }
+  useEffect(() => { load() }, [])
 
   const filtered = pupils.filter(p =>
     !search || (p.name || '').toLowerCase().includes(search.toLowerCase())
@@ -74,6 +78,16 @@ export default function TeacherDevelopment() {
       {loading ? (
         <div className="flex justify-center py-16">
           <Loader2 className="w-6 h-6 animate-spin text-tertiary" />
+        </div>
+      ) : error ? (
+        <div className="bg-card rounded-xl border border-status-error/40 p-6">
+          <EmptyState
+            icon={Users}
+            title="Couldn't load pupil development"
+            hint="Something went wrong fetching your pupils. This is a loading problem, not missing data."
+            actionLabel="Try again"
+            onAction={load}
+          />
         </div>
       ) : filtered.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
