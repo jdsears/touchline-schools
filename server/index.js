@@ -99,6 +99,7 @@ import { errorHandler } from './middleware/errorHandler.js'
 if (!process.env.ANTHROPIC_API_KEY) console.warn('[BOOT] ANTHROPIC_API_KEY is not set - all AI features will return 503')
 if (!process.env.RESEND_API_KEY) console.warn('[BOOT] RESEND_API_KEY is not set - emails (invites, demo confirmations, trial reminders) will not send')
 if (!process.env.MUX_TOKEN_ID || !process.env.MUX_TOKEN_SECRET) console.warn('[BOOT] MUX credentials are not set - video upload/streaming will return 503')
+if ((process.env.TRANSCRIPTION_PROVIDER || 'assemblyai') === 'assemblyai' && !process.env.ASSEMBLYAI_API_KEY) console.warn('[BOOT] ASSEMBLYAI_API_KEY is not set - voice observation transcription will fail')
 
 dotenv.config()
 
