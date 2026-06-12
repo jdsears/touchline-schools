@@ -20,7 +20,7 @@ const FREE_MAIL_DOMAINS = ['gmail.com', 'hotmail.com', 'yahoo.com', 'outlook.com
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-const NOTIFICATION_EMAIL = process.env.DEMO_REQUEST_NOTIFICATION_EMAIL || 'john@moonbootssports.com'
+const NOTIFICATION_EMAIL = process.env.DEMO_REQUEST_NOTIFICATION_EMAIL || 'js@moonbootsconsultancy.com'
 
 const FROM_ADDRESS = process.env.EMAIL_FROM || 'MoonBoots Sports <noreply@moonbootssports.com>'
 
@@ -134,7 +134,7 @@ router.post('/', demoRequestLimiter, async (req, res) => {
           await client.emails.send({
             from: FROM_ADDRESS,
             to: trimmedEmail,
-            replyTo: 'hello@moonbootssports.com',
+            replyTo: 'js@moonbootsconsultancy.com',
             subject: 'Your MoonBoots Sports demo request',
             html: buildConfirmationEmailHtml({
               name: name.trim(),

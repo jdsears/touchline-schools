@@ -79,7 +79,7 @@ export default function LicenceTab() {
           To discuss your licence, add sports, or adjust your seat count, contact the MoonBoots team.
         </p>
         <a
-          href={`mailto:accounts@moonbootssports.com?subject=Licence review request&body=School: ${encodeURIComponent(window.location.hostname)}`}
+          href={`mailto:js@moonbootsconsultancy.com?subject=Licence review request&body=School: ${encodeURIComponent(window.location.hostname)}`}
           className="inline-flex items-center gap-2 px-4 py-2 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm transition-colors"
         >
           <Mail className="w-4 h-4" />

@@ -79,7 +79,7 @@ export default function MePage() {
           icon={HelpCircle}
           label="Help"
           value=""
-          onClick={() => { window.location.href = 'mailto:support@moonbootssports.com' }}
+          onClick={() => { window.location.href = 'mailto:js@moonbootsconsultancy.com' }}
         />
       </div>
 

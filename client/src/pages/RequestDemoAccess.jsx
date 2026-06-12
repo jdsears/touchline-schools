@@ -149,7 +149,7 @@ export default function RequestDemoAccess() {
             </p>
             <p style={{ fontFamily: 'var(--font-sans)', fontSize: 16, color: 'rgba(250, 250, 247, 0.85)', lineHeight: 1.6, marginTop: 16 }}>
               If you do not hear back within one working day, please email{' '}
-              <a href="mailto:hello@moonbootssports.com" style={{ color: 'var(--mb-gold)' }}>hello@moonbootssports.com</a> directly.
+              <a href="mailto:js@moonbootsconsultancy.com" style={{ color: 'var(--mb-gold)' }}>js@moonbootsconsultancy.com</a> directly.
             </p>
             <Link to="/" style={{ fontFamily: 'var(--font-sans)', fontSize: 15, color: 'var(--mb-gold)', marginTop: 32, display: 'inline-block', textDecoration: 'none' }}>
               Back to homepage
