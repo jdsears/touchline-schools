@@ -311,9 +311,9 @@ function HowWeWork() {
 // ---------------------------------------------------------------------------
 
 const CONTACTS = [
-  { label: 'Sales and discovery calls', email: 'hello@moonbootssports.com' },
-  { label: 'Existing school support', email: 'support@moonbootssports.com' },
-  { label: 'Partnership and press', email: 'john@moonbootsconsultancy.net' },
+  { label: 'Sales and discovery calls', email: 'js@moonbootsconsultancy.com' },
+  { label: 'Existing school support', email: 'js@moonbootsconsultancy.com' },
+  { label: 'Partnership and press', email: 'js@moonbootsconsultancy.com' },
 ]
 
 function GetInTouch() {

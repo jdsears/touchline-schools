@@ -870,7 +870,7 @@ Under UK GDPR, users can access, correct, or delete their data at any time.
 ### SUPPORT
 
 First point of contact should always be your coach or school.
-For platform-specific concerns, contact MoonBoots Sports support at hello@moonbootssports.com
+For platform-specific concerns, contact MoonBoots Sports support at js@moonbootsconsultancy.com
 
 ## YOUR ROLE
 

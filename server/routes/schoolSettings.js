@@ -378,7 +378,7 @@ router.get('/school/licence', authenticateToken, async (req, res) => {
         seat_count: 0,
         sport_count: 0,
         commercial_contact_name: '',
-        commercial_contact_email: 'accounts@moonbootssports.com',
+        commercial_contact_email: 'js@moonbootsconsultancy.com',
         notes: '',
       })
     }

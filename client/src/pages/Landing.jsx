@@ -1044,7 +1044,7 @@ export function MarketingFooter() {
                 { label: 'About', to: '/about' },
                 { label: 'Terms', to: '/terms' },
                 { label: 'Privacy', to: '/terms' },
-                { label: 'Contact', href: 'mailto:hello@moonbootssports.com' },
+                { label: 'Contact', href: 'mailto:js@moonbootsconsultancy.com' },
               ].map((link) => (
                 <li key={link.label}>
                   {link.to ? (
@@ -1062,7 +1062,7 @@ export function MarketingFooter() {
           </div>
           <div className="min-w-[240px]">
             <p className="mb-4 font-body text-[11px] font-bold uppercase tracking-[0.2em] text-[#C9A961]">Get in touch</p>
-            <p className="font-body text-sm text-[#FAFAF7]/70">hello@moonbootssports.com</p>
+            <p className="font-body text-sm text-[#FAFAF7]/70">js@moonbootsconsultancy.com</p>
             <p className="mt-1 font-body text-sm text-[#FAFAF7]/70">Norfolk, United Kingdom</p>
             <a
               href="https://moonbootsconsultancy.net"

@@ -105,8 +105,8 @@ export default function BrandingTab() {
           <span className="text-brand-accent font-medium">Branding is managed by MoonBoots.</span>
           <span className="text-secondary ml-1">
             To request changes to your logo or colours, email{' '}
-            <a href="mailto:hello@moonbootssports.com" className="underline text-brand-accent hover:text-brand-accent">
-              hello@moonbootssports.com
+            <a href="mailto:js@moonbootsconsultancy.com" className="underline text-brand-accent hover:text-brand-accent">
+              js@moonbootsconsultancy.com
             </a>
           </span>
         </div>

@@ -55,7 +55,7 @@ export default function Terms() {
             </p>
             <p>
               These Terms are governed by the laws of England and Wales.
-              Contact: <a href="mailto:hello@moonbootssports.com" className="text-pitch-400 hover:underline">hello@moonbootssports.com</a>
+              Contact: <a href="mailto:js@moonbootsconsultancy.com" className="text-pitch-400 hover:underline">js@moonbootsconsultancy.com</a>
             </p>
           </PolicySection>
 
@@ -80,7 +80,7 @@ export default function Terms() {
             <p>
               Data is stored on servers within the European Economic Area (EEA) or under appropriate data transfer
               safeguards. You have the right to access, rectify, or erase your data. Contact us at{' '}
-              <a href="mailto:privacy@moonbootssports.com" className="text-pitch-400 hover:underline">privacy@moonbootssports.com</a>.
+              <a href="mailto:js@moonbootsconsultancy.com" className="text-pitch-400 hover:underline">js@moonbootsconsultancy.com</a>.
             </p>
             <p>
               Data is retained for the duration of the school's active subscription plus 90 days, after which it is
@@ -103,7 +103,7 @@ export default function Terms() {
             <p>
               If you become aware of a safeguarding concern related to use of this platform, follow your school's
               safeguarding procedures immediately. You may also contact us at{' '}
-              <a href="mailto:safeguarding@moonbootssports.com" className="text-pitch-400 hover:underline">safeguarding@moonbootssports.com</a>.
+              <a href="mailto:js@moonbootsconsultancy.com" className="text-pitch-400 hover:underline">js@moonbootsconsultancy.com</a>.
             </p>
           </PolicySection>
 
@@ -149,7 +149,7 @@ export default function Terms() {
             </p>
             <p>
               Questions about AI use:{' '}
-              <a href="mailto:hello@moonbootssports.com" className="text-pitch-400 hover:underline">hello@moonbootssports.com</a>
+              <a href="mailto:js@moonbootsconsultancy.com" className="text-pitch-400 hover:underline">js@moonbootsconsultancy.com</a>
             </p>
           </PolicySection>
 
@@ -157,8 +157,8 @@ export default function Terms() {
             <p>MoonBoots Consultancy UK Ltd - Registered in England and Wales</p>
             <p className="mt-1">
               Questions?{' '}
-              <a href="mailto:hello@moonbootssports.com" className="text-secondary hover:text-white transition-colors">
-                hello@moonbootssports.com
+              <a href="mailto:js@moonbootsconsultancy.com" className="text-secondary hover:text-white transition-colors">
+                js@moonbootsconsultancy.com
               </a>
             </p>
           </div>

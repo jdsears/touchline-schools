@@ -221,7 +221,7 @@ We are responsible for:
 
 8. Safeguarding
 
-Safeguarding children and young people is central to everything we do. Our full Safeguarding Policy forms part of these Terms. If you become aware of any safeguarding concern related to the use of MoonBoots Sports, contact us immediately at safeguarding@moonbootssports.com.
+Safeguarding children and young people is central to everything we do. Our full Safeguarding Policy forms part of these Terms. If you become aware of any safeguarding concern related to the use of MoonBoots Sports, contact us immediately at js@moonbootsconsultancy.com.
 
 9. Limitation of Liability
 
@@ -238,8 +238,8 @@ These Terms are governed by the laws of England and Wales.
 12. Contact
 
 MoonBoots Consultancy UK Ltd
-Email: hello@moonbootssports.com
-Safeguarding concerns: safeguarding@moonbootssports.com
+Email: js@moonbootsconsultancy.com
+Safeguarding concerns: js@moonbootsconsultancy.com
 
 
 =====================================
@@ -286,7 +286,7 @@ Technical logs: 12 months
 
 6. Your Rights
 
-Under UK GDPR: access, rectification, erasure, restriction, portability, objection, and withdrawal of consent. Contact: privacy@moonbootssports.com. Response within 30 days. Complaints to the ICO at ico.org.uk.
+Under UK GDPR: access, rectification, erasure, restriction, portability, objection, and withdrawal of consent. Contact: js@moonbootsconsultancy.com. Response within 30 days. Complaints to the ICO at ico.org.uk.
 
 7. AI and Automated Processing
 
@@ -294,9 +294,9 @@ AI-generated content is always presented as suggestions. No decisions about a pu
 
 8. Contact
 
-Privacy enquiries: privacy@moonbootssports.com
-Safeguarding concerns: safeguarding@moonbootssports.com
-General: hello@moonbootssports.com
+Privacy enquiries: js@moonbootsconsultancy.com
+Safeguarding concerns: js@moonbootsconsultancy.com
+General: js@moonbootsconsultancy.com
 
 
 =====================================
@@ -337,12 +337,12 @@ You can also contact:
 - NSPCC Helpline: 0808 800 5000
 - Childline: 0800 1111
 
-MoonBoots Sports concerns: safeguarding@moonbootssports.com
+MoonBoots Sports concerns: js@moonbootsconsultancy.com
 
 5. Contact
 
-Safeguarding concerns: safeguarding@moonbootssports.com
-General enquiries: hello@moonbootssports.com
+Safeguarding concerns: js@moonbootsconsultancy.com
+General enquiries: js@moonbootsconsultancy.com
 
 
 =====================================
@@ -368,7 +368,7 @@ Cookies We Don't Use:
 
 Managing Cookies: You can control cookies through your browser settings. Blocking essential cookies will prevent MoonBoots Sports from working properly.
 
-Contact: hello@moonbootssports.com
+Contact: js@moonbootsconsultancy.com
 
 
 =====================================
@@ -440,8 +440,8 @@ We believe AI should enhance coaching, not replace it. Every AI feature in MoonB
 
 9. Accountability
 
-Email: hello@moonbootssports.com
-Safeguarding concerns involving AI: safeguarding@moonbootssports.com
+Email: js@moonbootsconsultancy.com
+Safeguarding concerns involving AI: js@moonbootsconsultancy.com
 
 10. Review
 

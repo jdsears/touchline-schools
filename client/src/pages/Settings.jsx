@@ -714,7 +714,7 @@ function BillingTab({ teamId, userEmail }) {
               </button>
             )}
             <a
-              href="mailto:hello@moonbootssports.com?subject=Plan%20enquiry"
+              href="mailto:js@moonbootsconsultancy.com?subject=Plan%20enquiry"
               className="btn-primary w-full block text-center"
             >
               {entitlements?.status === 'active' ? 'Discuss Your Plan' : 'Talk to Us About Upgrading'}
