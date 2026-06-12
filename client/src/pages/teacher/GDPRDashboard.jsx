@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { EmptyState } from '../../components/common/ui'
 import { gdprService } from '../../services/api'
 import {
   Shield, Download, Trash2, FileText, CheckCircle, Clock,
@@ -58,7 +59,7 @@ export default function GDPRDashboard() {
     <div className="p-6 max-w-6xl mx-auto">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
+        <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary flex items-center gap-3">
           <Shield className="w-7 h-7 text-brand-primary" />
           Data & Privacy (GDPR)
         </h1>
@@ -508,9 +509,12 @@ function RequestsTab() {
   return (
     <div>
       {requests.length === 0 ? (
-        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
-          <FileText className="w-8 h-8 text-tertiary mx-auto mb-3" />
-          <p className="text-secondary">No data requests yet</p>
+        <div className="bg-card rounded-xl border border-border-default p-6">
+          <EmptyState
+            icon={FileText}
+            title="No data requests yet"
+            hint="Subject access and erasure requests from parents will appear here with their statutory deadlines."
+          />
         </div>
       ) : (
         <div className="space-y-3">

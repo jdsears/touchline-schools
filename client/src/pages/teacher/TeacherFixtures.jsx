@@ -178,7 +178,7 @@ export default function TeacherFixtures() {
     <div className="p-4 md:p-6 max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-primary">Fixtures & Results</h1>
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-[-0.015em] text-primary">Fixtures & Results</h1>
           <p className="text-secondary text-sm mt-0.5">{fixtures.length} matches across {teams.length} team{teams.length !== 1 ? 's' : ''}</p>
         </div>
         <div className="flex items-center gap-1 bg-subtle rounded-lg p-0.5">

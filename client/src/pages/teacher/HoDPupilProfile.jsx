@@ -188,7 +188,7 @@ export default function HoDPupilProfile() {
                   className="px-2 py-1 bg-subtle border border-border-strong rounded text-primary text-lg font-bold w-32 focus:outline-none focus:border-brand-primary" />
               </div>
             ) : (
-              <h1 className="text-2xl font-bold text-primary">{pupil.first_name} {pupil.last_name}</h1>
+              <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">{pupil.first_name} {pupil.last_name}</h1>
             )}
             <div className="flex items-center gap-3 mt-1">
               {editing ? (

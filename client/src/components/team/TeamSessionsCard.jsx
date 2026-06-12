@@ -7,6 +7,7 @@ import {
   Calendar, Clock, Plus, X, Loader2, Printer, Trash2, Share2, Sparkles, ChevronRight,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { IconTile } from '../common/ui'
 
 const FOCUS_SUGGESTIONS = {
   football: ['passing', 'finishing', 'defending', 'pressing', 'possession', '1v1 skills'],
@@ -392,8 +393,8 @@ export default function TeamSessionsCard({ teamId, sport, pupilCount }) {
   return (
     <div className="bg-card rounded-xl border border-border-default p-6 lg:col-span-2">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-          <Calendar className="w-5 h-5 text-brand-primary" />
+        <h2 className="text-lg font-semibold text-primary flex items-center gap-2.5 font-display">
+          <IconTile icon={Calendar} size="sm" />
           Training Sessions ({sessions.length})
         </h2>
         <button

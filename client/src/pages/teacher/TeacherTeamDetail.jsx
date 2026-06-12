@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { SPORT_ICONS } from '../../constants/sports'
 import TeamSessionsCard from '../../components/team/TeamSessionsCard'
+import { StatCard, IconTile } from '../../components/common/ui'
 import {
   ChevronLeft, Users, Trophy, Calendar, MapPin,
   Shield, Loader2, Clock, Plus,
@@ -87,7 +88,7 @@ export default function TeacherTeamDetail() {
           {SPORT_ICONS[team.sport] || <Shield className="w-7 h-7 text-secondary" />}
         </div>
         <div>
-          <h1 className="text-2xl font-bold text-primary">{team.name}</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">{team.name}</h1>
           <div className="flex items-center gap-3 mt-1">
             <span className="px-2 py-0.5 bg-subtle rounded text-xs text-secondary capitalize">{team.sport}</span>
             {team.age_group && <span className="text-sm text-secondary">{team.age_group}</span>}
@@ -100,26 +101,17 @@ export default function TeacherTeamDetail() {
 
       {/* Stats row */}
       <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="bg-card rounded-xl border border-border-default p-4 text-center">
-          <div className="text-2xl font-bold text-primary">{pupils.length}</div>
-          <div className="text-xs text-secondary mt-1">Squad</div>
-        </div>
-        <div className="bg-card rounded-xl border border-border-default p-4 text-center">
-          <div className="text-2xl font-bold text-primary">{past.length}</div>
-          <div className="text-xs text-secondary mt-1">Played</div>
-        </div>
-        <div className="bg-card rounded-xl border border-border-default p-4 text-center">
-          <div className="text-2xl font-bold text-primary">{upcoming.length}</div>
-          <div className="text-xs text-secondary mt-1">Upcoming</div>
-        </div>
+        <StatCard label="Squad" value={pupils.length} sub="pupils in this team" />
+        <StatCard label="Played" value={past.length} sub="fixtures completed" />
+        <StatCard label="Upcoming" value={upcoming.length} sub="fixtures scheduled" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Squad */}
         <div className="bg-card rounded-xl border border-border-default p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-              <Users className="w-5 h-5 text-brand-primary" />
+            <h2 className="text-lg font-semibold text-primary flex items-center gap-2.5 font-display">
+              <IconTile icon={Users} size="sm" />
               Squad ({pupils.length})
             </h2>
           </div>
@@ -146,8 +138,8 @@ export default function TeacherTeamDetail() {
         {/* Fixtures */}
         <div className="bg-card rounded-xl border border-border-default p-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-primary flex items-center gap-2">
-              <Trophy className="w-5 h-5 text-brand-accent" />
+            <h2 className="text-lg font-semibold text-primary flex items-center gap-2.5 font-display">
+              <IconTile icon={Trophy} size="sm" />
               Fixtures ({matches.length})
             </h2>
             <Link to={`/teacher/teams/${teamId}/fixtures/block`}

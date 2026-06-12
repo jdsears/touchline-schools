@@ -92,7 +92,7 @@ export default function HoDOverview() {
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-primary flex items-center gap-3">
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-[-0.015em] text-primary flex items-center gap-3">
             <Building2 className="w-6 h-6 text-brand-accent" />
             School Overview
           </h1>

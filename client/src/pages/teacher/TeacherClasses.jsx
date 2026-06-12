@@ -93,7 +93,7 @@ export default function TeacherClasses() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">My Classes</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">My Classes</h1>
           <p className="text-secondary mt-1">Manage your teaching groups and sport units</p>
         </div>
         <button

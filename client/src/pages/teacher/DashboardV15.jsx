@@ -178,7 +178,7 @@ export default function DashboardV15() {
   roles.push('teacherCurriculum', 'teacherExtraCurricular')
 
   return (
-    <div className="max-w-[860px] mx-auto px-7 py-6">
+    <div className="max-w-[1100px] mx-auto px-7 py-6">
       {/* Page header */}
       <div className="flex items-baseline justify-between gap-4 mb-4">
         <div>

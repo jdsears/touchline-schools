@@ -71,7 +71,7 @@ export default function HoDStaffActivity() {
 
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-xl md:text-2xl font-bold text-primary flex items-center gap-3">
+          <h1 className="font-display text-2xl md:text-3xl font-bold tracking-[-0.015em] text-primary flex items-center gap-3">
             <UserCog className="w-6 h-6 text-brand-accent" />
             Staff Activity Report
           </h1>

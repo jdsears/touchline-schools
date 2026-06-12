@@ -56,7 +56,7 @@ export default function TeacherSessions() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Session Planning</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">Session Planning</h1>
           <p className="text-secondary mt-1">Training sessions across all your teams</p>
         </div>
       </div>

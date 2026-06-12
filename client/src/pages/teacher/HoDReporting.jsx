@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import { EmptyState } from '../../components/common/ui'
 import { useNavigate } from 'react-router-dom'
 import { reportingService } from '../../services/api'
 import { FileBarChart, Plus, X, Check, Lock, Unlock, ChevronRight, AlertTriangle } from 'lucide-react'
@@ -116,7 +117,7 @@ export default function HoDReporting() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Reporting</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">Reporting</h1>
           <p className="text-secondary mt-1">Manage reporting windows for the school</p>
         </div>
         <button
@@ -185,12 +186,14 @@ export default function HoDReporting() {
           })}
         </div>
       ) : (
-        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
-          <FileBarChart className="w-8 h-8 text-tertiary mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-primary mb-2">No reporting windows yet</h3>
-          <p className="text-secondary text-sm max-w-md mx-auto">
-            Create a reporting window for each term. Teachers will write reports for their classes when the window is open.
-          </p>
+        <div className="bg-card rounded-xl border border-border-default p-6">
+          <EmptyState
+            icon={FileBarChart}
+            title="No reporting windows yet"
+            hint="Create a reporting window for each term. Teachers will write reports for their classes while the window is open."
+            actionLabel="Create your first reporting window"
+            onAction={() => setShowCreate(true)}
+          />
         </div>
       )}
 

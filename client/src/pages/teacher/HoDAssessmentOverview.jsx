@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { EmptyState } from '../../components/common/ui'
 import { hodService } from '../../services/api'
 import { ClipboardCheck, Users, TrendingUp, Filter } from 'lucide-react'
 
@@ -101,14 +102,14 @@ export default function HoDAssessmentOverview() {
   if (!data || data.year_groups.length === 0) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold text-primary mb-2">Assessment Overview</h1>
+        <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary mb-2">Assessment Overview</h1>
         <p className="text-secondary mb-8">Cross-year curriculum assessment heatmap</p>
-        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
-          <ClipboardCheck className="w-8 h-8 text-tertiary mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-primary mb-2">No assessments recorded yet</h3>
-          <p className="text-secondary text-sm max-w-md mx-auto">
-            Once teachers begin recording assessments against curriculum strands, the cross-year heatmap will appear here.
-          </p>
+        <div className="bg-card rounded-xl border border-border-default p-6">
+          <EmptyState
+            icon={ClipboardCheck}
+            title="No assessments recorded yet"
+            hint="Once teachers begin recording assessments against curriculum strands, the cross-year heatmap will appear here."
+          />
         </div>
       </div>
     )
@@ -122,7 +123,7 @@ export default function HoDAssessmentOverview() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Assessment Overview</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">Assessment Overview</h1>
           <p className="text-secondary mt-1">Cross-year curriculum assessment heatmap</p>
         </div>
         <div className="flex items-center gap-2">

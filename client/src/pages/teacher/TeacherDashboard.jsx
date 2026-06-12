@@ -69,7 +69,7 @@ export default function TeacherDashboard() {
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto space-y-6">
       <div>
-        <h1 className="text-xl md:text-2xl font-bold text-primary">Dashboard</h1>
+        <h1 className="font-display text-2xl md:text-3xl font-bold tracking-[-0.015em] text-primary">Dashboard</h1>
         <p className="text-secondary text-sm mt-0.5">{todayDate}</p>
       </div>
 
