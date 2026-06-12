@@ -109,7 +109,7 @@ export function requireRole(...roles) {
   }
 }
 
-export function requireTeamAccess(req, res, next) {
+export async function requireTeamAccess(req, res, next) {
   const teamId = req.params.teamId || req.params.id
 
   if (!req.user) {
@@ -121,11 +121,33 @@ export function requireTeamAccess(req, res, next) {
     return next()
   }
 
-  if (req.user.team_id !== teamId) {
-    return res.status(403).json({ message: 'Access denied to this team' })
+  // Legacy single-team path (pupils, parents, single-team coaches)
+  if (req.user.team_id === teamId) {
+    return next()
   }
 
-  next()
+  // Schools model: staff manage multiple teams via ownership or
+  // team_memberships - the legacy users.team_id check alone locked
+  // multi-team teachers out of every team but their primary
+  try {
+    const access = await pool.query(
+      `SELECT 1
+       FROM teams t
+       LEFT JOIN team_memberships tm
+         ON tm.team_id = t.id AND tm.user_id = $2
+       WHERE t.id = $1
+         AND (t.owner_id = $2 OR tm.role IN ('manager', 'assistant', 'scout'))
+       LIMIT 1`,
+      [teamId, req.user.id]
+    )
+    if (access.rows.length > 0) {
+      return next()
+    }
+  } catch (err) {
+    console.error('requireTeamAccess membership check failed:', err.message)
+  }
+
+  return res.status(403).json({ message: 'Access denied to this team' })
 }
 
 // Middleware to require full access (admin or valid subscription)
