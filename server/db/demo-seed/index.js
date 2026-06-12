@@ -25,6 +25,7 @@ import { seedLessons } from './lessons.js'
 import { seedAssessments } from './assessments.js'
 import { seedReports } from './reports.js'
 import { seedFixturesExtra } from './fixturesExtra.js'
+import { seedDevelopmentObservations } from './development.js'
 import { seedMedicalNotes } from '../seeds/seed-medical-notes.js'
 import { seedSendNotes } from '../seeds/seed-send-notes.js'
 import { seedIdps } from '../seeds/seed-idps.js'
@@ -176,6 +177,7 @@ export async function runDemoSeed({ wipeOnly = false, onLog } = {}) {
   log('[demo-seed] Fixtures seeded')
 
   await seedFixturesExtra(school.id)
+  await seedDevelopmentObservations(teams).catch(e => log(`[demo-seed] Development observations failed: ${e.message}`))
   log('[demo-seed] Extra fixtures seeded')
 
   await seedSafeguarding(school.id, staff)

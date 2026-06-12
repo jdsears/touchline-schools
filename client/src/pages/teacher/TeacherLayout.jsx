@@ -50,6 +50,13 @@ export default function TeacherLayout() {
   const [voicePendingCount, setVoicePendingCount] = useState(0)
   const [showRecorder, setShowRecorder] = useState(false)
 
+  // The demo tour's voice step (and anything else) can open the recorder
+  useEffect(() => {
+    const open = () => setShowRecorder(true)
+    window.addEventListener('open-voice-recorder', open)
+    return () => window.removeEventListener('open-voice-recorder', open)
+  }, [])
+
   const isOnHoDView = location.pathname === '/teacher/hod' || location.pathname.startsWith('/teacher/hod/')
   const isOnTeacherHome = location.pathname === '/teacher'
   const roleDisplay = ROLE_DISPLAY[schoolRole] || ROLE_DISPLAY[user?.role] || user?.role

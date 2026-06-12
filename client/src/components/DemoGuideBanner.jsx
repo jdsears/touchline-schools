@@ -8,8 +8,9 @@ import { Sparkles, X, ChevronRight } from 'lucide-react'
 const STEPS = [
   { label: 'Your day at a glance', to: '/teacher' },
   { label: 'Open a team & plan a session', to: '/teacher/teams' },
-  { label: 'Ask Coach for drills', to: '/assistant' },
-  { label: 'Speak a voice note from the field', to: '/teacher/voice' },
+  { label: 'Ask Coach for drills', to: '/teacher/assistant' },
+  // Voice notes live behind the gold mic button - open the recorder directly
+  { label: 'Speak a voice note from the field', action: 'open-voice-recorder' },
   { label: 'Fixtures & results', to: '/teacher/fixtures' },
   { label: 'Pupil development', to: '/teacher/development' },
 ]
@@ -32,17 +33,27 @@ export default function DemoGuideBanner() {
         </span>
         <div className="flex flex-wrap items-center gap-1.5">
           {STEPS.map((step, i) => {
-            const active = location.pathname === step.to
+            const active = step.to && location.pathname === step.to
+            const cls = `flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium transition-colors ${
+              active
+                ? 'bg-brand-primary text-on-dark'
+                : 'bg-card/70 text-secondary hover:bg-card hover:text-primary'
+            }`
+            if (step.action) {
+              return (
+                <button
+                  key={step.label}
+                  type="button"
+                  onClick={() => window.dispatchEvent(new CustomEvent(step.action))}
+                  className={cls}
+                >
+                  <span className="font-semibold">{i + 1}.</span> {step.label}
+                  <ChevronRight className="h-3 w-3 opacity-50" />
+                </button>
+              )
+            }
             return (
-              <Link
-                key={step.to}
-                to={step.to}
-                className={`flex items-center gap-1 rounded-full px-2.5 py-1 text-[12px] font-medium transition-colors ${
-                  active
-                    ? 'bg-brand-primary text-on-dark'
-                    : 'bg-card/70 text-secondary hover:bg-card hover:text-primary'
-                }`}
-              >
+              <Link key={step.to} to={step.to} className={cls}>
                 <span className="font-semibold">{i + 1}.</span> {step.label}
                 {!active && <ChevronRight className="h-3 w-3 opacity-50" />}
               </Link>
