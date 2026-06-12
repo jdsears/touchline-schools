@@ -199,7 +199,7 @@ export default function TeacherClassDetail() {
             <GraduationCap className="w-7 h-7 text-brand-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-primary">{group.name}</h1>
+            <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">{group.name}</h1>
             <div className="flex items-center gap-3 mt-1">
               <span className="text-sm text-secondary">Year {group.year_group}</span>
               <span className="text-tertiary">|</span>

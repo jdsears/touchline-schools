@@ -1,21 +1,8 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { hodService } from '../services/api'
+import { StatCard } from './common/ui'
 import { Clock, ChevronRight, TrendingUp, TrendingDown } from 'lucide-react'
-
-function Metric({ label, value, delta, deltaTone = 'neutral', sub }) {
-  const deltaColor = deltaTone === 'positive' ? 'var(--status-success)'
-    : deltaTone === 'negative' ? 'var(--status-error)' : 'var(--text-tertiary)'
-  return (
-    <div className="flex-1 min-w-0 p-[14px_16px] rounded-[var(--radius-lg)]"
-      style={{ background: 'var(--surface-card)', border: '1px solid var(--border-subtle)' }}>
-      <div className="text-[10.5px] font-bold tracking-[0.06em] uppercase mb-1.5" style={{ color: 'var(--text-tertiary)' }}>{label}</div>
-      <div className="flex items-baseline gap-2">
-        <span className="text-[26px] font-bold tracking-[-0.02em] leading-none tabular-nums" style={{ color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>{value}</span>
-        {delta && <span className="text-[11.5px] font-semibold" style={{ color: deltaColor }}>{delta}</span>}
-      </div>
-      {sub && <div className="text-[11.5px] mt-1" style={{ color: 'var(--text-tertiary)' }}>{sub}</div>}
-    </div>
-  )
-}
 
 function ReportingWindowRow({ name, completed, total, dueLabel, dueTone = 'neutral' }) {
   const pct = Math.round((completed / total) * 100)
@@ -47,14 +34,26 @@ function SectionHeading({ label, single }) {
 }
 
 export function HoDSection({ single }) {
+  // Live weekly metrics - these were hardcoded demo values until v1.6
+  const [weekly, setWeekly] = useState(null)
+  useEffect(() => {
+    hodService.getSchoolOverviewWeekly()
+      .then(res => setWeekly(res.data))
+      .catch(() => setWeekly(null))
+  }, [])
+
+  const staff = weekly?.staff_activity || []
+  const activeStaff = staff.filter(t => Number(t.observations_logged) > 0 || Number(t.reports_updated) > 0).length
+  const fixturesThisWeek = (weekly?.fixtures || []).length
+
   return (
     <div>
       <SectionHeading label="Head of Department" single={single} />
       <div className="flex gap-3 mb-4 flex-wrap">
-        <Metric label="Sports active" value="7" sub="Across all year groups" />
-        <Metric label="Pupils involved" value="412" delta="↑ 14" deltaTone="positive" sub="vs last term" />
-        <Metric label="Staff activity" value="14/17" sub="Logged this week" />
-        <Metric label="Awaiting moderation" value="3" delta="↓ 2" deltaTone="positive" sub="vs yesterday" />
+        <StatCard label="Sports active" value={weekly ? Number(weekly.participation?.sports_active) || 0 : null} sub="Across all year groups" />
+        <StatCard label="Pupils involved" value={weekly ? Number(weekly.participation?.unique_pupils) || 0 : null} sub="In teams and classes" />
+        <StatCard label="Staff activity" value={weekly ? activeStaff : null} suffix={weekly && staff.length ? `/${staff.length}` : ''} sub="Logged this week" />
+        <StatCard label="Fixtures this week" value={weekly ? fixturesThisWeek : null} sub="Across all teams" />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="rounded-[var(--radius-lg)] p-5" style={{ background: 'var(--surface-card)', border: '1px solid var(--border-subtle)' }}>

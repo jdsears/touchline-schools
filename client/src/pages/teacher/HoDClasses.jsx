@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { EmptyState } from '../../components/common/ui'
 import { hodService } from '../../services/api'
 import { GraduationCap, Users, BookOpen, Filter } from 'lucide-react'
 
@@ -28,7 +29,7 @@ export default function HoDClasses() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary">All Classes</h1>
+        <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">All Classes</h1>
         <p className="text-secondary mt-1">Every teaching group across the school</p>
       </div>
 
@@ -104,12 +105,12 @@ export default function HoDClasses() {
           ))}
         </div>
       ) : (
-        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
-            <GraduationCap className="w-8 h-8 text-tertiary" />
-          </div>
-          <h3 className="text-lg font-semibold text-primary mb-2">No classes yet</h3>
-          <p className="text-secondary text-sm">Teaching groups will appear here as teachers create them.</p>
+        <div className="bg-card rounded-xl border border-border-default p-6">
+          <EmptyState
+            icon={GraduationCap}
+            title="No classes yet"
+            hint="Teaching groups will appear here as teachers create them for their timetabled PE classes."
+          />
         </div>
       )}
     </div>

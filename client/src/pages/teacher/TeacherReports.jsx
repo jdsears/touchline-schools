@@ -136,7 +136,7 @@ export default function TeacherReports() {
   if (!data || data.windows.length === 0) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold text-primary mb-2">Reports</h1>
+        <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary mb-2">Reports</h1>
         <p className="text-secondary mb-8">Generate termly pupil reports</p>
         <div className="bg-card rounded-xl border border-border-default p-12 text-center">
           <FileBarChart className="w-8 h-8 text-tertiary mx-auto mb-4" />
@@ -150,7 +150,7 @@ export default function TeacherReports() {
   if (data.pupils_to_report.length === 0) {
     return (
       <div className="p-6 max-w-7xl mx-auto">
-        <h1 className="text-2xl font-bold text-primary mb-2">Reports</h1>
+        <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary mb-2">Reports</h1>
         <div className="bg-card rounded-xl border border-border-default p-12 text-center">
           <FileBarChart className="w-8 h-8 text-tertiary mx-auto mb-4" />
           <h3 className="text-lg font-semibold text-primary mb-2">{data.windows[0]?.name} is open</h3>
@@ -164,7 +164,7 @@ export default function TeacherReports() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">Reports</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">Reports</h1>
           <p className="text-secondary mt-1">
             {selectedWindow?.name} - {data.pupils_to_report.length} pupils to report on
           </p>

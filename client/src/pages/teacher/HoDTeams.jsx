@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { EmptyState } from '../../components/common/ui'
 import { SPORT_ICONS, SPORT_BADGE_CLASSES as SPORT_COLORS } from '../../constants/sports'
 import { useSearchParams } from 'react-router-dom'
 import { hodService } from '../../services/api'
@@ -40,7 +41,7 @@ export default function HoDTeams() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary">All Teams</h1>
+        <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">All Teams</h1>
         <p className="text-secondary mt-1">Every extra-curricular team across the school</p>
       </div>
 
@@ -108,12 +109,12 @@ export default function HoDTeams() {
           ))}
         </div>
       ) : (
-        <div className="bg-card rounded-xl border border-border-default p-12 text-center">
-          <div className="w-16 h-16 rounded-full bg-subtle flex items-center justify-center mx-auto mb-4">
-            <Shield className="w-8 h-8 text-tertiary" />
-          </div>
-          <h3 className="text-lg font-semibold text-primary mb-2">No teams yet</h3>
-          <p className="text-secondary text-sm">Teams will appear here as they are created.</p>
+        <div className="bg-card rounded-xl border border-border-default p-6">
+          <EmptyState
+            icon={Shield}
+            title="No teams yet"
+            hint="Every extra-curricular team your teachers create will appear here, across all sports and year groups."
+          />
         </div>
       )}
     </div>

@@ -139,7 +139,7 @@ export default function HoDSSOSettings() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary flex items-center gap-3">
+        <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary flex items-center gap-3">
           <Link2 className="w-7 h-7 text-brand-primary" />
           Single Sign-On (SSO)
         </h1>

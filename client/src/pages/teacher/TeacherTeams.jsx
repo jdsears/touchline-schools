@@ -41,7 +41,7 @@ export default function TeacherTeams() {
     <div className="p-6 max-w-7xl mx-auto">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-primary">My Teams</h1>
+          <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">My Teams</h1>
           <p className="text-secondary mt-1">Extra-curricular teams you coach</p>
         </div>
       </div>

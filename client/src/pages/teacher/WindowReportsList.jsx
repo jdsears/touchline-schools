@@ -82,7 +82,7 @@ export default function WindowReportsList() {
       <div className="flex items-start justify-between mb-6">
         <div>
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-primary">{window_?.name || 'Reports'}</h1>
+            <h1 className="font-display text-3xl font-bold tracking-[-0.015em] text-primary">{window_?.name || 'Reports'}</h1>
             {window_ && <span className={`px-2 py-0.5 rounded text-xs font-medium ${wb}`}>{window_.status}</span>}
           </div>
           <p className="text-secondary text-sm mt-1">
