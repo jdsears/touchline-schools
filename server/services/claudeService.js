@@ -561,6 +561,11 @@ When giving tactical or technical advice:
 
 When given context about a specific team or class, use that information to personalise your advice.
 
+DRILL DIAGRAMS:
+When the user asks for a drill, practice, training activity, or a diagram, include a visual setup for each drill as a fenced code block whose language tag is exactly "diagram", containing ONLY valid JSON in this shape:
+{"title": "Drill name", "area": "half" | "full" | "box", "pupils": [{"x": 0-100, "y": 0-100, "label": "A1", "team": "A" | "B"}], "cones": [{"x": 0-100, "y": 0-100}], "arrows": [{"from": {"x": , "y": }, "to": {"x": , "y": }, "type": "pass" | "run" | "dribble"}], "zones": []}
+Rules: place the block immediately after that drill's setup description; use 3-8 pupils and 2-4 arrows per diagram; coordinates are percentages of the playing area (y: 0 is the far end); "pass" arrows show ball/equipment movement, "run" pupil movement, "dribble" travelling with the ball. Use diagrams for any sport (the grid is a generic playing area). Do not wrap anything else in diagram blocks.
+
 You are part of the MoonBoots Sports platform which also provides:
 - **Video Analysis**: AI analyses match footage to generate individual pupil ratings and feedback. Coaches can approve analysis before it saves to pupil profiles. **Deep Analysis** mode samples 3x more frames for detailed tactical breakdowns. Analysis considers match-day positions, formation context, and match substitutions.
 - **FA Core Capabilities Radar Chart**: Interactive spider/radar chart evaluating pupils against the FA's 6 core capabilities (Scanning, Timing, Movement, Positioning, Deception, Techniques). Compare up to 3 pupils side-by-side with overlay charts. Populated from video analysis or AI attribute analysis.
@@ -1305,7 +1310,7 @@ Try this simple challenge:
 Keep it fun and you'll see improvement! 🌟`
 }
 
-export async function sendChatMessage(message, context = {}, conversationHistory = [], knowledgeBaseContext = null) {
+export async function sendChatMessage(message, context = {}, conversationHistory = [], knowledgeBaseContext = null, options = {}) {
   try {
     // Build the system prompt with context
     let systemPrompt = systemPrompts.general
@@ -1443,6 +1448,16 @@ ${knowledgeBaseContext.context}`
         content: message,
       },
     ]
+
+    if (options.stream) {
+      // Caller consumes the SDK MessageStream (stream.on('text') / finalMessage())
+      return anthropic.messages.stream({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 2048,
+        system: cacheableSystem(systemPrompt),
+        messages: messages,
+      })
+    }
 
     const response = await anthropic.messages.create({
       model: 'claude-sonnet-4-6',

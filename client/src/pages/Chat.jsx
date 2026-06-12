@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { printElement } from '../lib/printUtils'
 import { ASSISTANT_NAME } from '../lib/assistant'
 import { useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
@@ -6,6 +7,7 @@ import { useTeam } from '../context/TeamContext'
 import { chatService } from '../services/api'
 import { motion, AnimatePresence } from 'framer-motion'
 import AIMarkdown from '../components/AIMarkdown'
+import { Printer } from 'lucide-react'
 import {
   Send,
   Sparkles,
@@ -62,11 +64,15 @@ const suggestedPrompts = [
 export default function Chat() {
   const { user } = useAuth()
   const { team, pupils, upcomingMatches } = useTeam()
+  // Chat scope: whole-department by default; optionally pinned to a team.
+  // Department scope sends no team context, so answers stay multi-sport.
+  const [scope, setScope] = useState('department')
   const [searchParams] = useSearchParams()
 
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [streaming, setStreaming] = useState(false)
   const [loadingHistory, setLoadingHistory] = useState(true)
   const [showSuggestions, setShowSuggestions] = useState(true)
 
@@ -115,15 +121,18 @@ export default function Chat() {
   
   // Build context for AI
   function buildContext() {
+    const teamScoped = scope === 'team' && team
     return {
-      team: team ? {
+      team: teamScoped ? {
         name: team.name,
+        sport: team.sport,
         ageGroup: team.age_group,
+        teamFormat: team.team_format,
         formation: team.formation,
         gameModel: team.game_model,
       } : null,
-      squadSize: pupils.length,
-      upcomingMatch: upcomingMatches[0] ? {
+      squadSize: teamScoped ? pupils.length : undefined,
+      upcomingMatch: teamScoped && upcomingMatches[0] ? {
         opponent: upcomingMatches[0].opponent,
         date: upcomingMatches[0].date,
       } : null,
@@ -145,31 +154,67 @@ export default function Chat() {
     setShowSuggestions(false)
     setLoading(true)
     
+    const aiId = Date.now() + 1
     try {
-      const response = await chatService.sendMessage(
-        user.team_id,
-        messageText.trim(),
-        buildContext()
-      )
-      
-      const aiMessage = {
-        id: Date.now() + 1,
-        role: 'assistant',
-        content: response.data.message,
-        timestamp: new Date().toISOString(),
+      const token = localStorage.getItem('fam_token')
+      const res = await fetch(`/api/chat/${user.team_id}/message`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: messageText.trim(),
+          context: buildContext(),
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.message || 'Failed to get response. Please try again.')
       }
-      
-      setMessages(prev => [...prev, aiMessage])
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let text = ''
+      let buffer = ''
+      let started = false
+      let streamError = null
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const events = buffer.split('\n\n')
+        buffer = events.pop()
+        for (const evt of events) {
+          const line = evt.split('\n').find(l => l.startsWith('data: '))
+          if (!line) continue
+          let parsed
+          try { parsed = JSON.parse(line.slice(6)) } catch { continue }
+          if (parsed.type === 'text' && parsed.text) {
+            text += parsed.text
+            if (!started) {
+              started = true
+              setStreaming(true)
+              setMessages(prev => [...prev, {
+                id: aiId, role: 'assistant', content: text, timestamp: new Date().toISOString(),
+              }])
+            } else {
+              setMessages(prev => prev.map(msg => msg.id === aiId ? { ...msg, content: text } : msg))
+            }
+          } else if (parsed.type === 'error') {
+            streamError = parsed.message || 'Failed to get response. Please try again.'
+          }
+        }
+      }
+      if (streamError && !text) throw new Error(streamError)
+      if (!text) throw new Error('No response generated. Please try again.')
     } catch (error) {
       console.error('Chat error:', error)
-      const serverMsg = error.response?.data?.message
-      toast.error(serverMsg || 'Failed to get response. Please try again.')
-      
-      // Remove the user message if we failed
-      setMessages(prev => prev.filter(m => m.id !== userMessage.id))
+      toast.error(error.message || 'Failed to get response. Please try again.')
+
+      // Remove the user message (and any empty reply) if we failed
+      setMessages(prev => prev.filter(m => m.id !== userMessage.id && m.id !== aiId))
       setInput(messageText)
     } finally {
       setLoading(false)
+      setStreaming(false)
       inputRef.current?.focus()
     }
   }
@@ -208,8 +253,34 @@ export default function Chat() {
           <div>
             <h1 className="font-display font-semibold text-primary">{ASSISTANT_NAME}</h1>
             <p className="text-sm text-secondary">
-              {team ? `Helping ${team.name}` : 'Your AI coaching assistant'}
+              Your PE department assistant
             </p>
+            <div className="mt-1.5 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => setScope('department')}
+                className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
+                  scope === 'department'
+                    ? 'bg-brand-primary-tint text-brand-primary'
+                    : 'text-tertiary hover:text-secondary'
+                }`}
+              >
+                Whole department
+              </button>
+              {team && (
+                <button
+                  type="button"
+                  onClick={() => setScope('team')}
+                  className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold transition-colors ${
+                    scope === 'team'
+                      ? 'bg-brand-primary-tint text-brand-primary'
+                      : 'text-tertiary hover:text-secondary'
+                  }`}
+                >
+                  {team.name}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
@@ -287,14 +358,28 @@ export default function Chat() {
                 </div>
                 
                 <div className={`
-                  rounded-2xl p-4
+                  group rounded-2xl p-4
                   ${message.role === 'user'
                     ? 'bg-brand-primary text-on-dark rounded-br-md'
                     : 'bg-subtle text-primary rounded-bl-md'
                   }
                 `}>
                   {message.role === 'assistant' ? (
-                    <AIMarkdown variant="chat">{message.content}</AIMarkdown>
+                    <>
+                      <div id={`chat-msg-${message.id}`}>
+                        <AIMarkdown variant="chat">{message.content}</AIMarkdown>
+                      </div>
+                      {message.content && (
+                        <button
+                          type="button"
+                          onClick={() => printElement(document.getElementById(`chat-msg-${message.id}`), `${ASSISTANT_NAME} — MoonBoots Sports`)}
+                          className="mt-2 flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-tertiary opacity-0 transition-all hover:bg-card hover:text-primary group-hover:opacity-100"
+                          title="Print this answer"
+                        >
+                          <Printer className="h-3.5 w-3.5" /> Print
+                        </button>
+                      )}
+                    </>
                   ) : (
                     <p>{message.content}</p>
                   )}
@@ -303,7 +388,7 @@ export default function Chat() {
             </motion.div>
           ))}
           
-          {loading && (
+          {loading && !streaming && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -314,9 +399,17 @@ export default function Chat() {
                   <Sparkles className="w-4 h-4 text-brand-primary" />
                 </div>
                 <div className="bg-subtle rounded-2xl rounded-bl-md p-4">
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="w-4 h-4 animate-spin text-brand-primary" />
-                    <span className="text-secondary">Thinking...</span>
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex items-center gap-1">
+                      {[0, 1, 2].map(i => (
+                        <span
+                          key={i}
+                          className="h-1.5 w-1.5 rounded-full bg-brand-primary/60 animate-bounce"
+                          style={{ animationDelay: `${i * 0.15}s` }}
+                        />
+                      ))}
+                    </span>
+                    <span className="text-sm text-secondary">{ASSISTANT_NAME} is typing…</span>
                   </div>
                 </div>
               </div>

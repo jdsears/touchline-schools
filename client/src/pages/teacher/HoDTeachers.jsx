@@ -1,5 +1,17 @@
 import { useState, useEffect } from 'react'
 import { SUPPORTED_SPORTS, SPORT_ICONS, sportLabel } from '../../constants/sports'
+
+const AVATAR_TINTS = [
+  'bg-brand-primary-tint text-brand-primary',
+  'bg-brand-accent-tint text-brand-accent',
+  'bg-status-info-tint text-status-info',
+  'bg-status-success-tint text-status-success',
+]
+function avatarTint(name = '') {
+  let h = 0
+  for (const c of name) h = (h * 31 + c.charCodeAt(0)) % 997
+  return AVATAR_TINTS[h % AVATAR_TINTS.length]
+}
 import { hodService } from '../../services/api'
 import { UserCog, Plus, X, Shield, GraduationCap, ChevronDown, Edit2, Check } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -133,8 +145,11 @@ export default function HoDTeachers() {
   return (
     <div className="p-6 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-primary">Staff & Roles</h1>
-        <p className="text-secondary mt-1">Manage staff roles and their sport assignments</p>
+        <h1 className="font-display text-3xl font-bold text-primary">Staff & Roles</h1>
+        <p className="text-secondary mt-1.5">
+          {teachers.length > 0 ? `${teachers.length} staff member${teachers.length === 1 ? '' : 's'} — ` : ''}
+          manage roles and sport assignments
+        </p>
       </div>
 
       {/* Role reference */}
@@ -157,16 +172,16 @@ export default function HoDTeachers() {
           {teachers.map(teacher => {
             const effectiveRole = teacher.school_role || teacher.role || 'teacher'
             return (
-              <div key={teacher.id} className="bg-card rounded-xl border border-border-default p-5">
+              <div key={teacher.id} className="bg-card rounded-xl border border-border-default p-5 transition-all duration-200 hover:border-border-strong hover:shadow-md">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-full bg-border-default flex items-center justify-center">
-                      <span className="text-lg font-medium text-primary">
-                        {teacher.name?.charAt(0)?.toUpperCase() || '?'}
+                    <div className={`w-12 h-12 rounded-full flex items-center justify-center ring-1 ring-black/5 ${avatarTint(teacher.name)}`}>
+                      <span className="text-lg font-semibold">
+                        {(teacher.name || '?').split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()}
                       </span>
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-primary">{teacher.name}</h3>
+                      <h3 className="font-display text-base font-semibold text-primary">{teacher.name}</h3>
                       <div className="flex items-center gap-3 mt-0.5 flex-wrap">
                         <span className="text-xs text-secondary">{teacher.email}</span>
                         <span className={`px-2 py-0.5 rounded text-xs font-medium ${ROLE_BADGE_COLORS[effectiveRole] || 'bg-border-default text-secondary'}`}>
@@ -178,14 +193,14 @@ export default function HoDTeachers() {
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => openRoleModal(teacher)}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-xs transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-border-default bg-card hover:bg-subtle hover:border-border-strong text-secondary rounded-lg text-xs font-medium transition-colors"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                       Role
                     </button>
                     <button
                       onClick={() => setAssignModal({ userId: teacher.id, name: teacher.name })}
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-xs transition-colors"
+                      className="flex items-center gap-1.5 px-3 py-1.5 border border-border-default bg-card hover:bg-subtle hover:border-border-strong text-secondary rounded-lg text-xs font-medium transition-colors"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Sport
@@ -197,9 +212,9 @@ export default function HoDTeachers() {
                 <div className="mt-4 flex flex-wrap gap-2">
                   {teacher.sports && teacher.sports.filter(Boolean).length > 0 ? (
                     teacher.sports.filter(Boolean).map(s => (
-                      <div key={s.sport} className="flex items-center gap-2 px-3 py-1.5 bg-subtle rounded-lg">
+                      <div key={s.sport} className="flex items-center gap-2 px-3 py-1.5 bg-subtle border border-border-default rounded-full">
                         <span>{SPORT_ICONS[s.sport] || ''}</span>
-                        <span className="text-sm text-primary capitalize">{s.sport}</span>
+                        <span className="text-sm font-medium text-primary">{sportLabel(s.sport)}</span>
                         <span className="text-xs text-secondary">({s.role?.replace(/_/g, ' ')})</span>
                         <button
                           onClick={() => handleRemoveSport(teacher.id, s.sport, teacher.name)}
@@ -210,7 +225,12 @@ export default function HoDTeachers() {
                       </div>
                     ))
                   ) : (
-                    <span className="text-xs text-tertiary">No sport assignments</span>
+                    <button
+                      onClick={() => setAssignModal({ userId: teacher.id, name: teacher.name })}
+                      className="flex items-center gap-1.5 rounded-full border border-dashed border-border-strong px-3 py-1.5 text-xs text-tertiary transition-colors hover:border-brand-primary hover:text-brand-primary"
+                    >
+                      <Plus className="w-3 h-3" /> Assign a sport
+                    </button>
                   )}
 
                   {teacher.teams && teacher.teams.filter(Boolean).length > 0 && (
