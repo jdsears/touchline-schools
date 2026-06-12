@@ -56,6 +56,7 @@ const volleyball = {
   tacticalZones: null,
   viewModes: ['formation'],
   supportsPhases: false,
+  supportsGameModel: false,
   defaultFormat: 6,
 }
 

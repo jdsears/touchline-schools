@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { SPORT_ICONS } from '../../constants/sports'
 import { teacherService } from '../../services/api'
-import { Calendar, Clock, Target, Filter, Users } from 'lucide-react'
+import { Calendar, Clock, Target, Filter, Users, Plus } from 'lucide-react'
 
 
 function formatDate(dateStr) {
@@ -129,9 +130,16 @@ export default function TeacherSessions() {
           </div>
           <h3 className="text-lg font-semibold text-primary mb-2">No sessions planned</h3>
           <p className="text-secondary text-sm max-w-md mx-auto">
-            Create training sessions from each team's page. The AI assistant can help generate
-            sport-specific session plans tailored to your team's level.
+            Sessions you plan will appear here across all your teams. Coach can generate a
+            sport-specific session plan for your team in seconds.
           </p>
+          <Link
+            to="/training?new=true"
+            className="mt-6 inline-flex items-center gap-2 rounded-lg bg-brand-primary px-5 py-2.5 text-sm font-semibold text-on-dark transition-colors hover:opacity-90"
+          >
+            <Plus className="w-4 h-4" />
+            Plan a session
+          </Link>
         </div>
       )}
     </div>
