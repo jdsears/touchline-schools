@@ -415,6 +415,23 @@ router.post('/login', async (req, res, next) => {
 })
 
 // Get current user with all team memberships
+// Public live-demo entry: issues a short-lived token for the configured
+// demo account (the seeded demo school's Head of Sport). Enabled whenever
+// that account exists; point DEMO_LOGIN_EMAIL elsewhere to change it.
+router.post('/demo-login', async (req, res, next) => {
+  try {
+    const demoEmail = (process.env.DEMO_LOGIN_EMAIL || 'j.okonkwo.demo@ashworthpark.norfolk.sch.uk').toLowerCase()
+    const result = await pool.query('SELECT id FROM users WHERE LOWER(email) = $1', [demoEmail])
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'The live demo is not available right now.' })
+    }
+    const token = jwt.sign({ userId: result.rows[0].id, demo: true }, JWT_SECRET, { expiresIn: '4h' })
+    res.json({ token })
+  } catch (error) {
+    next(error)
+  }
+})
+
 // Change password (requires current password)
 router.post('/change-password', authenticateToken, async (req, res, next) => {
   try {

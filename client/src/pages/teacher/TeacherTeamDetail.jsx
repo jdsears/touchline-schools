@@ -1,16 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { teamService } from '../../services/api'
+import { SPORT_ICONS } from '../../constants/sports'
+import TeamSessionsCard from '../../components/team/TeamSessionsCard'
 import {
   ChevronLeft, Users, Trophy, Calendar, MapPin,
   Shield, Loader2, Clock, Plus,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
-const SPORT_ICONS = {
-  football: '⚽', rugby: '🏉', cricket: '🏏',
-  hockey: '🏑', netball: '🤾',
-}
 
 function formatDate(d) {
   if (!d) return ''
@@ -187,6 +185,9 @@ export default function TeacherTeamDetail() {
             <p className="text-tertiary text-sm text-center py-6">No fixtures scheduled</p>
           )}
         </div>
+
+        {/* Training sessions */}
+        <TeamSessionsCard teamId={teamId} sport={team.sport} pupilCount={pupils.length} />
       </div>
     </div>
   )
