@@ -9,6 +9,7 @@ const STEPS = [
   { label: 'Your day at a glance', to: '/teacher' },
   { label: 'Open a team & plan a session', to: '/teacher/teams' },
   { label: 'Ask Coach for drills', to: '/assistant' },
+  { label: 'Speak a voice note from the field', to: '/teacher/voice' },
   { label: 'Fixtures & results', to: '/teacher/fixtures' },
   { label: 'Pupil development', to: '/teacher/development' },
 ]
