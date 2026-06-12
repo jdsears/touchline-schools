@@ -20,7 +20,7 @@ dotenv.config()
  * @param {string|Buffer} audioUrlOrBuffer - Signed URL OR raw audio bytes
  * @param {Object} options
  * @param {string[]} [options.customVocabulary] - Pupil names and nicknames for improved accuracy
- * @param {string} [options.languageCode] - Language hint (default: en_gb)
+ * @param {string} [options.languageCode] - Language hint (default: en_uk, AssemblyAI's code for British English)
  * @returns {Promise<TranscriptionResult>}
  */
 export async function transcribe(audioUrlOrBuffer, options = {}) {
@@ -59,7 +59,8 @@ async function transcribeWithAssemblyAI(audioUrlOrBuffer, options = {}) {
 
   const requestBody = {
     audio_url: audioUrl,
-    language_code: options.languageCode || 'en_gb',
+    // AssemblyAI rejects ISO-style en_gb; their British English code is en_uk
+    language_code: options.languageCode || 'en_uk',
     punctuate: true,
     format_text: true,
   }
@@ -103,7 +104,7 @@ async function transcribeWithAssemblyAI(audioUrlOrBuffer, options = {}) {
     if (pollResult.status === 'completed') {
       return {
         text: pollResult.text || '',
-        language: pollResult.language_code || 'en_gb',
+        language: pollResult.language_code || 'en_uk',
         durationSeconds: Math.round((pollResult.audio_duration || 0)),
         confidence: pollResult.confidence || 0,
         wordTimings: pollResult.words?.map(w => ({

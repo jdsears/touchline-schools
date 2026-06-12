@@ -1292,9 +1292,9 @@ export default function Settings() {
   })
 
   const [brandingSettings, setBrandingSettings] = useState({
-    primaryColor: branding?.primaryColor || '#22C55E',
+    primaryColor: branding?.primaryColor || '#0F1E3D',
     secondaryColor: branding?.secondaryColor || '#0F172A',
-    accentColor: branding?.accentColor || '#F97316',
+    accentColor: branding?.accentColor || '#C9A961',
   })
 
   const [teamFormations, setTeamFormations] = useState([])
@@ -1309,9 +1309,9 @@ export default function Settings() {
   useEffect(() => {
     if (team) {
       setBrandingSettings({
-        primaryColor: team.primary_color || '#22C55E',
+        primaryColor: team.primary_color || '#0F1E3D',
         secondaryColor: team.secondary_color || '#0F172A',
-        accentColor: team.accent_color || '#F97316',
+        accentColor: team.accent_color || '#C9A961',
       })
       // Parse formations from team data
       const formations = team.formations

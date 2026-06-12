@@ -27,9 +27,9 @@ export function TeamProvider({ children }) {
   useEffect(() => {
     if (team) {
       const root = document.documentElement
-      const primary = team.primary_color || '#22C55E'
+      const primary = team.primary_color || '#0F1E3D'
       const secondary = team.secondary_color || '#0F172A'
-      const accent = team.accent_color || '#F97316'
+      const accent = team.accent_color || '#C9A961'
 
       root.style.setProperty('--team-primary', primary)
       root.style.setProperty('--team-secondary', secondary)
@@ -170,9 +170,9 @@ export function TeamProvider({ children }) {
     hubName: team?.hub_name || team?.name || 'Team Hub',
     teamName: team?.name || 'Team',
     ageGroup: team?.age_group || '',
-    primaryColor: team?.primary_color || '#22C55E',
+    primaryColor: team?.primary_color || '#0F1E3D',
     secondaryColor: team?.secondary_color || '#0F172A',
-    accentColor: team?.accent_color || '#F97316',
+    accentColor: team?.accent_color || '#C9A961',
     logoUrl: team?.logo_url || null,
     faFulltimeUrl: team?.fa_fulltime_url || null,
     timezone: team?.timezone || 'Europe/London',

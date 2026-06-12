@@ -84,7 +84,7 @@ export async function processVoiceObservation(audioSourceId, teacherId, schoolId
       }
       transcriptionResult = await transcribe(audioInput, {
         customVocabulary,
-        languageCode: 'en_gb',
+        languageCode: 'en_uk',
       })
     } catch (err) {
       console.error(`[VoicePipeline] Transcription failed for ${audioSourceId}:`, err.message)

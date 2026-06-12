@@ -402,7 +402,9 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
               (SELECT t.school_id FROM teams t WHERE t.id = p.team_id) AS team_school_id,
               (SELECT tg.school_id FROM teaching_group_pupils tgp
                  JOIN teaching_groups tg ON tg.id = tgp.teaching_group_id
-                 WHERE tgp.pupil_id = p.id LIMIT 1) AS class_school_id
+                 JOIN schools s ON s.id = tg.school_id
+                 WHERE tgp.pupil_id = p.id
+                 ORDER BY tgp.created_at DESC LIMIT 1) AS class_school_id
        FROM pupils p WHERE p.id = $1`,
       [id]
     )
@@ -434,7 +436,7 @@ router.get('/:id/observations', authenticateToken, async (req, res, next) => {
     const result = await pool.query(
       `SELECT o.*, COALESCE(u.name, 'Staff member') as observer_name,
               m.opponent as match_opponent, COALESCE(m.date, m.match_date) as match_date,
-              ts.session_date as training_date, ts.focus as training_focus,
+              ts.date as training_date, ts.focus_areas as training_focus,
               tg.name as teaching_group_name
        FROM observations o
        LEFT JOIN users u ON o.observer_id = u.id

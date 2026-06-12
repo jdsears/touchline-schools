@@ -57,20 +57,62 @@ function pickFromPool(seed, sportHint) {
   return matching[seed % matching.length]
 }
 
+// The achievements table is pupil_achievements on migrated databases but may
+// still be player_achievements on older ones (the migration renames in place,
+// it never creates the new name). Resolve whichever exists; create if neither.
+let ACH_TABLE = 'pupil_achievements'
+async function resolveTable() {
+  const r = await pool.query(
+    `SELECT to_regclass('public.pupil_achievements') AS new, to_regclass('public.player_achievements') AS old`
+  )
+  if (r.rows[0].new) { ACH_TABLE = 'pupil_achievements'; }
+  else if (r.rows[0].old) { ACH_TABLE = 'player_achievements'; }
+  else {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS pupil_achievements (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        player_id UUID REFERENCES pupils(id) ON DELETE CASCADE,
+        achievement_type VARCHAR(50) NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        icon VARCHAR(50),
+        earned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        match_id UUID REFERENCES matches(id) ON DELETE SET NULL,
+        training_session_id UUID REFERENCES training_sessions(id) ON DELETE SET NULL,
+        awarded_by UUID REFERENCES users(id) ON DELETE SET NULL,
+        sport_key TEXT
+      )
+    `)
+    ACH_TABLE = 'pupil_achievements'
+  }
+  await pool.query(`ALTER TABLE ${ACH_TABLE} ADD COLUMN IF NOT EXISTS sport_key TEXT`).catch(() => {})
+}
+
+let FAILED = 0
+let FIRST_ERROR = null
 async function insertAchievement(pupilId, entry, awardedBy, createdAtIso, matchId = null) {
-  await pool.query(`
-    INSERT INTO pupil_achievements (
-      player_id, achievement_type, title, description, icon,
-      earned_at, match_id, awarded_by, sport_key
-    )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-  `, [
-    pupilId, entry.type, entry.title, entry.description || null, entry.icon,
-    createdAtIso, matchId, awardedBy, entry.sport_key,
-  ])
+  try {
+    await pool.query(`
+      INSERT INTO ${ACH_TABLE} (
+        player_id, achievement_type, title, description, icon,
+        earned_at, match_id, awarded_by, sport_key
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+    `, [
+      pupilId, entry.type, entry.title, entry.description || null, entry.icon,
+      createdAtIso, matchId, awardedBy, entry.sport_key,
+    ])
+    return true
+  } catch (e) {
+    FAILED++
+    if (!FIRST_ERROR) FIRST_ERROR = e.message
+    return false
+  }
 }
 
 async function run() {
+  await resolveTable()
+
   const sr = await pool.query(`SELECT id FROM schools WHERE slug = $1`, [DEMO_SCHOOL_SLUG])
   if (sr.rows.length === 0) throw new Error('Demo school not found. Run seed:demo first.')
   const schoolId = sr.rows[0].id
@@ -102,7 +144,7 @@ async function run() {
   console.log(`[seed-achievements] ${pupils.length} pupils resolved`)
 
   await pool.query(
-    `DELETE FROM pupil_achievements WHERE player_id = ANY($1::uuid[])`,
+    `DELETE FROM ${ACH_TABLE} WHERE player_id = ANY($1::uuid[])`,
     [pupils.map(p => p.id)]
   )
 
@@ -114,34 +156,31 @@ async function run() {
 
   // ── Persona achievements (exact, from brief) ──
   if (jamie) {
-    await insertAchievement(jamie.id,
+    if (await insertAchievement(jamie.id,
       { type: 'award', icon: 'trophy', title: 'Most Improved Player', description: 'Awarded for outstanding progress over the autumn term.', sport_key: 'football' },
-      teacher1 || hodPe, daysAgoIso(40))
-    await insertAchievement(jamie.id,
+      teacher1 || hodPe, daysAgoIso(40))) personaCount++
+    if (await insertAchievement(jamie.id,
       { type: 'recognition', icon: 'flag', title: 'House Points Champion, Year 7', description: 'Top contributor to Elm House across the term.', sport_key: null },
-      hodPe, daysAgoIso(25))
-    personaCount += 2
+      hodPe, daysAgoIso(25))) personaCount++
   }
   if (amelia) {
-    await insertAchievement(amelia.id,
+    if (await insertAchievement(amelia.id,
       { type: 'award', icon: 'medal', title: "Captain's Award", description: 'Recognising leadership on the Year 9 netball squad.', sport_key: 'netball' },
-      teacher2 || hodPe, daysAgoIso(45))
-    await insertAchievement(amelia.id,
+      teacher2 || hodPe, daysAgoIso(45))) personaCount++
+    if (await insertAchievement(amelia.id,
       { type: 'match', icon: 'star', title: 'Player of the Match vs Oakfield Grammar', description: '14 goals from 17 attempts in the County Cup quarter-final.', sport_key: 'netball' },
-      teacher2 || hodPe, daysAgoIso(18))
-    await insertAchievement(amelia.id,
+      teacher2 || hodPe, daysAgoIso(18))) personaCount++
+    if (await insertAchievement(amelia.id,
       { type: 'recognition', icon: 'star', title: 'Department Sports Leader', description: 'Selected by HoD PE for demonstrable leadership across both sports.', sport_key: null },
-      hodPe, daysAgoIso(7))
-    personaCount += 3
+      hodPe, daysAgoIso(7))) personaCount++
   }
   if (toby) {
-    await insertAchievement(toby.id,
+    if (await insertAchievement(toby.id,
       { type: 'award', icon: 'medal', title: '1st XV Commitment Award', description: 'End-of-term rugby award for attendance, effort, and leadership.', sport_key: 'rugby' },
-      teacher1 || hodPe, daysAgoIso(35))
-    await insertAchievement(toby.id,
+      teacher1 || hodPe, daysAgoIso(35))) personaCount++
+    if (await insertAchievement(toby.id,
       { type: 'milestone', icon: 'trophy', title: 'GCSE PE Practical Distinction predicted', description: 'On track for a distinction-level practical grade at GCSE.', sport_key: null },
-      hodPe, daysAgoIso(20))
-    personaCount += 2
+      hodPe, daysAgoIso(20))) personaCount++
   }
 
   // ── Broader roster (~30%) ──
@@ -155,12 +194,14 @@ async function run() {
       if (entry.sport_key === 'football' || entry.sport_key === 'rugby') awarder = teacher1 || hodPe
       else if (entry.sport_key === 'netball' || entry.sport_key === 'hockey') awarder = teacher2 || hodPe
       else if (entry.type === 'recognition' && entry.title.includes('Sports Leader')) awarder = director || hodPe
-      await insertAchievement(p.id, entry, awarder, daysAgoIso(Math.floor(Math.random() * 180) + 5))
-      rosterCount++
+      if (await insertAchievement(p.id, entry, awarder, daysAgoIso(Math.floor(Math.random() * 180) + 5))) rosterCount++
     }
   }
 
-  console.log(`[seed-achievements] Seeded ${personaCount} persona achievements + ${rosterCount} roster achievements.`)
+  console.log(`[seed-achievements] Seeded ${personaCount} persona achievements + ${rosterCount} roster achievements.${FAILED ? ` ${FAILED} failed (first: ${FIRST_ERROR})` : ''}`)
+  if (personaCount + rosterCount === 0 && FIRST_ERROR) {
+    throw new Error(`No achievements seeded — ${FIRST_ERROR}`)
+  }
 }
 
 if (process.argv[1]?.includes('seed-achievements.js')) {

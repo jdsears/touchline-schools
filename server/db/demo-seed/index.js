@@ -95,6 +95,40 @@ export async function wipeDemoTenant() {
     await pool.query(`DELETE FROM ${tbl} WHERE school_id = $1`, [schoolId]).catch(() => {})
   }
 
+  // Delete the curriculum chain explicitly. On databases where teaching_groups
+  // was created before the ON DELETE CASCADE FK existed (CREATE TABLE IF NOT
+  // EXISTS never retrofits constraints), deleting the school orphans its
+  // groups instead of cascading — protected pupils then accumulate duplicate
+  // class enrolments across reseeds. Children first, each guarded.
+  const curriculumChain = [
+    `DELETE FROM pupil_assessments WHERE unit_id IN (
+       SELECT su.id FROM sport_units su
+       JOIN teaching_groups tg ON tg.id = su.teaching_group_id
+       WHERE tg.school_id = $1)`,
+    `DELETE FROM lesson_plans WHERE teaching_group_id IN (SELECT id FROM teaching_groups WHERE school_id = $1)`,
+    `DELETE FROM sport_units WHERE teaching_group_id IN (SELECT id FROM teaching_groups WHERE school_id = $1)`,
+    `DELETE FROM teaching_group_pupils WHERE teaching_group_id IN (SELECT id FROM teaching_groups WHERE school_id = $1)`,
+    `DELETE FROM teaching_groups WHERE school_id = $1`,
+  ]
+  for (const sql of curriculumChain) {
+    await pool.query(sql, [schoolId]).catch(err => console.warn('[demo-seed] Curriculum wipe step skipped:', err.message))
+  }
+
+  // Sweep orphans left behind by wipes that ran before this fix existed.
+  const orphanSweep = [
+    `DELETE FROM pupil_assessments WHERE unit_id IN (
+       SELECT su.id FROM sport_units su
+       JOIN teaching_groups tg ON tg.id = su.teaching_group_id
+       WHERE tg.school_id NOT IN (SELECT id FROM schools))`,
+    `DELETE FROM lesson_plans WHERE teaching_group_id IN (SELECT id FROM teaching_groups WHERE school_id NOT IN (SELECT id FROM schools))`,
+    `DELETE FROM sport_units WHERE teaching_group_id IN (SELECT id FROM teaching_groups WHERE school_id NOT IN (SELECT id FROM schools))`,
+    `DELETE FROM teaching_group_pupils WHERE teaching_group_id IN (SELECT id FROM teaching_groups WHERE school_id NOT IN (SELECT id FROM schools))`,
+    `DELETE FROM teaching_groups WHERE school_id NOT IN (SELECT id FROM schools)`,
+  ]
+  for (const sql of orphanSweep) {
+    await pool.query(sql).catch(err => console.warn('[demo-seed] Orphan sweep step skipped:', err.message))
+  }
+
   // Delete the school (cascades to school_members, teams, teaching_groups, etc.)
   await pool.query(`DELETE FROM schools WHERE id = $1`, [schoolId])
 

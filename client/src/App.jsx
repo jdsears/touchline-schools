@@ -107,6 +107,7 @@ const MatchReportV15 = lazy(() => import('./pages/teacher/MatchReportV15'))
 const TeacherSessions = lazy(() => import('./pages/teacher/TeacherSessions'))
 const TeacherDevelopment = lazy(() => import('./pages/teacher/TeacherDevelopment'))
 const TeacherClassDetail = lazy(() => import('./pages/teacher/TeacherClassDetail'))
+const TeacherNotifications = lazy(() => import('./pages/teacher/TeacherNotifications'))
 
 // Head of Department pages
 const HoDOverview = lazy(() => import('./pages/teacher/HoDOverview'))
@@ -338,6 +339,7 @@ export default function App() {
           <Route path="fixtures" element={<TeacherFixtures />} />
           <Route path="sessions" element={<TeacherSessions />} />
           <Route path="development" element={<TeacherDevelopment />} />
+          <Route path="notifications" element={<TeacherNotifications />} />
           <Route path="tactics" element={<TacticsRedirect />} />
           <Route path="video" element={<VideoLibrary />} />
           <Route path="film-room" element={<FilmRoom />} />
