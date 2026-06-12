@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
+import { enterLiveDemo } from '../lib/demo'
+import toast from 'react-hot-toast'
 import { Link } from 'react-router-dom'
 import SEO from '../components/common/SEO'
 import {
@@ -104,6 +106,32 @@ export function GhostCTA({ to, children, light = true, large = false }) {
     <motion.span whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} transition={{ duration: 0.2 }} className="inline-block">
       <Link to={to} className={cls}>{children}</Link>
     </motion.span>
+  )
+}
+
+
+export function DemoCTA({ large = false, children = 'Try the live demo' }) {
+  const [loading, setLoading] = useState(false)
+  async function go() {
+    setLoading(true)
+    try {
+      await enterLiveDemo()
+    } catch (err) {
+      toast.error(err.message)
+      setLoading(false)
+    }
+  }
+  return (
+    <motion.button
+      whileHover={{ y: -2 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ duration: 0.2 }}
+      onClick={go}
+      disabled={loading}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg border border-[#C9A961]/60 font-body font-semibold text-[#E2C97A] transition-colors hover:border-[#C9A961] hover:bg-[#C9A961]/10 disabled:opacity-60 ${large ? 'px-7 py-4 text-base' : 'px-6 py-3 text-[15px]'}`}
+    >
+      {loading ? 'Opening the demo…' : children}
+    </motion.button>
   )
 }
 
@@ -425,7 +453,7 @@ function Hero() {
             className="mt-9 flex flex-wrap items-center gap-4"
           >
             <PrimaryCTA href={CALENDLY_URL} large>Book a discovery call</PrimaryCTA>
-            <GhostCTA to="/request-demo" large>Request demo access</GhostCTA>
+            <DemoCTA large />
           </motion.div>
           <motion.p
             initial={{ opacity: 0 }}
@@ -433,7 +461,9 @@ function Hero() {
             transition={{ duration: 0.8, delay: 0.9 }}
             className="mt-6 font-body text-sm text-[#FAFAF7]/55"
           >
-            Bespoke deployments for primary, prep, secondary, all-through, and multi-academy trusts.
+            Straight into a fully populated demo school as Head of Sport — no sign-up.
+            Prefer a guided 7-day trial?{' '}
+            <Link to="/request-demo" className="text-[#E2C97A] underline-offset-2 hover:underline">Request demo access</Link>.
           </motion.p>
         </div>
 
@@ -1014,7 +1044,7 @@ function FinalCTA() {
           </p>
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <PrimaryCTA href={CALENDLY_URL} large>Book a discovery call</PrimaryCTA>
-            <GhostCTA to="/request-demo" large>Request demo access</GhostCTA>
+            <DemoCTA large />
           </div>
         </Reveal>
       </div>

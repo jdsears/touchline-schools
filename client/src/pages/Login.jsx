@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react'
+import { enterLiveDemo } from '../lib/demo'
+import toast from 'react-hot-toast'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
@@ -296,6 +298,16 @@ export default function Login() {
           <p className="mt-8 text-center font-body text-sm text-[#0F1E3D]/55">
             Don't have an account?{' '}
             <Link to="/register" className="font-semibold text-[#8a6d2f] hover:underline">Sign up</Link>
+          </p>
+          <p className="mt-2 text-center font-body text-sm text-[#0F1E3D]/55">
+            Just exploring?{' '}
+            <button
+              type="button"
+              onClick={() => enterLiveDemo().catch(err => toast.error(err.message))}
+              className="font-semibold text-[#8a6d2f] hover:underline"
+            >
+              Open the live demo
+            </button>
           </p>
         </motion.div>
       </div>
