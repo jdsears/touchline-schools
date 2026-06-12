@@ -60,6 +60,7 @@ const cricket = {
   tacticalZones: null,
   viewModes: ['formation'],
   supportsPhases: false,
+  supportsGameModel: false,
   defaultFormat: 11,
 }
 

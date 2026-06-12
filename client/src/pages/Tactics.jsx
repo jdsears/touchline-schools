@@ -2142,9 +2142,11 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               </p>
             </div>}
 
-            {/* Game Model Summary */}
+            {/* Game Model Summary - possession/pressing concepts only make
+                sense for invasion games; sports flag this off in their config */}
+            {sportConfig.supportsGameModel !== false && (
             <div className="card p-4">
-              <h2 className="font-display font-semibold text-white mb-4 flex items-center gap-2">
+              <h2 className="font-display font-semibold text-primary mb-4 flex items-center gap-2">
                 <Target className="w-5 h-5 text-brand-accent" />
                 Game Model
               </h2>
@@ -2152,23 +2154,23 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               <div className="space-y-3 text-sm">
                 <div>
                   <span className="text-secondary">Style:</span>
-                  <span className="ml-2 text-white">{gameModel.style || 'Not set'}</span>
+                  <span className="ml-2 text-primary font-medium">{gameModel.style || 'Not set'}</span>
                 </div>
                 <div>
                   <span className="text-secondary">Build-up:</span>
-                  <span className="ml-2 text-white">{gameModel.buildUp || 'Not set'}</span>
+                  <span className="ml-2 text-primary font-medium">{gameModel.buildUp || 'Not set'}</span>
                 </div>
                 <div>
                   <span className="text-secondary">Pressing:</span>
-                  <span className="ml-2 text-white">{gameModel.pressing || 'Not set'}</span>
+                  <span className="ml-2 text-primary font-medium">{gameModel.pressing || 'Not set'}</span>
                 </div>
                 <div>
                   <span className="text-secondary">In possession:</span>
-                  <span className="ml-2 text-white">{gameModel.inPossession || 'Not set'}</span>
+                  <span className="ml-2 text-primary font-medium">{gameModel.inPossession || 'Not set'}</span>
                 </div>
                 <div>
                   <span className="text-secondary">Out of possession:</span>
-                  <span className="ml-2 text-white">{gameModel.outOfPossession || 'Not set'}</span>
+                  <span className="ml-2 text-primary font-medium">{gameModel.outOfPossession || 'Not set'}</span>
                 </div>
               </div>
 
@@ -2179,6 +2181,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
                 Edit Game Model
               </button>
             </div>
+            )}
 
             {/* Playing Time Calculator */}
             {pupils.length > 0 && (
@@ -2212,7 +2215,7 @@ export default function Tactics({ teamOverride, pupilsOverride, updateTeamOverri
               onClick={(e) => e.stopPropagation()}
             >
               <div className="p-6 border-b border-border-default flex items-center justify-between">
-                <h2 className="font-display text-xl font-semibold text-white">Edit Game Model</h2>
+                <h2 className="font-display text-xl font-semibold text-primary">Edit Game Model</h2>
                 <button
                   onClick={() => setShowGameModel(false)}
                   className="p-2 text-secondary hover:text-white transition-colors"
