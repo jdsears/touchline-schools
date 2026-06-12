@@ -10,15 +10,7 @@
  */
 
 import pool from '../config/database.js'
-import { wipeDemoTenant } from '../db/demo-seed/index.js'
-import { seedSchool } from '../db/demo-seed/school.js'
-import { seedStaff } from '../db/demo-seed/staff.js'
-import { seedPupils } from '../db/demo-seed/pupils.js'
-import { seedTeams } from '../db/demo-seed/teams.js'
-import { seedCurriculum } from '../db/demo-seed/curriculum.js'
-import { seedFixtures } from '../db/demo-seed/fixtures.js'
-import { seedSafeguarding } from '../db/demo-seed/safeguarding.js'
-import { seedAuditLog } from '../db/demo-seed/auditLog.js'
+import { runDemoSeed } from '../db/demo-seed/index.js'
 
 const UK_RESET_HOUR = 3 // 03:00 Europe/London
 
@@ -48,16 +40,11 @@ export async function resetDemoTenant() {
   const start = Date.now()
 
   try {
-    await wipeDemoTenant()
-
-    const school = await seedSchool()
-    const staff = await seedStaff(school.id)
-    const pupils = await seedPupils(school.id)
-    const teams = await seedTeams(school.id, staff, pupils)
-    await seedCurriculum(school.id, staff, pupils)
-    await seedFixtures(school.id, teams, staff, pupils)
-    await seedSafeguarding(school.id, staff)
-    await seedAuditLog(school.id, staff)
+    // Single source of truth: run exactly the same full seed as the
+    // manual Admin -> Reseed Demo action (lessons, assessments, reports,
+    // IDPs, medical/SEND notes, achievements included). The nightly path
+    // previously ran a stale subset and produced a thinner demo.
+    await runDemoSeed({ onLog: (msg) => console.log(msg) })
 
     const elapsed = ((Date.now() - start) / 1000).toFixed(1)
     console.log(`[DemoReset] Demo tenant reset complete in ${elapsed}s.`)

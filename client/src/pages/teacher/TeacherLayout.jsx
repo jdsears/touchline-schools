@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
+import DemoGuideBanner from '../../components/DemoGuideBanner'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { hodService, voiceObservationService } from '../../services/api'
@@ -130,6 +131,7 @@ export default function TeacherLayout() {
 
         {/* Page content */}
         <main className="min-h-[calc(100vh-4rem)] lg:min-h-screen">
+          <DemoGuideBanner />
           <ErrorBoundary>
             <Outlet />
           </ErrorBoundary>
@@ -144,7 +146,7 @@ export default function TeacherLayout() {
           className="fixed z-40 flex items-center justify-center"
           style={{
             right: 24, bottom: 24, width: 52, height: 52, borderRadius: '50%',
-            background: 'var(--status-success)', color: 'var(--on-brand-primary)',
+            background: 'var(--brand-primary)', color: 'var(--brand-accent)',
             border: 'none', cursor: 'pointer',
             boxShadow: '0 8px 22px rgba(15,30,61,0.22), 0 2px 6px rgba(15,30,61,0.14)',
           }}

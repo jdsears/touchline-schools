@@ -511,6 +511,7 @@ router.get('/me', authenticateToken, async (req, res, next) => {
         team_id: req.user.team_id,
         pupil_id: req.user.pupil_id,
         is_admin: req.user.is_admin,
+        is_demo_user: req.user.is_demo_user || false,
         hasFullAccess: req.user.hasFullAccess,
         subscriptionStatus: req.user.subscriptionStatus,
         has_completed_onboarding: req.user.has_completed_onboarding || false,

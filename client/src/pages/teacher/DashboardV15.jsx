@@ -146,8 +146,24 @@ import { HoDSection, CurriculumSection, ExtraCurricularSection } from '../../com
 export default function DashboardV15() {
   const { user } = useAuth()
   const [isHoD, setIsHoD] = useState(false)
+  const [showCustomise, setShowCustomise] = useState(false)
+  const [hidden, setHidden] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('dash_hidden_sections') || '[]') } catch { return [] }
+  })
+  function toggleSection(key) {
+    setHidden(prev => {
+      const next = prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+      localStorage.setItem('dash_hidden_sections', JSON.stringify(next))
+      return next
+    })
+  }
   const [schoolRole, setSchoolRole] = useState(null)
-  const firstName = user?.name?.split(' ')[0] || 'there'
+  // First name for the greeting, skipping honorifics ("Mr James Okonkwo" -> "James")
+  const HONORIFICS = ['mr', 'mrs', 'ms', 'miss', 'dr', 'mx', 'prof', 'rev', 'sir']
+  const nameParts = (user?.name || '').trim().split(/\s+/).filter(Boolean)
+  const firstName = (HONORIFICS.includes(nameParts[0]?.toLowerCase().replace(/\.$/, ''))
+    ? nameParts[1]
+    : nameParts[0]) || 'there'
   const hour = new Date().getHours()
 
   useEffect(() => {
@@ -171,21 +187,53 @@ export default function DashboardV15() {
           </h1>
           <p className="text-[13.5px] mt-1" style={{ color: 'var(--text-tertiary)' }}>{formatDate()}</p>
         </div>
-        <button className="inline-flex items-center gap-1.5 px-3 py-[6px] rounded-[var(--radius-md)] text-[13px] font-semibold cursor-pointer"
-          style={{ background: 'transparent', border: '1px solid transparent', color: 'var(--text-primary)' }}>
-          <Settings size={14} /> Customise
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setShowCustomise(v => !v)}
+            className="inline-flex items-center gap-1.5 px-3 py-[6px] rounded-[var(--radius-md)] text-[13px] font-semibold cursor-pointer transition-colors hover:bg-[var(--surface-subtle)]"
+            style={{ background: 'transparent', border: '1px solid var(--border-subtle)', color: 'var(--text-primary)' }}
+          >
+            <Settings size={14} /> Customise
+          </button>
+          {showCustomise && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowCustomise(false)} />
+              <div className="absolute right-0 top-full z-20 mt-2 w-60 rounded-xl border border-[var(--border-subtle)] bg-[var(--surface-card)] p-3 shadow-lg">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
+                  Show on your dashboard
+                </p>
+                {[
+                  ['briefing', 'Morning briefing'],
+                  ['today', 'Today in your department'],
+                  ['hod', 'Head of Department'],
+                  ['curriculum', 'Curriculum PE'],
+                  ['extra', 'Extra-curricular'],
+                ].map(([key, label]) => (
+                  <label key={key} className="flex cursor-pointer items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] transition-colors hover:bg-[var(--surface-subtle)]" style={{ color: 'var(--text-primary)' }}>
+                    <input
+                      type="checkbox"
+                      checked={!hidden.includes(key)}
+                      onChange={() => toggleSection(key)}
+                      className="h-3.5 w-3.5 accent-[var(--brand-primary)]"
+                    />
+                    {label}
+                  </label>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
-      <BriefingCard />
-      <TodaySection roles={roles} />
+      {!hidden.includes('briefing') && <BriefingCard />}
+      {!hidden.includes('today') && <TodaySection roles={roles} />}
 
       {/* Role sections in priority order */}
-      {(roles.includes('schoolAdmin') || roles.includes('hod')) && (
+      {!hidden.includes('hod') && (roles.includes('schoolAdmin') || roles.includes('hod')) && (
         <HoDSection single={roles.length <= 2} />
       )}
-      <CurriculumSection single={roles.length <= 2} />
-      <ExtraCurricularSection single={roles.length <= 2} />
+      {!hidden.includes('curriculum') && <CurriculumSection single={roles.length <= 2} />}
+      {!hidden.includes('extra') && <ExtraCurricularSection single={roles.length <= 2} />}
     </div>
   )
 }
