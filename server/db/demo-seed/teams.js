@@ -208,10 +208,46 @@ export async function seedTeams(schoolId, staff, pupils) {
     { name: 'Sixth Form Football',   sport: 'football', gender: 'mixed', ageGroup: 'Year 13', seasonType: 'autumn', pupils: allY13  },
   ]
 
+  // Staff coaching assignments mirror the teacher_sports seeds:
+  // Okonkwo runs football + rugby, Whitfield runs netball/hockey/cricket,
+  // with the classroom teachers assisting.
+  const managerBySport = {
+    football: hodPe,
+    rugby: hodPe,
+    netball: directorOfSport,
+    hockey: directorOfSport,
+    cricket: directorOfSport,
+  }
+  const assistantBySport = {
+    football: teacher1,
+    rugby: teacher1,
+    netball: teacher2,
+    hockey: teacher2,
+  }
+
+  async function assignStaff(team, sport) {
+    const manager = managerBySport[sport] || hodPe
+    await pool.query('UPDATE teams SET owner_id = $1 WHERE id = $2', [manager.id, team.id])
+    await pool.query(`
+      INSERT INTO team_memberships (team_id, user_id, role, is_primary, created_at)
+      VALUES ($1, $2, 'manager', true, NOW())
+      ON CONFLICT (user_id, team_id) DO NOTHING
+    `, [team.id, manager.id])
+    const assistant = assistantBySport[sport]
+    if (assistant) {
+      await pool.query(`
+        INSERT INTO team_memberships (team_id, user_id, role, is_primary, created_at)
+        VALUES ($1, $2, 'assistant', false, NOW())
+        ON CONFLICT (user_id, team_id) DO NOTHING
+      `, [team.id, assistant.id])
+    }
+  }
+
   const teams = []
   for (const def of teamDefs) {
     const team = await createTeam(schoolId, def)
     await addTeamMemberships(team, def.pupils)
+    await assignStaff(team, def.sport)
     teams.push(team)
   }
 

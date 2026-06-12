@@ -149,5 +149,20 @@ export async function seedStaff(schoolId) {
     viewReports: true,
   })
 
+  // The demo staff list must only ever contain demo accounts. Remove any
+  // real users who have joined the demo school (e.g. while testing) so
+  // prospects never see real names or emails.
+  const scrub = await pool.query(`
+    DELETE FROM school_members sm
+    USING users u
+    WHERE sm.user_id = u.id
+      AND sm.school_id = $1
+      AND u.email NOT LIKE '%.demo@%'
+    RETURNING u.email
+  `, [schoolId])
+  if (scrub.rowCount > 0) {
+    console.log(`[demo-seed] Removed ${scrub.rowCount} non-demo member(s) from the demo school: ${scrub.rows.map(r => r.email).join(', ')}`)
+  }
+
   return { hodPe, directorOfSport, teacher1, teacher2, nonSpec1, nonSpec2 }
 }

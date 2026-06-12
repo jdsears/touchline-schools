@@ -21,7 +21,7 @@ export async function authenticateToken(req, res, next) {
 
     // Get base user data
     const result = await pool.query(
-      `SELECT u.id, u.email, u.name, u.role, u.team_id, u.pupil_id, u.is_admin, u.has_completed_onboarding
+      `SELECT u.id, u.email, u.name, u.role, u.team_id, u.pupil_id, u.is_admin, u.is_demo_user, u.has_completed_onboarding
        FROM users u
        WHERE u.id = $1`,
       [decoded.userId]
