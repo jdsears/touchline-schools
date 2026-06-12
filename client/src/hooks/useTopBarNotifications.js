@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { notificationService, consentService } from '../services/api'
 import api from '../services/api'
 
@@ -63,9 +63,13 @@ export function useTopBarNotifications({ isAdmin = false, isHoD = false } = {}) 
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
-  const [dismissed, setDismissed] = useState(() => (typeof window !== 'undefined' ? readDismissed() : new Set()))
+  // Dismissals live in a ref (mirrored to localStorage), NOT state: if `load`
+  // depended on the set, every mark-read would recreate it and re-trigger the
+  // fetch effect — visibly yanking synthetic rows out of an open tray.
+  const dismissedRef = useRef(typeof window !== 'undefined' ? readDismissed() : new Set())
 
   const load = useCallback(async () => {
+    const dismissed = dismissedRef.current
     setLoading(true); setError(null)
     try {
       const calls = [notificationService.getNotifications(50)]
@@ -143,7 +147,7 @@ export function useTopBarNotifications({ isAdmin = false, isHoD = false } = {}) 
     } finally {
       setLoading(false)
     }
-  }, [isAdmin, isHoD, dismissed])
+  }, [isAdmin, isHoD])
 
   useEffect(() => { load() }, [load])
 
@@ -158,29 +162,29 @@ export function useTopBarNotifications({ isAdmin = false, isHoD = false } = {}) 
     if (row.source === 'table') {
       try { await notificationService.deleteNotification(row.id) } catch { /* swallow */ }
     } else {
-      const next = new Set(dismissed); next.add(row.id); setDismissed(next); writeDismissed(next)
+      dismissedRef.current.add(row.id); writeDismissed(dismissedRef.current)
     }
     setRows(rs => rs.filter(r => r.id !== row.id))
-  }, [dismissed])
+  }, [])
 
   const markRead = useCallback(async (row) => {
     if (!row.unread) return
     if (row.source === 'table') {
       try { await notificationService.markAsRead(row.id) } catch { /* swallow */ }
     } else {
-      // For synthetics, mark-read == dismiss (they're action-required by definition).
-      const next = new Set(dismissed); next.add(row.id); setDismissed(next); writeDismissed(next)
+      // For synthetics, mark-read == dismiss persistence; the row stays visible
+      // (as read) until the next full load.
+      dismissedRef.current.add(row.id); writeDismissed(dismissedRef.current)
     }
     setRows(rs => rs.map(r => r.id === row.id ? { ...r, unread: false } : r))
-  }, [dismissed])
+  }, [])
 
   const markAllRead = useCallback(async () => {
     try { await notificationService.markAllAsRead() } catch { /* swallow */ }
-    const next = new Set(dismissed)
-    for (const r of rows) if (r.source !== 'table' && r.unread) next.add(r.id)
-    setDismissed(next); writeDismissed(next)
+    for (const r of rows) if (r.source !== 'table' && r.unread) dismissedRef.current.add(r.id)
+    writeDismissed(dismissedRef.current)
     setRows(rs => rs.map(r => ({ ...r, unread: false })))
-  }, [rows, dismissed])
+  }, [rows])
 
   // Counts by class — used to power filter chips and the bell badge
   const counts = rows.reduce((acc, r) => {

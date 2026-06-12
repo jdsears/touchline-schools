@@ -17,7 +17,9 @@ async function resolvePupilAccess(req, pupilId) {
             (SELECT t.school_id FROM teams t WHERE t.id = p.team_id) AS team_school_id,
             (SELECT tg.school_id FROM teaching_group_pupils tgp
                JOIN teaching_groups tg ON tg.id = tgp.teaching_group_id
-               WHERE tgp.pupil_id = p.id LIMIT 1) AS class_school_id
+               JOIN schools s ON s.id = tg.school_id
+               WHERE tgp.pupil_id = p.id
+               ORDER BY tgp.created_at DESC LIMIT 1) AS class_school_id
      FROM pupils p WHERE p.id = $1`,
     [pupilId]
   )
@@ -126,30 +128,48 @@ router.get('/:id', async (req, res) => {
 
 // GET /:id/idp-goals
 router.get('/:id/idp-goals', async (req, res) => {
-  const access = await resolvePupilAccess(req, req.params.id)
-  if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
-  const r = await pool.query(
-    `SELECT g.*, u.name AS created_by_name FROM pupil_idp_goals g
-     LEFT JOIN users u ON u.id = g.created_by_user_id
-     WHERE g.pupil_id = $1 ORDER BY g.status, g.created_at DESC`,
-    [req.params.id]
-  )
-  res.json(r.rows)
+  try {
+    const access = await resolvePupilAccess(req, req.params.id)
+    if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
+    const r = await pool.query(
+      `SELECT g.*, u.name AS created_by_name FROM pupil_idp_goals g
+       LEFT JOIN users u ON u.id = g.created_by_user_id
+       WHERE g.pupil_id = $1 ORDER BY g.status, g.created_at DESC`,
+      [req.params.id]
+    )
+    res.json(r.rows)
+  } catch (e) {
+    if (e.code === '42P01') return res.json([]) // table not migrated yet
+    console.error('pupilProfile idp-goals:', e.message)
+    res.status(500).json({ error: 'Failed to load IDP goals' })
+  }
 })
 
 // GET /:id/achievements
 router.get('/:id/achievements', async (req, res) => {
-  const access = await resolvePupilAccess(req, req.params.id)
-  if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
-  const r = await pool.query(
-    `SELECT a.*, u.name AS awarded_by_name, m.opponent AS match_opponent
-     FROM pupil_achievements a
-     LEFT JOIN users u ON u.id = a.awarded_by
-     LEFT JOIN matches m ON m.id = a.match_id
-     WHERE a.player_id = $1 ORDER BY a.earned_at DESC`,
-    [req.params.id]
-  )
-  res.json(r.rows)
+  try {
+    const access = await resolvePupilAccess(req, req.params.id)
+    if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
+    // Older databases may still have the pre-rename player_achievements table.
+    const achievementsSql = (table) =>
+      `SELECT a.*, u.name AS awarded_by_name, m.opponent AS match_opponent
+       FROM ${table} a
+       LEFT JOIN users u ON u.id = a.awarded_by
+       LEFT JOIN matches m ON m.id = a.match_id
+       WHERE a.player_id = $1 ORDER BY a.earned_at DESC`
+    let r
+    try {
+      r = await pool.query(achievementsSql('pupil_achievements'), [req.params.id])
+    } catch (e) {
+      if (e.code !== '42P01') throw e
+      r = await pool.query(achievementsSql('player_achievements'), [req.params.id])
+    }
+    res.json(r.rows)
+  } catch (e) {
+    if (e.code === '42P01') return res.json([]) // neither table exists yet
+    console.error('pupilProfile achievements:', e.message)
+    res.status(500).json({ error: 'Failed to load achievements' })
+  }
 })
 
 // GET /:id/medical — HoD & PE teachers; access-logged

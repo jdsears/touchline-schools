@@ -128,7 +128,31 @@ function pickSportCreator(sportKey, staff) {
   return staff.hodPe
 }
 
+// Self-healing: the goals table ships in a later migration phase, so a seed
+// run against a not-yet-migrated database would otherwise fail outright.
+async function ensureTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS pupil_idp_goals (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+      sport_key TEXT,
+      goal_description TEXT NOT NULL,
+      target_date DATE,
+      self_assessment_notes TEXT,
+      teacher_assessment_notes TEXT,
+      status TEXT NOT NULL DEFAULT 'in_progress'
+        CHECK (status IN ('in_progress', 'achieved', 'revised', 'abandoned')),
+      created_by_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+      created_at TIMESTAMPTZ DEFAULT NOW(),
+      updated_at TIMESTAMPTZ DEFAULT NOW()
+    )
+  `)
+  await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_pupil ON pupil_idp_goals(pupil_id)`)
+}
+
 async function run() {
+  await ensureTable()
+
   const sr = await pool.query(`SELECT id FROM schools WHERE slug = $1`, [DEMO_SCHOOL_SLUG])
   if (sr.rows.length === 0) throw new Error('Demo school not found. Run seed:demo first.')
   const schoolId = sr.rows[0].id
@@ -163,11 +187,21 @@ async function run() {
   const amelia = pupils.find(p => p.email?.startsWith('amelia.whitehead.test'))
   const toby = pupils.find(p => p.email?.startsWith('toby.marsh.test'))
 
-  let personaCount = 0, rosterCount = 0
+  let personaCount = 0, rosterCount = 0, failed = 0, firstError = null
+  const tryInsert = async (pupilId, goal, createdBy) => {
+    try {
+      await insertGoal(pupilId, goal, createdBy)
+      return true
+    } catch (e) {
+      failed++
+      if (!firstError) firstError = e.message
+      return false
+    }
+  }
 
-  if (jamie)  for (const g of SEED_JAMIE)  { await insertGoal(jamie.id,  g, pickSportCreator(g.sport_key, staff)); personaCount++ }
-  if (amelia) for (const g of SEED_AMELIA) { await insertGoal(amelia.id, g, pickSportCreator(g.sport_key, staff)); personaCount++ }
-  if (toby)   for (const g of SEED_TOBY)   { await insertGoal(toby.id,   g, pickSportCreator(g.sport_key, staff)); personaCount++ }
+  if (jamie)  for (const g of SEED_JAMIE)  { if (await tryInsert(jamie.id,  g, pickSportCreator(g.sport_key, staff))) personaCount++ }
+  if (amelia) for (const g of SEED_AMELIA) { if (await tryInsert(amelia.id, g, pickSportCreator(g.sport_key, staff))) personaCount++ }
+  if (toby)   for (const g of SEED_TOBY)   { if (await tryInsert(toby.id,   g, pickSportCreator(g.sport_key, staff))) personaCount++ }
 
   for (const p of pupils) {
     if ([jamie?.id, amelia?.id, toby?.id].includes(p.id)) continue
@@ -180,17 +214,19 @@ async function run() {
       const selfNote = Math.random() < 0.3
         ? 'Self-reflection: working on this with my coach. Steady progress so far.'
         : null
-      await insertGoal(p.id, {
+      if (await tryInsert(p.id, {
         sport_key: base.sport_key,
         goal_description: base.goal,
         status,
         self: selfNote,
-      }, pickSportCreator(base.sport_key, staff))
-      rosterCount++
+      }, pickSportCreator(base.sport_key, staff))) rosterCount++
     }
   }
 
-  console.log(`[seed-idps] Seeded ${personaCount} persona goals + ${rosterCount} roster goals.`)
+  console.log(`[seed-idps] Seeded ${personaCount} persona goals + ${rosterCount} roster goals.${failed ? ` ${failed} failed (first: ${firstError})` : ''}`)
+  if (personaCount + rosterCount === 0 && firstError) {
+    throw new Error(`No IDP goals seeded — ${firstError}`)
+  }
 }
 
 if (process.argv[1]?.includes('seed-idps.js')) {

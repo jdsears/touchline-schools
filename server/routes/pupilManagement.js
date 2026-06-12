@@ -161,6 +161,8 @@ router.get('/:id/profile', async (req, res) => {
     let classes = [], assessments = [], teams = [], sports = []
 
     try {
+      // JOIN schools: deployed DBs may carry orphaned teaching_groups whose
+      // school was deleted before the cascade FK existed — never show those.
       const r = await pool.query(
         `SELECT tg.id, tg.name, tg.year_group, tg.key_stage,
                 u.name AS teacher_name,
@@ -168,9 +170,10 @@ router.get('/:id/profile', async (req, res) => {
                  FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
          FROM teaching_group_pupils tgp
          JOIN teaching_groups tg ON tgp.teaching_group_id = tg.id
+         JOIN schools s ON s.id = tg.school_id
          LEFT JOIN users u ON tg.teacher_id = u.id
          WHERE tgp.pupil_id = $1
-         ORDER BY tg.year_group ASC`, [id])
+         ORDER BY tg.year_group ASC, tg.created_at DESC`, [id])
       classes = r.rows
     } catch (e) { console.warn('Profile classes query failed:', e.message) }
 
