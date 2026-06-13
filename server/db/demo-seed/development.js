@@ -68,8 +68,19 @@ function pick(arr, n) {
 
 export async function seedDevelopmentObservations(teams) {
   let count = 0
+  let skipped = 0
   for (const team of teams) {
-    if (!team.owner_id) continue
+    // Resolve the observing staff member. team.owner_id may be absent on the
+    // in-memory object (createTeam returns the row before owner_id is set), so
+    // fall back to the persisted value before giving up — otherwise every team
+    // is skipped and the roster gets zero observations.
+    let observerId = team.owner_id
+    if (!observerId) {
+      const r = await pool.query('SELECT owner_id FROM teams WHERE id = $1', [team.id])
+      observerId = r.rows[0]?.owner_id || null
+    }
+    if (!observerId) { skipped++; continue }
+
     const pupils = await pool.query(
       'SELECT id, name FROM pupils WHERE team_id = $1 ORDER BY name LIMIT 8',
       [team.id]
@@ -86,13 +97,13 @@ export async function seedDevelopmentObservations(teams) {
         await pool.query(
           `INSERT INTO observations (pupil_id, observer_id, type, content, context_type, source, review_state, created_at)
            VALUES ($1, $2, $3, $4, 'pe_lesson', 'typed', 'confirmed', NOW() - INTERVAL '${daysAgo} days')`,
-          [pupil.id, team.owner_id, type, pick(pool_, i + j)]
+          [pupil.id, observerId, type, pick(pool_, i + j)]
         )
         count++
       }
       i++
     }
   }
-  console.log(`[demo-seed] Development observations seeded: ${count} across ${teams.length} teams`)
+  console.log(`[demo-seed] Development observations seeded: ${count} across ${teams.length} teams${skipped ? ` (${skipped} skipped: no owner)` : ''}`)
   return count
 }

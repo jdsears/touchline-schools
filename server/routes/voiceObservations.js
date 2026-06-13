@@ -5,7 +5,7 @@ import { authenticateToken } from '../middleware/auth.js'
 import { uploadFile } from '../services/storageService.js'
 import { processVoiceObservation } from '../services/voicePipeline.js'
 import { v4 as uuidv4 } from 'uuid'
-import rateLimit from 'express-rate-limit'
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit'
 import path from 'path'
 import fs from 'fs'
 import os from 'os'
@@ -89,7 +89,8 @@ ensureVoiceSchema().catch(() => {})
 const voiceUploadLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
-  keyGenerator: (req) => req.user?.id || req.ip,
+  // Key by user id; fall back to the IPv6-safe helper for unauthenticated hits.
+  keyGenerator: (req) => req.user?.id || ipKeyGenerator(req.ip),
   message: { error: 'Too many voice observations. Maximum 20 per hour.' },
 })
 

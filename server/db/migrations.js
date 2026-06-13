@@ -1,5 +1,21 @@
 import pool from '../config/database.js'
 
+// Best-effort DDL. Some legacy tables (training_attendance, video_ai_analysis,
+// match_goals, …) carry a player_id column that later phases rename to pupil_id.
+// On a previously-migrated database the column is ALREADY pupil_id, so a
+// hard-coded `CREATE INDEX … (player_id)` throws — and because the whole
+// migration runs in one try block, that single throw strands every later phase
+// (which is how the Phase-21 note tables silently went missing in production).
+// Use this for those legacy-column statements so a cosmetic index failure can
+// never abort the run; the canonical pupil_id indexes are created elsewhere.
+async function tryQuery(sql) {
+  try {
+    await pool.query(sql)
+  } catch (e) {
+    console.warn('[migrations] non-fatal statement skipped:', e.message)
+  }
+}
+
 // Run migrations
 export async function runMigrations() {
   try {
@@ -313,7 +329,7 @@ export async function runMigrations() {
       )
     `)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_training_attendance_session ON training_attendance(session_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_training_attendance_player ON training_attendance(player_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_training_attendance_player ON training_attendance(player_id)`)
 
     // Create training_availability table (mirrors match_availability for training/S&C sessions)
     await pool.query(`
@@ -331,7 +347,7 @@ export async function runMigrations() {
       )
     `)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_training_availability_session ON training_availability(session_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_training_availability_player ON training_availability(player_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_training_availability_player ON training_availability(player_id)`)
 
     // Create invites table
     await pool.query(`
@@ -986,8 +1002,9 @@ export async function runMigrations() {
       ON team_memberships(team_id)
     `)
 
-    // Migrate existing user-team relationships to team_memberships table
-    await pool.query(`
+    // Migrate existing user-team relationships to team_memberships table.
+    // user/team_memberships player_id may already be pupil_id on migrated DBs.
+    await tryQuery(`
       INSERT INTO team_memberships (user_id, team_id, role, player_id, is_primary)
       SELECT id, team_id, role, player_id, true
       FROM users
@@ -1189,10 +1206,10 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_videos_mux_upload ON videos(mux_upload_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_videos_status ON videos(status)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_video_clips_video ON video_clips(video_id, start_time)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_clip_tags_player ON clip_player_tags(player_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_clip_tags_player ON clip_player_tags(player_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_clip_tags_clip ON clip_player_tags(clip_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_ai_analysis_video ON video_ai_analysis(video_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_ai_analysis_player ON video_ai_analysis(player_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_ai_analysis_player ON video_ai_analysis(player_id)`)
 
     // Add status and progress columns to video_ai_analysis for progress tracking
     await pool.query(`
@@ -1880,7 +1897,7 @@ export async function runMigrations() {
     )`)
 
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_event_reg_event ON event_registrations(event_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_event_reg_player ON event_registrations(player_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_event_reg_player ON event_registrations(player_id)`)
 
     // Session Schedule (training sessions + matches with availability)
     await pool.query(`CREATE TABLE IF NOT EXISTS session_schedule (
@@ -1927,7 +1944,7 @@ export async function runMigrations() {
     )`)
 
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_availability_session ON availability_responses(session_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_availability_player ON availability_responses(player_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_availability_player ON availability_responses(player_id)`)
 
     // =============================================
     // AI CLUB INTELLIGENCE TABLES (Phase 6)
@@ -2249,7 +2266,7 @@ export async function runMigrations() {
       )
     `)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_training_attendance_session ON training_attendance(session_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_training_attendance_player ON training_attendance(player_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_training_attendance_player ON training_attendance(player_id)`)
 
     // Coaching qualifications on user profile
     try {
@@ -2295,7 +2312,7 @@ export async function runMigrations() {
       )
     `)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_goals_match ON match_goals(match_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_goals_scorer ON match_goals(scorer_player_id) WHERE scorer_player_id IS NOT NULL`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_match_goals_scorer ON match_goals(scorer_player_id) WHERE scorer_player_id IS NOT NULL`)
 
     // Add coaching_philosophy column to teams table
     await pool.query(`
@@ -2682,7 +2699,7 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_attr_snapshots_player ON attribute_snapshots(player_id, created_at DESC)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_attr_snapshots_player ON attribute_snapshots(player_id, created_at DESC)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_attr_snapshots_team ON attribute_snapshots(team_id, created_at DESC)`)
 
     // Add effort_rating column to training_attendance (additive - does not touch existing columns)
@@ -3131,6 +3148,21 @@ export async function runMigrations() {
     )`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_criteria_strand ON assessment_criteria(strand_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_assessment_criteria_sport ON assessment_criteria(sport)`)
+
+    // Reconcile assessment_criteria across two historical definitions: migrations.js
+    // uses `criterion` + `key_stage`, index.js uses `criterion_name`. Whichever
+    // CREATE TABLE ran first wins (IF NOT EXISTS), so seeds and the pupils route
+    // hit "column does not exist" or NOT NULL violations. Ensure every column the
+    // code touches exists and is nullable, then backfill so reads are populated.
+    await tryQuery(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS criterion TEXT`)
+    await tryQuery(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS criterion_name TEXT`)
+    await tryQuery(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS key_stage TEXT`)
+    await tryQuery(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS sport TEXT`)
+    await tryQuery(`ALTER TABLE assessment_criteria ADD COLUMN IF NOT EXISTS display_order INTEGER DEFAULT 0`)
+    await tryQuery(`ALTER TABLE assessment_criteria ALTER COLUMN criterion DROP NOT NULL`)
+    await tryQuery(`ALTER TABLE assessment_criteria ALTER COLUMN criterion_name DROP NOT NULL`)
+    await tryQuery(`UPDATE assessment_criteria SET criterion_name = criterion WHERE criterion_name IS NULL AND criterion IS NOT NULL`)
+    await tryQuery(`UPDATE assessment_criteria SET criterion = criterion_name WHERE criterion IS NULL AND criterion_name IS NOT NULL`)
 
     // --- 9g: Pupil assessments (actual marks and observations) ---
     await pool.query(`CREATE TABLE IF NOT EXISTS pupil_assessments (

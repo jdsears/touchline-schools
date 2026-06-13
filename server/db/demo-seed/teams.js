@@ -228,6 +228,10 @@ export async function seedTeams(schoolId, staff, pupils) {
   async function assignStaff(team, sport) {
     const manager = managerBySport[sport] || hodPe
     await pool.query('UPDATE teams SET owner_id = $1 WHERE id = $2', [manager.id, team.id])
+    // createTeam returned the row BEFORE this UPDATE, so the in-memory object has
+    // owner_id = null. Mirror it here or downstream consumers (e.g. development
+    // observation seeding, which skips ownerless teams) silently see zero teams.
+    team.owner_id = manager.id
     await pool.query(`
       INSERT INTO team_memberships (team_id, user_id, role, is_primary, created_at)
       VALUES ($1, $2, 'manager', true, NOW())

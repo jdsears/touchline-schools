@@ -14,21 +14,33 @@ import { runDemoSeed } from '../db/demo-seed/index.js'
 
 const UK_RESET_HOUR = 3 // 03:00 Europe/London
 
+const ONE_DAY_MS = 24 * 60 * 60 * 1000
+
 /**
- * Calculate ms until the next 03:00 UK time.
+ * Calculate ms until the next 03:00 Europe/London.
+ *
+ * Reads the current London wall-clock via Intl parts and counts forward to the
+ * next 03:00. The previous implementation did `new Date(date.toLocaleString())`,
+ * which parses a locale string (`DD/MM/YYYY, …`) that V8 can return as an
+ * Invalid Date — yielding NaN and crashing the scheduler. This avoids string
+ * parsing entirely and always returns a finite, positive number.
  */
 function msUntilNextReset() {
-  const now = new Date()
-  // Next reset in UK time
-  const ukNow = new Date(now.toLocaleString('en-GB', { timeZone: 'Europe/London' }))
-  const next = new Date(ukNow)
-  next.setHours(UK_RESET_HOUR, 0, 0, 0)
-  if (next <= ukNow) {
-    next.setDate(next.getDate() + 1)
-  }
-  // Convert back to UTC delta
-  const delta = next - ukNow
-  return Math.max(delta, 60_000) // minimum 1 minute buffer
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London',
+    hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false,
+  }).formatToParts(new Date())
+  const get = (t) => parseInt(parts.find((p) => p.type === t)?.value ?? 'NaN', 10)
+  const h = get('hour') % 24 // Intl can emit "24" at midnight
+  const m = get('minute')
+  const s = get('second')
+  if ([h, m, s].some(Number.isNaN)) return ONE_DAY_MS // never return NaN
+
+  const secsNow = h * 3600 + m * 60 + s
+  const target = UK_RESET_HOUR * 3600
+  let deltaSec = target - secsNow
+  if (deltaSec <= 0) deltaSec += 24 * 3600
+  return Math.max(deltaSec * 1000, 60_000) // minimum 1 minute buffer
 }
 
 export async function resetDemoTenant() {
@@ -55,6 +67,10 @@ export async function resetDemoTenant() {
 
 export async function expireProspectAccess() {
   try {
+    // Prospect tables only exist on prospect-enabled deployments; skip quietly otherwise.
+    const present = await pool.query(`SELECT to_regclass('public.demo_prospects') AS t`)
+    if (!present.rows[0].t) return
+
     const result = await pool.query(`
       UPDATE demo_prospects
       SET is_active = false
@@ -91,14 +107,32 @@ export function scheduleDemoReset() {
   }
 
   const scheduleNext = () => {
-    const delay = msUntilNextReset()
-    const resetAt = new Date(Date.now() + delay).toISOString()
+    let delay
+    try {
+      delay = msUntilNextReset()
+    } catch (e) {
+      console.error('[DemoReset] Failed to compute next reset; defaulting to 24h:', e.message)
+      delay = ONE_DAY_MS
+    }
+    if (!Number.isFinite(delay) || delay <= 0) delay = ONE_DAY_MS
+
+    let resetAt = `in ~${Math.round(delay / 3_600_000)}h`
+    try { resetAt = new Date(Date.now() + delay).toISOString() } catch { /* keep relative label */ }
     console.log(`[DemoReset] Next reset scheduled for ~${resetAt}`)
 
-    setTimeout(async () => {
-      await expireProspectAccess()
-      await resetDemoTenant()
-      scheduleNext()
+    // The callback must never throw uncaught — an unhandled rejection here would
+    // crash the whole server process and put it in a restart loop.
+    setTimeout(() => {
+      ;(async () => {
+        try {
+          await expireProspectAccess()
+          await resetDemoTenant()
+        } catch (e) {
+          console.error('[DemoReset] Reset cycle error:', e)
+        } finally {
+          scheduleNext()
+        }
+      })()
     }, delay)
   }
 
