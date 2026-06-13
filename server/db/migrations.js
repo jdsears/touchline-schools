@@ -2493,6 +2493,11 @@ export async function runMigrations() {
       )
     `)
 
+    // Department-scope chat (the HoD "PE department assistant") has no team, so
+    // allow a NULL team_id; those rows are scoped by user_id instead.
+    await tryQuery(`ALTER TABLE messages ALTER COLUMN team_id DROP NOT NULL`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_messages_user_dept ON messages(user_id, created_at DESC) WHERE team_id IS NULL`)
+
     // Create tactics table (needed for tactical board)
     await pool.query(`
       CREATE TABLE IF NOT EXISTS tactics (

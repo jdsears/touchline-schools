@@ -7,6 +7,12 @@ import { checkAndIncrementUsage, getEntitlements } from '../services/billingServ
 
 const router = Router()
 
+// Department-scope chat (the HoD "PE department assistant") has no team, so the
+// client sends a non-UUID sentinel (e.g. "department"). Detect it to switch to
+// team-less behaviour instead of passing it to a uuid column.
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+const isUuid = (v) => typeof v === 'string' && UUID_RE.test(v)
+
 // ==========================================
 // Public Chat (Landing Page Assistant)
 // ==========================================
@@ -175,106 +181,122 @@ router.post('/:teamId/message', authenticateToken, async (req, res, next) => {
       return res.status(400).json({ message: 'Message is required' })
     }
 
-    // Check AI chat usage limit
-    const entitlements = await getEntitlements({ userId: req.user.id, teamId, userEmail: req.user.email })
-    const usageCheck = await checkAndIncrementUsage(teamId, 'chat', entitlements)
-    if (!usageCheck.allowed) {
-      return res.status(429).json({
-        message: usageCheck.limit === 0
-          ? 'AI chat is not available on your current plan. Upgrade to Core or Pro to chat with The Gaffer.'
-          : `You've used all ${usageCheck.limit} AI messages this month. Upgrade your plan for unlimited AI chat.`,
-        code: 'CHAT_LIMIT_REACHED',
-        usage: { current: usageCheck.current, limit: usageCheck.limit },
-        upgradeRequired: true,
-      })
+    // Department scope has no team UUID; meter against the user's anchor team
+    // (any team they own) when there is one, otherwise run unmetered.
+    const isDept = !isUuid(teamId)
+    let billingTeamId = isDept ? null : teamId
+    if (isDept) {
+      const anchor = await pool.query(
+        `SELECT id FROM teams WHERE owner_id = $1 ORDER BY created_at ASC LIMIT 1`,
+        [req.user.id]
+      )
+      billingTeamId = anchor.rows[0]?.id || null
+    }
+    if (billingTeamId) {
+      const entitlements = await getEntitlements({ userId: req.user.id, teamId: billingTeamId, userEmail: req.user.email })
+      const usageCheck = await checkAndIncrementUsage(billingTeamId, 'chat', entitlements)
+      if (!usageCheck.allowed) {
+        return res.status(429).json({
+          message: usageCheck.limit === 0
+            ? 'AI chat is not available on your current plan. Upgrade to Core or Pro to chat with Coach.'
+            : `You've used all ${usageCheck.limit} AI messages this month. Upgrade your plan for unlimited AI chat.`,
+          code: 'CHAT_LIMIT_REACHED',
+          usage: { current: usageCheck.current, limit: usageCheck.limit },
+          upgradeRequired: true,
+        })
+      }
     }
 
-    // Get team context
-    const teamResult = await pool.query(
-      'SELECT * FROM teams WHERE id = $1',
-      [teamId]
-    )
-    
-    const team = teamResult.rows[0]
-    
-    // Get pupil count
-    const playerResult = await pool.query(
-      'SELECT COUNT(*) as count FROM pupils WHERE team_id = $1',
-      [teamId]
-    )
-    
-    // Get upcoming match, past match results, and recent video analyses in parallel
-    const [matchResult, pastMatchesResult, videoAnalysisResult] = await Promise.all([
-      pool.query(
-        `SELECT opponent, COALESCE(date, match_date) AS date FROM matches
-         WHERE team_id = $1 AND COALESCE(date, match_date) > NOW() AND score_for IS NULL
-         ORDER BY COALESCE(date, match_date) LIMIT 1`,
-        [teamId]
-      ),
-      pool.query(
-        `SELECT opponent, COALESCE(date, match_date) AS date,
-                (home_away = 'home') AS is_home,
-                CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
-                  THEN score_for || ' - ' || score_against ELSE NULL END AS result,
-                score_for AS goals_for, score_against AS goals_against,
-                formations AS formation_used, team_notes, report
-         FROM matches
-         WHERE team_id = $1 AND score_for IS NOT NULL
-         ORDER BY COALESCE(date, match_date) DESC LIMIT 10`,
-        [teamId]
-      ),
-      pool.query(
-        `SELECT va.summary, va.observations, va.recommendations, va.player_feedback, va.created_at,
-                m.opponent, m.date AS match_date
-         FROM video_ai_analysis va
-         JOIN videos v ON v.id = va.video_id
-         LEFT JOIN matches m ON v.match_id = m.id
-         WHERE v.team_id = $1 AND va.approved = true AND va.status = 'complete'
-         ORDER BY va.created_at DESC LIMIT 5`,
-        [teamId]
-      ),
-    ])
+    // Team context only applies to team-scoped chat. Department scope stays
+    // multi-sport with no single team's data leaking in.
+    let team = null
+    let fullContext
+    if (isDept) {
+      fullContext = { ...context, team: null }
+    } else {
+      const teamResult = await pool.query('SELECT * FROM teams WHERE id = $1', [teamId])
+      team = teamResult.rows[0]
 
-    // Build context
-    const fullContext = {
-      ...context,
-      team: team ? {
-        name: team.name,
-        ageGroup: team.age_group,
-        formation: team.formation,
-        gameModel: team.game_model,
-        teamFormat: team.team_format || 11,
-        coachingPhilosophy: team.coaching_philosophy,
-      } : null,
-      squadSize: parseInt(playerResult.rows[0]?.count || 0),
-      upcomingMatch: matchResult.rows[0] || null,
-      pastMatches: pastMatchesResult.rows.map(m => ({
-        opponent: m.opponent,
-        date: m.date,
-        isHome: m.is_home,
-        result: m.result,
-        goalsFor: m.goals_for,
-        goalsAgainst: m.goals_against,
-        formationUsed: m.formation_used,
-        teamNotes: m.team_notes,
-        report: m.report?.generated ? m.report.generated.summary || m.report.generated : null,
-      })),
-      videoAnalyses: videoAnalysisResult.rows.map(va => ({
-        opponent: va.opponent,
-        matchDate: va.match_date,
-        summary: va.summary,
-        observations: va.observations,
-        recommendations: va.recommendations,
-        playerFeedback: va.player_feedback,
-        analysedAt: va.created_at,
-      })),
+      const playerResult = await pool.query(
+        'SELECT COUNT(*) as count FROM pupils WHERE team_id = $1',
+        [teamId]
+      )
+
+      // Get upcoming match, past match results, and recent video analyses in parallel
+      const [matchResult, pastMatchesResult, videoAnalysisResult] = await Promise.all([
+        pool.query(
+          `SELECT opponent, COALESCE(date, match_date) AS date FROM matches
+           WHERE team_id = $1 AND COALESCE(date, match_date) > NOW() AND score_for IS NULL
+           ORDER BY COALESCE(date, match_date) LIMIT 1`,
+          [teamId]
+        ),
+        pool.query(
+          `SELECT opponent, COALESCE(date, match_date) AS date,
+                  (home_away = 'home') AS is_home,
+                  CASE WHEN score_for IS NOT NULL AND score_against IS NOT NULL
+                    THEN score_for || ' - ' || score_against ELSE NULL END AS result,
+                  score_for AS goals_for, score_against AS goals_against,
+                  formations AS formation_used, team_notes, report
+           FROM matches
+           WHERE team_id = $1 AND score_for IS NOT NULL
+           ORDER BY COALESCE(date, match_date) DESC LIMIT 10`,
+          [teamId]
+        ),
+        pool.query(
+          `SELECT va.summary, va.observations, va.recommendations, va.player_feedback, va.created_at,
+                  m.opponent, m.date AS match_date
+           FROM video_ai_analysis va
+           JOIN videos v ON v.id = va.video_id
+           LEFT JOIN matches m ON v.match_id = m.id
+           WHERE v.team_id = $1 AND va.approved = true AND va.status = 'complete'
+           ORDER BY va.created_at DESC LIMIT 5`,
+          [teamId]
+        ),
+      ])
+
+      fullContext = {
+        ...context,
+        team: team ? {
+          name: team.name,
+          ageGroup: team.age_group,
+          formation: team.formation,
+          gameModel: team.game_model,
+          teamFormat: team.team_format || 11,
+          coachingPhilosophy: team.coaching_philosophy,
+        } : null,
+        squadSize: parseInt(playerResult.rows[0]?.count || 0),
+        upcomingMatch: matchResult.rows[0] || null,
+        pastMatches: pastMatchesResult.rows.map(m => ({
+          opponent: m.opponent,
+          date: m.date,
+          isHome: m.is_home,
+          result: m.result,
+          goalsFor: m.goals_for,
+          goalsAgainst: m.goals_against,
+          formationUsed: m.formation_used,
+          teamNotes: m.team_notes,
+          report: m.report?.generated ? m.report.generated.summary || m.report.generated : null,
+        })),
+        videoAnalyses: videoAnalysisResult.rows.map(va => ({
+          opponent: va.opponent,
+          matchDate: va.match_date,
+          summary: va.summary,
+          observations: va.observations,
+          recommendations: va.recommendations,
+          playerFeedback: va.player_feedback,
+          analysedAt: va.created_at,
+        })),
+      }
     }
-    
-    // Get recent conversation history
+
+    // Get recent conversation history (team-scoped, or per-user for department)
     const historyResult = await pool.query(
-      `SELECT role, content FROM messages 
-       WHERE team_id = $1 ORDER BY created_at DESC LIMIT 10`,
-      [teamId]
+      isDept
+        ? `SELECT role, content FROM messages
+           WHERE team_id IS NULL AND user_id = $1 ORDER BY created_at DESC LIMIT 10`
+        : `SELECT role, content FROM messages
+           WHERE team_id = $1 ORDER BY created_at DESC LIMIT 10`,
+      [isDept ? req.user.id : teamId]
     )
     
     const conversationHistory = historyResult.rows.reverse()
@@ -283,7 +305,7 @@ router.post('/:teamId/message', authenticateToken, async (req, res, next) => {
     let knowledgeBaseContext = null
     try {
       knowledgeBaseContext = await retrieveCoachingContext({
-        teamId,
+        teamId: isDept ? null : teamId,
         message,
         ageGroup: team?.age_group,
       })
@@ -295,7 +317,7 @@ router.post('/:teamId/message', authenticateToken, async (req, res, next) => {
     // client can render the assistant typing in real time
     await pool.query(
       `INSERT INTO messages (team_id, user_id, role, content, context) VALUES ($1, $2, 'user', $3, $4)`,
-      [teamId, req.user.id, message, JSON.stringify(fullContext)]
+      [isDept ? null : teamId, req.user.id, message, JSON.stringify(fullContext)]
     )
 
     res.setHeader('Content-Type', 'text/event-stream')
@@ -317,7 +339,7 @@ router.post('/:teamId/message', authenticateToken, async (req, res, next) => {
       if (fullText) {
         await pool.query(
           `INSERT INTO messages (team_id, user_id, role, content) VALUES ($1, $2, 'assistant', $3)`,
-          [teamId, req.user.id, fullText]
+          [isDept ? null : teamId, req.user.id, fullText]
         )
       }
 
@@ -341,11 +363,15 @@ router.get('/:teamId/history', authenticateToken, async (req, res, next) => {
   try {
     const { teamId } = req.params
     const { limit = 50 } = req.query
+    const isDept = !isUuid(teamId)
 
     const result = await pool.query(
-      `SELECT id, role, content, created_at FROM messages
-       WHERE team_id = $1 ORDER BY created_at DESC LIMIT $2`,
-      [teamId, limit]
+      isDept
+        ? `SELECT id, role, content, created_at FROM messages
+           WHERE team_id IS NULL AND user_id = $1 ORDER BY created_at DESC LIMIT $2`
+        : `SELECT id, role, content, created_at FROM messages
+           WHERE team_id = $1 ORDER BY created_at DESC LIMIT $2`,
+      [isDept ? req.user.id : teamId, limit]
     )
 
     res.json(result.rows.reverse())
@@ -358,10 +384,13 @@ router.get('/:teamId/history', authenticateToken, async (req, res, next) => {
 router.delete('/:teamId/history', authenticateToken, async (req, res, next) => {
   try {
     const { teamId } = req.params
+    const isDept = !isUuid(teamId)
 
     await pool.query(
-      'DELETE FROM messages WHERE team_id = $1',
-      [teamId]
+      isDept
+        ? 'DELETE FROM messages WHERE team_id IS NULL AND user_id = $1'
+        : 'DELETE FROM messages WHERE team_id = $1',
+      [isDept ? req.user.id : teamId]
     )
 
     res.json({ success: true, message: 'Chat history cleared' })
