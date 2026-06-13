@@ -69,6 +69,11 @@ export default function Chat() {
   const [scope, setScope] = useState('department')
   const [searchParams] = useSearchParams()
 
+  // Chat is stored and billed per scope: a real team id when pinned to a team,
+  // or the "department" sentinel for whole-department (team-less HoD) chat.
+  // The HoD has no user.team_id, so sending that raw produced /chat/null/...
+  const chatScopeId = scope === 'team' && team?.id ? team.id : 'department'
+
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -79,16 +84,18 @@ export default function Chat() {
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
-  // Load chat history on mount
+  // Load chat history on mount and whenever scope changes — department vs a
+  // pinned team each keep their own history, so reset and refetch on switch.
   useEffect(() => {
-    if (user?.team_id) {
-      loadHistory()
-    }
-  }, [user?.team_id])
+    setMessages([])
+    setShowSuggestions(true)
+    setLoadingHistory(true)
+    loadHistory()
+  }, [chatScopeId])
 
   async function loadHistory() {
     try {
-      const response = await chatService.getHistory(user.team_id, 50)
+      const response = await chatService.getHistory(chatScopeId, 50)
       if (response.data && response.data.length > 0) {
         setMessages(response.data.map(msg => ({
           id: msg.id,
@@ -157,7 +164,7 @@ export default function Chat() {
     const aiId = Date.now() + 1
     try {
       const token = localStorage.getItem('fam_token')
-      const res = await fetch(`/api/chat/${user.team_id}/message`, {
+      const res = await fetch(`/api/chat/${chatScopeId}/message`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -236,7 +243,7 @@ export default function Chat() {
     setShowSuggestions(true)
     // Clear history from database
     try {
-      await chatService.clearHistory(user.team_id)
+      await chatService.clearHistory(chatScopeId)
     } catch (error) {
       console.error('Failed to clear chat history:', error)
     }
