@@ -128,15 +128,27 @@ export async function requireTeamAccess(req, res, next) {
 
   // Schools model: staff manage multiple teams via ownership or
   // team_memberships - the legacy users.team_id check alone locked
-  // multi-team teachers out of every team but their primary
+  // multi-team teachers out of every team but their primary.
+  // School oversight roles (HoD, Director of Sport, school admins/owner) and
+  // anyone explicitly flagged can_view_all_teams may access ANY team in their
+  // own school - a Head of PE oversees the whole department, not just the
+  // teams they personally coach.
   try {
     const access = await pool.query(
       `SELECT 1
        FROM teams t
        LEFT JOIN team_memberships tm
          ON tm.team_id = t.id AND tm.user_id = $2
+       LEFT JOIN school_members sm
+         ON sm.school_id = t.school_id AND sm.user_id = $2
        WHERE t.id = $1
-         AND (t.owner_id = $2 OR tm.role IN ('manager', 'assistant', 'scout'))
+         AND (
+           t.owner_id = $2
+           OR tm.role IN ('manager', 'assistant', 'scout')
+           OR sm.can_view_all_teams = true
+           OR COALESCE(sm.school_role, sm.role) IN
+              ('owner', 'school_admin', 'admin', 'head_of_pe', 'head_of_sport')
+         )
        LIMIT 1`,
       [teamId, req.user.id]
     )
