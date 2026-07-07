@@ -169,7 +169,7 @@ router.get('/me/schedule', authenticateToken, async (req, res) => {
     // 2. Training: pupil is on a team that has training sessions
     const trainingRes = await pool.query(`
       SELECT ts.id, 'training' AS type,
-        COALESCE(ts.focus_areas, ts.focus, 'Training') AS title,
+        COALESCE(array_to_string(ts.focus_areas, ', '), 'Training') AS title,
         ts.date,
         ts.time AS start_time,
         NULL::TIME AS end_time,
