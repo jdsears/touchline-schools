@@ -148,13 +148,13 @@ router.get('/mine/sessions', authenticateToken, async (req, res, next) => {
     const userId = req.user.id
 
     const result = await pool.query(
-      `SELECT ts.*, ts.focus AS focus_areas, t.name AS team_name, t.sport, t.age_group, t.gender,
+      `SELECT ts.*, t.name AS team_name, t.sport, t.age_group, t.gender,
               t.primary_color AS team_color
        FROM training_sessions ts
        JOIN teams t ON ts.team_id = t.id
        LEFT JOIN team_memberships tm ON tm.team_id = t.id AND tm.user_id = $1
        WHERE (t.owner_id = $1 OR (tm.user_id = $1 AND tm.role IN ('manager', 'assistant', 'scout')))
-       ORDER BY ts.session_date DESC
+       ORDER BY ts.date DESC
        LIMIT 50`,
       [userId]
     )
