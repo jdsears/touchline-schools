@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import MatchLoadError from '../../components/MatchLoadError'
 import { useParams } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { Video, Upload, Loader2, Play, Trash2, Clock } from 'lucide-react'
@@ -19,6 +20,7 @@ export default function MatchVideoV15() {
   const [match, setMatch] = useState(null)
   const [team, setTeam] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
 
@@ -32,7 +34,7 @@ export default function MatchVideoV15() {
           setTeam(t.data)
         }
       })
-      .catch(() => {})
+      .catch(setLoadError)
       .finally(() => setLoading(false))
   }, [id])
 
@@ -68,7 +70,7 @@ export default function MatchVideoV15() {
   }
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--text-tertiary)' }} /></div>
-  if (!match) return <div className="text-center py-20 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Match not found</div>
+  if (!match) return <MatchLoadError error={loadError} />
 
   const hasVideo = match.video_url || match.veo_link
 

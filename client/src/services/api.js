@@ -42,20 +42,71 @@ export async function downloadFile(path, filename, params) {
 }
 
 // Response interceptor for error handling
+// A demo session carries `demo: true` in its token. If it expires mid-walkthrough
+// the app re-enters the demo quietly instead of bouncing to the login page.
+function isDemoToken(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')))
+    return payload?.demo === true
+  } catch {
+    return false
+  }
+}
+
+let demoRenewal = null
+function renewDemoToken() {
+  if (!demoRenewal) {
+    demoRenewal = fetch('/api/auth/demo-login', { method: 'POST' })
+      .then((r) => (r.ok ? r.json() : Promise.reject(new Error('demo login failed'))))
+      .then(({ token }) => {
+        if (!token) throw new Error('demo login failed')
+        localStorage.setItem('fam_token', token)
+        return token
+      })
+      .finally(() => { demoRenewal = null })
+  }
+  return demoRenewal
+}
+
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
 // Use a flag to prevent multiple simultaneous redirects (especially in PWA)
 let isRedirectingToLogin = false
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401 && !isRedirectingToLogin) {
+  async (error) => {
+    const status = error.response?.status
+    const config = error.config
+
+    // Rate limited: wait for the window the server asks for (bounded) and
+    // try once more, rather than surfacing a blank page.
+    if (status === 429 && config && !config._retriedAfterLimit) {
+      const retryAfter = Number(error.response?.headers?.['retry-after'])
+      const waitMs = Math.min(Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter * 1000 : 1500, 5000)
+      await sleep(waitMs)
+      config._retriedAfterLimit = true
+      return api(config)
+    }
+
+    if (status === 401 && !isRedirectingToLogin) {
       // Don't redirect for auth endpoints - they return 401 for invalid credentials
       // and the UI handles those errors directly
-      const url = error.config?.url || ''
+      const url = config?.url || ''
       const isAuthEndpoint = url.includes('/auth/login') || url.includes('/auth/register') ||
         url.includes('/auth/magic-link') || url.includes('/auth/invite') ||
         url.includes('/auth/forgot-password') || url.includes('/auth/reset-password') ||
         url.includes('/guardian-invite/')
       if (!isAuthEndpoint) {
+        const current = localStorage.getItem('fam_token')
+        if (current && isDemoToken(current) && config && !config._retriedAfterRenewal) {
+          try {
+            await renewDemoToken()
+            config._retriedAfterRenewal = true
+            return api(config) // the request interceptor attaches the fresh token
+          } catch {
+            // fall through to the ordinary sign-in redirect
+          }
+        }
         isRedirectingToLogin = true
         localStorage.removeItem('fam_token')
         // Use a small delay to let any in-flight requests settle before redirecting

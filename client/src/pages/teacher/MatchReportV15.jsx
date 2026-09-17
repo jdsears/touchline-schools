@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import MatchLoadError from '../../components/MatchLoadError'
 import { useParams } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { FileText, Sparkles, Edit2, Save, Loader2, Trophy, Star, RefreshCw } from 'lucide-react'
@@ -19,6 +20,7 @@ export default function MatchReportV15() {
   const [match, setMatch] = useState(null)
   const [team, setTeam] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [teamNotes, setTeamNotes] = useState('')
   const [editingNotes, setEditingNotes] = useState(false)
   const [savingNotes, setSavingNotes] = useState(false)
@@ -42,7 +44,7 @@ export default function MatchReportV15() {
         setTeam(t.data)
       }
       teamService.getMatchGoals(id).then(r => setGoals(r.data || [])).catch(() => {})
-    }).catch(() => {}).finally(() => setLoading(false))
+    }).catch(setLoadError).finally(() => setLoading(false))
   }, [id])
 
   async function saveNotes() {
@@ -84,7 +86,7 @@ export default function MatchReportV15() {
   }
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--text-tertiary)' }} /></div>
-  if (!match) return <div className="text-center py-20 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Match not found</div>
+  if (!match) return <MatchLoadError error={loadError} />
 
   const hasResult = match.score_for != null && match.score_against != null
   const reportText = typeof report?.generated === 'string' ? report.generated : report?.generated?.summary || ''

@@ -425,7 +425,9 @@ router.post('/demo-login', async (req, res, next) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ message: 'The live demo is not available right now.' })
     }
-    const token = jwt.sign({ userId: result.rows[0].id, demo: true }, JWT_SECRET, { expiresIn: '4h' })
+    // A demo walkthrough can run across a whole day; the client also renews
+    // a demo token quietly if it does expire mid-session.
+    const token = jwt.sign({ userId: result.rows[0].id, demo: true }, JWT_SECRET, { expiresIn: '12h' })
     res.json({ token })
   } catch (error) {
     next(error)

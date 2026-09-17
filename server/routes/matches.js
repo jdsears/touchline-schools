@@ -73,7 +73,6 @@ router.get('/:id', authenticateToken, async (req, res, next) => {
     const result = await pool.query(
       `SELECT m.*,
         (m.home_away = 'home') AS is_home,
-        m.result_data,
         m.score_for AS goals_for,
         m.score_against AS goals_against,
         m.team_notes AS notes,
