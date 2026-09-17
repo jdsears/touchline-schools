@@ -17,6 +17,34 @@ const GRADE_COLORS = {
   excellent: 'bg-status-info-tint text-status-info border-status-info',
 }
 
+// Seeded and imported reports may carry scale codes (Sec, Exc, effort 1-5)
+// rather than the editor's words; show them on the matching button.
+const ATTAINMENT_ALIASES = { exc: 'excelling', sec: 'secure', dev: 'developing', beg: 'emerging' }
+const EFFORT_ALIASES = { 5: 'excellent', 4: 'very_good', 3: 'good', 2: 'needs_improvement', 1: 'needs_improvement' }
+function normaliseAttainment(value) {
+  if (!value) return ''
+  const key = String(value).toLowerCase()
+  return ATTAINMENT_GRADES.includes(key) ? key : (ATTAINMENT_ALIASES[key] || '')
+}
+function normaliseEffort(value) {
+  if (!value) return ''
+  const key = String(value).toLowerCase()
+  return EFFORT_GRADES.includes(key) ? key : (EFFORT_ALIASES[key] || '')
+}
+
+function evidenceSummary(evidence) {
+  if (!evidence) return null
+  const plural = (n, word) => `${n} ${word}${n === 1 ? '' : 's'}`
+  const parts = []
+  if (evidence.assessments) parts.push(plural(evidence.assessments, 'assessment'))
+  if (evidence.observations) parts.push(plural(evidence.observations, 'observation'))
+  if (evidence.goals) parts.push(plural(evidence.goals, 'development goal'))
+  if (evidence.previous_report) parts.push('the last published report')
+  if (parts.length === 0) return 'Drafted from the grades you chose. Edit freely before submitting.'
+  const list = parts.length > 1 ? `${parts.slice(0, -1).join(', ')} and ${parts[parts.length - 1]}` : parts[0]
+  return `Drafted from ${list}. Edit freely before submitting.`
+}
+
 export default function TeacherReports() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -24,6 +52,7 @@ export default function TeacherReports() {
   const [reports, setReports] = useState({}) // { pupilId: { attainment, effort, comment, status } }
   const [saving, setSaving] = useState({})
   const [drafting, setDrafting] = useState({})
+  const [draftInfo, setDraftInfo] = useState({}) // { pupilId: evidence counts behind the last draft }
 
   useEffect(() => {
     loadData()
@@ -42,9 +71,10 @@ export default function TeacherReports() {
       for (const [key, report] of Object.entries(res.data.existing_reports || {})) {
         const [pupilId] = key.split('_')
         existing[pupilId] = {
-          attainment_grade: report.attainment_grade || '',
-          effort_grade: report.effort_grade || '',
+          attainment_grade: normaliseAttainment(report.attainment_grade),
+          effort_grade: normaliseEffort(report.effort_grade),
           teacher_comment: report.teacher_comment || '',
+          ai_draft: report.ai_draft || '',
           status: report.status || 'draft',
           id: report.id,
         }
@@ -76,6 +106,7 @@ export default function TeacherReports() {
         attainment_grade: report.attainment_grade || null,
         effort_grade: report.effort_grade || null,
         teacher_comment: report.teacher_comment || null,
+        ai_draft: report.ai_draft || null,
         status: 'draft',
       })
       toast.success('Report saved')
@@ -98,6 +129,7 @@ export default function TeacherReports() {
         attainment_grade: report.attainment_grade || null,
         effort_grade: report.effort_grade || null,
         teacher_comment: report.teacher_comment || null,
+        ai_draft: report.ai_draft || null,
         status: 'submitted',
       })
       updateReport(pupilId, 'status', 'submitted')
@@ -111,19 +143,36 @@ export default function TeacherReports() {
 
   async function generateDraft(pupilId, pupil) {
     const report = reports[pupilId] || {}
+    // Never silently overwrite something the teacher has written themselves.
+    const written = (report.teacher_comment || '').trim()
+    if (written && written !== (report.ai_draft || '').trim()
+      && !window.confirm('Replace the comment you have written with a new draft?')) return
+
     setDrafting(prev => ({ ...prev, [pupilId]: true }))
     try {
+      const unit = (pupil.units || []).filter(Boolean)[0]
       const res = await reportingService.generateAIDraft({
         pupil_id: pupilId,
-        sport: pupil.units?.[0]?.sport || 'football',
-        unit_name: pupil.units?.[0]?.unit_name || 'PE',
-        attainment_grade: report.attainment_grade,
-        effort_grade: report.effort_grade,
+        reporting_window_id: selectedWindow?.id,
+        unit_id: unit?.id,
+        sport: unit?.sport,
+        attainment_grade: report.attainment_grade || null,
+        effort_grade: report.effort_grade || null,
       })
-      updateReport(pupilId, 'teacher_comment', res.data.draft)
-      toast.success('Draft generated. Review and edit before submitting.')
+      setReports(prev => ({
+        ...prev,
+        [pupilId]: {
+          ...prev[pupilId],
+          teacher_comment: res.data.draft,
+          ai_draft: res.data.draft,
+          id: prev[pupilId]?.id || res.data.report_id || undefined,
+          status: prev[pupilId]?.status || 'draft',
+        },
+      }))
+      setDraftInfo(prev => ({ ...prev, [pupilId]: res.data.evidence }))
+      toast.success('Draft ready. Review and edit before submitting.')
     } catch (err) {
-      toast.error('Failed to generate draft')
+      toast.error(err.response?.data?.error || err.response?.data?.message || 'Failed to generate draft')
     } finally {
       setDrafting(prev => ({ ...prev, [pupilId]: false }))
     }
@@ -269,10 +318,11 @@ export default function TeacherReports() {
                   <button
                     onClick={() => generateDraft(pupil.id, pupil)}
                     disabled={drafting[pupil.id] || isSubmitted}
+                    title="Drafts a comment from this term's assessments, observations and development goals"
                     className="flex items-center gap-1.5 px-3 py-1.5 bg-subtle hover:bg-border-default text-secondary rounded-lg text-xs transition-colors disabled:opacity-50"
                   >
                     {drafting[pupil.id] ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                    AI Draft
+                    {drafting[pupil.id] ? 'Drafting…' : 'Draft with AI'}
                   </button>
                 </div>
               </div>
@@ -287,6 +337,11 @@ export default function TeacherReports() {
                   rows={3}
                   className="w-full px-3 py-2 bg-subtle border border-border-strong rounded-lg text-primary text-sm placeholder:text-tertiary focus:outline-none focus:border-brand-primary resize-none disabled:opacity-60"
                 />
+                {draftInfo[pupil.id] && (
+                  <p className="mt-1.5 text-xs text-tertiary flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 shrink-0" /> {evidenceSummary(draftInfo[pupil.id])}
+                  </p>
+                )}
               </div>
 
               {/* Actions */}

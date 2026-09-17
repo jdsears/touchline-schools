@@ -3,6 +3,9 @@ import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { v4 as uuidv4 } from 'uuid'
 import { windowReportsPdf, pdfFilename } from '../services/reportPdf.js'
+import { gatherReportEvidence, draftReportComment, storeAiDraft } from '../services/reportDraftService.js'
+import { WORKHORSE_MODEL } from '../config/aiModels.js'
+import { resolvePupilAccess, gate, STAFF_PROFILE_ROLES } from './pupilProfile.js'
 
 const router = express.Router()
 router.use(authenticateToken)
@@ -147,7 +150,7 @@ router.put('/windows/:id', async (req, res) => {
         [w.id]
       )
       await pool.query(
-        `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, metadata, created_at)
+        `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details, created_at)
          VALUES ($1, $2, $3, 'reporting_window', $4, $5, NOW())`,
         [
           w.school_id, req.user.id,
@@ -261,12 +264,14 @@ router.get('/my-reports', async (req, res) => {
       return res.json({ windows: [], pupils_to_report: [], existing_reports: {} })
     }
 
-    // Get pupils in the teacher's teaching groups (scoped to this school)
+    // Get pupils in the teacher's teaching groups (scoped to this school).
+    // The units column must be jsonb: DISTINCT needs an equality operator
+    // and plain json has none, which made this whole page a 500.
     const pupilsResult = await pool.query(
       `SELECT DISTINCT p.id, p.first_name, p.last_name, p.year_group,
               tg.id AS teaching_group_id,
               tg.name AS class_name,
-              (SELECT json_agg(json_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name))
+              (SELECT jsonb_agg(jsonb_build_object('id', su.id, 'sport', su.sport, 'unit_name', su.unit_name) ORDER BY su.end_date DESC)
                FROM sport_units su WHERE su.teaching_group_id = tg.id) AS units
        FROM teaching_group_pupils tgp
        JOIN pupils p ON tgp.pupil_id = p.id
@@ -283,7 +288,7 @@ router.get('/my-reports', async (req, res) => {
     const existingResult = pupilIds.length > 0 ? await pool.query(
       `SELECT pr.id, pr.pupil_id, pr.reporting_window_id, pr.status,
               pr.attainment_grade, pr.effort_grade,
-              pr.teacher_comment, pr.generated_by
+              pr.teacher_comment, pr.ai_draft, pr.generated_by
        FROM pupil_reports pr
        WHERE pr.reporting_window_id = ANY($1)
          AND pr.pupil_id = ANY($2)`,
@@ -309,15 +314,20 @@ router.get('/my-reports', async (req, res) => {
 // POST /reports - Create or update a pupil report
 router.post('/reports', async (req, res) => {
   try {
-    const { pupil_id, reporting_window_id, unit_id, sport, attainment_grade, effort_grade, teacher_comment, status } = req.body
+    const { pupil_id, reporting_window_id, unit_id, sport, attainment_grade, effort_grade, teacher_comment, ai_draft, status } = req.body
 
     if (!pupil_id || !reporting_window_id) {
       return res.status(400).json({ error: 'pupil_id and reporting_window_id are required' })
     }
 
-    // Check if report already exists
+    // The teacher's own report for this window. Rows created by the seed or
+    // by HoD tooling carry no generated_by, so a matching teacher_id (or no
+    // teacher at all) claims those rather than creating a duplicate.
     const existing = await pool.query(
-      `SELECT id FROM pupil_reports WHERE pupil_id = $1 AND reporting_window_id = $2 AND generated_by = $3`,
+      `SELECT id FROM pupil_reports
+       WHERE pupil_id = $1 AND reporting_window_id = $2
+         AND (generated_by = $3 OR (generated_by IS NULL AND (teacher_id = $3 OR teacher_id IS NULL)))
+       ORDER BY (generated_by = $3) DESC NULLS LAST, updated_at DESC NULLS LAST LIMIT 1`,
       [pupil_id, reporting_window_id, req.user.id]
     )
 
@@ -330,18 +340,21 @@ router.post('/reports', async (req, res) => {
           attainment_grade = COALESCE($3, attainment_grade),
           effort_grade = COALESCE($4, effort_grade),
           teacher_comment = COALESCE($5, teacher_comment),
-          status = COALESCE($6, status),
+          ai_draft = COALESCE($6, ai_draft),
+          status = COALESCE($7, status),
+          generated_by = COALESCE(generated_by, $8),
+          teacher_id = COALESCE(teacher_id, $8),
           updated_at = NOW()
-         WHERE id = $7
+         WHERE id = $9
          RETURNING *`,
-        [unit_id, sport, attainment_grade, effort_grade, teacher_comment, status || 'draft', existing.rows[0].id]
+        [unit_id, sport, attainment_grade, effort_grade, teacher_comment, ai_draft || null, status || 'draft', req.user.id, existing.rows[0].id]
       )
     } else {
       result = await pool.query(
-        `INSERT INTO pupil_reports (pupil_id, reporting_window_id, unit_id, sport, attainment_grade, effort_grade, teacher_comment, generated_by, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        `INSERT INTO pupil_reports (pupil_id, reporting_window_id, unit_id, sport, attainment_grade, effort_grade, teacher_comment, ai_draft, generated_by, teacher_id, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9, $10)
          RETURNING *`,
-        [pupil_id, reporting_window_id, unit_id || null, sport || null, attainment_grade || null, effort_grade || null, teacher_comment || null, req.user.id, status || 'draft']
+        [pupil_id, reporting_window_id, unit_id || null, sport || null, attainment_grade || null, effort_grade || null, teacher_comment || null, ai_draft || null, req.user.id, status || 'draft']
       )
     }
 
@@ -366,58 +379,81 @@ router.get('/reports/:id', async (req, res) => {
   }
 })
 
-// POST /reports/ai-draft - Generate an AI draft comment for a pupil
-router.post('/reports/ai-draft', async (req, res) => {
+// POST /reports/ai-draft — draft a report comment from the pupil's evidence
+// for this window: the teacher's grades, assessments against the curriculum
+// strands, confirmed observations, current development goals and the last
+// published report. The teacher reviews and edits it; nothing is submitted
+// here. The draft is kept in ai_draft beside whatever the teacher writes.
+router.post('/reports/ai-draft', async (req, res, next) => {
   try {
-    const { pupil_id, sport, unit_name, attainment_grade, effort_grade } = req.body
+    const { pupil_id, reporting_window_id, unit_id, sport, attainment_grade, effort_grade } = req.body || {}
+    if (!pupil_id) return res.status(400).json({ error: 'pupil_id is required' })
 
-    // Get pupil info
-    const pupilResult = await pool.query(
-      'SELECT first_name, last_name, year_group FROM pupils WHERE id = $1',
-      [pupil_id]
-    )
+    const access = await resolvePupilAccess(req, pupil_id)
+    if (access.error === 'not_found') return res.status(404).json({ error: 'Pupil not found' })
+    if (access.error || !gate(access, STAFF_PROFILE_ROLES)) return res.status(403).json({ error: 'Access denied' })
+    const { pupil, schoolId } = access
 
-    if (pupilResult.rows.length === 0) {
-      return res.status(404).json({ error: 'Pupil not found' })
+    let window = null
+    if (reporting_window_id) {
+      const loaded = await loadWindowForUser(req, reporting_window_id)
+      if (loaded.error) return res.status(loaded.error).json({ error: loaded.error === 404 ? 'Reporting window not found' : 'Access denied' })
+      window = loaded.window
     }
 
-    const pupil = pupilResult.rows[0]
+    const evidence = await gatherReportEvidence({ pupilId: pupil_id, schoolId, window, unitId: unit_id || null, sport: sport || null })
+    const firstName = pupil.first_name || String(pupil.name || '').split(' ')[0] || 'this pupil'
+    if (!evidence.assessments.length && !evidence.observations.length && !evidence.goals.length && !evidence.previousReport) {
+      return res.status(422).json({ error: `Nothing to draft from yet: no assessments, confirmed observations or development goals for ${firstName}. Record some evidence first.` })
+    }
 
-    // Get recent assessments for this pupil in this sport
-    const assessmentsResult = await pool.query(
-      `SELECT pa.grade, pa.teacher_notes, su.unit_name, su.curriculum_area
-       FROM pupil_assessments pa
-       JOIN sport_units su ON pa.unit_id = su.id
-       WHERE pa.pupil_id = $1 AND su.sport = $2
-       ORDER BY pa.assessed_at DESC
-       LIMIT 10`,
-      [pupil_id, sport || 'football']
-    )
+    const draft = await draftReportComment({
+      pupil, window,
+      unit: evidence.unit,
+      grades: { attainment: attainment_grade, effort: effort_grade },
+      assessments: evidence.assessments,
+      observations: evidence.observations,
+      goals: evidence.goals,
+      previousReport: evidence.previousReport,
+      template: evidence.template,
+    })
 
-    // Build a simple prompt for the AI draft
-    const assessmentContext = assessmentsResult.rows.length > 0
-      ? assessmentsResult.rows.map(a => `${a.unit_name}: ${a.grade}${a.teacher_notes ? ` (${a.teacher_notes})` : ''}`).join('; ')
-      : 'No formal assessments recorded yet'
+    let reportId = null
+    if (window) {
+      reportId = await storeAiDraft({
+        pupilId: pupil_id, windowId: window.id, teacherId: req.user.id,
+        unitId: evidence.unit?.id || unit_id || null, sport: evidence.unit?.sport || sport || null,
+        draft: draft.comment,
+      })
+    }
 
-    const draft = `${pupil.first_name} has ${
-      attainment_grade === 'excelling' ? 'demonstrated excellent ability' :
-      attainment_grade === 'secure' ? 'shown a solid understanding' :
-      attainment_grade === 'developing' ? 'made good progress' :
-      'been working to develop skills'
-    } in ${unit_name || sport || 'PE'} this term. ${
-      effort_grade === 'excelling' || effort_grade === 'secure'
-        ? `${pupil.first_name} consistently shows strong effort and a positive attitude in lessons.`
-        : `${pupil.first_name} is encouraged to continue building confidence and putting full effort into activities.`
-    } ${
-      assessmentsResult.rows.length > 0
-        ? `Assessment data shows: ${assessmentContext}.`
-        : ''
-    }`
+    await pool.query(
+      `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details)
+       VALUES ($1, $2, 'report_ai_drafted', 'pupil', $3, $4)`,
+      [schoolId, req.user.id, pupil_id, JSON.stringify({
+        reporting_window_id: window?.id || null, report_id: reportId,
+        observations: evidence.observations.length, assessments: evidence.assessments.length,
+        goals: evidence.goals.length, words: draft.word_count, model: WORKHORSE_MODEL,
+      })]
+    ).catch(() => {})
 
-    res.json({ draft: draft.trim() })
+    res.json({
+      draft: draft.comment,
+      word_count: draft.word_count,
+      evidence: {
+        assessments: evidence.assessments.length,
+        observations: evidence.observations.length,
+        goals: evidence.goals.length,
+        previous_report: Boolean(evidence.previousReport),
+      },
+      evidence_ids: draft.evidence_ids,
+      report_id: reportId,
+      source: 'ai',
+    })
   } catch (error) {
+    if (error.code === 'AI_NOT_CONFIGURED') return next(error)
     console.error('Error generating AI draft:', error)
-    res.status(500).json({ error: 'Failed to generate draft' })
+    res.status(502).json({ error: 'The draft could not be generated. Try again in a moment.' })
   }
 })
 

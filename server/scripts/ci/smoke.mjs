@@ -295,6 +295,51 @@ if (token) {
     } catch (e) {
       record('POST idp-goals/suggest', false, e.message)
     }
+    // The teacher's own Reports page: its feed used SELECT DISTINCT over a
+    // json column, which Postgres cannot compare, so the page was a 500.
+    await get('/reporting/my-reports', {
+      validate: (b) => (Array.isArray(b?.windows) && Array.isArray(b?.pupils_to_report) && b.pupils_to_report.length > 0
+        && b.pupils_to_report.every((p) => Array.isArray(p.units))
+        ? null
+        : `expected windows and pupils with units, got ${JSON.stringify(b).slice(0, 160)}`),
+    })
+    // Report drafting is a real model call too (it used to be a template):
+    // a comment with the evidence it rests on when a key is configured, a
+    // clean 503 otherwise. Never a 500, and never a duplicate report row.
+    if (openWindow.rows[0]) {
+      const wid = openWindow.rows[0].id
+      // Saving a draft for a pupil whose seeded report carries no generated_by
+      // must update that row, not add a second one to the window.
+      const rowsBefore = await pool.query(`SELECT COUNT(*)::int AS n FROM pupil_reports WHERE pupil_id = $1 AND reporting_window_id = $2`, [pid, wid])
+      const saved = await post('/reporting/reports', { pupil_id: pid, reporting_window_id: wid, teacher_comment: 'Smoke draft comment', status: 'draft' }, {
+        validate: (b) => (b?.pupil_id === pid && b?.teacher_comment === 'Smoke draft comment' ? null : `unexpected report payload ${JSON.stringify(b).slice(0, 160)}`),
+      })
+      if (saved) {
+        const rowsAfter = await pool.query(`SELECT COUNT(*)::int AS n FROM pupil_reports WHERE pupil_id = $1 AND reporting_window_id = $2`, [pid, wid])
+        record('POST /reporting/reports updates the existing row rather than duplicating it',
+          rowsAfter.rows[0].n === Math.max(rowsBefore.rows[0].n, 1), `rows before ${rowsBefore.rows[0].n}, after ${rowsAfter.rows[0].n}`)
+      }
+      const before = await pool.query(`SELECT COUNT(*)::int AS n FROM pupil_reports WHERE pupil_id = $1 AND reporting_window_id = $2`, [pid, wid])
+      try {
+        const res = await fetch(`${BASE}/api/reporting/reports/ai-draft`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pupil_id: pid, reporting_window_id: wid, attainment_grade: 'secure', effort_grade: 'very_good' }),
+        })
+        const body = await res.json().catch(() => null)
+        const drafted = res.status === 200 && typeof body?.draft === 'string' && body.draft.split(/\s+/).length >= 30
+          && body?.evidence && Number.isInteger(body.evidence.observations) && body.source === 'ai'
+        const unconfigured = res.status === 503 && body?.code === 'AI_NOT_CONFIGURED'
+        record('POST reporting/reports/ai-draft (200 with key, 503 AI_NOT_CONFIGURED without)', drafted || unconfigured, `status ${res.status}: ${JSON.stringify(body).slice(0, 150)}`)
+        if (drafted) {
+          const after = await pool.query(`SELECT COUNT(*)::int AS n, bool_or(ai_draft IS NOT NULL) AS stored FROM pupil_reports WHERE pupil_id = $1 AND reporting_window_id = $2`, [pid, wid])
+          const sameRows = after.rows[0].n === Math.max(before.rows[0].n, 1)
+          record('ai-draft stored on the teacher\'s report without duplicating it', sameRows && after.rows[0].stored, `rows before ${before.rows[0].n}, after ${after.rows[0].n}, stored ${after.rows[0].stored}`)
+        }
+      } catch (e) {
+        record('POST reporting/reports/ai-draft', false, e.message)
+      }
+    }
   } else {
     record('Toby Marsh persona lookup', false, 'persona pupil missing from seed')
   }
