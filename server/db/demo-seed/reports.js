@@ -76,7 +76,7 @@ async function seedAutumnReports(schoolId) {
     INSERT INTO reporting_windows (school_id, name, academic_year, term, year_groups, status, opens_at, closes_at, created_at)
     VALUES ($1, 'Autumn Report 2025', '2025-26', 'autumn', $2, 'closed', '2025-11-15', '2025-12-12', NOW())
     RETURNING id
-  `, [schoolId, JSON.stringify([7, 9, 11])])
+  `, [schoolId, [7, 9, 11]])
   const windowId = wRes.rows[0].id
 
   const groups = [
@@ -136,7 +136,7 @@ async function seedSpringWindow(schoolId) {
     INSERT INTO reporting_windows (school_id, name, academic_year, term, year_groups, status, opens_at, closes_at, created_at)
     VALUES ($1, 'Spring Report 2026', '2025-26', 'spring', $2, 'open', '2026-03-01', '2026-04-30', NOW())
     RETURNING id
-  `, [schoolId, JSON.stringify([7, 9, 11])])
+  `, [schoolId, [7, 9, 11]])
   const windowId = wRes.rows[0].id
 
   const groups = [

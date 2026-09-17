@@ -152,6 +152,10 @@ export async function wipeDemoTenant() {
       { table: 'pupil_safeguarding_notes', col: 'resolved_by_user_id' },
       { table: 'pupil_idp_goals', col: 'created_by_user_id' },
       { table: 'pupil_achievements', col: 'awarded_by' },
+      // Team-less pupils (e.g. left behind by a partially-failed seed) don't
+      // cascade away with the school, and pupils.user_id has no ON DELETE
+      // action - detach them so the user delete can proceed.
+      { table: 'pupils', col: 'user_id' },
     ]
     for (const { table, col } of nullReferences) {
       await pool.query(

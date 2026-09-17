@@ -1,4 +1,5 @@
 import pool from '../config/database.js'
+import { runLegacyEnsure } from './legacyEnsure.js'
 
 // Best-effort DDL. Some legacy tables (training_attendance, video_ai_analysis,
 // match_goals, …) carry a player_id column that later phases rename to pupil_id.
@@ -72,10 +73,69 @@ export async function runMigrations() {
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS has_completed_onboarding BOOLEAN DEFAULT false`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo_user BOOLEAN DEFAULT false`,
       `ALTER TABLE users ADD COLUMN IF NOT EXISTS demo_expires_at TIMESTAMPTZ`,
+      // Previously only ensured by index.js on demo deployments; the demo
+      // wipe/seed reads them, so fresh databases need them too.
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS is_test_persona BOOLEAN DEFAULT false`,
+      `ALTER TABLE users ADD COLUMN IF NOT EXISTS protected_from_reset BOOLEAN DEFAULT false`,
     ]
     for (const sql of earlyUserColumns) {
       try { await pool.query(sql) } catch (e) { /* already exists */ }
     }
+
+    // Fresh-database bootstrap for the schools model. Historically these tables
+    // only ever existed via the legacy clubs -> schools rename in index.js, so
+    // a brand-new database could not stand up at all: every later statement
+    // with REFERENCES schools(id) failed. Existing databases (which already
+    // have schools from that rename) are untouched via IF NOT EXISTS.
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS schools (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        name TEXT NOT NULL,
+        slug TEXT UNIQUE,
+        school_type TEXT,
+        urn TEXT,
+        contact_email TEXT,
+        contact_phone TEXT,
+        website TEXT,
+        address_line1 TEXT,
+        address_line2 TEXT,
+        city TEXT,
+        county TEXT,
+        postcode TEXT,
+        primary_color VARCHAR(20),
+        secondary_color VARCHAR(20),
+        logo_url TEXT,
+        subscription_tier TEXT,
+        subscription_status TEXT,
+        season_start_month INTEGER,
+        season_end_month INTEGER,
+        voice_observations_enabled BOOLEAN DEFAULT false,
+        audio_retention_days INTEGER DEFAULT 7,
+        transcript_retention_days INTEGER DEFAULT 30,
+        is_demo_tenant BOOLEAN DEFAULT false,
+        settings JSONB DEFAULT '{}',
+        created_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
+      )
+    `)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS school_members (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        role TEXT,
+        school_role TEXT,
+        can_view_all_classes BOOLEAN DEFAULT false,
+        can_view_all_teams BOOLEAN DEFAULT false,
+        can_manage_curriculum BOOLEAN DEFAULT false,
+        can_view_reports BOOLEAN DEFAULT false,
+        can_manage_safeguarding BOOLEAN DEFAULT false,
+        joined_at TIMESTAMPTZ DEFAULT NOW(),
+        UNIQUE(school_id, user_id)
+      )
+    `)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_school_members_user ON school_members(user_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_school_members_school ON school_members(school_id)`)
 
     // Ensure critical columns exist on schools table
     try {
@@ -86,7 +146,9 @@ export async function runMigrations() {
     // where the migration previously failed before reaching that phase)
     const earlyPlayerIdRenames = [
       'users', 'training_attendance', 'training_availability', 'invites',
-      'pupil_messages', 'match_media', 'pupil_achievements', 'team_suggestions',
+      'pupil_messages', 'match_media', 'team_suggestions',
+      // NOTE: pupil_achievements deliberately excluded - its player_id column
+      // is what every consumer (routes, seeds) and production use.
       'team_memberships', 'clip_player_tags', 'video_ai_analysis',
       'event_registrations', 'availability_responses', 'match_availability',
       'match_squads', 'observations', 'development_plans', 'attribute_snapshots'
@@ -94,7 +156,8 @@ export async function runMigrations() {
     for (const table of earlyPlayerIdRenames) {
       try {
         await pool.query(`DO $$ BEGIN
-          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${table}' AND column_name = 'player_id') THEN
+          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${table}' AND column_name = 'player_id')
+             AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${table}' AND column_name = 'pupil_id') THEN
             ALTER TABLE ${table} RENAME COLUMN player_id TO pupil_id;
           END IF;
         END $$`)
@@ -110,7 +173,8 @@ export async function runMigrations() {
     for (const r of matchColRenames) {
       try {
         await pool.query(`DO $$ BEGIN
-          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${r.table}' AND column_name = '${r.old}') THEN
+          IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${r.table}' AND column_name = '${r.old}')
+             AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${r.table}' AND column_name = '${r.new}') THEN
             ALTER TABLE ${r.table} RENAME COLUMN ${r.old} TO ${r.new};
           END IF;
         END $$`)
@@ -162,13 +226,18 @@ export async function runMigrations() {
       console.warn('players columns migration warning:', e.message)
     }
 
-    // Add foreign key for users.player_id after players table exists
+    // Add foreign key for users.player_id after players table exists.
+    // Fresh databases create users with pupil_id (no player_id), so the FK
+    // only applies to legacy DBs that still carry the old column.
     await pool.query(`
       DO $$
       BEGIN
         IF NOT EXISTS (
           SELECT 1 FROM information_schema.table_constraints
           WHERE constraint_name = 'users_player_id_fkey' AND table_name = 'users'
+        ) AND EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = 'users' AND column_name = 'player_id'
         ) THEN
           ALTER TABLE users ADD CONSTRAINT users_player_id_fkey
             FOREIGN KEY (player_id) REFERENCES players(id) ON DELETE SET NULL;
@@ -197,6 +266,11 @@ export async function runMigrations() {
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `)
+
+    // Schools-era code reads matches.date (chat context, fixtures feeds) and
+    // the seeds write both date and match_date; older DBs added `date` via a
+    // path that never existed for fresh ones.
+    await tryQuery(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS date DATE`)
 
     // Ensure kit_type column exists on matches (for existing databases where CREATE TABLE was a no-op)
     try {
@@ -1380,7 +1454,7 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_members_club ON club_members(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_club_members_club ON club_members(club_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_members_user ON club_members(user_id)`)
 
     // Guardians - parent/guardian CRM
@@ -1419,7 +1493,7 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_guardians_club ON guardians(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_guardians_club ON guardians(club_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_guardians_email ON guardians(email)`)
 
     // Player-guardian link
@@ -1531,8 +1605,8 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_payment_plans_club ON payment_plans(club_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_payment_plans_active ON payment_plans(club_id, is_active)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_payment_plans_club ON payment_plans(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_payment_plans_active ON payment_plans(club_id, is_active)`)
 
     // Ensure term columns exist on payment_plans (for existing databases)
     try {
@@ -1574,12 +1648,12 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_club ON player_subscriptions(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_player_subs_club ON player_subscriptions(club_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_plan ON player_subscriptions(payment_plan_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_player ON player_subscriptions(player_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_guardian ON player_subscriptions(guardian_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_token ON player_subscriptions(portal_token) WHERE portal_token IS NOT NULL`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_subs_status ON player_subscriptions(club_id, status)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_player_subs_status ON player_subscriptions(club_id, status)`)
 
     // Transactions - every payment recorded
     await pool.query(`
@@ -1609,9 +1683,9 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_transactions_club ON club_transactions(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_club_transactions_club ON club_transactions(club_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_transactions_player ON club_transactions(player_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_transactions_date ON club_transactions(club_id, created_at DESC)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_club_transactions_date ON club_transactions(club_id, created_at DESC)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_transactions_stripe ON club_transactions(stripe_payment_intent_id)`)
 
     // Add stripe_onboarding_complete to clubs
@@ -1654,8 +1728,8 @@ export async function runMigrations() {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_announcements_club ON club_announcements(club_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_announcements_date ON club_announcements(club_id, created_at DESC)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_club_announcements_club ON club_announcements(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_club_announcements_date ON club_announcements(club_id, created_at DESC)`)
 
     // Guardian invite tokens (for account linking)
     await pool.query(`
@@ -1694,7 +1768,7 @@ export async function runMigrations() {
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_comms_log_club ON club_comms_log(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_club_comms_log_club ON club_comms_log(club_id)`)
 
     // Add notification_preferences to guardians
     await pool.query(`
@@ -1738,7 +1812,7 @@ export async function runMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_player_messages_player_created ON player_messages(player_id, created_at DESC)`)
 
     // Guardians: speed up club guardian lookups
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_guardians_club ON guardians(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_guardians_club ON guardians(club_id)`)
 
     // =============================================
     // SAFEGUARDING & COMPLIANCE TABLES (Phase 4)
@@ -1769,7 +1843,7 @@ export async function runMigrations() {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_compliance_club ON compliance_records(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_compliance_club ON compliance_records(club_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_compliance_user ON compliance_records(user_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_compliance_dbs_expiry ON compliance_records(dbs_expiry_date)`)
 
@@ -1785,7 +1859,7 @@ export async function runMigrations() {
       UNIQUE(club_id, safeguarding_role, team_id)
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_safeguarding_roles_club ON safeguarding_roles(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_safeguarding_roles_club ON safeguarding_roles(club_id)`)
 
     // Safeguarding Incidents (confidential)
     await pool.query(`CREATE TABLE IF NOT EXISTS safeguarding_incidents (
@@ -1812,7 +1886,7 @@ export async function runMigrations() {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_incidents_club ON safeguarding_incidents(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_incidents_club ON safeguarding_incidents(club_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_incidents_status ON safeguarding_incidents(status)`)
 
     // Compliance Alerts (auto-generated)
@@ -1830,7 +1904,7 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_alerts_club ON compliance_alerts(club_id, status)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_alerts_club ON compliance_alerts(club_id, status)`)
 
     // =============================================
     // EVENTS & AVAILABILITY TABLES (Phase 5)
@@ -1871,7 +1945,7 @@ export async function runMigrations() {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_events_club ON club_events(club_id, start_date)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_events_club ON club_events(club_id, start_date)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_events_status ON club_events(status)`)
 
     // Event Registrations
@@ -1984,7 +2058,7 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_ai_insights_club ON ai_insights(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_ai_insights_club ON ai_insights(club_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_ai_insights_team ON ai_insights(team_id)`)
 
     // AI usage tracking
@@ -1999,7 +2073,7 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_ai_usage_club ON ai_usage(club_id, created_at)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_ai_usage_club ON ai_usage(club_id, created_at)`)
 
     // Grant application drafts
     await pool.query(`CREATE TABLE IF NOT EXISTS grant_drafts (
@@ -2015,7 +2089,7 @@ export async function runMigrations() {
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_grant_drafts_club ON grant_drafts(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_grant_drafts_club ON grant_drafts(club_id)`)
 
     // =============================================
     // PHASE 7: Registration & Subscription Terms
@@ -2597,10 +2671,15 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_club_charity_settings_club ON club_charity_settings(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_club_charity_settings_club ON club_charity_settings(club_id)`)
 
-    // Parent Gift Aid declarations
-    await pool.query(`
+    // Parent Gift Aid declarations. NOTE: this whole Gift Aid cluster is a
+    // legacy club-product feature - it references clubs(id), which existing
+    // school databases renamed to schools years ago, and this first CREATE
+    // also carried a trailing comma that made it invalid SQL, so none of these
+    // tables have ever been created in production. Best-effort only: they must
+    // never abort the migration (they used to strand every later phase).
+    await tryQuery(`
       CREATE TABLE IF NOT EXISTS parent_gift_aid_declarations (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -2619,7 +2698,7 @@ export async function runMigrations() {
         is_active BOOLEAN DEFAULT true,
 
         created_at TIMESTAMPTZ DEFAULT NOW(),
-        updated_at TIMESTAMPTZ DEFAULT NOW(),
+        updated_at TIMESTAMPTZ DEFAULT NOW()
 
         -- No unique constraint on (user_id, club_id) because old declarations
         -- are preserved with is_active = false for audit trail.
@@ -2627,12 +2706,12 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_parent_gad_user ON parent_gift_aid_declarations(user_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_parent_gad_club ON parent_gift_aid_declarations(club_id)`)
-    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_parent_gad_active ON parent_gift_aid_declarations(user_id, club_id) WHERE is_active = true`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_parent_gad_user ON parent_gift_aid_declarations(user_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_parent_gad_club ON parent_gift_aid_declarations(club_id)`)
+    await tryQuery(`CREATE UNIQUE INDEX IF NOT EXISTS idx_parent_gad_active ON parent_gift_aid_declarations(user_id, club_id) WHERE is_active = true`)
 
     // Gift Aid receipt sequence per club
-    await pool.query(`
+    await tryQuery(`
       CREATE TABLE IF NOT EXISTS gift_aid_receipt_sequences (
         club_id UUID PRIMARY KEY REFERENCES clubs(id) ON DELETE CASCADE,
         next_val INTEGER NOT NULL DEFAULT 1
@@ -2640,7 +2719,7 @@ export async function runMigrations() {
     `)
 
     // Gift Aid records (per payment)
-    await pool.query(`
+    await tryQuery(`
       CREATE TABLE IF NOT EXISTS gift_aid_records (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         transaction_id UUID REFERENCES club_transactions(id) ON DELETE CASCADE,
@@ -2672,10 +2751,10 @@ export async function runMigrations() {
       )
     `)
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_club ON gift_aid_records(club_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_user ON gift_aid_records(user_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_tax_year ON gift_aid_records(club_id, tax_year)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_receipt ON gift_aid_records(receipt_number)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_club ON gift_aid_records(club_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_user ON gift_aid_records(user_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_tax_year ON gift_aid_records(club_id, tax_year)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_gift_aid_records_receipt ON gift_aid_records(receipt_number)`)
 
     // ================================================
     // SEASON DEVELOPMENT TRACKING
@@ -2832,61 +2911,56 @@ export async function runMigrations() {
     await pool.query(`DROP TABLE IF EXISTS parent_potm_votes CASCADE`)
 
     // --- 8b: Rename core tables ---
-    // clubs -> schools
+    // clubs -> schools (skip when schools already exists, e.g. the fresh-DB
+    // bootstrap created it; the legacy clubs table is then just dead weight)
     await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'clubs') THEN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'clubs')
+         AND NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'schools') THEN
         ALTER TABLE clubs RENAME TO schools;
       END IF;
     END $$`)
 
     // club_members -> school_members
     await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_members') THEN
+      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_members')
+         AND NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'school_members') THEN
         ALTER TABLE club_members RENAME TO school_members;
       END IF;
     END $$`)
 
-    // club_announcements -> school_announcements
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_announcements') THEN
-        ALTER TABLE club_announcements RENAME TO school_announcements;
-      END IF;
-    END $$`)
+    // Remaining table renames. Guarded on the target NOT existing as well:
+    // renamed-away legacy tables get recreated empty by their original
+    // CREATE TABLE IF NOT EXISTS on the next run, and an unguarded rename
+    // then collides with the real (already-renamed) table and aborts the run.
+    const tableRenames = [
+      ['club_announcements', 'school_announcements'],
+      ['club_comms_log', 'school_comms_log'],
+      ['club_events', 'school_events'],
+      ['players', 'pupils'],
+      ['player_achievements', 'pupil_achievements'],
+      ['player_messages', 'pupil_messages'],
+    ]
+    for (const [renameFrom, renameTo] of tableRenames) {
+      await pool.query(`DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '${renameFrom}')
+           AND NOT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = '${renameTo}') THEN
+          ALTER TABLE ${renameFrom} RENAME TO ${renameTo};
+        END IF;
+      END $$`)
+    }
 
-    // club_comms_log -> school_comms_log
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_comms_log') THEN
-        ALTER TABLE club_comms_log RENAME TO school_comms_log;
-      END IF;
-    END $$`)
-
-    // club_events -> school_events
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'club_events') THEN
-        ALTER TABLE club_events RENAME TO school_events;
-      END IF;
-    END $$`)
-
-    // players -> pupils
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'players') THEN
-        ALTER TABLE players RENAME TO pupils;
-      END IF;
-    END $$`)
-
-    // player_achievements -> pupil_achievements
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_achievements') THEN
-        ALTER TABLE player_achievements RENAME TO pupil_achievements;
-      END IF;
-    END $$`)
-
-    // player_messages -> pupil_messages
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'player_messages') THEN
-        ALTER TABLE player_messages RENAME TO pupil_messages;
-      END IF;
-    END $$`)
+    // Roster columns the schools product expects on pupils. These historically
+    // lived only in index.js's boot-time ensure block (which runs solely on
+    // demo deployments), so a fresh database could not seed a single pupil.
+    const pupilEnsureCols = [
+      'team_id UUID', 'school_id UUID', 'user_id UUID', 'year_group INTEGER',
+      'house TEXT', 'first_name TEXT', 'last_name TEXT', 'nicknames TEXT',
+      'is_active BOOLEAN DEFAULT true', 'protected_from_reset BOOLEAN DEFAULT false',
+      'gcse_pe_candidate BOOLEAN NOT NULL DEFAULT FALSE',
+    ]
+    for (const col of pupilEnsureCols) {
+      await tryQuery(`ALTER TABLE pupils ADD COLUMN IF NOT EXISTS ${col}`)
+    }
 
     // --- 8c: Rename club_id -> school_id in surviving tables ---
     const clubIdRenames = [
@@ -2900,16 +2974,54 @@ export async function runMigrations() {
         IF EXISTS (
           SELECT 1 FROM information_schema.columns
           WHERE table_name = '${table}' AND column_name = 'club_id'
+        ) AND NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = '${table}' AND column_name = 'school_id'
         ) THEN
           ALTER TABLE ${table} RENAME COLUMN club_id TO school_id;
         END IF;
       END $$`)
     }
 
+    // Re-point foreign keys that still reference the dead legacy clubs table.
+    // On long-migrated databases the clubs -> schools TABLE rename carried
+    // these constraints across, but on fresh databases (where a clubs shell
+    // coexists with the bootstrapped schools table) the club_id -> school_id
+    // COLUMN rename keeps its old FK aimed at clubs, which then rejects every
+    // school-scoped insert. Each repair is isolated so one failure can't
+    // abort the rest.
+    await tryQuery(`DO $$
+      DECLARE r RECORD;
+      BEGIN
+        IF to_regclass('public.clubs') IS NULL OR to_regclass('public.schools') IS NULL THEN
+          RETURN;
+        END IF;
+        FOR r IN
+          SELECT c.conname, t.relname AS tbl, a.attname AS col
+          FROM pg_constraint c
+          JOIN pg_class t ON t.oid = c.conrelid
+          JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = c.conkey[1]
+          WHERE c.contype = 'f'
+            AND c.confrelid = 'public.clubs'::regclass
+            AND a.attname = 'school_id'
+        LOOP
+          BEGIN
+            EXECUTE format('ALTER TABLE %I DROP CONSTRAINT %I', r.tbl, r.conname);
+            EXECUTE format(
+              'ALTER TABLE %I ADD CONSTRAINT %I FOREIGN KEY (school_id) REFERENCES schools(id) ON DELETE CASCADE',
+              r.tbl, r.tbl || '_school_id_fkey'
+            );
+          EXCEPTION WHEN others THEN NULL;
+          END;
+        END LOOP;
+      END $$`)
+
     // --- 8d: Rename player_id -> pupil_id in surviving tables ---
     const playerIdRenames = [
       'users', 'training_attendance', 'training_availability', 'invites',
-      'pupil_messages', 'match_media', 'pupil_achievements', 'team_suggestions',
+      'pupil_messages', 'match_media', 'team_suggestions',
+      // NOTE: pupil_achievements deliberately excluded - its player_id column
+      // is what every consumer (routes, seeds) and production use.
       'team_memberships', 'clip_player_tags', 'video_ai_analysis',
       'event_registrations', 'availability_responses', 'match_availability',
       'match_squads', 'observations', 'development_plans', 'attribute_snapshots'
@@ -2919,33 +3031,31 @@ export async function runMigrations() {
         IF EXISTS (
           SELECT 1 FROM information_schema.columns
           WHERE table_name = '${table}' AND column_name = 'player_id'
+        ) AND NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name = '${table}' AND column_name = 'pupil_id'
         ) THEN
           ALTER TABLE ${table} RENAME COLUMN player_id TO pupil_id;
         END IF;
       END $$`)
     }
 
-    // Rename player-related columns in match tables
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_goals' AND column_name = 'scorer_player_id') THEN
-        ALTER TABLE match_goals RENAME COLUMN scorer_player_id TO scorer_pupil_id;
-      END IF;
-    END $$`)
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_goals' AND column_name = 'assist_player_id') THEN
-        ALTER TABLE match_goals RENAME COLUMN assist_player_id TO assist_pupil_id;
-      END IF;
-    END $$`)
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_substitutions' AND column_name = 'player_off_id') THEN
-        ALTER TABLE match_substitutions RENAME COLUMN player_off_id TO pupil_off_id;
-      END IF;
-    END $$`)
-    await pool.query(`DO $$ BEGIN
-      IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'match_substitutions' AND column_name = 'player_on_id') THEN
-        ALTER TABLE match_substitutions RENAME COLUMN player_on_id TO pupil_on_id;
-      END IF;
-    END $$`)
+    // Rename player-related columns in match tables (target-guarded: the old
+    // column can be re-added by legacy CREATE/ALTER statements on later runs)
+    const matchPlayerColRenames = [
+      ['match_goals', 'scorer_player_id', 'scorer_pupil_id'],
+      ['match_goals', 'assist_player_id', 'assist_pupil_id'],
+      ['match_substitutions', 'player_off_id', 'pupil_off_id'],
+      ['match_substitutions', 'player_on_id', 'pupil_on_id'],
+    ]
+    for (const [tbl, oldCol, newCol] of matchPlayerColRenames) {
+      await pool.query(`DO $$ BEGIN
+        IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${tbl}' AND column_name = '${oldCol}')
+           AND NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = '${tbl}' AND column_name = '${newCol}') THEN
+          ALTER TABLE ${tbl} RENAME COLUMN ${oldCol} TO ${newCol};
+        END IF;
+      END $$`)
+    }
 
     // Also rename guardian_id -> drop it from event_registrations (guardians table is gone)
     await pool.query(`DO $$ BEGIN
@@ -3202,6 +3312,18 @@ export async function runMigrations() {
     )`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_reporting_windows_school ON reporting_windows(school_id)`)
 
+    // Reconcile year_groups to INTEGER[] on databases where an older variant
+    // created it as JSONB - the seeds and routes pass real integer arrays.
+    await tryQuery(`DO $$ BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'reporting_windows' AND column_name = 'year_groups' AND data_type = 'jsonb'
+      ) THEN
+        ALTER TABLE reporting_windows ALTER COLUMN year_groups TYPE INTEGER[]
+          USING (SELECT array_agg(x::int) FROM jsonb_array_elements_text(year_groups) AS t(x));
+      END IF;
+    END $$`)
+
     // --- 9i: Pupil reports (generated report data per pupil per subject) ---
     await pool.query(`CREATE TABLE IF NOT EXISTS pupil_reports (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -3220,6 +3342,12 @@ export async function runMigrations() {
     )`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_reports_pupil ON pupil_reports(pupil_id)`)
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_reports_window ON pupil_reports(reporting_window_id)`)
+
+    // Columns the reporting flow writes that older variants of this table
+    // carried but this definition lacked (previously ensured only by index.js).
+    await tryQuery(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE SET NULL`)
+    await tryQuery(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS teacher_id UUID REFERENCES users(id) ON DELETE SET NULL`)
+    await tryQuery(`ALTER TABLE pupil_reports ADD COLUMN IF NOT EXISTS ai_draft TEXT`)
 
     // --- 9j: Seed default curriculum strands for KS3 and KS4 ---
     try {
@@ -3874,9 +4002,13 @@ export async function runMigrations() {
     // existing data is preserved. Each table has its own access-control
     // policy enforced at the route layer; safeguarding is the strictest.
 
-    // 21a: identity & profile columns on pupils (aka players)
+    // 21a: identity & profile columns. The roster table is `pupils` on any
+    // database that has run the Phase 8 renames (i.e. every real deployment)
+    // and `players` only on ancient pre-rename snapshots - resolve which.
+    const rosterTable = (await pool.query(`SELECT to_regclass('public.pupils') AS t`)).rows[0].t
+      ? 'pupils' : 'players'
     await pool.query(`
-      ALTER TABLE players
+      ALTER TABLE ${rosterTable}
         ADD COLUMN IF NOT EXISTS preferred_name TEXT,
         ADD COLUMN IF NOT EXISTS pronouns TEXT,
         ADD COLUMN IF NOT EXISTS parent_phone TEXT,
@@ -3886,8 +4018,8 @@ export async function runMigrations() {
         ADD COLUMN IF NOT EXISTS house_id UUID,
         ADD COLUMN IF NOT EXISTS tutor_user_id UUID REFERENCES users(id) ON DELETE SET NULL
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_talent_pathway ON players(talent_pathway_flag) WHERE talent_pathway_flag = TRUE`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_tutor ON players(tutor_user_id)`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_talent_pathway ON ${rosterTable}(talent_pathway_flag) WHERE talent_pathway_flag = TRUE`)
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_tutor ON ${rosterTable}(tutor_user_id)`)
 
     // 21b: medical notes
     await pool.query(`
@@ -4054,6 +4186,15 @@ export async function runMigrations() {
     EXCEPTION WHEN others THEN NULL;
     END $$`)
     console.log('Phase 23: matches.result_data')
+
+    // ================================================
+    // PHASE 24: Consolidated boot-time ensure-schema
+    // ================================================
+    // Formerly index.js's ensureDemoPrerequisites, which only ran on demo
+    // deployments and competed with this file as a second schema source.
+    // Every statement inside is individually best-effort.
+    await runLegacyEnsure()
+    console.log('Phase 24: consolidated boot-time ensure-schema (formerly index.js)')
 
     console.log('Migrations completed')
   } catch (error) {
