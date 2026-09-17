@@ -46,13 +46,24 @@ export async function seedV2Capabilities(schoolId) {
        WHERE sm.school_id = $1 AND p.is_active = true LIMIT 30`,
       [schoolId]
     )
-    for (const pupil of pupils.rows) {
+    let expiringSoonCount = 0
+    const pupilRows = pupils.rows
+    for (let pIdx = 0; pIdx < pupilRows.length; pIdx++) {
+      const pupil = pupilRows[pIdx]
       for (let i = 0; i < ctIds.length; i++) {
-        const skipConsent = Math.random() < 0.05
+        const skipConsent = (pIdx + i) % 19 === 7 // a few deterministic gaps
         if (skipConsent) continue
         const expiresAt = new Date()
-        const expiringSoon = Math.random() < 0.04
-        expiresAt.setMonth(expiresAt.getMonth() + (expiringSoon ? 0 : consentTypes[i]?.months || 12))
+        // Exactly two consents land inside the 30-day expiry window: enough
+        // to light the bell's action-required badge and demonstrate the
+        // consent workflow, without the tray opening on an alarming red "10".
+        const expiringSoon = expiringSoonCount < 2 && i === 0 && pIdx % 9 === 4
+        if (expiringSoon) {
+          expiringSoonCount++
+          expiresAt.setDate(expiresAt.getDate() + 10 + expiringSoonCount * 7) // 17 & 24 days out
+        } else {
+          expiresAt.setMonth(expiresAt.getMonth() + (consentTypes[i]?.months || 12))
+        }
         await pool.query(
           `INSERT INTO pupil_consents (pupil_id, consent_type_id, status, granted_at, expires_at, parent_signature_text, granted_by_parent_email)
            VALUES ($1,$2,'granted',NOW(),$3,'Parent/Guardian',$4) ON CONFLICT (pupil_id, consent_type_id) DO NOTHING`,

@@ -32,6 +32,7 @@ import { seedIdps } from '../seeds/seed-idps.js'
 import { seedAchievements } from '../seeds/seed-achievements.js'
 import { seedSafeguardingFlags } from '../seeds/seed-safeguarding-flags.js'
 import { seedV2Capabilities } from './v2Capabilities.js'
+import { seedVoiceNotes, seedCoachChat, seedNotifications } from './richness.js'
 
 dotenv.config()
 
@@ -143,6 +144,14 @@ export async function wipeDemoTenant() {
       [demoUserIds]
     ).catch(err => console.warn('[demo-seed] Could not delete stale observations:', err.message))
 
+    // Department-scope Coach messages have team_id NULL, so they don't cascade
+    // away with the school's teams — and messages.user_id has no ON DELETE
+    // action, so they'd block the user delete below.
+    await pool.query(
+      `DELETE FROM messages WHERE team_id IS NULL AND user_id = ANY($1::uuid[])`,
+      [demoUserIds]
+    ).catch(err => console.warn('[demo-seed] Could not delete department chat messages:', err.message))
+
     // Other tables that may reference users(id) without ON DELETE SET NULL.
     // Add more as we hit them — each is guarded so missing tables/columns
     // don't abort the wipe.
@@ -244,6 +253,11 @@ export async function runDemoSeed({ wipeOnly = false, onLog } = {}) {
 
   await seedV2Capabilities(school.id).catch(e => log(`[demo-seed] v2.0 capabilities failed: ${e.message}`))
   log('[demo-seed] v2.0 capabilities seeded (venues, consents, reports, concussion, MIS)')
+
+  await seedVoiceNotes(school.id, staff).catch(e => log(`[demo-seed] Voice notes failed: ${e.message}`))
+  await seedCoachChat(staff).catch(e => log(`[demo-seed] Coach chat failed: ${e.message}`))
+  await seedNotifications(staff).catch(e => log(`[demo-seed] Notifications failed: ${e.message}`))
+  log('[demo-seed] Demo richness seeded (voice notes, Coach chat, notifications)')
 
   log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
   return { wiped: true, seeded: true, schoolId: school.id }
