@@ -83,9 +83,24 @@ export default function HoDOverview() {
 
   const todayDate = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
   const todayItems = [
-    ...(today?.lessons || []).map(l => ({ type: 'lesson', time: null, label: `${l.class_name} – ${l.unit_name}`, sub: `${l.teacher_name} · Yr ${l.year_group}`, pupils: l.pupil_count, sport: l.sport })),
-    ...(today?.training || []).map(t => ({ type: 'training', time: t.time, label: `${t.team_name} training`, sub: `${t.coach_name || 'TBC'} · ${t.location || 'TBC'}`, pupils: t.pupil_count, sport: t.sport })),
-    ...(today?.fixtures || []).map(f => ({ type: 'fixture', time: f.match_time, label: `${f.team_name} vs ${f.opponent}`, sub: `${f.coach_name || 'TBC'} · ${f.location || 'TBC'} (${f.home_away})`, pupils: f.pupil_count, sport: f.sport })),
+    ...(today?.lessons || []).map(l => ({
+      key: `lesson-${l.id}`, type: 'lesson', time: null,
+      label: `${l.title || 'Lesson'} · ${l.class_name}`,
+      sub: [l.teacher_name, l.year_group ? `Yr ${l.year_group}` : null, l.unit_name || l.sport].filter(Boolean).join(' · '),
+      pupils: l.pupil_count, href: l.group_id ? `/teacher/classes/${l.group_id}` : '/teacher/lessons',
+    })),
+    ...(today?.training || []).map(t => ({
+      key: `training-${t.id}`, type: 'training', time: t.time,
+      label: `${t.team_name} training`,
+      sub: [t.coach_name, t.location].filter(Boolean).join(' · ') || 'Details to confirm',
+      pupils: t.pupil_count, href: t.team_id ? `/teacher/teams/${t.team_id}` : '/teacher/sessions',
+    })),
+    ...(today?.fixtures || []).map(f => ({
+      key: `fixture-${f.id}`, type: 'fixture', time: f.match_time,
+      label: `${f.team_name} ${f.home_away === 'home' ? 'vs' : 'at'} ${f.opponent}`,
+      sub: [f.coach_name, f.location].filter(Boolean).join(' · ') || 'Details to confirm',
+      pupils: f.pupil_count, href: `/teacher/match/${f.id}`,
+    })),
   ].sort((a, b) => (a.time || '99:99').localeCompare(b.time || '99:99'))
 
   return (
@@ -125,8 +140,8 @@ export default function HoDOverview() {
             <p className="text-tertiary text-sm text-center py-8">Quiet day in the department</p>
           ) : (
             <div className="space-y-2">
-              {todayItems.map((item, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-subtle">
+              {todayItems.map(item => (
+                <Link key={item.key} to={item.href} className="flex items-center gap-3 p-3 rounded-lg bg-subtle hover:bg-brand-primary-tint transition-colors">
                   <div className="w-14 text-right">
                     <span className="text-xs text-secondary font-mono">{item.time ? formatTime(item.time) : '—'}</span>
                   </div>
@@ -138,7 +153,8 @@ export default function HoDOverview() {
                   <div className="flex items-center gap-1 text-xs text-tertiary">
                     <Users className="w-3 h-3" />{item.pupils}
                   </div>
-                </div>
+                  <ChevronRight className="w-4 h-4 text-tertiary shrink-0" />
+                </Link>
               ))}
             </div>
           )}
@@ -153,14 +169,15 @@ export default function HoDOverview() {
           <div className="space-y-4">
             {/* Reporting windows */}
             {(attention?.reporting_windows || []).map(rw => {
-              const pct = rw.total > 0 ? Math.round((rw.submitted / rw.total) * 100) : 0
+              const completed = Number(rw.submitted || 0) + Number(rw.published || 0)
+              const pct = rw.total > 0 ? Math.round((completed / rw.total) * 100) : 0
               return (
-                <Link key={rw.id} to={`/teacher/hod/reporting`} className="block p-3 rounded-lg bg-subtle hover:bg-subtle transition-colors">
+                <Link key={rw.id} to={`/teacher/hod/reporting/windows/${rw.id}`} className="block p-3 rounded-lg bg-subtle hover:bg-brand-primary-tint transition-colors">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-sm text-primary font-medium flex items-center gap-2">
                       <FileBarChart className="w-3.5 h-3.5 text-secondary" />{rw.name}
                     </span>
-                    <span className="text-xs text-secondary">{rw.submitted}/{rw.total}</span>
+                    <span className="text-xs text-secondary">{completed}/{rw.total}{Number(rw.submitted) > 0 ? ` · ${rw.submitted} to moderate` : ''}</span>
                   </div>
                   <div className="w-full h-1.5 bg-border-default rounded-full overflow-hidden">
                     <div className="h-full bg-brand-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
@@ -198,9 +215,7 @@ export default function HoDOverview() {
               <div>
                 <h3 className="text-xs font-semibold text-secondary uppercase tracking-wide mb-2">Open safeguarding</h3>
                 {attention.open_safeguarding.slice(0, 3).map(si => {
-                  const href = attention.school_slug
-                    ? `/school/${attention.school_slug}/safeguarding/incidents?highlight=${si.id}`
-                    : '/teacher/safeguarding'
+                  const href = `/teacher/safeguarding/incidents?highlight=${si.id}`
                   return (
                     <Link key={si.id} to={href} className="flex items-center gap-3 p-2 rounded-lg hover:bg-subtle transition-colors">
                       <Shield className="w-4 h-4 text-status-error" />
@@ -271,13 +286,13 @@ function WeeklyStaffActivity({ staff }) {
       {active.length === 0 ? <p className="text-tertiary text-xs">No activity recorded</p> : (
         <div className="space-y-1.5">
           {active.map(s => (
-            <div key={s.id} className="flex items-center justify-between p-2 rounded-lg bg-subtle">
+            <Link key={s.id} to="/teacher/hod/staff-activity" className="flex items-center justify-between p-2 rounded-lg bg-subtle hover:bg-brand-primary-tint transition-colors">
               <span className="text-sm text-primary">{s.name}</span>
               <div className="flex gap-3 text-xs text-secondary">
                 {s.observations_logged > 0 && <span>{s.observations_logged} obs</span>}
                 {s.reports_updated > 0 && <span>{s.reports_updated} reports</span>}
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       )}

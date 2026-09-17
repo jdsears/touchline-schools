@@ -61,7 +61,7 @@ export default function TeacherSafeguarding() {
           description="Log a safeguarding concern or incident. This will be visible to the DSL and recorded in the audit trail."
           buttonLabel="Report Concern"
           color="alert"
-          href={schoolSlug ? `/school/${schoolSlug}/safeguarding/incidents` : '#'}
+          href="/teacher/safeguarding/incidents?report=1"
         />
         <ActionCard
           icon={UserCheck}
@@ -105,7 +105,7 @@ export default function TeacherSafeguarding() {
               icon={AlertTriangle}
               title="Incident Log"
               description="All reported safeguarding concerns and incidents with status tracking."
-              href={schoolSlug ? `/school/${schoolSlug}/safeguarding/incidents` : '#'}
+              href="/teacher/safeguarding/incidents"
             />
             <DashboardCard
               icon={Users}

@@ -268,7 +268,11 @@ export default function ClubLayout() {
         <main className="min-h-[calc(100vh-4rem)] lg:min-h-screen">
           <ErrorBoundary key={location.pathname}>
             <Suspense fallback={<div className="flex items-center justify-center min-h-[50vh]"><div className="spinner w-8 h-8" /></div>}>
-              <Outlet context={{ school, myRole, refreshClub: loadClub }} />
+              <Outlet context={{
+                school, myRole, refreshClub: loadClub,
+                mySchoolRole: school?.my_school_role || null,
+                canManageSafeguarding: !!school?.my_can_manage_safeguarding,
+              }} />
             </Suspense>
           </ErrorBoundary>
         </main>

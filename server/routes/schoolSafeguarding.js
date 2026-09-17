@@ -5,7 +5,7 @@ import fs from 'fs'
 import { fileURLToPath } from 'url'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { loadSchool, requireSchoolRole } from '../middleware/schoolAuth.js'
+import { loadSchool, requireSchoolRole, STAFF_ROLES } from '../middleware/schoolAuth.js'
 import { sendNotificationEmail, isEmailEnabled, sendEmail } from '../services/emailService.js'
 import { uploadFile } from '../services/storageService.js'
 
@@ -62,8 +62,13 @@ const upload = multer({
 // INLINE MIDDLEWARE: SAFEGUARDING ACCESS
 // ==========================================
 
-// Only welfare officers, school owners, and site admins can view incidents.
-// Any school member can REPORT an incident (handled at the route level).
+// Who may read incident records: site admins, school owners/admins, the
+// Head of PE and DSL roles (the same set the pupil profile's safeguarding
+// tab uses), anyone whose membership carries can_manage_safeguarding, and
+// appointed welfare officers. Any staff member can REPORT an incident
+// (handled at the route level).
+const INCIDENT_ACCESS_ROLES = ['owner', 'admin', 'school_admin', 'head_of_pe', 'dsl', 'deputy_dsl']
+
 async function requireSafeguardingAccess(req, res, next) {
   try {
     const schoolId = req.params.schoolId || req.school?.id
@@ -71,22 +76,21 @@ async function requireSafeguardingAccess(req, res, next) {
       return res.status(401).json({ error: 'Authentication required' })
     }
 
-    // Site admins always have access
     if (req.user.is_admin) {
       req.safeguardingRole = 'admin'
       return next()
     }
 
-    // School owners have access
-    if (req.clubRole === 'owner') {
-      req.safeguardingRole = 'owner'
+    const membership = req.clubMembership || {}
+    const roles = [membership.school_role, membership.role, req.clubRole].filter(Boolean)
+    if (roles.some(r => INCIDENT_ACCESS_ROLES.includes(r)) || membership.can_manage_safeguarding) {
+      req.safeguardingRole = roles.includes('owner') ? 'owner' : 'designated'
       return next()
     }
 
-    // Check if user is a welfare officer for this school
     const welfareResult = await pool.query(
       `SELECT id, role_type FROM safeguarding_roles
-       WHERE school_id = $1 AND user_id = $2 AND role_type = 'welfare_officer'`,
+       WHERE school_id = $1 AND user_id = $2 AND role_type IN ('welfare_officer', 'dsl', 'deputy_dsl')`,
       [schoolId, req.user.id]
     )
 
@@ -95,7 +99,7 @@ async function requireSafeguardingAccess(req, res, next) {
       return next()
     }
 
-    return res.status(403).json({ error: 'Only welfare officers and school owners can access incident records' })
+    return res.status(403).json({ error: 'Only designated safeguarding staff can access incident records' })
   } catch (error) {
     next(error)
   }
@@ -499,7 +503,7 @@ router.delete('/:schoolId/safeguarding/roles/:id', authenticateToken, loadSchool
 // ==========================================
 
 // List incidents (welfare officers + owners only)
-router.get('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
+router.get('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolRole(...STAFF_ROLES), requireSafeguardingAccess, async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const { status, severity } = req.query
@@ -537,7 +541,7 @@ router.get('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, r
 })
 
 // Report an incident (any school member can report)
-router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), async (req, res, next) => {
+router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, requireSchoolRole(...STAFF_ROLES), async (req, res, next) => {
   try {
     const { schoolId } = req.params
     const {
@@ -623,7 +627,7 @@ router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, 
 })
 
 // View a single incident (logs audit trail)
-router.get('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
+router.get('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolRole(...STAFF_ROLES), requireSafeguardingAccess, async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
 
@@ -666,7 +670,7 @@ router.get('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchoo
 })
 
 // Update an incident
-router.put('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolRole('owner', 'admin', 'treasurer', 'secretary', 'coach'), requireSafeguardingAccess, async (req, res, next) => {
+router.put('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchool, requireSchoolRole(...STAFF_ROLES), requireSafeguardingAccess, async (req, res, next) => {
   try {
     const { schoolId, id } = req.params
     const {

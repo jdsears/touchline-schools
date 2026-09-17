@@ -1164,7 +1164,8 @@ router.put('/:schoolId/registrations/:pupilId', authenticateToken, loadSchool, r
 router.get('/', authenticateToken, async (req, res, next) => {
   try {
     const result = await pool.query(
-      `SELECT c.*, cm.role as my_role
+      `SELECT c.*, cm.role AS my_role, cm.school_role AS my_school_role,
+              cm.can_manage_safeguarding AS my_can_manage_safeguarding
        FROM schools c
        JOIN school_members cm ON cm.school_id = c.id
        WHERE cm.user_id = $1 AND cm.status = 'active'

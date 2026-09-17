@@ -35,7 +35,7 @@ const router = Router()
 
 async function getSchoolId(user) {
   const mem = await pool.query(
-    `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC NULLS LAST LIMIT 1`,
+    `SELECT school_id FROM school_members WHERE user_id = $1 AND status = 'active' ORDER BY joined_at ASC NULLS LAST LIMIT 1`,
     [user.id]
   )
   if (mem.rows.length) return mem.rows[0].school_id

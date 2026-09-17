@@ -161,9 +161,30 @@ if (token) {
   // Top-bar feeds for a Head of PE. consent/venues/concussion resolved the
   // school through a nonexistent school_members.status column (500 on every
   // call); voice safeguarding accepted only owner/admin (silent 403 for HoDs).
+  // School Overview "today" rows link to the team / fixture / class, so each
+  // needs its id (the training rows previously carried none).
+  await get('/hod/school-overview/today', {
+    validate: (b) => {
+      if (!['fixtures', 'training', 'lessons'].every((k) => Array.isArray(b?.[k]))) return `expected three arrays, got ${JSON.stringify(b).slice(0, 120)}`
+      const badTraining = b.training.find((t) => !t.team_id)
+      const badFixture = b.fixtures.find((f) => !f.id || !f.team_id)
+      return badTraining || badFixture ? `row missing ids: ${JSON.stringify(badTraining || badFixture).slice(0, 120)}` : null
+    },
+  })
   await get('/consent/expiring?days=30', { validate: isArray })
   await get('/voice-safeguarding/flagged', { validate: isArray })
   await get('/venues', { validate: isArray })
+
+  // School-area membership lookups (my schools, role gate) read
+  // school_members.status, which fresh databases lacked until Phase 30; the
+  // incident log additionally admits HoD/DSL roles, not just owner/admin.
+  const mySchools = await get('/schools', { validate: nonEmptyArray })
+  const demoSchoolId = mySchools?.find((s) => s.slug === 'ashworth-park-demo')?.id
+  if (demoSchoolId) {
+    await get(`/school-safeguarding/${demoSchoolId}/safeguarding/incidents`, { validate: isArray })
+  } else {
+    record('demo school in /schools', false, `expected ashworth-park-demo in ${JSON.stringify(mySchools).slice(0, 120)}`)
+  }
 
   const myTeams = await get('/teams/mine', { validate: nonEmptyArray })
   if (myTeams?.[0]?.id) {

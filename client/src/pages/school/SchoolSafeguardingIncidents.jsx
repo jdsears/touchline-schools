@@ -55,13 +55,21 @@ const EMPTY_FORM = {
   location: '',
 }
 
-export default function ClubSafeguardingIncidents() {
-  const { school, myRole } = useOutletContext()
+// Roles that may read the incident log. Mirrors requireSafeguardingAccess on
+// the server (plus per-member can_manage_safeguarding, and DSL roles).
+const INCIDENT_ROLES = ['owner', 'admin', 'school_admin', 'head_of_pe', 'dsl', 'deputy_dsl']
+
+// Renders inside the school-admin layout (outlet context supplies the school)
+// or inside the teacher layout via props from TeacherSafeguardingIncidents.
+export default function ClubSafeguardingIncidents({ school: schoolProp, myRole: roleProp, canManageOverride, basePath: basePathProp } = {}) {
+  const outlet = useOutletContext() || {}
+  const school = schoolProp || outlet.school
+  const myRole = roleProp || outlet.myRole
   const navigate = useNavigate()
   const location = useLocation()
   const [incidents, setIncidents] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(new URLSearchParams(location.search).get('report') === '1')
   const [form, setForm] = useState({ ...EMPTY_FORM })
   const [expandedId, setExpandedId] = useState(null)
   const [expandedDetail, setExpandedDetail] = useState(null)
@@ -69,8 +77,10 @@ export default function ClubSafeguardingIncidents() {
   const [saving, setSaving] = useState(false)
   const [updatingStatus, setUpdatingStatus] = useState(null)
 
-  const canManage = ['owner', 'admin'].includes(myRole)
-  const basePath = location.pathname.replace(/\/safeguarding.*/, '/safeguarding')
+  const canManage = canManageOverride ?? (
+    INCIDENT_ROLES.includes(myRole) || INCIDENT_ROLES.includes(outlet.mySchoolRole) || !!outlet.canManageSafeguarding
+  )
+  const basePath = basePathProp || location.pathname.replace(/\/safeguarding.*/, '/safeguarding')
 
   // Check if user has access (welfare officer, owner, or admin)
   const hasAccess = canManage

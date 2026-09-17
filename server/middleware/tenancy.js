@@ -14,14 +14,12 @@ import pool from '../config/database.js'
  *   if (!isAllowed(schools, resource.school_id)) return res.status(404).json(...)
  */
 
-// All school_ids the user can access, or '*' for site admins. Membership has
-// no status column — a row in school_members is the membership — so there is
-// nothing to filter on beyond the user.
+// All school_ids the user can access, or '*' for site admins.
 export async function getUserSchoolIds(user) {
   if (!user) return []
   if (user.is_admin) return '*'
   const r = await pool.query(
-    `SELECT school_id FROM school_members WHERE user_id = $1`,
+    `SELECT school_id FROM school_members WHERE user_id = $1 AND status = 'active'`,
     [user.id]
   )
   return r.rows.map((row) => row.school_id).filter(Boolean)

@@ -6,6 +6,7 @@ import { HOD_ROLES } from '../middleware/schoolAuth.js'
 import { weekStartOf, isoDate, previousWeekStats, captureWeeklyStats } from '../services/weeklyStats.js'
 import { buildHodDigestData } from '../cron/emailLifecycle.js'
 import { renderEmailTemplate } from '../services/emailService.js'
+import { londonToday } from '../services/schoolTime.js'
 
 const router = express.Router()
 
@@ -428,47 +429,52 @@ router.get('/test-personas', requireHoD, async (req, res) => {
 router.get('/school-overview/today', requireHoD, async (req, res) => {
   try {
     const schoolId = req.schoolId
-    const today = new Date().toISOString().slice(0, 10)
+    const today = londonToday()
 
+    // Coach is the team owner. The previous join hung every owner/admin/coach
+    // member of the school off each row, which duplicated rows and picked an
+    // arbitrary name.
     const [fixtures, training, lessons] = await Promise.all([
       pool.query(
-        `SELECT m.id, m.match_date, m.match_time, m.opponent, m.location, m.home_away,
-                t.name AS team_name, t.sport, t.age_group,
+        `SELECT m.id, COALESCE(m.date, m.match_date) AS match_date, m.match_time, m.opponent, m.location,
+                m.home_away, m.squad_announced,
+                t.id AS team_id, t.name AS team_name, t.sport, t.age_group,
                 u.name AS coach_name,
                 (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count
          FROM matches m
          JOIN teams t ON t.id = m.team_id
-         LEFT JOIN school_members sm ON sm.school_id = t.school_id AND sm.role IN ('owner','admin','coach')
-         LEFT JOIN users u ON u.id = sm.user_id
-         WHERE t.school_id = $1 AND m.match_date = $2
+         LEFT JOIN users u ON u.id = t.owner_id
+         WHERE t.school_id = $1 AND COALESCE(m.date, m.match_date) = $2
          ORDER BY m.match_time NULLS LAST`,
         [schoolId, today]
       ),
       pool.query(
         `SELECT ts.id, ts.date, ts.time, ts.location, ts.session_type, ts.focus_areas,
-                t.name AS team_name, t.sport,
+                t.id AS team_id, t.name AS team_name, t.sport,
                 u.name AS coach_name,
                 (SELECT COUNT(*) FROM pupils p WHERE p.team_id = t.id AND p.is_active = true) AS pupil_count
          FROM training_sessions ts
          JOIN teams t ON t.id = ts.team_id
-         LEFT JOIN school_members sm ON sm.school_id = t.school_id AND sm.role IN ('owner','admin','coach')
-         LEFT JOIN users u ON u.id = sm.user_id
+         LEFT JOIN users u ON u.id = t.owner_id
          WHERE t.school_id = $1 AND ts.date = $2
          ORDER BY ts.time NULLS LAST`,
         [schoolId, today]
       ),
+      // Lessons planned for today (a unit spanning today is not a lesson today)
       pool.query(
-        `SELECT su.id, su.sport, su.unit_name,
-                tg.name AS class_name, tg.year_group,
+        `SELECT lp.id, lp.title, lp.duration, lp.status,
+                su.sport, su.unit_name,
+                tg.id AS group_id, tg.name AS class_name, tg.year_group,
                 u.name AS teacher_name,
                 (SELECT COUNT(*) FROM teaching_group_pupils tgp WHERE tgp.teaching_group_id = tg.id) AS pupil_count
-         FROM sport_units su
-         JOIN teaching_groups tg ON tg.id = su.teaching_group_id
-         JOIN users u ON u.id = tg.teacher_id
-         JOIN school_members sm ON sm.user_id = tg.teacher_id AND sm.school_id = $1
-         WHERE su.start_date <= $2 AND su.end_date >= $2`,
+         FROM lesson_plans lp
+         JOIN teaching_groups tg ON tg.id = lp.teaching_group_id
+         LEFT JOIN sport_units su ON su.id = lp.sport_unit_id
+         LEFT JOIN users u ON u.id = lp.teacher_id
+         WHERE tg.school_id = $1 AND lp.lesson_date = $2
+         ORDER BY lp.created_at`,
         [schoolId, today]
-      ),
+      ).catch(() => ({ rows: [] })),
     ])
 
     res.json({
