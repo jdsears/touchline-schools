@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useSearchParams } from 'react-router-dom'
 import { Trophy, Calendar, MapPin, Clock, Filter, ChevronRight, Loader2, Rss, CalendarPlus } from 'lucide-react'
 import api from '../services/api'
+import { resultOutcome, scoreline } from '../lib/results'
 
 const SPORT_ICONS = { football: '⚽', rugby: '🏉', cricket: '🏏', hockey: '🏑', netball: '🤾' }
 
@@ -11,10 +12,10 @@ function formatDate(d) {
 }
 
 function resultBadge(f) {
-  if (f.score_for == null || f.score_against == null) return null
-  const w = f.score_for > f.score_against ? 'W' : f.score_for < f.score_against ? 'L' : 'D'
+  const w = resultOutcome(f, f.sport)
+  if (!w) return null
   const colours = { W: 'bg-status-success-tint text-status-success', L: 'bg-status-error-tint text-status-error', D: 'bg-brand-accent-tint text-brand-accent' }
-  return { label: w, score: `${f.score_for} - ${f.score_against}`, cls: colours[w] }
+  return { label: w, score: scoreline(f, f.sport), cls: colours[w] }
 }
 
 export default function PublicFixtures() {
@@ -191,8 +192,8 @@ export default function PublicFixtures() {
                 {' vs '}
                 {selectedFixture.home_away === 'home' ? selectedFixture.opponent : selectedFixture.team_name}
               </h2>
-              {selectedFixture.score_for != null && (
-                <p className="text-3xl font-bold text-primary mt-2">{selectedFixture.score_for} - {selectedFixture.score_against}</p>
+              {selectedFixture.score_for != null && selectedFixture.score_against != null && (
+                <p className="text-3xl font-bold text-primary mt-2">{scoreline(selectedFixture, selectedFixture.sport, { order: 'home-first' })}</p>
               )}
             </div>
             {selectedFixture.location && (

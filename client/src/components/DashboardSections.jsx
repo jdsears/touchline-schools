@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { hodService, teacherService, lessonService } from '../services/api'
 import { StatCard } from './common/ui'
 import { Clock, ChevronRight, ClipboardCheck, BookOpen, Calendar } from 'lucide-react'
+import { resultOutcome, scoreline } from '../lib/results'
 
 function fmtDate(d) {
   if (!d) return ''
@@ -20,11 +21,11 @@ function daysUntil(d) {
   return Math.round((target - today) / 86400000)
 }
 
-function resultBadge(r) {
-  if (!r || r.score_for == null) return null
-  const w = r.score_for > r.score_against ? 'W' : r.score_for < r.score_against ? 'L' : 'D'
+function resultBadge(r, sport) {
+  const w = resultOutcome(r, sport)
+  if (!w) return null
   const colour = { W: 'var(--status-success)', L: 'var(--status-error)', D: 'var(--brand-accent)' }[w]
-  return <span className="text-[11px] font-bold font-mono" style={{ color: colour }}>{w} {r.score_for}-{r.score_against}</span>
+  return <span className="text-[11px] font-bold font-mono" style={{ color: colour }}>{w} {scoreline(r, sport)}</span>
 }
 
 function Card({ title, action, children }) {
@@ -329,7 +330,7 @@ export function ExtraCurricularSection({ single }) {
         </Card>
         <Card title="My Teams" action={<CardLink to="/teacher/teams">View all</CardLink>}>
           {teams.map(t => (
-            <Row key={t.id} to={`/teacher/teams/${t.id}`} right={resultBadge(t.last_result)}>
+            <Row key={t.id} to={`/teacher/teams/${t.id}`} right={resultBadge(t.last_result, t.sport)}>
               <div className="text-[13px] font-semibold truncate" style={{ color: 'var(--text-primary)' }}>{t.name}</div>
               <div className="text-[12px] truncate" style={{ color: 'var(--text-secondary)' }}>
                 {[t.sport, t.age_group].filter(Boolean).join(' · ')} · {t.pupil_count} pupils

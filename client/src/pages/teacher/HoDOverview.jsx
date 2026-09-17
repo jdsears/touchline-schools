@@ -6,6 +6,7 @@ import {
   Users, ChevronRight, Loader2, Shield, FileBarChart,
   Trophy, GraduationCap, Plus, Download, UserCog,
 } from 'lucide-react'
+import { resultOutcome, scoreline } from '../../lib/results'
 
 const TYPE_PILL = {
   fixture: 'bg-brand-accent-tint text-brand-accent',
@@ -25,13 +26,13 @@ function formatDate(d) {
   return new Date(d).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'short' })
 }
 
-function resultPill(scoreFor, scoreAgainst) {
-  if (scoreFor == null || scoreAgainst == null) return null
-  const w = scoreFor > scoreAgainst ? 'W' : scoreFor < scoreAgainst ? 'L' : 'D'
+function resultPill(match) {
+  const w = resultOutcome(match, match.sport)
+  if (!w) return null
   const colours = { W: 'bg-status-success-tint text-status-success', L: 'bg-status-error-tint text-status-error', D: 'bg-brand-accent-tint text-brand-accent' }
   return (
     <span className={`text-xs font-bold px-2 py-0.5 rounded ${colours[w]}`}>
-      {w} {scoreFor}-{scoreAgainst}
+      {w} {scoreline(match, match.sport)}
     </span>
   )
 }
@@ -267,7 +268,7 @@ function WeeklyFixtures({ fixtures }) {
             <Link key={f.id} to={`/teacher/match/${f.id}`} className="block p-2.5 rounded-lg bg-subtle hover:bg-subtle transition-colors">
               <div className="flex items-center justify-between mb-0.5">
                 <span className="text-sm text-primary">{f.team_name} vs {f.opponent}</span>
-                {resultPill(f.score_for, f.score_against)}
+                {resultPill(f)}
               </div>
               <div className="text-xs text-tertiary">{formatDate(f.match_date)} {f.match_time ? `· ${formatTime(f.match_time)}` : ''} · {f.home_away}</div>
             </Link>

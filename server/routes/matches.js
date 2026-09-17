@@ -143,7 +143,7 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
     if (!(await ensureMatchAccess(req, res, id))) return
-    const { team_notes, prep_notes, formations, prep_completed, kit_type, score_for, score_against } = req.body
+    const { team_notes, prep_notes, formations, prep_completed, kit_type, score_for, score_against, result_data } = req.body
 
     console.log('PATCH /matches/:id - Received:', { id, userId: req.user.id, role: req.user.role, prep_notes: !!prep_notes })
 
@@ -184,12 +184,23 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
 
     for (const [column, raw] of [['score_for', score_for], ['score_against', score_against]]) {
       if (raw === undefined) continue
-      const n = raw === null || raw === '' ? null : parseInt(raw, 10)
-      if (n !== null && (!Number.isInteger(n) || n < 0)) {
-        return res.status(400).json({ message: `${column} must be a whole number` })
+      // Rounders scores go up in halves; every other sport is whole numbers.
+      const n = raw === null || raw === '' ? null : Number(raw)
+      if (n !== null && (!Number.isFinite(n) || n < 0 || Math.round(n * 2) !== n * 2)) {
+        return res.status(400).json({ message: `${column} must be a non-negative number` })
       }
       updates.push(`${column} = $${paramCount}`)
       values.push(n)
+      paramCount++
+    }
+
+    // Sport-specific breakdown (innings, events, rubbers, sets). null clears it.
+    if (result_data !== undefined) {
+      if (result_data !== null && (typeof result_data !== 'object' || Array.isArray(result_data))) {
+        return res.status(400).json({ message: 'result_data must be an object' })
+      }
+      updates.push(`result_data = $${paramCount}::jsonb`)
+      values.push(result_data ? JSON.stringify(result_data) : null)
       paramCount++
     }
 

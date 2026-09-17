@@ -5,6 +5,8 @@ import { CheckCircle, Circle, AlertTriangle, ChevronRight, Sparkles, MessageSqua
 import toast from 'react-hot-toast'
 import MatchHeader from '../../components/MatchHeader'
 import TabStrip from '../../components/TabStrip'
+import { ResultDetailsEditor, ResultDetailsSummary } from '../../components/MatchResultDetails'
+import { scoreVocab, headlineLabel, headlineFromDetails, hasDetailSchema, resultOutcome, scoreline, resultSentence, hasRecordedResult } from '../../lib/results'
 
 const MATCH_TABS = [
   { id: 'overview', label: 'Overview', href: '' },
@@ -64,8 +66,8 @@ function ReadinessRow({ state, title, meta, detail, actionLabel, actionHref, onA
   )
 }
 
-function ReadinessPanel({ match, matchId, squad, onChooseKit, onRecordResult }) {
-  const hasResult = match.score_for != null && match.score_against != null
+function ReadinessPanel({ match, matchId, squad, sport, onChooseKit, onRecordResult }) {
+  const hasResult = hasRecordedResult(match)
   const played = isPastDate(match.date || match.match_date)
   const starters = squad.filter(s => s.is_starting).length
   const primary = match.formations?.primary
@@ -89,8 +91,8 @@ function ReadinessPanel({ match, matchId, squad, onChooseKit, onRecordResult }) 
   ]
   if (played || hasResult) {
     checklist.push(hasResult
-      ? { state: 'done', title: `Result recorded: ${match.score_for} – ${match.score_against}`, actionLabel: 'Edit result', onAction: onRecordResult }
-      : { state: 'blocked', title: 'Result not recorded', detail: 'Record the score to unlock the match report', actionLabel: 'Record result', onAction: onRecordResult })
+      ? { state: 'done', title: `Result recorded: ${scoreline(match, sport)}`, detail: resultSentence(match, sport), actionLabel: 'Edit result', onAction: onRecordResult }
+      : { state: 'blocked', title: 'Result not recorded', detail: `Record the ${scoreVocab(sport).unit} to unlock the match report`, actionLabel: 'Record result', onAction: onRecordResult })
   }
   const done = checklist.filter(c => c.state === 'done').length
 
@@ -118,14 +120,14 @@ function ReadinessPanel({ match, matchId, squad, onChooseKit, onRecordResult }) 
   )
 }
 
-function meetingOutcome(m) {
-  const gf = Number(m.score_for), ga = Number(m.score_against)
-  const label = gf > ga ? 'W' : gf < ga ? 'L' : 'D'
+function meetingOutcome(m, sport) {
+  const label = resultOutcome(m, sport)
+  if (!label) return null
   const colour = { W: 'var(--status-success)', L: 'var(--status-error)', D: 'var(--brand-accent)' }[label]
-  return <span className="text-[12px] font-bold font-mono" style={{ color: colour }}>{label} {gf}–{ga}</span>
+  return <span className="text-[12px] font-bold font-mono" style={{ color: colour }}>{label} {scoreline(m, sport)}</span>
 }
 
-function OppositionCard({ match, history, loading }) {
+function OppositionCard({ match, history, loading, sport }) {
   return (
     <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-[var(--shadow-sm)]">
       <div className="px-5 pt-5 pb-3">
@@ -151,7 +153,7 @@ function OppositionCard({ match, history, loading }) {
                 <span className="text-[12.5px]" style={{ color: 'var(--text-secondary)' }}>
                   {fmtDate(m.date || m.match_date)} · {m.home_away === 'home' ? 'Home' : 'Away'}
                 </span>
-                {meetingOutcome(m)}
+                {meetingOutcome(m, sport)}
               </Link>
             ))}
           </div>
@@ -204,6 +206,7 @@ export default function MatchOverviewV15() {
   const [showResultModal, setShowResultModal] = useState(false)
   const [scoreFor, setScoreFor] = useState('')
   const [scoreAgainst, setScoreAgainst] = useState('')
+  const [resultDetails, setResultDetails] = useState(null)
   const [savingResult, setSavingResult] = useState(false)
 
   function openKit() {
@@ -214,6 +217,7 @@ export default function MatchOverviewV15() {
   function openResult() {
     setScoreFor(match?.score_for != null ? String(match.score_for) : '')
     setScoreAgainst(match?.score_against != null ? String(match.score_against) : '')
+    setResultDetails(match?.result_data || null)
     setShowResultModal(true)
   }
 
@@ -229,12 +233,34 @@ export default function MatchOverviewV15() {
     finally { setSavingKit(false) }
   }
 
+  // Innings sports take the headline from the innings block; team-points
+  // sports may have no headline at all (the event list is the result).
+  function resolveHeadline() {
+    const derived = headlineFromDetails(team?.sport, resultDetails)
+    if (derived) return derived
+    if (scoreFor === '' || scoreAgainst === '') return null
+    return { score_for: Number(scoreFor), score_against: Number(scoreAgainst) }
+  }
+
   async function handleResultSave() {
-    if (scoreFor === '' || scoreAgainst === '') return
+    const vocab = scoreVocab(team?.sport)
+    const headline = resolveHeadline()
+    const hasRows = Array.isArray(resultDetails?.rows) && resultDetails.rows.some(r => Object.values(r).some(Boolean))
+    if (!headline && !(vocab.teamPoints && hasRows)) {
+      toast.error(vocab.innings ? 'Enter both innings first' : `Enter the ${vocab.unit} for both sides`)
+      return
+    }
     setSavingResult(true)
     try {
-      const res = await teamService.patchMatch(id, { score_for: scoreFor, score_against: scoreAgainst })
-      setMatch(prev => ({ ...prev, score_for: res.data?.score_for ?? Number(scoreFor), score_against: res.data?.score_against ?? Number(scoreAgainst) }))
+      const payload = { result_data: resultDetails || null }
+      if (headline) Object.assign(payload, headline)
+      const res = await teamService.patchMatch(id, payload)
+      setMatch(prev => ({
+        ...prev,
+        score_for: res.data?.score_for ?? headline?.score_for ?? prev.score_for,
+        score_against: res.data?.score_against ?? headline?.score_against ?? prev.score_against,
+        result_data: res.data?.result_data ?? resultDetails,
+      }))
       setShowResultModal(false)
       toast.success('Result recorded')
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to save result') }
@@ -271,6 +297,9 @@ export default function MatchOverviewV15() {
   if (!match) return <div className="text-center py-20 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Match not found</div>
 
   const teamLabel = team?.name || 'Us'
+  const sport = team?.sport || 'football'
+  const vocab = scoreVocab(sport)
+  const derivedHeadline = headlineFromDetails(sport, resultDetails)
 
   return (
     <div className="max-w-[1100px] mx-auto px-7 py-6">
@@ -280,11 +309,17 @@ export default function MatchOverviewV15() {
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-5">
         <div className="space-y-5">
-          <ReadinessPanel match={match} matchId={id} squad={squad} onChooseKit={openKit} onRecordResult={openResult} />
+          <ReadinessPanel match={match} matchId={id} squad={squad} sport={sport} onChooseKit={openKit} onRecordResult={openResult} />
+          {hasRecordedResult(match) && match.result_data && (
+            <div className="rounded-[var(--radius-lg)] border border-[var(--border-subtle)] bg-[var(--surface-card)] shadow-[var(--shadow-sm)] px-5 py-4">
+              <span className="text-[10px] font-bold tracking-[0.1em] uppercase block mb-2" style={{ color: 'var(--brand-accent)' }}>Result breakdown</span>
+              <ResultDetailsSummary sport={sport} data={match.result_data} usLabel={teamLabel} themLabel={match.opponent} />
+            </div>
+          )}
           <AIShortcuts match={match} matchId={id} />
         </div>
         <div className="space-y-5">
-          <OppositionCard match={match} history={history} loading={historyLoading} />
+          <OppositionCard match={match} history={history} loading={historyLoading} sport={sport} />
         </div>
       </div>
 
@@ -320,32 +355,47 @@ export default function MatchOverviewV15() {
 
       {showResultModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'var(--surface-overlay, rgba(15,30,61,0.45))' }} onClick={() => setShowResultModal(false)}>
-          <div className="rounded-[var(--radius-xl)] p-6 w-full max-w-sm" style={{ background: 'var(--surface-card)' }} onClick={e => e.stopPropagation()}>
+          <div className={`rounded-[var(--radius-xl)] p-6 w-full ${hasDetailSchema(sport) ? 'max-w-lg' : 'max-w-sm'}`} style={{ background: 'var(--surface-card)' }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-1">
               <h3 className="text-[15px] font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                 <Trophy size={15} style={{ color: 'var(--brand-accent)' }} /> Record result
               </h3>
               <button onClick={() => setShowResultModal(false)} style={{ color: 'var(--text-tertiary)' }}><X size={18} /></button>
             </div>
-            <p className="text-[12.5px] mb-4" style={{ color: 'var(--text-secondary)' }}>Final score for {teamLabel} {match.home_away === 'home' ? 'vs' : 'at'} {match.opponent}.</p>
-            <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3 mb-5">
-              <label className="block">
-                <span className="text-[11px] font-semibold uppercase tracking-wide block mb-1 truncate" style={{ color: 'var(--text-tertiary)' }}>{teamLabel}</span>
-                <input type="number" min="0" inputMode="numeric" value={scoreFor} onChange={e => setScoreFor(e.target.value)}
-                  className="w-full text-center text-[22px] font-bold rounded-[var(--radius-md)] border border-[var(--border-default)] py-2"
-                  style={{ background: 'var(--surface-card)', color: 'var(--text-primary)' }} />
-              </label>
-              <span className="text-[18px] font-bold pb-3" style={{ color: 'var(--text-tertiary)' }}>–</span>
-              <label className="block">
-                <span className="text-[11px] font-semibold uppercase tracking-wide block mb-1 truncate" style={{ color: 'var(--text-tertiary)' }}>{match.opponent}</span>
-                <input type="number" min="0" inputMode="numeric" value={scoreAgainst} onChange={e => setScoreAgainst(e.target.value)}
-                  className="w-full text-center text-[22px] font-bold rounded-[var(--radius-md)] border border-[var(--border-default)] py-2"
-                  style={{ background: 'var(--surface-card)', color: 'var(--text-primary)' }} />
-              </label>
-            </div>
-            <button onClick={handleResultSave} disabled={savingResult || scoreFor === '' || scoreAgainst === ''}
-              className="w-full py-[10px] rounded-[var(--radius-md)] text-[13px] font-semibold"
-              style={{ background: 'var(--brand-primary)', color: 'var(--on-brand-primary)', opacity: scoreFor === '' || scoreAgainst === '' ? 0.5 : 1 }}>
+            <p className="text-[12.5px] mb-4" style={{ color: 'var(--text-secondary)' }}>
+              {vocab.innings ? 'Innings' : vocab.teamPoints ? 'Results' : headlineLabel(sport)} for {teamLabel} {match.home_away === 'home' ? 'vs' : 'at'} {match.opponent}.
+            </p>
+            {vocab.innings ? (
+              derivedHeadline && (
+                <p className="text-[13px] font-semibold mb-2" style={{ color: 'var(--text-primary)' }}>
+                  Headline: {derivedHeadline.score_for} – {derivedHeadline.score_against} {vocab.unit}
+                </p>
+              )
+            ) : (
+              <div className="grid grid-cols-[1fr_auto_1fr] items-end gap-3 mb-2">
+                <label className="block">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide block mb-1 truncate" style={{ color: 'var(--text-tertiary)' }}>{teamLabel} · {headlineLabel(sport)}</span>
+                  <input type="number" min="0" step={vocab.step || 1} inputMode="numeric" value={scoreFor} onChange={e => setScoreFor(e.target.value)}
+                    className="w-full text-center text-[22px] font-bold rounded-[var(--radius-md)] border border-[var(--border-default)] py-2"
+                    style={{ background: 'var(--surface-card)', color: 'var(--text-primary)' }} />
+                </label>
+                <span className="text-[18px] font-bold pb-3" style={{ color: 'var(--text-tertiary)' }}>–</span>
+                <label className="block">
+                  <span className="text-[11px] font-semibold uppercase tracking-wide block mb-1 truncate" style={{ color: 'var(--text-tertiary)' }}>{match.opponent}</span>
+                  <input type="number" min="0" step={vocab.step || 1} inputMode="numeric" value={scoreAgainst} onChange={e => setScoreAgainst(e.target.value)}
+                    className="w-full text-center text-[22px] font-bold rounded-[var(--radius-md)] border border-[var(--border-default)] py-2"
+                    style={{ background: 'var(--surface-card)', color: 'var(--text-primary)' }} />
+                </label>
+              </div>
+            )}
+            {hasDetailSchema(sport) && (
+              <div className="max-h-[50vh] overflow-y-auto pr-1">
+                <ResultDetailsEditor sport={sport} value={resultDetails} onChange={setResultDetails} usLabel={teamLabel} themLabel={match.opponent} />
+              </div>
+            )}
+            <button onClick={handleResultSave} disabled={savingResult}
+              className="w-full mt-5 py-[10px] rounded-[var(--radius-md)] text-[13px] font-semibold"
+              style={{ background: 'var(--brand-primary)', color: 'var(--on-brand-primary)', opacity: savingResult ? 0.6 : 1 }}>
               {savingResult ? 'Saving...' : 'Save result'}
             </button>
           </div>

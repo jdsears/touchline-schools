@@ -371,10 +371,17 @@ if (token) {
       label: `PATCH /matches/${mid} (record result)`,
       validate: (b) => (b?.score_for === 2 && b?.score_against === 1 ? null : `score did not round-trip: ${b?.score_for}-${b?.score_against}`),
     })
+    // Sport-specific breakdowns (innings, events, rubbers) live in result_data.
+    await patch(`/matches/${mid}`, { score_for: 120, score_against: 98, result_data: { for: { runs: 120, wickets: 4, overs: '20' }, against: { runs: 98, wickets: 9, overs: '18.3' } } }, {
+      label: `PATCH /matches/${mid} (result breakdown)`,
+      validate: (b) => (b?.result_data?.for?.runs === 120 && b?.result_data?.against?.wickets === 9 ? null : `result_data did not round-trip: ${JSON.stringify(b?.result_data).slice(0, 120)}`),
+    })
+    await patch(`/matches/${mid}`, { result_data: ['not', 'an', 'object'] }, { expect: 400, label: `PATCH /matches/${mid} (rejects non-object result_data)` })
     // Put the fixture back as we found it so the demo data stays untouched.
     await patch(`/matches/${mid}`, {
       score_for: before?.score_for ?? null,
       score_against: before?.score_against ?? null,
+      result_data: before?.result_data ?? null,
       prep_notes: before?.prep_notes ?? null,
       formations: before?.formations ?? null,
     }, { label: `PATCH /matches/${mid} (restore)` })
