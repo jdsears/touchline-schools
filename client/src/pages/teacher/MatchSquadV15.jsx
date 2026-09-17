@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import MatchLoadError from '../../components/MatchLoadError'
 import { useParams, Link } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { Users, UserCheck, Plus, Send, ChevronRight, Loader2, Star, Shield, X, AlertTriangle } from 'lucide-react'
@@ -22,6 +23,7 @@ export default function MatchSquadV15() {
   const [squad, setSquad] = useState([])
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [showPicker, setShowPicker] = useState(false)
   const [announcing, setAnnouncing] = useState(false)
 
@@ -42,7 +44,7 @@ export default function MatchSquadV15() {
         setSquad(Array.isArray(squadRes.data) ? squadRes.data : [])
         setPlayers(Array.isArray(playersRes.data) ? playersRes.data : [])
       }
-    }).catch(() => {}).finally(() => setLoading(false))
+    }).catch(setLoadError).finally(() => setLoading(false))
   }, [id])
 
   const sport = useMemo(() => getSportDef(team?.sport || 'football'), [team?.sport])
@@ -103,7 +105,7 @@ export default function MatchSquadV15() {
   }
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--text-tertiary)' }} /></div>
-  if (!match) return <div className="text-center py-20 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Match not found</div>
+  if (!match) return <MatchLoadError error={loadError} />
 
   return (
     <div className="max-w-[1100px] mx-auto px-7 py-6">

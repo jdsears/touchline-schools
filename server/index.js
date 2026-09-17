@@ -130,6 +130,12 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const PORT = process.env.PORT || 3001
 
+// One proxy hop (Railway's edge) sits in front of us. Trust it so req.ip is
+// the visitor's address: without this every visitor shares the proxy's IP,
+// and therefore one rate-limit bucket, and a busy afternoon turns into 429s
+// that surface as blank "not found" pages.
+app.set('trust proxy', 1)
+
 // Canonical domain redirect: non-canonical hosts -> app.moonbootssports.com
 // Handles: railway.app preview domain, www subdomain, any other alias.
 // HTTP -> HTTPS is handled by Railway's edge proxy, but if a request
@@ -250,12 +256,15 @@ const publicFormLimiter = rateLimit({
   message: { error: 'Too many submissions, please try again later' },
 })
 
-// General API limiter (generous but prevents abuse)
+// General API limiter: per visitor (see trust proxy above), and generous
+// enough for a teacher clicking through several pages a minute, each of
+// which fans out into a dozen requests. Health checks are not counted.
 const apiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
-  max: 120, // 120 requests per minute
+  max: 600,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: (req) => req.path === '/health',
   message: { error: 'Too many requests, please slow down' },
 })
 

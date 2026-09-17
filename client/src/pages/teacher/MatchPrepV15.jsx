@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
+import MatchLoadError from '../../components/MatchLoadError'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { CheckCircle, Sparkles, ChevronRight, Loader2, X, Users, Shirt, RotateCcw } from 'lucide-react'
@@ -118,6 +119,7 @@ export default function MatchPrepV15() {
   const [squad, setSquad] = useState([])
   const [players, setPlayers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [activeSection, setActiveSection] = useState('formation')
   const [briefingOpen, setBriefingOpen] = useState(searchParams.get('briefing') === 'open')
   const [briefingText, setBriefingText] = useState('')
@@ -145,7 +147,7 @@ export default function MatchPrepV15() {
           setPlayers(Array.isArray(playersRes.data) ? playersRes.data : [])
         }
       })
-      .catch(() => {})
+      .catch(setLoadError)
       .finally(() => setLoading(false))
   }, [id])
 
@@ -232,7 +234,7 @@ export default function MatchPrepV15() {
   }
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--text-tertiary)' }} /></div>
-  if (!match) return <div className="text-center py-20 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Match not found</div>
+  if (!match) return <MatchLoadError error={loadError} />
 
   const starters = squad.filter(s => s.is_starting).length
   const bench = squad.length - starters

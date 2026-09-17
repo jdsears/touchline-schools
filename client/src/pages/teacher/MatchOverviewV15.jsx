@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import MatchLoadError from '../../components/MatchLoadError'
 import { useParams, Link } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { CheckCircle, Circle, AlertTriangle, ChevronRight, Sparkles, MessageSquare, Video, Loader2, X, Shirt, Trophy } from 'lucide-react'
@@ -200,6 +201,7 @@ export default function MatchOverviewV15() {
   const [history, setHistory] = useState([])
   const [historyLoading, setHistoryLoading] = useState(true)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState(null)
   const [showKitModal, setShowKitModal] = useState(false)
   const [kitChoice, setKitChoice] = useState(null)
   const [savingKit, setSavingKit] = useState(false)
@@ -289,12 +291,12 @@ export default function MatchOverviewV15() {
           setHistory(previous)
         }
       })
-      .catch(() => {})
+      .catch(setLoadError)
       .finally(() => { setLoading(false); setHistoryLoading(false) })
   }, [id])
 
   if (loading) return <div className="flex justify-center py-20"><Loader2 className="w-6 h-6 animate-spin" style={{ color: 'var(--text-tertiary)' }} /></div>
-  if (!match) return <div className="text-center py-20 text-[14px]" style={{ color: 'var(--text-tertiary)' }}>Match not found</div>
+  if (!match) return <MatchLoadError error={loadError} />
 
   const teamLabel = team?.name || 'Us'
   const sport = team?.sport || 'football'
