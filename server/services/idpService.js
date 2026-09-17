@@ -1,23 +1,5 @@
-import Anthropic from '@anthropic-ai/sdk'
+import { anthropic, parseJsonObject } from './anthropicClient.js'
 import { WORKHORSE_MODEL, WORKHORSE_REQUEST_DEFAULTS, responseText } from '../config/aiModels.js'
-
-// Guarded client: without ANTHROPIC_API_KEY the server still boots and any
-// call fails with the mappable 503 the error handler already understands.
-function makeAnthropicClient() {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return new Proxy({}, {
-      get() {
-        const err = new Error('AI features are not configured on this server. Set ANTHROPIC_API_KEY to enable them.')
-        err.status = 503
-        err.code = 'AI_NOT_CONFIGURED'
-        throw err
-      },
-    })
-  }
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
-}
-
-const anthropic = makeAnthropicClient()
 
 const SYSTEM_PROMPT = `You help PE teachers in UK secondary schools write Individual Development Plan (IDP) goals for a pupil.
 
@@ -57,16 +39,6 @@ ${obsLines.join('\n')}
 
 Propose ${Math.min(maxGoals, 4)} goals at most (fewer if the evidence only supports fewer). Respond with this JSON shape:
 {"goals":[{"goal_description":"...","success_criteria":"...","rationale":"...","sport_key":"one of: ${sports.length ? sports.join(', ') + ', ' : ''}general","target_weeks":8,"evidence_ids":["observation id", "..."]}]}`
-}
-
-// Pull the JSON object out of a model reply that may still carry fences or
-// a stray sentence, without trusting anything outside the braces.
-function parseJsonObject(text) {
-  const cleaned = String(text || '').replace(/```(?:json)?/gi, '').trim()
-  const start = cleaned.indexOf('{')
-  const end = cleaned.lastIndexOf('}')
-  if (start < 0 || end <= start) throw new Error('The model did not return JSON')
-  return JSON.parse(cleaned.slice(start, end + 1))
 }
 
 function clampWeeks(value) {
