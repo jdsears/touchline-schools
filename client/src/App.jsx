@@ -345,7 +345,8 @@ export default function App() {
           <Route path="film-room" element={<FilmRoom />} />
           <Route path="assistant" element={<Chat />} />
           <Route path="safeguarding" element={<TeacherSafeguarding />} />
-          <Route path="settings" element={<Settings />} />
+          {/* NOTE: no bare "settings" route here - the legacy club Settings page
+              used to shadow the three-tier redirect declared further down */}
           <Route path="hod" element={<HoDOverview />} />
           <Route path="hod/teachers" element={<HoDTeachers />} />
           <Route path="hod/staff-activity" element={<HoDStaffActivity />} />
