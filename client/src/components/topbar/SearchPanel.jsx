@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import Popover from './Popover'
 import { useTopBarSearch, SEARCH_GROUP_LABEL } from '../../hooks/useTopBarSearch'
+import { teacherService } from '../../services/api'
 
 const TYPE_ICON = {
   pupil: Users,
@@ -16,7 +17,25 @@ const TYPE_ICON = {
   report: FileBarChart,
 }
 
-const SUGGESTIONS = ['Y8 Boys Football', 'Whitfield', 'Today', 'Lesson plan']
+// Starter chips are the user's own classes and teams, fetched once the
+// panel first opens. No names are invented when they have none.
+function useSuggestions(open) {
+  const [chips, setChips] = useState(null)
+  useEffect(() => {
+    if (!open || chips !== null) return
+    let cancelled = false
+    Promise.allSettled([teacherService.getDashboardClasses(), teacherService.getDashboardTeams()])
+      .then(([classes, teams]) => {
+        if (cancelled) return
+        const names = []
+        if (classes.status === 'fulfilled' && Array.isArray(classes.value.data)) names.push(...classes.value.data.map(c => c.name))
+        if (teams.status === 'fulfilled' && Array.isArray(teams.value.data)) names.push(...teams.value.data.map(t => t.name))
+        setChips([...new Set(names.filter(Boolean))].slice(0, 5))
+      })
+    return () => { cancelled = true }
+  }, [open, chips])
+  return chips || []
+}
 
 function flattenForKeyboard(results) {
   const out = []
@@ -85,6 +104,7 @@ export default function SearchPanel({ openExternal, onClose: onCloseProp, isAdmi
   const navigate = useNavigate()
   const { query, setQuery, results, loading, totalResults, recent, recordRecent, clearRecent } =
     useTopBarSearch({ isAdmin, isHoD })
+  const suggestions = useSuggestions(open)
 
   const flat = useMemo(() => flattenForKeyboard(results), [results])
   const [activeIdx, setActiveIdx] = useState(0)
@@ -209,18 +229,26 @@ export default function SearchPanel({ openExternal, onClose: onCloseProp, isAdmi
                   ))}
                 </>
               )}
-              <div className="px-3 pt-3 pb-1 text-[10px] font-bold tracking-[0.08em] uppercase" style={{ color: 'var(--text-tertiary)' }}>
-                Try
-              </div>
-              <div className="px-3 pb-3 flex flex-wrap gap-1.5">
-                {SUGGESTIONS.map(s => (
-                  <button key={s} onClick={() => handleSuggestion(s)}
-                    className="px-2 py-[3px] rounded-full text-[11.5px] transition-colors"
-                    style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                    {s}
-                  </button>
-                ))}
-              </div>
+              {suggestions.length > 0 ? (
+                <>
+                  <div className="px-3 pt-3 pb-1 text-[10px] font-bold tracking-[0.08em] uppercase" style={{ color: 'var(--text-tertiary)' }}>
+                    Your classes and teams
+                  </div>
+                  <div className="px-3 pb-3 flex flex-wrap gap-1.5">
+                    {suggestions.map(s => (
+                      <button key={s} onClick={() => handleSuggestion(s)}
+                        className="px-2 py-[3px] rounded-full text-[11.5px] transition-colors"
+                        style={{ background: 'var(--surface-sunken)', border: '1px solid var(--border-subtle)', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <div className="px-3 pt-3 pb-3 text-[12px]" style={{ color: 'var(--text-tertiary)' }}>
+                  Search by pupil, teacher, class, lesson or report name.
+                </div>
+              )}
             </div>
           ) : loading && totalResults === 0 ? (
             <div className="px-4 py-6 text-center text-[12.5px]" style={{ color: 'var(--text-tertiary)' }}>Searching…</div>

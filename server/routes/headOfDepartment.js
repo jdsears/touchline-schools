@@ -493,9 +493,11 @@ router.get('/school-overview/attention', requireHoD, async (req, res) => {
 
     const [reportingWindows, recentObservations, safeguardingOpen] = await Promise.all([
       pool.query(
-        `SELECT rw.id, rw.name, rw.status, rw.closes_at,
-                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id AND pr.status = 'submitted') AS submitted,
-                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id) AS total
+        `SELECT rw.id, rw.name, rw.status, rw.opens_at, rw.closes_at,
+                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id AND pr.status = 'submitted')::int AS submitted,
+                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id AND pr.status = 'published')::int AS published,
+                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id AND pr.status = 'draft')::int AS draft,
+                (SELECT COUNT(*) FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id)::int AS total
          FROM reporting_windows rw
          WHERE rw.school_id = $1 AND rw.status IN ('open', 'draft')
          ORDER BY rw.closes_at ASC`,

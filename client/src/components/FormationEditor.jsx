@@ -4,24 +4,7 @@ import { getSportDef, getPresetsForFormat, getDefaultPreset } from '../lib/sport
 import { validateFormation, transferAssignment } from '../lib/formationPresets'
 import BattingOrderEditorDefault, { BattingPairsEditor } from './BattingOrderEditor'
 
-const DEMO_SQUAD = [
-  { id: 'p1', name: 'Reuben Asante', first: 'R.', last: 'Asante', number: 9, preferred: ['ST', 'LW'], status: 'ready' },
-  { id: 'p2', name: 'Toby Lindgren', first: 'T.', last: 'Lindgren', number: 10, preferred: ['AM', 'CM'], status: 'ready' },
-  { id: 'p3', name: 'Marcus Hill', first: 'M.', last: 'Hill', number: 7, preferred: ['RW', 'RM'], status: 'ready' },
-  { id: 'p4', name: 'Olu Adekunle', first: 'O.', last: 'Adekunle', number: 11, preferred: ['LW', 'ST'], status: 'ready' },
-  { id: 'p5', name: 'Sam Whitford', first: 'S.', last: 'Whitford', number: 4, preferred: ['CM', 'DM'], status: 'ready' },
-  { id: 'p6', name: 'Ben Carrington', first: 'B.', last: 'Carrington', number: 6, preferred: ['CB'], status: 'ready' },
-  { id: 'p7', name: 'Ethan Reid', first: 'E.', last: 'Reid', number: 5, preferred: ['CB'], status: 'ready' },
-  { id: 'p8', name: "Liam O'Connor", first: 'L.', last: "O'Connor", number: 3, preferred: ['LB'], status: 'ready' },
-  { id: 'p9', name: 'Joshua Brookes', first: 'J.', last: 'Brookes', number: 2, preferred: ['RB'], status: 'ready' },
-  { id: 'p10', name: 'Daniel Park', first: 'D.', last: 'Park', number: 1, preferred: ['GK'], status: 'ready' },
-  { id: 'p11', name: 'Akin Hassan', first: 'A.', last: 'Hassan', number: 8, preferred: ['CM', 'DM'], status: 'ready' },
-  { id: 'p12', name: 'George Whitaker', first: 'G.', last: 'Whitaker', number: 12, preferred: ['CB', 'DM'], status: 'ready' },
-  { id: 'p13', name: 'Felix Tan', first: 'F.', last: 'Tan', number: 14, preferred: ['CM', 'AM'], status: 'ready' },
-  { id: 'p14', name: 'Noah Jansen', first: 'N.', last: 'Jansen', number: 15, preferred: ['LW', 'LM'], status: 'queried' },
-  { id: 'p15', name: 'Adam Petrescu', first: 'A.', last: 'Petrescu', number: 16, preferred: ['RB', 'RM'], status: 'ready' },
-  { id: 'p16', name: 'Kai Nakamura', first: 'K.', last: 'Nakamura', number: 17, preferred: ['GK'], status: 'queried' },
-]
+const EMPTY_DATA = { primary: null, backup: null, format: '11v11' }
 
 function FootballPitchLines() {
   return (
@@ -134,13 +117,23 @@ function RosterSheet({ slot, squad, assignment, onPick, onClear, numberFirst }) 
   )
 }
 
-function useFormationPersistence(fixtureId) {
-  const key = `formation-${fixtureId || 'demo'}`
+// Formation state lives on the fixture when the caller supplies `initialData`
+// and `onPersist` (the match's `formations` column). Without a fixture the
+// editor keeps a local draft so a scratch board still survives a reload.
+function useFormationPersistence(fixtureId, initialData, onPersist) {
+  const key = `formation-${fixtureId || 'draft'}`
   const [data, setData] = useState(() => {
+    if (initialData) {
+      try {
+        const parsed = typeof initialData === 'string' ? JSON.parse(initialData) : initialData
+        if (parsed && typeof parsed === 'object') return { ...EMPTY_DATA, ...parsed }
+      } catch { /* fall through to the local draft */ }
+    }
+    if (onPersist) return { ...EMPTY_DATA }
     try {
       const saved = localStorage.getItem(key)
-      return saved ? JSON.parse(saved) : { primary: null, backup: null, format: '11v11' }
-    } catch { return { primary: null, backup: null, format: '11v11' } }
+      return saved ? JSON.parse(saved) : { ...EMPTY_DATA }
+    } catch { return { ...EMPTY_DATA } }
   })
   const saveTimer = useRef(null)
   const [saveState, setSaveState] = useState('idle')
@@ -149,18 +142,23 @@ function useFormationPersistence(fixtureId) {
     setData(next)
     setSaveState('saving')
     clearTimeout(saveTimer.current)
-    saveTimer.current = setTimeout(() => {
-      try { localStorage.setItem(key, JSON.stringify(next)) } catch {}
-      setSaveState('saved')
-      setTimeout(() => setSaveState('idle'), 1500)
+    saveTimer.current = setTimeout(async () => {
+      try {
+        if (onPersist) await onPersist(next)
+        else localStorage.setItem(key, JSON.stringify(next))
+        setSaveState('saved')
+      } catch {
+        setSaveState('error')
+      }
+      setTimeout(() => setSaveState('idle'), 2000)
     }, 500)
-  }, [key])
+  }, [key, onPersist])
 
   return { data, persist, saveState }
 }
 
-export default function FormationEditor({ sport: sportId = 'football', format: initFormat = '11v11', squad = DEMO_SQUAD, fixtureId, onMobileSheet }) {
-  const { data, persist, saveState } = useFormationPersistence(fixtureId)
+export default function FormationEditor({ sport: sportId = 'football', format: initFormat = '11v11', squad = [], fixtureId, initialData, onPersist, onMobileSheet }) {
+  const { data, persist, saveState } = useFormationPersistence(fixtureId, initialData, onPersist)
   const [activeTab, setActiveTab] = useState('primary')
   const [format] = useState(initFormat)
   const sportDef = useMemo(() => getSportDef(sportId), [sportId])
@@ -252,8 +250,8 @@ export default function FormationEditor({ sport: sportId = 'football', format: i
           </span>
           <div>
             <div className="text-[14.5px] font-semibold" style={{ color: 'var(--text-primary)' }}>Starting XI</div>
-            <div className="text-[11.5px]" style={{ color: 'var(--text-tertiary)' }}>
-              {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : `${filledCount}/${slots.length} placed`}
+            <div className="text-[11.5px]" style={{ color: saveState === 'error' ? 'var(--status-error)' : 'var(--text-tertiary)' }}>
+              {saveState === 'saving' ? 'Saving...' : saveState === 'saved' ? 'Saved' : saveState === 'error' ? 'Not saved — check your connection' : `${filledCount}/${slots.length} placed`}
             </div>
           </div>
         </div>
@@ -306,9 +304,12 @@ export default function FormationEditor({ sport: sportId = 'football', format: i
           ) : (
             <div className="p-3">
               <div className="text-[11px] font-bold tracking-[0.06em] uppercase mb-2" style={{ color: 'var(--text-tertiary)' }}>Bench</div>
+              {squad.length === 0 && (
+                <p className="text-[11.5px] italic" style={{ color: 'var(--text-tertiary)' }}>No players to place yet. Add pupils to the team or pick a squad first.</p>
+              )}
               {squad.filter(p => !Object.values(assignment).includes(p.id)).map(p => (
                 <div key={p.id} className="flex items-center gap-2 py-1.5 text-[12px]" style={{ color: 'var(--text-secondary)' }}>
-                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: 'var(--brand-primary-tint)', color: 'var(--brand-primary)' }}>{p.number}</span>
+                  <span className="w-5 h-5 rounded-full flex items-center justify-center text-[8px] font-bold" style={{ background: 'var(--brand-primary-tint)', color: 'var(--brand-primary)' }}>{p.number || '·'}</span>
                   <span className="truncate">{p.name}</span>
                 </div>
               ))}
@@ -321,8 +322,7 @@ export default function FormationEditor({ sport: sportId = 'football', format: i
       {focusedSlot && (
         <div className="lg:hidden fixed inset-0 z-50">
           <div className="absolute inset-0" style={{ background: 'rgba(15,30,61,0.32)' }} onClick={() => setFocusedSlotId(null)} />
-          <div className="absolute bottom-0 left-0 right-0 rounded-t-[var(--radius-xl)] overflow-hidden"
-            className="animate-sheet-up"
+          <div className="absolute bottom-0 left-0 right-0 rounded-t-[var(--radius-xl)] overflow-hidden animate-sheet-up"
             style={{ background: 'var(--surface-card)', maxHeight: '65vh' }}>
             <div className="flex justify-center pt-2 pb-1">
               <div className="w-8 h-1 rounded-full" style={{ background: 'var(--border-default)' }} />

@@ -4244,6 +4244,10 @@ export async function runMigrations() {
     await tryQuery(`ALTER TABLE match_reports ALTER COLUMN model_used SET DEFAULT 'claude-sonnet-5'`)
     console.log('Phase 28: model_used defaults -> claude-sonnet-5')
 
+    // --- Phase 29: match prep sign-off ---
+    await tryQuery(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS prep_completed_at TIMESTAMPTZ`)
+    console.log('Phase 29: matches.prep_completed_at')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================

@@ -143,7 +143,7 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
   try {
     const { id } = req.params
     if (!(await ensureMatchAccess(req, res, id))) return
-    const { team_notes, prep_notes, formations } = req.body
+    const { team_notes, prep_notes, formations, prep_completed, kit_type, score_for, score_against } = req.body
 
     console.log('PATCH /matches/:id - Received:', { id, userId: req.user.id, role: req.user.role, prep_notes: !!prep_notes })
 
@@ -167,6 +167,29 @@ router.patch('/:id', authenticateToken, async (req, res, next) => {
     if (formations !== undefined) {
       updates.push(`formations = $${paramCount}::jsonb`)
       values.push(formations ? JSON.stringify(formations) : null)
+      paramCount++
+    }
+
+    if (prep_completed !== undefined) {
+      updates.push(`prep_completed_at = ${prep_completed ? 'NOW()' : 'NULL'}`)
+    }
+
+    // Partial fields the V15 match pages edit in place. The PUT route
+    // rewrites meet_time on every call, so these go through PATCH.
+    if (kit_type !== undefined) {
+      updates.push(`kit_type = $${paramCount}`)
+      values.push(kit_type)
+      paramCount++
+    }
+
+    for (const [column, raw] of [['score_for', score_for], ['score_against', score_against]]) {
+      if (raw === undefined) continue
+      const n = raw === null || raw === '' ? null : parseInt(raw, 10)
+      if (n !== null && (!Number.isInteger(n) || n < 0)) {
+        return res.status(400).json({ message: `${column} must be a whole number` })
+      }
+      updates.push(`${column} = $${paramCount}`)
+      values.push(n)
       paramCount++
     }
 
@@ -649,6 +672,13 @@ router.post('/:id/prep/generate', authenticateToken, async (req, res, next) => {
     }
 
     if (fullText) {
+      // Keep the briefing so the prep page and readiness checklist can show
+      // it on later visits instead of asking for a fresh generation each time.
+      try {
+        await pool.query('UPDATE matches SET prep_draft = $1, updated_at = NOW() WHERE id = $2', [fullText, id])
+      } catch (saveErr) {
+        console.error('Match prep save warning:', saveErr.message)
+      }
       res.write(`data: ${JSON.stringify({ type: 'done' })}\n\n`)
     } else {
       res.write(`data: ${JSON.stringify({ type: 'error', message: 'No content generated' })}\n\n`)

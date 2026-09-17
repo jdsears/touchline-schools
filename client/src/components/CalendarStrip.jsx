@@ -1,4 +1,5 @@
-import { useMemo } from 'react'
+import { Link } from 'react-router-dom'
+import { ChevronRight } from 'lucide-react'
 
 const ROLE_DOTS = {
   schoolAdmin: 'var(--brand-primary)',
@@ -50,8 +51,10 @@ export function CalendarStrip({ events = [] }) {
           const width = Math.max((ev.end - ev.start) * hourW - 6, 40)
           const dotColor = ROLE_DOTS[ev.role] || 'var(--text-secondary)'
           const isPast = ev.end <= nowHour
+          const Block = ev.href ? Link : 'div'
+          const linkProps = ev.href ? { to: ev.href, title: ev.label } : {}
           return (
-            <div key={i} className="absolute flex items-center gap-1.5 overflow-hidden" style={{
+            <Block key={ev.id || i} {...linkProps} className="absolute flex items-center gap-1.5 overflow-hidden no-underline" style={{
               left, top: (ev.lane || 0) * 28, width, height: 26,
               borderRadius: 'var(--radius-sm)',
               background: isPast ? 'var(--surface-sunken)' : 'var(--surface-card)',
@@ -61,7 +64,7 @@ export function CalendarStrip({ events = [] }) {
               fontSize: 11.5, color: 'var(--text-primary)', fontWeight: 600,
             }}>
               <span className="truncate">{ev.label}</span>
-            </div>
+            </Block>
           )
         })}
       </div>
@@ -69,38 +72,47 @@ export function CalendarStrip({ events = [] }) {
   )
 }
 
-export function AttentionQueue({ actions = [] }) {
+function ActionRow({ action: a }) {
+  const Row = a.href ? Link : 'div'
+  const linkProps = a.href ? { to: a.href } : {}
+  const pillBg = a.urgency === 'high' ? 'var(--status-error-tint)' : a.urgency === 'medium' ? 'var(--status-warning-tint)' : 'var(--surface-sunken)'
+  const pillFg = a.urgency === 'high' ? 'var(--status-error)' : a.urgency === 'medium' ? 'var(--status-warning)' : 'var(--text-secondary)'
+  return (
+    <Row {...linkProps}
+      className={`flex items-center gap-3 py-[10px] px-[14px] no-underline transition-colors ${a.href ? 'hover:bg-[var(--surface-card)]' : ''}`}
+      style={{ borderTop: '1px solid var(--border-subtle)' }}>
+      <span className="w-2 h-2 rounded-full shrink-0" style={{ background: ROLE_DOTS[a.role] || 'var(--text-tertiary)' }} />
+      <span className="shrink-0 w-16 text-[9.5px] font-bold tracking-[0.06em] uppercase" style={{ color: 'var(--text-tertiary)' }}>
+        {ROLE_TAG[a.role] || ''}
+      </span>
+      <span className="flex-1 min-w-0 text-[13.5px] truncate" style={{ color: 'var(--text-primary)' }}>
+        <strong className="font-semibold">{a.verb}</strong>
+        <span style={{ color: 'var(--text-secondary)' }}> · {a.subject}</span>
+      </span>
+      {a.deadline && (
+        <span className="text-[12px] font-semibold px-[10px] py-[3px] rounded-full whitespace-nowrap"
+          style={{ background: pillBg, color: pillFg }}>
+          {a.deadline}
+        </span>
+      )}
+      {a.href && <ChevronRight size={14} className="shrink-0" style={{ color: 'var(--text-tertiary)' }} />}
+    </Row>
+  )
+}
+
+export function AttentionQueue({ actions = [], limit = 5, showAll = false }) {
   if (!actions.length) {
     return (
       <div className="py-4 text-center">
-        <p className="text-[13px] italic" style={{ color: 'var(--text-tertiary)' }}>Nothing in the queue.</p>
+        <p className="text-[13px] italic" style={{ color: 'var(--text-tertiary)' }}>Nothing needs your attention right now.</p>
       </div>
     )
   }
 
+  const visible = showAll ? actions : actions.slice(0, limit)
   return (
     <div>
-      {actions.slice(0, 5).map((a, i) => (
-        <div key={i} className="flex items-center gap-3 py-[10px] px-[14px]" style={{ borderTop: '1px solid var(--border-subtle)' }}>
-          <span className="w-2 h-2 rounded-full shrink-0" style={{ background: ROLE_DOTS[a.role] || 'var(--text-tertiary)' }} />
-          <span className="shrink-0 w-16 text-[9.5px] font-bold tracking-[0.06em] uppercase" style={{ color: 'var(--text-tertiary)' }}>
-            {ROLE_TAG[a.role] || ''}
-          </span>
-          <span className="flex-1 min-w-0 text-[13.5px]" style={{ color: 'var(--text-primary)' }}>
-            <strong className="font-semibold">{a.verb}</strong>
-            <span style={{ color: 'var(--text-secondary)' }}> · {a.subject}</span>
-          </span>
-          {a.deadline && (
-            <span className="text-[12px] font-semibold px-[10px] py-[3px] rounded-full whitespace-nowrap"
-              style={{
-                background: a.urgency === 'high' ? 'var(--status-error-tint)' : a.urgency === 'medium' ? 'var(--status-warning-tint)' : 'var(--surface-sunken)',
-                color: a.urgency === 'high' ? 'var(--status-error)' : a.urgency === 'medium' ? 'var(--status-warning)' : 'var(--text-secondary)',
-              }}>
-              {a.deadline}
-            </span>
-          )}
-        </div>
-      ))}
+      {visible.map((a, i) => <ActionRow key={a.id || i} action={a} />)}
     </div>
   )
 }
