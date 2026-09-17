@@ -6,8 +6,10 @@ import { v4 as uuidv4 } from 'uuid'
 const router = express.Router()
 router.use(authenticateToken)
 
-// Helper to get the user's school_id
-async function getUserSchoolId(userId) {
+// Helper to get the user's school_id (the switcher's choice when set)
+async function getUserSchoolId(userOrId) {
+  if (userOrId?.active_school_id) return userOrId.active_school_id
+  const userId = userOrId?.id || userOrId
   const result = await pool.query(
     `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at ASC LIMIT 1`,
     [userId]
@@ -18,7 +20,7 @@ async function getUserSchoolId(userId) {
 // GET / - List all pupils for the school with search and filters
 router.get('/', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     const { search, year_group, house, sport, limit: lim, offset: off } = req.query
@@ -97,7 +99,7 @@ router.get('/', async (req, res) => {
 // GET /stats - Pupil statistics for the school
 router.get('/stats', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     const [totalResult, yearResult, houseResult] = await Promise.all([
@@ -241,7 +243,7 @@ router.put('/:id', async (req, res) => {
 // POST / - Create a single pupil
 router.post('/', async (req, res) => {
   try {
-    const schoolId = await getUserSchoolId(req.user.id)
+    const schoolId = await getUserSchoolId(req.user)
     if (!schoolId) return res.status(403).json({ error: 'No school access' })
 
     const { first_name, last_name, year_group, house, date_of_birth } = req.body

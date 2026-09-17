@@ -65,7 +65,8 @@ function MoreToggle({ count, expanded, onClick }) {
   )
 }
 
-export default function Sidebar({ roles = [], school = {}, user = {}, onLogout, newSchool = false, basePath = '/teacher' }) {
+export default function Sidebar({ roles = [], school = {}, user = {}, onLogout, newSchool = false, basePath = '/teacher', schools = [], activeSchoolId = null, onSwitchSchool, topExtra = [] }) {
+  const multiSchool = Array.isArray(schools) && schools.length > 1
   const visible = buildVisibleRoles(roles)
   const isMulti = visible.length > 1
   const location = useLocation()
@@ -90,8 +91,22 @@ export default function Sidebar({ roles = [], school = {}, user = {}, onLogout, 
           {school.initials || 'MB'}
         </span>
         <div className="flex flex-col leading-[1.15] min-w-0 flex-1">
-          <span className="text-[13.5px] font-semibold truncate">{school.name || 'MoonBoots Sports'}</span>
-          <span className="text-[11px]" style={{ color: 'var(--text-on-dark-secondary)' }}>{school.roleLabel || 'Teacher'}</span>
+          {multiSchool ? (
+            <select
+              aria-label="Switch school"
+              value={activeSchoolId || schools[0]?.id}
+              onChange={e => onSwitchSchool?.(e.target.value)}
+              className="text-[13.5px] font-semibold truncate bg-transparent border-0 p-0 pr-4 cursor-pointer focus:outline-none"
+              style={{ color: 'var(--on-brand-primary)', appearance: 'auto' }}
+            >
+              {schools.map(s => <option key={s.id} value={s.id} style={{ color: '#111' }}>{s.name}</option>)}
+            </select>
+          ) : (
+            <span className="text-[13.5px] font-semibold truncate">{school.name || 'MoonBoots Sports'}</span>
+          )}
+          <span className="text-[11px]" style={{ color: 'var(--text-on-dark-secondary)' }}>
+            {school.roleLabel || 'Teacher'}{multiSchool ? ` · ${schools.length} schools` : ''}
+          </span>
         </div>
       </div>
 
@@ -99,6 +114,7 @@ export default function Sidebar({ roles = [], school = {}, user = {}, onLogout, 
         {/* Cross-role top cluster */}
         <div className="pt-[10px]">
           {CROSS_ROLE_TOP.map(item => <SidebarItem key={item.id} item={item} basePath={basePath} newSchool={newSchool} />)}
+          {topExtra.map(item => <SidebarItem key={item.id} item={item} basePath={basePath} newSchool={newSchool} />)}
         </div>
 
         {/* Role groups */}

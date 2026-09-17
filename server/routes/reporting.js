@@ -42,6 +42,7 @@ const REPORT_ROWS_SQL = `
 async function getUserSchoolId(user) {
   const userId = typeof user === 'object' ? user.id : user
   const isAdmin = typeof user === 'object' ? user.is_admin : false
+  if (typeof user === 'object' && user.active_school_id) return user.active_school_id
 
   const direct = await pool.query(
     `SELECT school_id FROM school_members WHERE user_id = $1 ORDER BY joined_at DESC NULLS LAST LIMIT 1`,

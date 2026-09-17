@@ -14,6 +14,7 @@ const router = Router()
 const PUPIL_SCHOOL = `COALESCE(p.school_id, (SELECT t.school_id FROM teams t WHERE t.id = p.team_id))`
 
 async function getSchoolId(user) {
+  if (user.active_school_id) return user.active_school_id
   const mem = await pool.query(
     `SELECT school_id FROM school_members WHERE user_id = $1 AND status = 'active' ORDER BY joined_at ASC NULLS LAST LIMIT 1`,
     [user.id]

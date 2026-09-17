@@ -6,6 +6,7 @@ import pool from '../config/database.js'
 const router = Router()
 
 async function getSchoolId(user) {
+  if (user.active_school_id) return user.active_school_id
   const mem = await pool.query(
     `SELECT school_id FROM school_members WHERE user_id = $1 AND status = 'active' ORDER BY joined_at ASC NULLS LAST LIMIT 1`,
     [user.id]

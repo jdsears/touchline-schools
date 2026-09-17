@@ -4326,6 +4326,25 @@ export async function runMigrations() {
                     ON audio_sources(teacher_id, client_upload_id) WHERE client_upload_id IS NOT NULL`)
     console.log('Phase 33: audio_sources.client_upload_id')
 
+    // --- Phase 34: schools parity with the renamed clubs table ---
+    // POST /schools still writes the club-era columns; databases bootstrapped
+    // fresh had only the schools-era ones, so creating a second school (any
+    // multi-school setup) failed with "column fa_affiliation_number ... does
+    // not exist".
+    for (const col of [
+      'fa_affiliation_number TEXT',
+      'league TEXT',
+      'charter_standard TEXT',
+      'stripe_customer_id TEXT',
+      'stripe_account_id TEXT',
+      'dpa_accepted_at TIMESTAMPTZ',
+      'dpa_accepted_by UUID',
+      'dpa_version TEXT',
+    ]) {
+      await tryQuery(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS ${col}`)
+    }
+    console.log('Phase 34: schools legacy columns')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================

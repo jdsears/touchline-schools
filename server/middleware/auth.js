@@ -81,6 +81,25 @@ export async function authenticateToken(req, res, next) {
     user.hasFullAccess = true
     user.subscriptionStatus = user.is_admin ? 'admin' : 'free'
 
+    // Staff at more than one school choose the school they are working in
+    // via the client's switcher, sent as X-School-Id. It is honoured only
+    // for a school they actually belong to (site admins may pick any), so a
+    // forged header can never widen access.
+    const requestedSchool = req.headers['x-school-id']
+    if (requestedSchool && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(requestedSchool)) {
+      try {
+        const allowed = user.is_admin
+          ? await pool.query('SELECT id FROM schools WHERE id = $1', [requestedSchool])
+          : await pool.query(
+            `SELECT school_id AS id FROM school_members WHERE user_id = $1 AND school_id = $2 AND status = 'active'`,
+            [user.id, requestedSchool]
+          )
+        if (allowed.rows.length > 0) user.active_school_id = requestedSchool
+      } catch (err) {
+        console.warn('Active school header ignored:', err.message)
+      }
+    }
+
     req.user = user
     next()
   } catch (error) {

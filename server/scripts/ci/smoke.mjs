@@ -367,6 +367,37 @@ if (token) {
     record('onboarding smoke (school lookup)', false, 'demo school not found')
   }
 
+  // ── Multi-school: the switcher header and the trust overview (#74) ───
+  // The demo Head of PE creates a second school (becoming its owner), so
+  // they now oversee two; the client's X-School-Id header must move every
+  // HoD-scoped request to the chosen school, and only to one of theirs.
+  const trustSchool = await post('/schools', { name: `Smoke Trust School ${stamp}`, dpa_accepted: true }, {
+    validate: (b) => (b?.id ? null : `no school id in ${JSON.stringify(b).slice(0, 120)}`),
+  })
+  if (trustSchool?.id) {
+    await get('/hod/check', {
+      validate: (b) => (Array.isArray(b?.schools) && b.schools.length >= 2 && b.schools.some((s) => s.id === trustSchool.id) ? null : `expected the new school among ${JSON.stringify(b?.schools).slice(0, 120)}`),
+    })
+    await get('/hod/schools', {
+      validate: (b) => (Array.isArray(b?.schools) && b.schools.some((s) => s.id === trustSchool.id) && b.schools.every((s) => Number.isInteger(s.pupils) && Number.isInteger(s.attention))
+        ? null : `trust overview missing the new school or its counts: ${JSON.stringify(b?.schools).slice(0, 160)}`),
+    })
+    const withSchool = (path, id) => fetch(`${BASE}/api${path}`, { headers: { Authorization: `Bearer ${token}`, 'X-School-Id': id } })
+    try {
+      const switched = await (await withSchool('/hod/check', trustSchool.id)).json()
+      record('X-School-Id switches the working school', switched?.school_id === trustSchool.id && switched?.role === 'owner', JSON.stringify(switched).slice(0, 150))
+      const attention = await withSchool('/teacher-dashboard/attention', trustSchool.id)
+      record('attention queue follows the active school', attention.status === 200, `status ${attention.status}`)
+      const branding = await (await withSchool('/schools/my-branding', trustSchool.id)).json()
+      record('branding follows the active school', branding?.branding?.schoolId === trustSchool.id, JSON.stringify(branding).slice(0, 120))
+      const forged = await (await withSchool('/hod/check', '00000000-0000-0000-0000-000000000000')).json()
+      record('an X-School-Id the user does not belong to is ignored', forged?.school_id && forged.school_id !== '00000000-0000-0000-0000-000000000000', JSON.stringify(forged).slice(0, 120))
+    } catch (e) {
+      record('school switch', false, e.message)
+    }
+    await pool.query('DELETE FROM schools WHERE id = $1', [trustSchool.id])
+  }
+
   // ── Offline voice notes: idempotent upload (#73) ─────────────────────
   // Queued recordings are retried by the app and the service worker with
   // the same client id; the second attempt must return the first record.

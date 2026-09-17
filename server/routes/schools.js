@@ -29,15 +29,20 @@ const __dirname = path.dirname(__filename)
 // GET /schools/my-branding - return the current user's school branding (logo, colours, name)
 router.get('/my-branding', authenticateToken, async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT s.id, s.name, s.slug, s.logo_url, s.primary_color, s.secondary_color
-       FROM school_members sm
-       JOIN schools s ON sm.school_id = s.id
-       WHERE sm.user_id = $1
-       ORDER BY sm.joined_at ASC
-       LIMIT 1`,
-      [req.user.id]
-    )
+    const result = req.user.active_school_id
+      ? await pool.query(
+        `SELECT s.id, s.name, s.slug, s.logo_url, s.primary_color, s.secondary_color FROM schools s WHERE s.id = $1`,
+        [req.user.active_school_id]
+      )
+      : await pool.query(
+        `SELECT s.id, s.name, s.slug, s.logo_url, s.primary_color, s.secondary_color
+         FROM school_members sm
+         JOIN schools s ON sm.school_id = s.id
+         WHERE sm.user_id = $1
+         ORDER BY sm.joined_at ASC
+         LIMIT 1`,
+        [req.user.id]
+      )
     if (result.rows.length === 0) {
       return res.json({ branding: null })
     }
