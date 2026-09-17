@@ -24,6 +24,45 @@ router.use(authenticateToken)
 router.use(requireAdmin)
 
 // ============================================
+// Server Error Log (observability)
+// ============================================
+
+// GET /api/admin/errors - recent server-side failures (process crashes
+// averted by the global guards, unhandled 5xx responses)
+router.get('/errors', async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT id, kind, message, path, method, user_id, created_at
+       FROM server_error_log ORDER BY created_at DESC LIMIT 100`
+    )
+    res.json(result.rows)
+  } catch (e) {
+    res.json([]) // table not migrated yet
+  }
+})
+
+// GET /api/admin/errors/:id - full detail including the stack trace
+router.get('/errors/:id', async (req, res, next) => {
+  try {
+    const result = await pool.query(`SELECT * FROM server_error_log WHERE id = $1`, [req.params.id])
+    if (result.rows.length === 0) return res.status(404).json({ message: 'Not found' })
+    res.json(result.rows[0])
+  } catch (error) {
+    next(error)
+  }
+})
+
+// DELETE /api/admin/errors - clear the log
+router.delete('/errors', async (req, res, next) => {
+  try {
+    await pool.query('DELETE FROM server_error_log')
+    res.json({ success: true })
+  } catch (error) {
+    next(error)
+  }
+})
+
+// ============================================
 // Dashboard Stats
 // ============================================
 

@@ -15,6 +15,20 @@ import { runMigrations } from './db/migrations.js'
 // Database
 import pool from './config/database.js'
 
+// Error observability
+import { logServerError } from './services/errorLog.js'
+
+// A single unhandled rejection once crash-looped the whole server for hours
+// (the nightly demo-reset scheduler's Invalid Date). Availability beats
+// fail-fast for this product: log loudly, persist to server_error_log, and
+// keep serving rather than letting the process die and restart in a loop.
+process.on('unhandledRejection', (reason) => {
+  logServerError('unhandled_rejection', reason instanceof Error ? reason : new Error(String(reason)))
+})
+process.on('uncaughtException', (err) => {
+  logServerError('uncaught_exception', err)
+})
+
 // Routes
 import authRoutes from './routes/auth.js'
 import teamRoutes from './routes/teams.js'
