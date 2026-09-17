@@ -3,6 +3,7 @@ import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { HOD_ROLES } from '../middleware/schoolAuth.js'
 import { suggestGoalsFromObservations } from '../services/idpService.js'
+import { pupilPackPdf, pdfFilename } from '../services/reportPdf.js'
 
 const router = express.Router()
 router.use(authenticateToken)
@@ -18,7 +19,7 @@ const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/
 
 // Resolve the pupil's school (via team or teaching group) and the requester's
 // effective role in that school. Returns { pupil, schoolId, role, isAdmin }.
-async function resolvePupilAccess(req, pupilId) {
+export async function resolvePupilAccess(req, pupilId) {
   const r = await pool.query(
     `SELECT p.*,
             (SELECT t.school_id FROM teams t WHERE t.id = p.team_id) AS team_school_id,
@@ -46,11 +47,13 @@ async function resolvePupilAccess(req, pupilId) {
   return { pupil, schoolId: m.rows[0].school_id, role: m.rows[0].role, isAdmin: false }
 }
 
-function gate(access, allowedRoles) {
+export function gate(access, allowedRoles) {
   if (!access || access.error) return false
   if (access.isAdmin) return true
   return allowedRoles.includes(access.role)
 }
+
+export const STAFF_PROFILE_ROLES = MEDICAL_ROLES
 
 async function logAccess(req, pupilId, schoolId, tab) {
   await pool.query(
@@ -374,6 +377,61 @@ router.delete('/:id/idp-goals/:goalId', async (req, res) => {
   } catch (e) {
     console.error('pupilProfile idp delete:', e.message)
     res.status(500).json({ error: 'Failed to remove the goal' })
+  }
+})
+
+// GET /:id/parents-evening-pack — one PDF a teacher can hand to parents:
+// written reports, curriculum grades, development plan, awards and
+// participation. Staff notes and observations are deliberately not
+// reproduced; only their count is.
+router.get('/:id/parents-evening-pack', async (req, res) => {
+  try {
+    const access = await resolvePupilAccess(req, req.params.id)
+    if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
+    if (!gate(access, STAFF_PROFILE_ROLES)) return res.status(403).json({ error: 'Access denied' })
+    const pupilId = req.params.id
+    const rows = async (sql, params) => pool.query(sql, params).then(r => r.rows).catch(e => { console.warn('parents pack query:', e.message); return [] })
+
+    const [school, classes, teams, reports, assessments, goals, achievements, participation] = await Promise.all([
+      rows(`SELECT name, primary_color, accent_color FROM schools WHERE id = $1`, [access.schoolId]).then(r => r[0] || null),
+      rows(`SELECT tg.name, tg.year_group FROM teaching_group_pupils tgp JOIN teaching_groups tg ON tg.id = tgp.teaching_group_id WHERE tgp.pupil_id = $1 ORDER BY tg.name`, [pupilId]),
+      rows(`SELECT DISTINCT t.name, t.sport FROM teams t
+            WHERE t.id = (SELECT team_id FROM pupils WHERE id = $1)
+               OR t.id IN (SELECT team_id FROM team_memberships WHERE pupil_id = $1)
+            ORDER BY t.name`, [pupilId]),
+      rows(`SELECT pr.*, rw.name AS window_name, rw.term, rw.academic_year, rw.closes_at,
+                   su.unit_name, su.sport AS unit_sport, u.name AS teacher_name
+            FROM pupil_reports pr
+            JOIN reporting_windows rw ON rw.id = pr.reporting_window_id
+            LEFT JOIN sport_units su ON su.id = pr.unit_id
+            LEFT JOIN users u ON u.id = COALESCE(pr.teacher_id, pr.generated_by)
+            WHERE pr.pupil_id = $1 AND pr.status IN ('submitted', 'published')
+            ORDER BY rw.closes_at DESC NULLS LAST, pr.updated_at DESC`, [pupilId]),
+      rows(`SELECT pa.grade, pa.assessment_type, pa.assessed_at, su.unit_name, su.sport,
+                   ac.criterion, ac.criterion_name, cs.strand_name
+            FROM pupil_assessments pa
+            LEFT JOIN sport_units su ON su.id = pa.unit_id
+            LEFT JOIN assessment_criteria ac ON ac.id = pa.criteria_id
+            LEFT JOIN curriculum_strands cs ON cs.id = ac.strand_id
+            WHERE pa.pupil_id = $1 AND pa.grade IS NOT NULL
+            ORDER BY pa.assessed_at DESC LIMIT 12`, [pupilId]),
+      rows(`SELECT * FROM pupil_idp_goals WHERE pupil_id = $1 ORDER BY status, created_at DESC`, [pupilId]),
+      rows(`SELECT title, description, earned_at, sport_key FROM pupil_achievements WHERE player_id = $1 ORDER BY earned_at DESC`, [pupilId]),
+      rows(`SELECT (SELECT COUNT(*) FROM match_squads ms WHERE ms.pupil_id = $1)::int AS fixtures,
+                   (SELECT COUNT(*) FROM observations o WHERE o.pupil_id = $1 AND o.created_at > NOW() - INTERVAL '365 days')::int AS observations`, [pupilId]).then(r => r[0] || {}),
+    ])
+
+    const pdf = await pupilPackPdf({
+      school, pupil: access.pupil, classes, teams, reports, assessments, goals, achievements, participation,
+      generatedBy: req.user.name || null,
+    })
+    await logAccess(req, pupilId, access.schoolId, 'parents_evening_pack')
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', `attachment; filename="${pdfFilename(access.pupil.name || `${access.pupil.first_name}-${access.pupil.last_name}`, 'progress-report')}"`)
+    res.send(pdf)
+  } catch (e) {
+    console.error('pupilProfile parents pack:', e)
+    res.status(500).json({ error: 'Failed to build the PDF' })
   }
 })
 

@@ -81,6 +81,22 @@ async function send(method, path, body, { expect, form = false, validate, label:
 const post = (path, body, opts = {}) => send('POST', path, body, { expect: 201, ...opts })
 const patch = (path, body, opts = {}) => send('PATCH', path, body, { expect: 200, ...opts })
 
+// Binary download: must answer 200 with a PDF body.
+async function getPdf(path, { minBytes = 2000, label: customLabel } = {}) {
+  const label = customLabel || `GET ${path} (pdf)`
+  try {
+    const res = await fetch(`${BASE}/api${path}`, { headers: { Authorization: `Bearer ${token}` } })
+    const buf = Buffer.from(await res.arrayBuffer())
+    const type = res.headers.get('content-type') || ''
+    const ok = res.status === 200 && type.includes('application/pdf') && buf.subarray(0, 5).toString() === '%PDF-' && buf.length >= minBytes
+    record(label, ok, `status ${res.status}, type ${type}, ${buf.length} bytes${ok ? '' : `, body: ${buf.subarray(0, 120).toString()}`}`)
+    return ok
+  } catch (e) {
+    record(label, false, e.message)
+    return false
+  }
+}
+
 // ── Sign in as the demo HoD ──────────────────────────────────────────
 try {
   const res = await fetch(`${BASE}/api/auth/demo-login`, { method: 'POST' })
@@ -254,6 +270,21 @@ if (token) {
         validate: (b) => (Array.isArray(b) && b.some((g) => g.id === created.id) ? null : 'created goal missing from list'),
       })
       await send('DELETE', `/pupil-profile/${pid}/idp-goals/${created.id}`, undefined, { expect: 204, label: `DELETE /pupil-profile/${pid}/idp-goals/:goalId` })
+    }
+    // Parents' evening pack: one PDF per pupil (reports, grades, plan, awards, participation)
+    await getPdf(`/pupil-profile/${pid}/parents-evening-pack`)
+    // Reporting window batch PDF and a single report PDF, scoped to the caller's school
+    const openWindow = await pool.query(`
+      SELECT rw.id FROM reporting_windows rw JOIN schools s ON s.id = rw.school_id
+      WHERE s.slug = 'ashworth-park-demo' AND EXISTS (SELECT 1 FROM pupil_reports pr WHERE pr.reporting_window_id = rw.id)
+      ORDER BY rw.closes_at DESC LIMIT 1`)
+    if (openWindow.rows[0]) {
+      const wid = openWindow.rows[0].id
+      await getPdf(`/reporting/windows/${wid}/pdf`, { minBytes: 4000 })
+      const oneReport = await pool.query(`SELECT id FROM pupil_reports WHERE reporting_window_id = $1 LIMIT 1`, [wid])
+      if (oneReport.rows[0]) await getPdf(`/reporting/reports/${oneReport.rows[0].id}/pdf`)
+    } else {
+      record('reporting window with reports', false, 'no demo window carries reports')
     }
     // Suggestions need a live model: 200 with an array when a key is configured, a clean 503 otherwise.
     try {

@@ -2,9 +2,38 @@ import express from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { v4 as uuidv4 } from 'uuid'
+import { windowReportsPdf, pdfFilename } from '../services/reportPdf.js'
 
 const router = express.Router()
 router.use(authenticateToken)
+
+// Load a reporting window with its school, refusing other schools' windows.
+async function loadWindowForUser(req, windowId) {
+  const r = await pool.query(
+    `SELECT rw.*, s.name AS school_name, s.primary_color, s.accent_color
+     FROM reporting_windows rw JOIN schools s ON s.id = rw.school_id WHERE rw.id = $1`,
+    [windowId]
+  )
+  const window = r.rows[0]
+  if (!window) return { error: 404 }
+  if (!req.user.is_admin) {
+    const schoolId = await getUserSchoolId(req.user)
+    if (!schoolId || schoolId !== window.school_id) return { error: 403 }
+  }
+  return { window }
+}
+
+const REPORT_ROWS_SQL = `
+  SELECT pr.*, p.name, p.first_name, p.last_name, p.year_group, p.house,
+         su.sport AS unit_sport, su.unit_name,
+         u.name AS teacher_name,
+         COALESCE(tg.name, tg2.name) AS class_name
+  FROM pupil_reports pr
+  JOIN pupils p ON pr.pupil_id = p.id
+  LEFT JOIN sport_units su ON pr.unit_id = su.id
+  LEFT JOIN users u ON u.id = COALESCE(pr.teacher_id, pr.generated_by)
+  LEFT JOIN teaching_groups tg ON tg.id = pr.teaching_group_id
+  LEFT JOIN teaching_groups tg2 ON tg2.id = su.teaching_group_id`
 
 // Helper to get the user's school_id — checks school_members first, then
 // falls back to teaching_groups (covers teachers not yet fully onboarded).
@@ -144,17 +173,13 @@ router.put('/windows/:id', async (req, res) => {
 router.get('/windows/:windowId/reports', async (req, res) => {
   try {
     const { windowId } = req.params
+    const loaded = await loadWindowForUser(req, windowId)
+    if (loaded.error) return res.status(loaded.error).json({ error: loaded.error === 404 ? 'Reporting window not found' : 'Access denied' })
 
     const result = await pool.query(
-      `SELECT pr.*, p.first_name, p.last_name, p.year_group,
-              su.sport, su.unit_name,
-              u.name AS teacher_name
-       FROM pupil_reports pr
-       JOIN pupils p ON pr.pupil_id = p.id
-       LEFT JOIN sport_units su ON pr.unit_id = su.id
-       LEFT JOIN users u ON pr.generated_by = u.id
+      `${REPORT_ROWS_SQL}
        WHERE pr.reporting_window_id = $1
-       ORDER BY p.year_group ASC, p.last_name ASC`,
+       ORDER BY p.year_group ASC, p.last_name ASC, p.first_name ASC`,
       [windowId]
     )
 
@@ -162,6 +187,60 @@ router.get('/windows/:windowId/reports', async (req, res) => {
   } catch (error) {
     console.error('Error loading reports:', error)
     res.status(500).json({ error: 'Failed to load reports' })
+  }
+})
+
+// GET /windows/:windowId/pdf — every report in the window as one PDF
+// (cover + contents, one page per report). ?class_name= and ?status=
+// narrow it to what the list on screen is showing.
+router.get('/windows/:windowId/pdf', async (req, res) => {
+  try {
+    const { windowId } = req.params
+    const loaded = await loadWindowForUser(req, windowId)
+    if (loaded.error) return res.status(loaded.error).json({ error: loaded.error === 404 ? 'Reporting window not found' : 'Access denied' })
+    const { window } = loaded
+    const filters = {
+      class_name: req.query.class_name ? String(req.query.class_name) : null,
+      status: ['draft', 'submitted', 'published'].includes(req.query.status) ? req.query.status : null,
+    }
+    const params = [windowId]
+    let where = 'WHERE pr.reporting_window_id = $1'
+    if (filters.class_name) { params.push(filters.class_name); where += ` AND COALESCE(tg.name, tg2.name) = $${params.length}` }
+    if (filters.status) { params.push(filters.status); where += ` AND pr.status = $${params.length}` }
+    const result = await pool.query(`${REPORT_ROWS_SQL} ${where} ORDER BY p.year_group ASC, p.last_name ASC, p.first_name ASC`, params)
+
+    const pdf = await windowReportsPdf({
+      school: { name: window.school_name, primary_color: window.primary_color, accent_color: window.accent_color },
+      window, reports: result.rows, filters, generatedBy: req.user.name || null,
+    })
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', `attachment; filename="${pdfFilename(window.name, filters.class_name, 'reports')}"`)
+    res.send(pdf)
+  } catch (error) {
+    console.error('Error building window PDF:', error)
+    res.status(500).json({ error: 'Failed to build the PDF' })
+  }
+})
+
+// GET /reports/:id/pdf — a single report as a PDF
+router.get('/reports/:id/pdf', async (req, res) => {
+  try {
+    const result = await pool.query(`${REPORT_ROWS_SQL} WHERE pr.id = $1`, [req.params.id])
+    const report = result.rows[0]
+    if (!report) return res.status(404).json({ error: 'Report not found' })
+    const loaded = await loadWindowForUser(req, report.reporting_window_id)
+    if (loaded.error) return res.status(loaded.error).json({ error: loaded.error === 404 ? 'Reporting window not found' : 'Access denied' })
+    const { window } = loaded
+    const pdf = await windowReportsPdf({
+      school: { name: window.school_name, primary_color: window.primary_color, accent_color: window.accent_color },
+      window, reports: [report], generatedBy: req.user.name || null,
+    })
+    res.setHeader('Content-Type', 'application/pdf')
+    res.setHeader('Content-Disposition', `attachment; filename="${pdfFilename(report.name || `${report.first_name}-${report.last_name}`, window.name)}"`)
+    res.send(pdf)
+  } catch (error) {
+    console.error('Error building report PDF:', error)
+    res.status(500).json({ error: 'Failed to build the PDF' })
   }
 })
 
@@ -275,21 +354,10 @@ router.post('/reports', async (req, res) => {
 // GET /reports/:id - Get a single pupil report with pupil and unit details
 router.get('/reports/:id', async (req, res) => {
   try {
-    const result = await pool.query(
-      `SELECT pr.*,
-              p.first_name, p.last_name, p.year_group, p.house,
-              su.sport AS unit_sport, su.unit_name,
-              u.name AS teacher_name,
-              tg.name AS class_name
-       FROM pupil_reports pr
-       JOIN pupils p ON pr.pupil_id = p.id
-       LEFT JOIN sport_units su ON pr.unit_id = su.id
-       LEFT JOIN users u ON pr.generated_by = u.id
-       LEFT JOIN teaching_groups tg ON su.teaching_group_id = tg.id
-       WHERE pr.id = $1`,
-      [req.params.id]
-    )
+    const result = await pool.query(`${REPORT_ROWS_SQL} WHERE pr.id = $1`, [req.params.id])
     if (result.rows.length === 0) return res.status(404).json({ error: 'Report not found' })
+    const loaded = await loadWindowForUser(req, result.rows[0].reporting_window_id)
+    if (loaded.error) return res.status(loaded.error).json({ error: loaded.error === 404 ? 'Reporting window not found' : 'Access denied' })
     res.json(result.rows[0])
   } catch (error) {
     console.error('Error loading report:', error)

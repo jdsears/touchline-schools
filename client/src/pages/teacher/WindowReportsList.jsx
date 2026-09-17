@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { reportingService } from '../../services/api'
-import { ArrowLeft, Search, Download } from 'lucide-react'
+import { ArrowLeft, Search, Download, FileText, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 const STATUS_BADGE = {
   draft: 'bg-border-default text-secondary',
@@ -60,6 +61,21 @@ export default function WindowReportsList() {
 
   const groups = useMemo(() => [...new Set(reports.map(r => r.class_name).filter(Boolean))].sort(), [reports])
   const [groupFilter, setGroupFilter] = useState('all')
+  const [downloading, setDownloading] = useState(false)
+
+  async function downloadPdf() {
+    setDownloading(true)
+    try {
+      await reportingService.downloadWindowPdf(windowId, {
+        class_name: groupFilter !== 'all' ? groupFilter : undefined,
+        status: statusFilter !== 'all' ? statusFilter : undefined,
+      }, `${(window_?.name || 'reports').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}-reports.pdf`)
+    } catch (err) {
+      toast.error(err.response?.status === 403 ? 'You do not have access to this window' : 'Could not build the PDF')
+    } finally {
+      setDownloading(false)
+    }
+  }
 
   const filtered = useMemo(() => reports.filter(r => {
     const name = `${r.first_name} ${r.last_name}`.toLowerCase()
@@ -89,9 +105,16 @@ export default function WindowReportsList() {
             {window_?.academic_year} {window_?.term && `· ${window_.term} term`} · {reports.length} reports
           </p>
         </div>
-        <button onClick={() => exportCSV(filtered)} className="flex items-center gap-2 px-4 py-2 bg-subtle hover:bg-border-default text-primary rounded-lg text-sm transition-colors">
-          <Download className="w-4 h-4" /> Export CSV
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => exportCSV(filtered)} className="flex items-center gap-2 px-4 py-2 bg-subtle hover:bg-border-default text-primary rounded-lg text-sm transition-colors">
+            <Download className="w-4 h-4" /> Export CSV
+          </button>
+          <button onClick={downloadPdf} disabled={downloading || filtered.length === 0}
+            title={filtered.length === 0 ? 'No reports in this selection' : 'One PDF with a page per report, matching the filters below'}
+            className="flex items-center gap-2 px-4 py-2 bg-brand-primary hover:opacity-90 text-on-dark rounded-lg text-sm transition-opacity disabled:opacity-50">
+            {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />} Download PDF{filtered.length !== reports.length ? ` (${filtered.length})` : ''}
+          </button>
+        </div>
       </div>
 
       <div className="flex flex-wrap gap-3 mb-5">

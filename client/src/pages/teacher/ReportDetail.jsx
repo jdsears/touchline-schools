@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { reportingService } from '../../services/api'
-import { ArrowLeft, User, BookOpen, MessageSquare, Clock } from 'lucide-react'
+import { ArrowLeft, User, BookOpen, MessageSquare, Clock, FileText, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 const GRADE_LABELS = {
   attainment: { emerging: 'Emerging', developing: 'Developing', secure: 'Secure', excelling: 'Excelling' },
@@ -25,6 +26,7 @@ export default function ReportDetail() {
   const [report, setReport] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [downloading, setDownloading] = useState(false)
 
   useEffect(() => {
     reportingService.getReport(reportId)
@@ -32,6 +34,14 @@ export default function ReportDetail() {
       .catch(() => setError('Report not found'))
       .finally(() => setLoading(false))
   }, [reportId])
+
+  async function downloadPdf() {
+    setDownloading(true)
+    try {
+      await reportingService.downloadReportPdf(reportId, `${report.first_name}-${report.last_name}-report.pdf`.toLowerCase())
+    } catch { toast.error('Could not build the PDF') }
+    finally { setDownloading(false) }
+  }
 
   if (loading) return <div className="p-6 flex items-center justify-center min-h-[50vh]"><div className="spinner w-8 h-8" /></div>
   if (error || !report) return (
@@ -43,9 +53,15 @@ export default function ReportDetail() {
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
-      <button onClick={() => navigate(`/teacher/hod/reporting/windows/${windowId}`)} className="flex items-center gap-1.5 text-secondary hover:text-link text-sm mb-5 transition-colors">
-        <ArrowLeft className="w-4 h-4" /> Back to reports list
-      </button>
+      <div className="flex items-center justify-between mb-5">
+        <button onClick={() => navigate(`/teacher/hod/reporting/windows/${windowId}`)} className="flex items-center gap-1.5 text-secondary hover:text-link text-sm transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back to reports list
+        </button>
+        <button onClick={downloadPdf} disabled={downloading}
+          className="flex items-center gap-2 px-3 py-1.5 bg-brand-primary hover:opacity-90 text-on-dark rounded-lg text-sm transition-opacity disabled:opacity-50">
+          {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />} Download PDF
+        </button>
+      </div>
 
       {/* Pupil identity */}
       <div className="card p-5 mb-4">
