@@ -227,6 +227,43 @@ if (token) {
     await get(`/pupil-profile/${pid}`)
     await get(`/pupil-profile/${pid}/idp-goals`, { validate: nonEmptyArray })
     await get(`/pupil-profile/${pid}/achievements`, { validate: nonEmptyArray })
+
+    // Observations → IDP: goals are written through the API (they used to
+    // be seed-only), carry their evidence, and can be closed or removed.
+    const goalStamp = Date.now().toString(36)
+    const obsRow = await pool.query(`SELECT id FROM observations WHERE pupil_id = $1 ORDER BY created_at DESC LIMIT 1`, [pid])
+    const evidenceId = obsRow.rows[0]?.id
+    const created = await post(`/pupil-profile/${pid}/idp-goals`, {
+      goal_description: `Smoke goal ${goalStamp}`,
+      success_criteria: 'Three consecutive sessions without prompting',
+      sport_key: 'football',
+      target_weeks: 6,
+      source_observation_ids: evidenceId ? [evidenceId] : [],
+      origin: 'teacher',
+    }, {
+      validate: (b) => (b?.id && b?.status === 'in_progress' && Array.isArray(b?.evidence) && (!evidenceId || b.evidence.length === 1)
+        ? null
+        : `unexpected goal payload ${JSON.stringify(b).slice(0, 160)}`),
+    })
+    if (created?.id) {
+      await patch(`/pupil-profile/${pid}/idp-goals/${created.id}`, { status: 'achieved', teacher_assessment_notes: 'smoke note' }, {
+        label: `PATCH /pupil-profile/${pid}/idp-goals/:goalId (achieve)`,
+        validate: (b) => (b?.status === 'achieved' && b?.teacher_assessment_notes === 'smoke note' ? null : 'status/note not updated'),
+      })
+      await get(`/pupil-profile/${pid}/idp-goals`, {
+        validate: (b) => (Array.isArray(b) && b.some((g) => g.id === created.id) ? null : 'created goal missing from list'),
+      })
+      await send('DELETE', `/pupil-profile/${pid}/idp-goals/${created.id}`, undefined, { expect: 204, label: `DELETE /pupil-profile/${pid}/idp-goals/:goalId` })
+    }
+    // Suggestions need a live model: 200 with an array when a key is configured, a clean 503 otherwise.
+    try {
+      const res = await fetch(`${BASE}/api/pupil-profile/${pid}/idp-goals/suggest`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } })
+      const body = await res.json().catch(() => null)
+      const ok = (res.status === 200 && Array.isArray(body?.suggestions)) || (res.status === 503 && body?.code === 'AI_NOT_CONFIGURED')
+      record('POST idp-goals/suggest (200 with key, 503 AI_NOT_CONFIGURED without)', ok, `status ${res.status}: ${JSON.stringify(body).slice(0, 150)}`)
+    } catch (e) {
+      record('POST idp-goals/suggest', false, e.message)
+    }
   } else {
     record('Toby Marsh persona lookup', false, 'persona pupil missing from seed')
   }
