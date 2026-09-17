@@ -46,6 +46,38 @@ async function get(path, { expect = 200, validate } = {}) {
   }
 }
 
+async function post(path, body, { expect = 201, form = false, validate, label: customLabel } = {}) {
+  const label = customLabel || `POST ${path}`
+  try {
+    const res = await fetch(`${BASE}/api${path}`, {
+      method: 'POST',
+      headers: form
+        ? { Authorization: `Bearer ${token}` }
+        : { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: form ? body : JSON.stringify(body),
+    })
+    const text = await res.text()
+    let parsed = null
+    try { parsed = JSON.parse(text) } catch { /* non-JSON */ }
+    if (res.status !== expect) {
+      record(label, false, `status ${res.status}, body: ${text.slice(0, 200)}`)
+      return null
+    }
+    if (validate) {
+      const problem = validate(parsed)
+      if (problem) {
+        record(label, false, problem)
+        return parsed
+      }
+    }
+    record(label, true)
+    return parsed
+  } catch (e) {
+    record(label, false, e.message)
+    return null
+  }
+}
+
 // ── Sign in as the demo HoD ──────────────────────────────────────────
 try {
   const res = await fetch(`${BASE}/api/auth/demo-login`, { method: 'POST' })
@@ -110,6 +142,74 @@ if (token) {
     await get(`/pupil-profile/${pid}/achievements`, { validate: nonEmptyArray })
   } else {
     record('Toby Marsh persona lookup', false, 'persona pupil missing from seed')
+  }
+
+  // ── Onboarding surface: Add Pupil, CSV import, teacher invites ─────
+  // Add Pupil regression: the insert used to omit the NOT NULL name column,
+  // so the button failed on every deployment.
+  const stamp = Date.now().toString(36)
+  await post('/pupil-management', { first_name: 'Smoke', last_name: `Added${stamp}`, year_group: 8 })
+
+  const schoolRow = await pool.query(`SELECT id FROM schools WHERE slug = 'ashworth-park-demo'`)
+  const schoolId = schoolRow.rows[0]?.id
+  if (schoolId) {
+    const csvOf = (rows) => {
+      const fd = new FormData()
+      fd.append('school_id', schoolId)
+      fd.append('file', new Blob([`first_name,last_name,year_group,house\n${rows.join('\n')}`], { type: 'text/csv' }), 'pupils.csv')
+      return fd
+    }
+
+    // Unique rows import cleanly...
+    await post('/onboarding/pupils/csv', csvOf([`Smokey,Import${stamp},7,Elm`, `Smokier,Import${stamp},9,Oak`]), {
+      form: true,
+      label: 'POST /onboarding/pupils/csv (new rows)',
+      validate: (b) => (b?.created === 2 ? null : `expected created 2, got ${JSON.stringify(b).slice(0, 150)}`),
+    })
+    // ...and re-importing the same export skips as duplicates, never doubles the roster
+    const fixed = ['Dedupe,Check,8,Elm', 'Dedupe,Again,8,Oak']
+    const first = await post('/onboarding/pupils/csv', csvOf(fixed), {
+      form: true,
+      label: 'POST /onboarding/pupils/csv (fixed pair)',
+      validate: (b) => ((b?.created ?? 0) + (b?.duplicates ?? 0) === 2 ? null : `expected created+duplicates 2, got ${JSON.stringify(b).slice(0, 150)}`),
+    })
+    if (first) {
+      await post('/onboarding/pupils/csv', csvOf(fixed), {
+        form: true,
+        label: 'POST /onboarding/pupils/csv (re-import dedupes)',
+        validate: (b) => (b?.created === 0 && b?.duplicates === 2 ? null : `expected 0 created / 2 duplicates, got ${JSON.stringify(b).slice(0, 150)}`),
+      })
+    }
+
+    // Teacher invite: creates the account, membership, and a working
+    // 7-day magic sign-in link (previously inserted into a nonexistent
+    // users.password column, so this step had never once succeeded).
+    const inviteEmail = `smoke.invite.${stamp}@ashworthpark.norfolk.sch.uk`
+    const invite = await post('/onboarding/teachers', {
+      school_id: schoolId,
+      teachers: [{ name: 'Smoke Invitee', email: inviteEmail, role: 'coach' }],
+    }, {
+      validate: (b) => (b?.invited === 1 && b?.teachers?.[0]?.invite_link ? null : `expected 1 invite with link, got ${JSON.stringify(b).slice(0, 150)}`),
+    })
+    const inviteToken = invite?.teachers?.[0]?.invite_link?.split('/magic/')[1]
+    if (inviteToken) {
+      try {
+        const res = await fetch(`${BASE}/api/auth/magic-link/verify`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: inviteToken }),
+        })
+        const body = await res.json()
+        record('invite magic link signs the teacher in', res.status === 200 && !!body.token,
+          `status ${res.status}: ${JSON.stringify(body).slice(0, 150)}`)
+      } catch (e) {
+        record('invite magic link signs the teacher in', false, e.message)
+      }
+    } else {
+      record('invite magic link signs the teacher in', false, 'no invite link returned')
+    }
+  } else {
+    record('onboarding smoke (school lookup)', false, 'demo school not found')
   }
 }
 
