@@ -4,6 +4,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import dotenv from 'dotenv'
 import { buildExtractionPrompt, EXTRACTION_PROMPT_VERSION } from '../prompts/voiceObservationExtraction.js'
+import { EXTRACTION_MODEL, responseText } from '../config/aiModels.js'
 
 dotenv.config()
 
@@ -58,7 +59,7 @@ export async function extractObservations({ transcript, teacherName, sport, cont
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: EXTRACTION_MODEL,
       max_tokens: 4096,
       system: systemPrompt,
       messages: [
@@ -69,7 +70,9 @@ export async function extractObservations({ transcript, teacherName, sport, cont
       ],
     })
 
-    const text = response.content[0]?.text || '{}'
+    // Current models emit thinking blocks before text, so take the first
+    // text block rather than content[0].
+    const text = responseText(response) || '{}'
 
     // Parse the JSON response
     // Claude sometimes wraps JSON in markdown code blocks

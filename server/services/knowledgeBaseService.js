@@ -2,6 +2,7 @@ import pool from '../config/database.js'
 import Anthropic from '@anthropic-ai/sdk'
 import fs from 'fs'
 import dotenv from 'dotenv'
+import { RETRIEVAL_MODEL } from '../config/aiModels.js'
 import { getSportFramework, getSportAgeGuidance, getSportGoverningBody } from './sportKnowledge.js'
 
 dotenv.config()
@@ -101,7 +102,7 @@ function chunkText(text, maxSize = MAX_CHUNK_SIZE, overlap = CHUNK_OVERLAP) {
 async function extractChunkMetadata(content, documentTitle, documentCategory) {
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: RETRIEVAL_MODEL,
       max_tokens: 256,
       system: 'You extract metadata from coaching content. Respond ONLY with valid JSON.',
       messages: [{
@@ -318,7 +319,7 @@ export async function searchKnowledgeBase({
 export async function formulateSubQueries(message, teamContext = {}) {
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-haiku-4-5-20251001',
+      model: RETRIEVAL_MODEL,
       max_tokens: 256,
       system: 'You help break down coaching questions into search queries. Respond ONLY with valid JSON.',
       messages: [{
