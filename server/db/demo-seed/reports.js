@@ -2,11 +2,16 @@
  * Seed reporting windows and published pupil reports for the demo school.
  *
  * Creates:
- *   1. Autumn Report 2025 (closed, all reports published)
- *   2. Updates the Spring Report 2026 (already created by seedCurriculum)
+ *   1. Last term's window (closed, every report published)
+ *   2. This term's window (open, part-complete, deadline ahead of today)
+ *   3. Two flagged observations for the "Attention needed" panel
+ *
+ * Which terms those are comes from academicCalendar.js, so the demo is
+ * current whenever it is reseeded.
  */
 
 import pool from '../../config/database.js'
+import { demoCalendar, addDays } from './academicCalendar.js'
 
 async function findGroup(schoolId, name) {
   const r = await pool.query(
@@ -38,15 +43,17 @@ async function findUnit(groupId, term) {
 const AUTUMN_GRADES = ['Sec', 'Dev', 'Exc', 'Sec', 'Dev', 'Sec', 'Beg', 'Sec', 'Dev', 'Sec', 'Sec', 'Dev', 'Exc', 'Sec', 'Dev']
 const EFFORT_GRADES = ['4', '3', '5', '4', '3', '4', '3', '5', '3', '4', '4', '3', '5', '4', '3']
 
-function generateComment(pupil, sport, grade) {
+function generateComment(pupil, sport, grade, termLabel, nextTermLabel) {
   const first = pupil.first_name || pupil.name?.split(' ')[0] || 'This pupil'
   const gradeText = { Exc: 'excelling', Sec: 'secure', Dev: 'developing', Beg: 'at an early stage' }
   const level = gradeText[grade] || 'progressing'
+  const term = termLabel.toLowerCase()
+  const nextTerm = nextTermLabel.toLowerCase()
 
   const openers = [
-    `${first} has had a productive autumn term in ${sport}.`,
+    `${first} has had a productive ${term} term in ${sport}.`,
     `${first} has shown consistent effort throughout the ${sport} unit this term.`,
-    `It has been a positive start to the year for ${first} in ${sport}.`,
+    `It has been a positive ${term} term for ${first} in ${sport}.`,
   ]
   const middles = [
     `Performance is ${level} across the key assessment criteria.`,
@@ -56,7 +63,7 @@ function generateComment(pupil, sport, grade) {
   const closers = [
     `${first} should continue to practise core skills regularly to maintain momentum.`,
     `Encouragement to participate in extra-curricular sport would benefit progress further.`,
-    `A strong foundation has been built for the spring term units.`,
+    `A strong foundation has been built for the ${nextTerm} term units.`,
     `Setting personal targets for technique improvement would be a good next step.`,
   ]
 
@@ -65,18 +72,22 @@ function generateComment(pupil, sport, grade) {
 }
 
 const PERSONA_COMMENTS = {
-  'jamie.okonkwo': 'Jamie has made outstanding progress in his first term. From a quiet start in September, he has grown in confidence across the football unit. His willingness to demonstrate skills in front of the class shows real character. Technically, his right-foot striking is developing well. Areas for spring term focus: left-foot confidence and spatial awareness in small-sided games.',
-  'amelia.whitehead': 'Amelia continues to be one of the most talented athletes in Year 9. Her hockey skills are developing rapidly, with particularly strong stick handling and court awareness that transfers from her netball experience. She has taken on a leadership role within the group, often supporting less confident peers. Target for spring: develop reverse-stick technique and written evaluation skills.',
-  'toby.marsh': 'Toby has delivered an exceptional autumn term across his GCSE PE programme. His practical football performance is at the top of the grade boundary, with excellent decision-making under pressure and outstanding fitness levels. Theory mock results (78%) show strong anatomy and training knowledge, with socio-cultural influences as the main area for revision. Selected for Norfolk County rugby trials. A thoroughly deserving candidate for the Sports Personality award.',
+  'jamie.okonkwo': 'Jamie has made outstanding progress this term. From a quiet start, he has grown in confidence across the football unit. His willingness to demonstrate skills in front of the class shows real character. Technically, his right-foot striking is developing well. Areas of focus for next term: left-foot confidence and spatial awareness in small-sided games.',
+  'amelia.whitehead': 'Amelia continues to be one of the most talented athletes in Year 9. Her hockey skills are developing rapidly, with particularly strong stick handling and court awareness that transfers from her netball experience. She has taken on a leadership role within the group, often supporting less confident peers. Target for next term: develop reverse-stick technique and written evaluation skills.',
+  'toby.marsh': 'Toby has delivered an exceptional term across his GCSE PE programme. His practical football performance is at the top of the grade boundary, with excellent decision-making under pressure and outstanding fitness levels. Theory mock results (78%) show strong anatomy and training knowledge, with socio-cultural influences as the main area for revision. Selected for Norfolk County rugby trials. A thoroughly deserving candidate for the Sports Personality award.',
 }
 
-async function seedAutumnReports(schoolId) {
-  // Create the Autumn 2025 reporting window (closed)
+async function seedPreviousTermReports(schoolId, cal) {
+  // Last term's window: closed a week before the term ended, every report published.
+  const term = cal.previous
+  const opensAt = addDays(term.end, -35)
+  const closesAt = addDays(term.end, -7)
+  const publishedAt = addDays(closesAt, -2)
   const wRes = await pool.query(`
     INSERT INTO reporting_windows (school_id, name, academic_year, term, year_groups, status, opens_at, closes_at, created_at)
-    VALUES ($1, 'Autumn Report 2025', '2025-26', 'autumn', $2, 'closed', '2025-11-15', '2025-12-12', NOW())
+    VALUES ($1, $2, $3, $4, $5, 'closed', $6, $7, $6)
     RETURNING id
-  `, [schoolId, [7, 9, 11]])
+  `, [schoolId, term.windowName, term.academicYear, term.key, [7, 9, 11], opensAt, closesAt])
   const windowId = wRes.rows[0].id
 
   const groups = [
@@ -91,7 +102,7 @@ async function seedAutumnReports(schoolId) {
   for (const g of groups) {
     const group = await findGroup(schoolId, g.name)
     if (!group) continue
-    const unit = await findUnit(group.id, 'autumn')
+    const unit = await findUnit(group.id, term.key)
     const pupils = await groupPupils(group.id)
 
     for (let i = 0; i < pupils.length; i++) {
@@ -102,7 +113,7 @@ async function seedAutumnReports(schoolId) {
 
       // Check for persona-specific comments
       const emailKey = p.email?.match(/^([a-z]+\.[a-z]+)\.test@/)?.[1]
-      const comment = PERSONA_COMMENTS[emailKey] || generateComment(p, sport, grade)
+      const comment = PERSONA_COMMENTS[emailKey] || generateComment(p, sport, grade, term.label, cal.current.label)
 
       // Some reports have an AI draft that was edited (showing human-in-the-loop)
       const aiDraft = (i < 2)
@@ -115,12 +126,12 @@ async function seedAutumnReports(schoolId) {
           unit_id, sport, attainment_grade, effort_grade,
           teacher_comment, ai_draft, status,
           created_at, updated_at
-        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'published',NOW(),NOW())
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,'published',$11,$11)
         ON CONFLICT DO NOTHING
       `, [
         p.id, windowId, group.id, group.teacher_id,
         unit?.id || null, sport, grade, effort,
-        comment, aiDraft,
+        comment, aiDraft, publishedAt,
       ])
       count++
     }
@@ -129,14 +140,17 @@ async function seedAutumnReports(schoolId) {
   return count
 }
 
-async function seedSpringWindow(schoolId) {
-  // Open reporting window — partially completed so the "Attention needed"
-  // panel shows a progress bar and deadline.
+async function seedCurrentTermWindow(schoolId, cal) {
+  // Open reporting window straddling today, partially completed so the
+  // "Attention needed" panel shows a progress bar and a deadline ahead.
+  const term = cal.current
+  const opensAt = addDays(cal.today, -10)
+  const closesAt = addDays(cal.today, 11)
   const wRes = await pool.query(`
     INSERT INTO reporting_windows (school_id, name, academic_year, term, year_groups, status, opens_at, closes_at, created_at)
-    VALUES ($1, 'Spring Report 2026', '2025-26', 'spring', $2, 'open', '2026-03-01', '2026-04-30', NOW())
+    VALUES ($1, $2, $3, $4, $5, 'open', $6, $7, $6)
     RETURNING id
-  `, [schoolId, [7, 9, 11]])
+  `, [schoolId, term.windowName, term.academicYear, term.key, [7, 9, 11], opensAt, closesAt])
   const windowId = wRes.rows[0].id
 
   const groups = [
@@ -150,7 +164,7 @@ async function seedSpringWindow(schoolId) {
   for (const g of groups) {
     const group = await findGroup(schoolId, g.name)
     if (!group) continue
-    const unit = await findUnit(group.id, 'spring')
+    const unit = await findUnit(group.id, term.key)
     const pupils = await groupPupils(group.id)
 
     for (let i = 0; i < pupils.length; i++) {
@@ -158,7 +172,7 @@ async function seedSpringWindow(schoolId) {
       const grade = AUTUMN_GRADES[i % AUTUMN_GRADES.length]
       const effort = EFFORT_GRADES[i % EFFORT_GRADES.length]
       const sport = unit?.sport || 'PE'
-      const comment = generateComment(p, sport, grade)
+      const comment = generateComment(p, sport, grade, term.label, cal.next.label)
 
       // First ~40% of each group submitted, rest in draft
       const status = i < Math.ceil(pupils.length * 0.4) ? 'submitted' : 'draft'
@@ -233,8 +247,9 @@ async function seedFlaggedObservations(schoolId) {
 }
 
 export async function seedReports(schoolId) {
-  const autumnCount = await seedAutumnReports(schoolId)
-  const spring = await seedSpringWindow(schoolId)
+  const cal = demoCalendar()
+  const previousCount = await seedPreviousTermReports(schoolId, cal)
+  const current = await seedCurrentTermWindow(schoolId, cal)
   const flagCount = await seedFlaggedObservations(schoolId)
-  console.log(`[demo-seed] Reports seeded: ${autumnCount} autumn published, Spring open (${spring.submitted}/${spring.total}), ${flagCount} flagged observations`)
+  console.log(`[demo-seed] Reports seeded: ${previousCount} published in ${cal.previous.windowName}, ${cal.current.windowName} open (${current.submitted}/${current.total}), ${flagCount} flagged observations`)
 }

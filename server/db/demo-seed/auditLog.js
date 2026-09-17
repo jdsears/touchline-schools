@@ -4,6 +4,7 @@
  */
 
 import pool from '../../config/database.js'
+import { demoCalendar } from './academicCalendar.js'
 
 function pastTs(daysAgo, hoursAgo = 0) {
   const d = new Date()
@@ -14,6 +15,7 @@ function pastTs(daysAgo, hoursAgo = 0) {
 
 export async function seedAuditLog(schoolId, staff) {
   const { hodPe, directorOfSport, teacher1, teacher2 } = staff
+  const cal = demoCalendar()
 
   const entries = [
     {
@@ -69,7 +71,7 @@ export async function seedAuditLog(schoolId, staff) {
       userId: directorOfSport.id,
       action: 'reporting.window.opened',
       entityType: 'reporting_window',
-      details: { name: 'Spring Report 2026', yearGroups: [7, 9, 11] },
+      details: { name: cal.current.windowName, yearGroups: [7, 9, 11] },
       ts: pastTs(10),
     },
     {
@@ -90,7 +92,7 @@ export async function seedAuditLog(schoolId, staff) {
       userId: hodPe.id,
       action: 'curriculum.unit.created',
       entityType: 'sport_unit',
-      details: { sport: 'football', unitName: 'Invasion Games: Football', term: 'autumn' },
+      details: { sport: 'football', unitName: 'Invasion Games: Football', term: cal.previous.key },
       ts: pastTs(56),
     },
     {

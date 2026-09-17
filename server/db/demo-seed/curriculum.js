@@ -3,10 +3,13 @@
  * - Teaching groups (timetabled PE classes)
  * - Sport units per group
  * - Sample pupil assessments
- * - A reporting window with some submitted reports
+ *
+ * Reporting windows are seeded by reports.js. Term dates come from
+ * academicCalendar.js so the data is anchored on the day the seed runs.
  */
 
 import pool from '../../config/database.js'
+import { demoCalendar } from './academicCalendar.js'
 
 // Returns assessment_scale id for this school (or null if none)
 async function getOrCreateScale(schoolId, keyStage) {
@@ -118,7 +121,12 @@ async function seedAssessments(pupils, unitId, strandId, teacherId) {
 
 export async function seedCurriculum(schoolId, staff, pupils) {
   const { hodPe, directorOfSport, teacher1, teacher2 } = staff
-  const ACADEMIC_YEAR = '2025-26'
+  const cal = demoCalendar()
+  const ACADEMIC_YEAR = cal.academicYear
+  // Units: last term is complete, this term is in progress, next term is planned.
+  const last = cal.previous
+  const now = cal.current
+  const upcoming = cal.next
 
   const byYear = (y) => pupils.filter(p => p.year_group === y)
   const year7 = byYear(7)
@@ -154,43 +162,43 @@ export async function seedCurriculum(schoolId, staff, pupils) {
   // Sport units for Year 7A
   const unit7aFootball = await createSportUnit(
     y7a.id, 'football', 'Invasion Games: Football', 'invasion_games',
-    'autumn', '2025-09-08', '2025-10-24', 6
+    last.key, last.start, last.end, 6
   )
   const unit7aGymnastics = await createSportUnit(
     y7a.id, 'gymnastics', 'Gymnastics: Sequences', 'gymnastics',
-    'spring', '2026-01-07', '2026-02-13', 6
+    now.key, now.start, now.end, 6
   )
 
   // Sport units for Year 9A
   const unit9aRugby = await createSportUnit(
     y9a.id, 'rugby', 'Invasion Games: Rugby Union', 'invasion_games',
-    'autumn', '2025-09-08', '2025-11-28', 10
+    last.key, last.start, last.end, 10
   )
   const unit9aAthletics = await createSportUnit(
     y9a.id, 'athletics', 'Athletics: Track & Field', 'athletics',
-    'summer', '2026-04-27', '2026-06-19', 6
+    upcoming.key, upcoming.start, upcoming.end, 6
   )
 
   // Sport units for Year 9B
   await createSportUnit(
     y9b.id, 'hockey', 'Net/Wall & Striking: Hockey', 'invasion_games',
-    'autumn', '2025-09-08', '2025-11-28', 10
+    last.key, last.start, last.end, 10
   )
   await createSportUnit(
     y9b.id, 'netball', 'Invasion Games: Netball', 'invasion_games',
-    'spring', '2026-01-07', '2026-03-27', 10
+    now.key, now.start, now.end, 10
   )
 
   // Sport units for Year 11 GCSE
   const unit11Football = await createSportUnit(
     y11a.id, 'football', 'GCSE Practical: Football (Invasion Games)', 'invasion_games',
-    'autumn', '2025-09-08', '2025-11-28', 10
+    last.key, last.start, last.end, 10
   )
 
   // Year 13 A-Level
   await createSportUnit(
     y13a.id, 'football', 'A-Level: Performance Analysis', 'invasion_games',
-    'autumn', '2025-09-08', '2025-12-12', 12
+    last.key, last.start, last.end, 12
   )
 
   // Seed some assessments for Year 7A football unit
@@ -206,33 +214,5 @@ export async function seedCurriculum(schoolId, staff, pupils) {
   // Seed KS4 assessments for Year 11
   if (physicalStrandKs4) {
     await seedAssessments(year11, unit11Football.id, physicalStrandKs4.id, hodPe.id)
-  }
-
-  // Reporting window (spring term, partially completed)
-  const windowResult = await pool.query(`
-    INSERT INTO reporting_windows (school_id, name, academic_year, term, year_groups, status, opens_at, closes_at, created_at)
-    VALUES ($1, 'Spring Report 2026', '2025-26', 'spring', $2, 'open',
-            '2026-02-01', '2026-03-31', NOW())
-    RETURNING *
-  `, [schoolId, [7, 9, 11]])
-  const window = windowResult.rows[0]
-
-  // A few submitted pupil reports
-  const reportPupils = year7.slice(0, 4)
-  for (const pupil of reportPupils) {
-    await pool.query(`
-      INSERT INTO pupil_reports (
-        pupil_id, reporting_window_id, unit_id, sport,
-        attainment_grade, effort_grade, teacher_comment, status,
-        generated_by, created_at, updated_at
-      )
-      VALUES ($1, $2, $3, 'football', 'Sec', '4',
-              $4, 'submitted', $5, NOW(), NOW())
-      ON CONFLICT DO NOTHING
-    `, [
-      pupil.id, window.id, unit7aFootball.id,
-      `${pupil.name} has worked well this term, showing good understanding of basic football principles. ${pupil.name.split(' ')[0]} is encouraged to continue practising at home.`,
-      hodPe.id,
-    ])
   }
 }

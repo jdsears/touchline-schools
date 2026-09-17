@@ -3,11 +3,13 @@
  *
  * Runs AFTER seedCurriculum() to add:
  *   1. Y11 Core PE teaching group (missing from base seed)
- *   2. Spring 2026 sport units where missing
- *   3. 6 lesson plans per active teaching group for the current term
+ *   2. Current-term sport units where missing
+ *   3. 6 weekly lesson plans per active teaching group, anchored on this
+ *      week: two are behind us, one is this week, three are still to come
  */
 
 import pool from '../../config/database.js'
+import { demoCalendar, addDays, LESSON_WEEKDAY } from './academicCalendar.js'
 
 async function findGroup(schoolId, name) {
   const r = await pool.query(
@@ -31,12 +33,6 @@ async function createUnit(groupId, sport, unitName, area, term, start, end, coun
     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,0,NOW()) RETURNING id, sport, unit_name
   `, [groupId, sport, unitName, area, term, start, end, count])
   return r.rows[0]
-}
-
-function springDate(weekOffset) {
-  const base = new Date('2026-01-12')
-  base.setDate(base.getDate() + weekOffset * 7)
-  return base.toISOString().split('T')[0]
 }
 
 const LESSON_TEMPLATES = {
@@ -83,16 +79,17 @@ const LESSON_TEMPLATES = {
 }
 
 export async function seedLessons(schoolId, staff) {
-  const { hodPe, teacher1, teacher2 } = staff
+  const { hodPe, teacher1 } = staff
+  const cal = demoCalendar()
 
   // Ensure Y11 Core PE group exists
   let coreGroup = await findGroup(schoolId, 'Y11 Core PE')
   if (!coreGroup) {
     const r = await pool.query(`
       INSERT INTO teaching_groups (school_id, teacher_id, name, year_group, group_identifier, academic_year, key_stage, created_at)
-      VALUES ($1, $2, 'Y11 Core PE', 11, 'Y11CorePE', '2025-26', 'KS4', NOW())
+      VALUES ($1, $2, 'Y11 Core PE', 11, 'Y11CorePE', $3, 'KS4', NOW())
       RETURNING id, teacher_id
-    `, [schoolId, teacher1.id])
+    `, [schoolId, teacher1.id, cal.academicYear])
     coreGroup = r.rows[0]
 
     // Add Y11 pupils who are NOT in GCSE PE
@@ -115,7 +112,7 @@ export async function seedLessons(schoolId, staff) {
     }
   }
 
-  // Ensure spring sport units exist for each group
+  // Ensure current-term sport units exist for each group
   const groupUnits = [
     { name: '7A PE', sport: 'gymnastics', unit: 'Gymnastics: Sequences', area: 'gymnastics' },
     { name: '7B PE', sport: 'gymnastics', unit: 'Gymnastics: Movement Composition', area: 'gymnastics' },
@@ -129,9 +126,9 @@ export async function seedLessons(schoolId, staff) {
     const group = await findGroup(schoolId, gu.name)
     if (!group) continue
 
-    let unit = await findUnit(group.id, 'spring')
+    let unit = await findUnit(group.id, cal.current.key)
     if (!unit) {
-      unit = await createUnit(group.id, gu.sport, gu.unit, gu.area, 'spring', '2026-01-07', '2026-03-27', 6)
+      unit = await createUnit(group.id, gu.sport, gu.unit, gu.area, cal.current.key, cal.current.start, cal.current.end, 6)
     }
 
     const templates = LESSON_TEMPLATES[gu.sport]
@@ -139,9 +136,12 @@ export async function seedLessons(schoolId, staff) {
 
     const teacherId = group.teacher_id || hodPe.id
 
+    // Weekly lesson on the group's timetabled day: weeks -2 and -1 are
+    // behind us, week 0 is this week, weeks +1 to +3 are still to come.
+    const weekday = LESSON_WEEKDAY[gu.name] ?? 0
     for (let i = 0; i < Math.min(6, templates.length); i++) {
       const t = templates[i]
-      const lessonDate = springDate(i * 2)
+      const lessonDate = addDays(cal.weekMonday, (i - 2) * 7 + weekday)
       await pool.query(`
         INSERT INTO lesson_plans (
           teaching_group_id, sport_unit_id, teacher_id,
