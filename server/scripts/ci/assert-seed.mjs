@@ -62,6 +62,9 @@ await expect('notifications for demo HoD', `
   SELECT COUNT(*) n FROM notifications no
   JOIN users u ON u.id = no.user_id
   WHERE LOWER(u.email) = 'j.okonkwo.demo@ashworthpark.norfolk.sch.uk'`, 3)
+await expect('weekly trend snapshots', `
+  SELECT COUNT(*) n FROM school_weekly_stats sws
+  JOIN schools s ON s.id = sws.school_id WHERE s.slug = 'ashworth-park-demo'`, 4)
 // Regression: the bell must not open on an alarming pile of action items
 await (async () => {
   try {

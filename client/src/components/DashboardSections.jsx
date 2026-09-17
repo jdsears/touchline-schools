@@ -46,14 +46,25 @@ export function HoDSection({ single }) {
   const activeStaff = staff.filter(t => Number(t.observations_logged) > 0 || Number(t.reports_updated) > 0).length
   const fixturesThisWeek = (weekly?.fixtures || []).length
 
+  // Honest week-over-week chips: only rendered when the server has a frozen
+  // prior-week snapshot to compare against (trends is null otherwise).
+  const trendChip = (key) => {
+    const t = weekly?.trends?.[key]
+    if (!t || !Number.isFinite(t.delta) || t.delta === 0) return undefined
+    return {
+      tone: t.delta > 0 ? 'positive' : 'negative',
+      label: `${t.delta > 0 ? '↑' : '↓'} ${Math.abs(t.delta)}`,
+    }
+  }
+
   return (
     <div>
       <SectionHeading label="Head of Department" single={single} />
       <div className="flex gap-3 mb-4 flex-wrap">
-        <StatCard label="Sports active" value={weekly ? Number(weekly.participation?.sports_active) || 0 : null} sub="Across all year groups" />
-        <StatCard label="Pupils involved" value={weekly ? Number(weekly.participation?.unique_pupils) || 0 : null} sub="In teams and classes" />
-        <StatCard label="Staff activity" value={weekly ? activeStaff : null} suffix={weekly && staff.length ? `/${staff.length}` : ''} sub="Logged this week" />
-        <StatCard label="Fixtures this week" value={weekly ? fixturesThisWeek : null} sub="Across all teams" />
+        <StatCard label="Sports active" value={weekly ? Number(weekly.participation?.sports_active) || 0 : null} sub="Across all year groups" trend={trendChip('sports_active')} />
+        <StatCard label="Pupils involved" value={weekly ? Number(weekly.participation?.unique_pupils) || 0 : null} sub="In teams and classes" trend={trendChip('unique_pupils')} />
+        <StatCard label="Staff activity" value={weekly ? activeStaff : null} suffix={weekly && staff.length ? `/${staff.length}` : ''} sub="Logged this week" trend={trendChip('active_staff')} />
+        <StatCard label="Fixtures this week" value={weekly ? fixturesThisWeek : null} sub="Across all teams" trend={trendChip('fixtures_count')} />
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div className="rounded-[var(--radius-lg)] p-5" style={{ background: 'var(--surface-card)', border: '1px solid var(--border-subtle)' }}>

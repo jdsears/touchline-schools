@@ -8,6 +8,7 @@
  */
 
 import pool from '../../config/database.js'
+import { weekStartOf, isoDate, computeWeekStats, upsertWeekStats } from '../../services/weeklyStats.js'
 
 // ── Voice notes ─────────────────────────────────────────────────────
 // Two touchline recordings for the demo HoD: one fresh from this morning's
@@ -220,4 +221,32 @@ export async function seedNotifications(staff) {
 
   console.log(`[demo-seed] Notifications seeded: ${rows.length} for the demo HoD`)
   return rows.length
+}
+
+// ── Weekly trend history ────────────────────────────────────────────
+// Three weeks of activity snapshots slightly below this week's live numbers,
+// so the HoD dashboard's week-over-week chips have real history to compare
+// against from the first moment a prospect opens it.
+export async function seedWeeklyHistory(schoolId) {
+  const monday = weekStartOf()
+  const sunday = new Date(monday)
+  sunday.setDate(sunday.getDate() + 6)
+
+  const current = await computeWeekStats(schoolId, isoDate(monday), isoDate(sunday))
+  await upsertWeekStats(schoolId, isoDate(monday), current)
+
+  const dip = (n, by) => Math.max(0, n - by)
+  const priorWeeks = [
+    { back: 7,  stats: { sports_active: dip(current.sports_active, 1), unique_pupils: dip(current.unique_pupils, 6), fixtures_count: dip(current.fixtures_count, 2), observations_logged: dip(current.observations_logged, 5), active_staff: dip(current.active_staff, 1) } },
+    { back: 14, stats: { sports_active: dip(current.sports_active, 1), unique_pupils: dip(current.unique_pupils, 11), fixtures_count: dip(current.fixtures_count, 3), observations_logged: dip(current.observations_logged, 9), active_staff: dip(current.active_staff, 1) } },
+    { back: 21, stats: { sports_active: dip(current.sports_active, 2), unique_pupils: dip(current.unique_pupils, 15), fixtures_count: dip(current.fixtures_count, 4), observations_logged: dip(current.observations_logged, 12), active_staff: dip(current.active_staff, 2) } },
+  ]
+  for (const w of priorWeeks) {
+    const start = new Date(monday)
+    start.setDate(start.getDate() - w.back)
+    await upsertWeekStats(schoolId, isoDate(start), w.stats)
+  }
+
+  console.log('[demo-seed] Weekly trend history seeded: current week + 3 prior weeks')
+  return priorWeeks.length + 1
 }

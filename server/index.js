@@ -100,6 +100,7 @@ import { seedTestPersonas } from './db/demo-seed/test-personas.js'
 // Cron jobs
 import { scanTrialLifecycle } from './cron/trialLifecycle.js'
 import { purgeExpiredVoiceAudio } from './cron/voiceObservationRetention.js'
+import { captureWeeklyStats } from './services/weeklyStats.js'
 import { scheduleDemoReset } from './cron/demoReset.js'
 
 import bcrypt from 'bcryptjs'
@@ -651,9 +652,11 @@ runMigrations().then(() => {
     setTimeout(() => {
       scanTrialLifecycle().catch(err => console.error('[TrialLifecycle] Startup scan error:', err))
       purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Startup scan error:', err))
+      captureWeeklyStats().catch(err => console.error('[WeeklyStats] Startup capture error:', err))
       setInterval(() => {
         scanTrialLifecycle().catch(err => console.error('[TrialLifecycle] Scheduled scan error:', err))
         purgeExpiredVoiceAudio().catch(err => console.error('[VoiceRetention] Scheduled scan error:', err))
+        captureWeeklyStats().catch(err => console.error('[WeeklyStats] Scheduled capture error:', err))
       }, TWENTY_FOUR_HOURS)
     }, 30_000)
 
