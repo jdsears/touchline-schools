@@ -83,6 +83,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('fam_token')
     localStorage.removeItem('fam_original_token')
     localStorage.removeItem('fam_impersonating')
+    // The offline voice-note outbox keeps a copy of the token for the
+    // service worker; drop it with the session.
+    import('../lib/voiceQueue').then(m => m.clearOfflineToken()).catch(() => {})
     setUser(null)
     toast.success('Logged out successfully')
   }
