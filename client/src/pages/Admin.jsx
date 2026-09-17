@@ -20,6 +20,7 @@ import {
   Search,
   ChevronDown,
   ChevronUp,
+  AlertTriangle,
   Percent,
   Gift,
   DollarSign,
@@ -972,6 +973,7 @@ export default function Admin() {
   const [searchQuery, setSearchQuery] = useState('')
   const [userPage, setUserPage] = useState(1)
   const [userTotal, setUserTotal] = useState(0)
+  const [serverErrors, setServerErrors] = useState([])
   const [managingUserId, setManagingUserId] = useState(null)
 
   const [dragOver, setDragOver] = useState(false)
@@ -1009,17 +1011,29 @@ export default function Admin() {
   const fetchData = async () => {
     setLoading(true)
     try {
-      const [statsRes, codesRes] = await Promise.all([
+      const [statsRes, codesRes, errorsRes] = await Promise.all([
         api.get('/admin/stats'),
         api.get('/admin/promo-codes'),
+        api.get('/admin/errors').catch(() => ({ data: [] })),
       ])
       setStats(statsRes.data)
       setPromoCodes(codesRes.data)
+      setServerErrors(Array.isArray(errorsRes.data) ? errorsRes.data : [])
     } catch (error) {
       console.error('Failed to fetch admin data:', error)
       toast.error('Failed to load admin data')
     } finally {
       setLoading(false)
+    }
+  }
+
+  const clearServerErrors = async () => {
+    try {
+      await api.delete('/admin/errors')
+      setServerErrors([])
+      toast.success('Server error log cleared')
+    } catch {
+      toast.error('Failed to clear error log')
     }
   }
 
@@ -1325,6 +1339,51 @@ export default function Admin() {
               icon={TrendingUp}
               color="purple"
             />
+          </div>
+
+          {/* Server error log - fed by the process guards and 5xx capture */}
+          <div className="bg-card border border-border-default rounded-xl p-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-semibold text-white flex items-center gap-2">
+                <AlertTriangle className={`w-4 h-4 ${serverErrors.length > 0 ? 'text-status-error' : 'text-status-success'}`} />
+                Server Errors
+                <span className="text-tertiary text-sm font-normal">({serverErrors.length} in the last 100)</span>
+              </h3>
+              {serverErrors.length > 0 && (
+                <button
+                  onClick={clearServerErrors}
+                  className="text-xs text-secondary hover:text-white border border-border-default rounded-lg px-2 py-1 transition-colors"
+                >
+                  Clear log
+                </button>
+              )}
+            </div>
+            {serverErrors.length === 0 ? (
+              <p className="text-sm text-secondary">
+                No server-side errors recorded. Crash guards and 5xx capture are active.
+              </p>
+            ) : (
+              <div className="space-y-2">
+                {serverErrors.slice(0, 5).map(err => (
+                  <div key={err.id} className="flex items-start gap-3 p-2 rounded-lg bg-subtle text-sm">
+                    <span className="shrink-0 px-1.5 py-0.5 rounded text-xs font-medium bg-status-error-tint text-status-error">
+                      {err.kind}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white truncate">{err.message}</p>
+                      <p className="text-xs text-tertiary mt-0.5">
+                        {err.method ? `${err.method} ${err.path || ''}` : (err.path || 'process-level')}
+                        {' · '}
+                        {new Date(err.created_at).toLocaleString('en-GB')}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+                {serverErrors.length > 5 && (
+                  <p className="text-xs text-tertiary">…and {serverErrors.length - 5} more in the log.</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Breakdowns */}

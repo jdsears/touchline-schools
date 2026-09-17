@@ -2108,7 +2108,7 @@ export default function Settings() {
                         <div>
                           <p className="font-medium text-white">{ASSISTANT_NAME} AI</p>
                           <p className={`text-sm ${!gafferDisabled ? 'text-brand-primary' : 'text-secondary'}`}>
-                            {!gafferDisabled ? 'Enabled - Your child can chat with The Gaffer' : 'Disabled - AI chat is turned off'}
+                            {!gafferDisabled ? `Enabled - Your child can chat with ${ASSISTANT_NAME}` : 'Disabled - AI chat is turned off'}
                           </p>
                         </div>
                       </div>
@@ -2145,9 +2145,9 @@ export default function Settings() {
 
                   {/* Info */}
                   <div className="p-4 bg-subtle rounded-lg border border-border-strong">
-                    <h4 className="font-medium text-white mb-2">About The Gaffer</h4>
+                    <h4 className="font-medium text-white mb-2">About {ASSISTANT_NAME}</h4>
                     <p className="text-sm text-secondary mb-3">
-                      The Gaffer is an AI coaching assistant that helps your child understand their development,
+                      {ASSISTANT_NAME} is an AI coaching assistant that helps your child understand their development,
                       prepare for matches, and get personalized tips based on coach feedback.
                     </p>
                     <ul className="space-y-2 text-sm text-secondary">
