@@ -77,8 +77,14 @@ router.get('/schools', async (req, res) => {
         count(`SELECT COUNT(*) AS n FROM school_members sm WHERE sm.school_id = $1 AND sm.status = 'active' AND COALESCE(sm.school_role, sm.role) = ANY($2)`, [s.id, STAFF_ROLES]),
         count(`SELECT COUNT(*) AS n FROM teams WHERE school_id = $1`, [s.id]),
         count(`SELECT COUNT(*) AS n FROM matches m JOIN teams t ON t.id = m.team_id WHERE t.school_id = $1 AND COALESCE(m.date, m.match_date) BETWEEN $2 AND $3`, [s.id, ws, we]),
-        count(`SELECT COUNT(*) AS n FROM observations o JOIN school_members sm ON sm.user_id = o.observer_id AND sm.school_id = $1 WHERE o.created_at >= $2::date AND o.created_at < ($3::date + 1)`, [s.id, ws, we]),
-        count(`SELECT COUNT(*) AS n FROM observations o JOIN school_members sm ON sm.user_id = o.observer_id AND sm.school_id = $1 WHERE o.review_state = 'pending_review'`, [s.id]),
+        // Scoped by the pupil's school, not the observer's membership: a lead
+        // who belongs to several schools would otherwise count for all of them.
+        count(`SELECT COUNT(*) AS n FROM observations o JOIN pupils p ON p.id = o.pupil_id
+               WHERE COALESCE(p.school_id, (SELECT t.school_id FROM teams t WHERE t.id = p.team_id)) = $1
+                 AND o.created_at >= $2::date AND o.created_at < ($3::date + 1)`, [s.id, ws, we]),
+        count(`SELECT COUNT(*) AS n FROM observations o JOIN pupils p ON p.id = o.pupil_id
+               WHERE COALESCE(p.school_id, (SELECT t.school_id FROM teams t WHERE t.id = p.team_id)) = $1
+                 AND o.review_state = 'pending_review'`, [s.id]),
         count(`SELECT COUNT(*) AS n FROM safeguarding_incidents WHERE school_id = $1 AND status NOT IN ('closed', 'resolved')`, [s.id]),
         count(`SELECT COUNT(*) AS n FROM pupil_reports pr JOIN reporting_windows rw ON rw.id = pr.reporting_window_id WHERE rw.school_id = $1 AND rw.status IN ('open', 'draft') AND pr.status = 'submitted'`, [s.id]),
         count(`SELECT COUNT(*) AS n FROM pupil_consents pc JOIN consent_types ct ON ct.id = pc.consent_type_id AND ct.school_id = $1 WHERE pc.status = 'granted' AND pc.expires_at < NOW() + INTERVAL '30 days'`, [s.id]),

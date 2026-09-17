@@ -10,9 +10,11 @@ function fmtDate(d) {
   return new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
 
+const ROLE_LABEL = { owner: 'Owner', school_admin: 'School admin', admin: 'Admin', head_of_pe: 'Head of PE', head_of_sport: 'Head of Sport' }
+
 function Stat({ icon: Icon, label, value }) {
   return (
-    <div className="flex items-center gap-2 text-sm">
+    <div className="inline-flex items-center gap-1.5 text-sm whitespace-nowrap">
       <Icon className="w-4 h-4 text-tertiary shrink-0" />
       <span className="text-primary font-semibold tabular-nums">{value}</span>
       <span className="text-secondary">{label}</span>
@@ -91,10 +93,10 @@ export default function TrustOverview() {
                   <h2 className="text-base font-semibold text-primary truncate">{s.name}</h2>
                   {s.active && <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide px-1.5 py-0.5 rounded-full bg-status-success-tint text-status-success"><CheckCircle className="w-3 h-3" /> Current</span>}
                 </div>
-                <p className="text-xs text-secondary capitalize">{String(s.role || '').replace(/_/g, ' ')}</p>
+                <p className="text-xs text-secondary">{ROLE_LABEL[s.role] || String(s.role || '').replace(/_/g, ' ')}</p>
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-6 gap-y-1.5 flex-1">
+            <div className="flex flex-wrap gap-x-5 gap-y-1.5 flex-1">
               <Stat icon={Users} label="pupils" value={s.pupils} />
               <Stat icon={Shield} label="teams" value={s.teams} />
               <Stat icon={Users} label="staff" value={s.staff} />
