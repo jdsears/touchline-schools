@@ -100,6 +100,18 @@ if (token) {
       ? null
       : `expected trends with numeric deltas, got ${JSON.stringify(b?.trends).slice(0, 120)}`),
   })
+
+  // Digest preview renders the full HoD email without sending anything
+  try {
+    const res = await fetch(`${BASE}/api/hod/school-overview/digest-preview`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    const html = await res.text()
+    record('GET /hod/school-overview/digest-preview', res.status === 200 && html.includes('Ashworth Park') && html.includes('department'),
+      `status ${res.status}, length ${html.length}`)
+  } catch (e) {
+    record('GET /hod/school-overview/digest-preview', false, e.message)
+  }
   await get('/notifications', { validate: isArray })
   await get('/teacher-dashboard/development', { validate: nonEmptyArray })
   await get('/teams/mine/fixtures', { validate: isArray })

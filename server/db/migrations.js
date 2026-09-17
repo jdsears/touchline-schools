@@ -4219,6 +4219,23 @@ export async function runMigrations() {
     await tryQuery(`CREATE INDEX IF NOT EXISTS idx_school_weekly_stats ON school_weekly_stats(school_id, week_start DESC)`)
     console.log('Phase 26: school_weekly_stats')
 
+    // --- Phase 27: email lifecycle dedupe logs ---
+    // One row per (recipient, week) digest and (recipient, match) reminder,
+    // so scheduled sends can never repeat across restarts.
+    await pool.query(`CREATE TABLE IF NOT EXISTS email_digest_log (
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      week_start DATE NOT NULL,
+      sent_at TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY (user_id, week_start)
+    )`)
+    await pool.query(`CREATE TABLE IF NOT EXISTS email_fixture_reminder_log (
+      match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+      user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      sent_at TIMESTAMPTZ DEFAULT NOW(),
+      PRIMARY KEY (match_id, user_id)
+    )`)
+    console.log('Phase 27: email lifecycle logs')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================
