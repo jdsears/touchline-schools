@@ -7,6 +7,7 @@
 
 import pool from '../../config/database.js'
 import bcrypt from 'bcryptjs'
+import { dobForYearGroup } from './academicCalendar.js'
 
 const PUPIL_PASSWORD_HASH_CACHE = {}
 
@@ -15,14 +16,6 @@ async function getDemoPasswordHash() {
     PUPIL_PASSWORD_HASH_CACHE.hash = await bcrypt.hash('pupil-demo-no-login', 10)
   }
   return PUPIL_PASSWORD_HASH_CACHE.hash
-}
-
-// year_group → approximate year of birth (relative to school year 2025-26)
-function dobForYear(yearGroup) {
-  const base = 2026 - yearGroup - 11
-  const month = String(Math.floor(Math.random() * 12) + 1).padStart(2, '0')
-  const day = String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')
-  return `${base}-${month}-${day}`
 }
 
 const YEAR_7_PUPILS = [
@@ -141,7 +134,7 @@ async function insertPupil(schoolId, { name, house, yearGroup }) {
       )
       VALUES ($1, $2, $3, $4, $5, $6, true, $7, NOW())
       RETURNING *
-    `, [name, firstName, lastName, yearGroup, house, dobForYear(yearGroup), userId])
+    `, [name, firstName, lastName, yearGroup, house, dobForYearGroup(yearGroup), userId])
   }
 
   const pupil = pupilResult.rows[0]

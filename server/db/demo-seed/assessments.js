@@ -6,6 +6,7 @@
  */
 
 import pool from '../../config/database.js'
+import { demoCalendar, addDays } from './academicCalendar.js'
 
 async function getStrands(keyStage) {
   const r = await pool.query(
@@ -141,19 +142,22 @@ async function assessGroup(schoolId, groupName, keyStage, term, assessedAt) {
 
 export async function seedAssessments(schoolId) {
   let total = 0
-  const autumnDate = '2025-12-06'
-  const springDate = '2026-03-01'
+  const cal = demoCalendar()
+  const lastTerm = cal.previous.key
+  const lastTermAssessedAt = addDays(cal.previous.end, -14)
+  const thisTerm = cal.current.key
+  const thisTermAssessedAt = addDays(cal.today, -5)
 
-  // Autumn term: fully assessed (all groups)
-  total += await assessGroup(schoolId, '7A PE', 'KS3', 'autumn', autumnDate)
-  total += await assessGroup(schoolId, '7B PE', 'KS3', 'autumn', autumnDate)
-  total += await assessGroup(schoolId, '9A PE', 'KS3', 'autumn', autumnDate)
-  total += await assessGroup(schoolId, '9B PE', 'KS3', 'autumn', autumnDate)
-  total += await assessGroup(schoolId, '11 GCSE PE', 'KS4', 'autumn', autumnDate)
+  // Last term: fully assessed (all groups)
+  total += await assessGroup(schoolId, '7A PE', 'KS3', lastTerm, lastTermAssessedAt)
+  total += await assessGroup(schoolId, '7B PE', 'KS3', lastTerm, lastTermAssessedAt)
+  total += await assessGroup(schoolId, '9A PE', 'KS3', lastTerm, lastTermAssessedAt)
+  total += await assessGroup(schoolId, '9B PE', 'KS3', lastTerm, lastTermAssessedAt)
+  total += await assessGroup(schoolId, '11 GCSE PE', 'KS4', lastTerm, lastTermAssessedAt)
 
-  // Spring term: partially assessed (only some groups, simulates in-progress)
-  total += await assessGroup(schoolId, '7A PE', 'KS3', 'spring', springDate)
-  total += await assessGroup(schoolId, '9B PE', 'KS3', 'spring', springDate)
+  // This term: partially assessed (only some groups, simulates in-progress)
+  total += await assessGroup(schoolId, '7A PE', 'KS3', thisTerm, thisTermAssessedAt)
+  total += await assessGroup(schoolId, '9B PE', 'KS3', thisTerm, thisTermAssessedAt)
 
   if (total === 0) {
     console.warn(`[demo-seed] WARNING: Assessments seeded 0 records - check teaching groups, strands, or schema drift`)

@@ -15,6 +15,7 @@
 
 import pool from '../../config/database.js'
 import bcrypt from 'bcryptjs'
+import { dobForYearGroup } from './academicCalendar.js'
 
 // Ensure required columns exist (in case seed runs before server startup)
 async function ensureColumns() {
@@ -38,10 +39,10 @@ async function getHash() {
   return _hash
 }
 
+// Fixed birthdays so the personas' ages are stable across reseeds.
+const PERSONA_BIRTHDAY = { 7: { month: 3, day: 14 }, 9: { month: 8, day: 22 }, 11: { month: 11, day: 5 } }
 function dobForYear(yearGroup) {
-  const baseYear = 2026 - yearGroup - 11
-  const months = { 7: '03-14', 9: '08-22', 11: '11-05' }
-  return `${baseYear}-${months[yearGroup] || '06-15'}`
+  return dobForYearGroup(yearGroup, PERSONA_BIRTHDAY[yearGroup] || { month: 6, day: 15 })
 }
 
 function daysAgo(n) {
@@ -148,11 +149,14 @@ async function insertTestPersona(schoolId, { name, yearGroup, house, gender }) {
     // Re-link existing protected persona to new school
     userId = existing.rows[0].user_id
     pupil = existing.rows[0]
-    // Refresh expiry
+    // Refresh expiry, and the date of birth so the persona's age still
+    // matches their year group in the current academic year.
     await pool.query(
       `UPDATE users SET demo_expires_at = NOW() + INTERVAL '7 days' WHERE id = $1`,
       [userId]
     )
+    pupil.date_of_birth = dobForYear(yearGroup)
+    await pool.query(`UPDATE pupils SET date_of_birth = $1 WHERE id = $2`, [pupil.date_of_birth, pupil.id])
     // Clean up stale data from previous seed cycles — observations reference
     // old staff user IDs that were deleted, and assessments reference old
     // sport_units that were cascade-deleted with the old school.
