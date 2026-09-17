@@ -4,6 +4,8 @@ import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { HOD_ROLES } from '../middleware/schoolAuth.js'
 import { weekStartOf, isoDate, previousWeekStats, captureWeeklyStats } from '../services/weeklyStats.js'
+import { buildHodDigestData } from '../cron/emailLifecycle.js'
+import { renderEmailTemplate } from '../services/emailService.js'
 
 const router = express.Router()
 
@@ -533,6 +535,23 @@ router.get('/school-overview/attention', requireHoD, async (req, res) => {
   } catch (error) {
     console.error('School overview attention error:', error)
     res.status(500).json({ error: 'Failed to load attention data' })
+  }
+})
+
+// GET /school-overview/digest-preview - Renders this week's HoD digest email
+// exactly as it would send, without sending. Lets a HoD see the digest before
+// opting in, and lets CI verify the content with no email key configured.
+router.get('/school-overview/digest-preview', requireHoD, async (req, res) => {
+  try {
+    const data = await buildHodDigestData(req.schoolId, (req.user.name || '').split(' ')[0] || 'there')
+    const rendered = renderEmailTemplate('hodWeeklyDigest', data)
+    if (req.query.json === '1') {
+      return res.json({ subject: rendered.subject, data })
+    }
+    res.type('html').send(rendered.html)
+  } catch (error) {
+    console.error('Digest preview error:', error)
+    res.status(500).json({ error: 'Failed to render digest preview' })
   }
 })
 

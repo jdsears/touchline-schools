@@ -24,6 +24,115 @@ function isEmailEnabled() {
 
 // Email templates
 const templates = {
+  // Weekly Head of Department digest - Monday morning department briefing
+  hodWeeklyDigest: ({ recipientName, schoolName, weekLabel, fixtures = [], trends, pendingVoiceReviews = 0, consentsExpiring = 0, openWindows = [], dashboardUrl }) => {
+    const trendLine = (label, t) => (t && t.delta !== 0
+      ? `<p class="session-detail">${label}: <strong style="color:${t.delta > 0 ? '#166534' : '#b91c1c'}">${t.delta > 0 ? '▲' : '▼'} ${Math.abs(t.delta)}</strong> vs last week</p>`
+      : '')
+    const fixtureRows = fixtures.slice(0, 8).map(f =>
+      `<p class="session-detail"><strong>${f.day}</strong> — ${f.teamName} ${f.homeAway === 'home' ? 'vs' : 'at'} ${f.opponent}${f.time ? ` · ${f.time}` : ''}</p>`
+    ).join('')
+    const windowRows = openWindows.map(w =>
+      `<p class="session-detail">${w.name}: <strong>${w.submitted}/${w.total}</strong> reports submitted</p>`
+    ).join('')
+    return {
+      subject: `${schoolName} — your PE department week (${weekLabel})`,
+      html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f5; }
+          .container { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
+          .card { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+          h1 { color: #0F1E3D; font-size: 22px; margin: 0 0 16px 0; }
+          h2 { color: #0F1E3D; font-size: 15px; margin: 24px 0 8px 0; text-transform: uppercase; letter-spacing: 0.05em; }
+          p { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 12px 0; }
+          .session-card { background: #f8fafc; border-radius: 12px; padding: 18px 24px; margin: 12px 0; }
+          .session-detail { font-size: 14px; color: #475569; margin: 6px 0; }
+          .attention { background: #FBF7EE; border: 1px solid #C9A961; border-radius: 8px; padding: 14px 18px; margin: 12px 0; }
+          .button { display: inline-block; background: #0F1E3D; color: #ffffff; text-decoration: none; padding: 13px 26px; border-radius: 8px; font-weight: 600; margin: 20px 0 4px 0; }
+          .footer { text-align: center; margin-top: 32px; color: #94a3b8; font-size: 13px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <h1>Your department this week</h1>
+            <p>Morning ${recipientName} — here's where ${schoolName} PE stands for ${weekLabel}.</p>
+
+            <h2>Fixtures this week</h2>
+            <div class="session-card">
+              ${fixtureRows || '<p class="session-detail">No fixtures scheduled this week.</p>'}
+            </div>
+
+            ${trends ? `<h2>Momentum</h2><div class="session-card">
+              ${trendLine('Pupils involved', trends.unique_pupils)}
+              ${trendLine('Fixtures', trends.fixtures_count)}
+              ${trendLine('Sports active', trends.sports_active)}
+              ${trendLine('Staff logging activity', trends.active_staff) || ''}
+            </div>` : ''}
+
+            ${(pendingVoiceReviews > 0 || consentsExpiring > 0 || windowRows) ? `<h2>Needs your attention</h2>` : ''}
+            ${pendingVoiceReviews > 0 ? `<div class="attention"><p class="session-detail"><strong>${pendingVoiceReviews}</strong> voice observation${pendingVoiceReviews === 1 ? '' : 's'} awaiting your review.</p></div>` : ''}
+            ${consentsExpiring > 0 ? `<div class="attention"><p class="session-detail"><strong>${consentsExpiring}</strong> parental consent${consentsExpiring === 1 ? '' : 's'} expiring within 30 days.</p></div>` : ''}
+            ${windowRows ? `<div class="attention">${windowRows}</div>` : ''}
+
+            ${dashboardUrl ? `<div style="text-align:center;"><a href="${dashboardUrl}" class="button">Open your dashboard</a></div>` : ''}
+            <div class="footer">MoonBoots Sports · Weekly department digest<br>Turn this off under Settings → Notifications.</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+      text: `Your department this week (${weekLabel})\n\nFixtures: ${fixtures.length ? fixtures.map(f => `${f.day} ${f.teamName} ${f.homeAway === 'home' ? 'vs' : 'at'} ${f.opponent}`).join('; ') : 'none scheduled'}\nPending voice reviews: ${pendingVoiceReviews}\nConsents expiring within 30 days: ${consentsExpiring}\n${openWindows.map(w => `${w.name}: ${w.submitted}/${w.total} reports`).join('\n')}\n\nOpen your dashboard: ${dashboardUrl || ''}`,
+    }
+  },
+
+  // Fixture reminder - sent to the coaching staff the day before a match
+  fixtureReminder: ({ recipientName, teamName, sport, opponent, homeAway, matchDate, matchTime, location, fixtureUrl }) => ({
+    subject: `Tomorrow: ${teamName} ${homeAway === 'home' ? 'vs' : 'at'} ${opponent}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f5; }
+          .container { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
+          .card { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+          h1 { color: #0F1E3D; font-size: 22px; margin: 0 0 16px 0; }
+          p { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 12px 0; }
+          .session-card { background: #f8fafc; border-radius: 12px; padding: 20px 24px; margin: 16px 0; }
+          .session-title { font-size: 17px; font-weight: 600; color: #0F1E3D; margin: 0 0 8px 0; }
+          .session-detail { font-size: 14px; color: #475569; margin: 4px 0; }
+          .button { display: inline-block; background: #0F1E3D; color: #ffffff; text-decoration: none; padding: 13px 26px; border-radius: 8px; font-weight: 600; margin: 16px 0 0 0; }
+          .footer { text-align: center; margin-top: 32px; color: #94a3b8; font-size: 13px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <h1>Fixture tomorrow</h1>
+            <p>Hi ${recipientName}, a reminder that ${teamName} play tomorrow.</p>
+            <div class="session-card">
+              <p class="session-title">${teamName} ${homeAway === 'home' ? 'vs' : 'at'} ${opponent}</p>
+              <p class="session-detail">${matchDate}${matchTime ? ` · ${matchTime}` : ''}</p>
+              <p class="session-detail">${location || (homeAway === 'home' ? 'Home' : 'Away')} · ${sport}</p>
+            </div>
+            ${fixtureUrl ? `<div style="text-align:center;"><a href="${fixtureUrl}" class="button">Open match prep</a></div>` : ''}
+            <div class="footer">MoonBoots Sports · Fixture reminders<br>Turn these off under Settings → Notifications.</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `Fixture tomorrow: ${teamName} ${homeAway === 'home' ? 'vs' : 'at'} ${opponent}\n${matchDate}${matchTime ? ` at ${matchTime}` : ''}\n${location || ''} (${sport})\n${fixtureUrl || ''}`,
+  }),
+
   // Team invite email
   teamInvite: ({ teamName, inviterName, role, inviteLink }) => ({
     subject: `You've been invited to join ${teamName}`,
@@ -1544,3 +1653,18 @@ async function sendBatchEmails(emails) {
 }
 
 export { isEmailEnabled, sendEmail, sendBatchEmails }
+
+export async function sendHodWeeklyDigestEmail(to, data) {
+  return sendEmail(to, 'hodWeeklyDigest', data)
+}
+
+export async function sendFixtureReminderEmail(to, data) {
+  return sendEmail(to, 'fixtureReminder', data)
+}
+
+// Render a template without sending - powers the digest preview endpoint so
+// the content is verifiable (and CI-testable) with no API key configured.
+export function renderEmailTemplate(template, data) {
+  const fn = templates[template]
+  return fn ? fn(data) : null
+}

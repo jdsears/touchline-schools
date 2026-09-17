@@ -219,6 +219,15 @@ export async function seedNotifications(staff) {
     )
   }
 
+  // Opt the demo HoD into the weekly digest so the email lifecycle has a
+  // live recipient the moment Resend is configured.
+  await pool.query(
+    `INSERT INTO notification_preferences (user_id, weekly_digest)
+     VALUES ($1, true)
+     ON CONFLICT (user_id) DO UPDATE SET weekly_digest = true`,
+    [hodPe.id]
+  ).catch(() => { /* table may not exist on very old databases */ })
+
   console.log(`[demo-seed] Notifications seeded: ${rows.length} for the demo HoD`)
   return rows.length
 }
