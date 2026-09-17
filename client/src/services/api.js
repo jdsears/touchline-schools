@@ -23,6 +23,20 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// Fetch a binary endpoint with the bearer token and hand it to the browser as
+// a download (a plain <a href> could not carry the Authorization header).
+export async function downloadFile(path, filename, params) {
+  const res = await api.get(path, { params, responseType: 'blob' })
+  const url = URL.createObjectURL(res.data)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  a.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 2000)
+}
+
 // Response interceptor for error handling
 // Use a flag to prevent multiple simultaneous redirects (especially in PWA)
 let isRedirectingToLogin = false
@@ -669,7 +683,9 @@ export const reportingService = {
   createWindow: (data) => api.post('/reporting/windows', data),
   updateWindow: (id, data) => api.put(`/reporting/windows/${id}`, data),
   getWindowReports: (windowId) => api.get(`/reporting/windows/${windowId}/reports`),
+  downloadWindowPdf: (windowId, params, filename) => downloadFile(`/reporting/windows/${windowId}/pdf`, filename, params),
   getReport: (reportId) => api.get(`/reporting/reports/${reportId}`),
+  downloadReportPdf: (reportId, filename) => downloadFile(`/reporting/reports/${reportId}/pdf`, filename),
   getMyReports: () => api.get('/reporting/my-reports'),
   saveReport: (data) => api.post('/reporting/reports', data),
   generateAIDraft: (data) => api.post('/reporting/reports/ai-draft', data),
@@ -692,6 +708,7 @@ export const pupilProfileService = {
   createIdpGoal: (id, data) => api.post(`/pupil-profile/${id}/idp-goals`, data),
   updateIdpGoal: (id, goalId, data) => api.patch(`/pupil-profile/${id}/idp-goals/${goalId}`, data),
   deleteIdpGoal: (id, goalId) => api.delete(`/pupil-profile/${id}/idp-goals/${goalId}`),
+  downloadParentsPack: (id, filename) => downloadFile(`/pupil-profile/${id}/parents-evening-pack`, filename),
   getAchievements: (id) => api.get(`/pupil-profile/${id}/achievements`),
   getMedical: (id) => api.get(`/pupil-profile/${id}/medical`),
   getSend: (id) => api.get(`/pupil-profile/${id}/send`),

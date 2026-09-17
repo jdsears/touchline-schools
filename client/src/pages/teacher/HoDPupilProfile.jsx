@@ -6,7 +6,7 @@ import {
   User, ChevronLeft, GraduationCap, Shield, ClipboardCheck,
   BookOpen, TrendingUp, Edit3, Save, X, MessageSquare,
   Plus, Trash2, Loader2, Eye, Brain, Dumbbell, Heart, Zap,
-  Target, Stethoscope, AlertTriangle,
+  Target, Stethoscope, AlertTriangle, FileText,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -57,6 +57,19 @@ export default function HoDPupilProfile() {
   const [savingObs, setSavingObs] = useState(false)
   const [deletingObsId, setDeletingObsId] = useState(null)
   const [activeTab, setActiveTab] = useState('overview')
+  const [downloadingPack, setDownloadingPack] = useState(false)
+
+  async function downloadParentsPack() {
+    setDownloadingPack(true)
+    try {
+      const pupilName = data?.pupil?.name || core?.pupil?.name || 'pupil'
+      await pupilProfileService.downloadParentsPack(id, `${pupilName}-progress-report.pdf`.toLowerCase().replace(/\s+/g, '-'))
+    } catch (err) {
+      toast.error(err.response?.status === 403 ? 'You do not have access to this pupil' : 'Could not build the PDF')
+    } finally {
+      setDownloadingPack(false)
+    }
+  }
 
   useEffect(() => {
     loadProfile()
@@ -219,9 +232,16 @@ export default function HoDPupilProfile() {
               </button>
             </>
           ) : (
-            <button onClick={() => setEditing(true)} className="flex items-center gap-1.5 px-3 py-2 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm">
-              <Edit3 className="w-4 h-4" /> Edit
-            </button>
+            <>
+              <button onClick={downloadParentsPack} disabled={downloadingPack}
+                title="One PDF for parents' evening: written reports, grades, development plan, awards and participation"
+                className="flex items-center gap-1.5 px-3 py-2 bg-brand-primary hover:opacity-90 text-on-dark rounded-lg text-sm disabled:opacity-50">
+                {downloadingPack ? <Loader2 className="w-4 h-4 animate-spin" /> : <FileText className="w-4 h-4" />} Parents' evening pack
+              </button>
+              <button onClick={() => setEditing(true)} className="flex items-center gap-1.5 px-3 py-2 bg-subtle hover:bg-border-default text-secondary rounded-lg text-sm">
+                <Edit3 className="w-4 h-4" /> Edit
+              </button>
+            </>
           )}
         </div>
       </div>
