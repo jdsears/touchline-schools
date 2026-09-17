@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
+import { WORKHORSE_MODEL, WORKHORSE_REQUEST_DEFAULTS, responseText } from '../config/aiModels.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { loadSchool, requireSchoolRole } from '../middleware/schoolAuth.js'
 import {
@@ -25,11 +26,12 @@ const TIER_MONTHLY_CAPS = {
   club_scale: 30.0,
 }
 
-// Rough cost estimation: Sonnet pricing ($3/M input, $15/M output)
-// Convert USD to GBP with approximate rate
+// Rough cost estimation at the workhorse model's list price
+// (claude-sonnet-5: $2/M input, $10/M output). Convert USD to GBP with an
+// approximate rate. Keep in step with WORKHORSE_MODEL in config/aiModels.js.
 const USD_TO_GBP = 0.79
-const INPUT_COST_PER_TOKEN = (3 / 1_000_000) * USD_TO_GBP
-const OUTPUT_COST_PER_TOKEN = (15 / 1_000_000) * USD_TO_GBP
+const INPUT_COST_PER_TOKEN = (2 / 1_000_000) * USD_TO_GBP
+const OUTPUT_COST_PER_TOKEN = (10 / 1_000_000) * USD_TO_GBP
 
 function estimateCostGBP(inputTokens, outputTokens) {
   return (inputTokens * INPUT_COST_PER_TOKEN) + (outputTokens * OUTPUT_COST_PER_TOKEN)
@@ -156,7 +158,7 @@ router.post(
       await trackAIUsage(
         schoolId,
         'match_report',
-        'claude-sonnet-4-6',
+        WORKHORSE_MODEL,
         aiResult.usage.input_tokens,
         aiResult.usage.output_tokens
       )
@@ -164,7 +166,7 @@ router.post(
       // Save report to database
       const insertResult = await pool.query(
         `INSERT INTO match_reports (school_id, team_id, match_id, report_text, status, model_used, generation_cost_tokens)
-         VALUES ($1, $2, $3, $4, 'draft', 'claude-sonnet-4-6', $5)
+         VALUES ($1, $2, $3, $4, 'draft', '${WORKHORSE_MODEL}', $5)
          RETURNING *`,
         [schoolId, match.team_id, matchId, aiResult.text, totalTokens]
       )
@@ -546,7 +548,7 @@ router.post(
       await trackAIUsage(
         schoolId,
         'season_summary',
-        'claude-sonnet-4-6',
+        WORKHORSE_MODEL,
         aiResult.usage.input_tokens,
         aiResult.usage.output_tokens
       )
@@ -554,7 +556,7 @@ router.post(
       // Store as an insight
       await pool.query(
         `INSERT INTO ai_insights (school_id, insight_type, title, content, data_snapshot, priority, model_used)
-         VALUES ($1, 'season_summary', 'Season Summary Report', $2, $3, 'normal', 'claude-sonnet-4-6')`,
+         VALUES ($1, 'season_summary', 'Season Summary Report', $2, $3, 'normal', '${WORKHORSE_MODEL}')`,
         [schoolId, JSON.stringify(aiResult.text), JSON.stringify({
           membership: membershipResult.rows[0],
           matches: matchResult.rows[0],
@@ -677,7 +679,7 @@ router.post(
       await trackAIUsage(
         schoolId,
         'grant_draft',
-        'claude-sonnet-4-6',
+        WORKHORSE_MODEL,
         aiResult.usage.input_tokens,
         aiResult.usage.output_tokens
       )
@@ -865,7 +867,7 @@ router.post(
       await trackAIUsage(
         schoolId,
         'compliance_analysis',
-        'claude-sonnet-4-6',
+        WORKHORSE_MODEL,
         aiResult.usage.input_tokens,
         aiResult.usage.output_tokens
       )
@@ -873,7 +875,7 @@ router.post(
       // Store as insight
       await pool.query(
         `INSERT INTO ai_insights (school_id, insight_type, title, content, data_snapshot, priority, model_used)
-         VALUES ($1, 'compliance_analysis', 'Compliance Gap Analysis', $2, $3, 'high', 'claude-sonnet-4-6')`,
+         VALUES ($1, 'compliance_analysis', 'Compliance Gap Analysis', $2, $3, 'high', '${WORKHORSE_MODEL}')`,
         [schoolId, JSON.stringify(aiResult.text), JSON.stringify({
           volunteer_count: volunteers.length,
           roles_filled: roles.length,
@@ -1023,7 +1025,7 @@ router.get(
       await trackAIUsage(
         schoolId,
         'coach_development',
-        'claude-sonnet-4-6',
+        WORKHORSE_MODEL,
         aiResult.usage.input_tokens,
         aiResult.usage.output_tokens
       )
@@ -1223,7 +1225,7 @@ router.post(
         await trackAIUsage(
           schoolId,
           'attendance_insights',
-          'claude-sonnet-4-6', // what generateAttendanceInsights actually runs on
+          WORKHORSE_MODEL,
           aiResult.usage.input_tokens || 0,
           aiResult.usage.output_tokens || 0
         )
