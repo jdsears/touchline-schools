@@ -4275,6 +4275,17 @@ export async function runMigrations() {
     await tryQuery(`UPDATE school_members SET status = 'active' WHERE status IS NULL`)
     console.log('Phase 30: school_members legacy columns (status, invited_at, permission flags)')
 
+    // --- Phase 31: IDP goals carry their evidence ---
+    // Goals suggested from observations keep the observation ids they rest
+    // on, plus the success criteria and rationale a teacher reviews before
+    // accepting them. origin distinguishes teacher-written, AI-suggested and
+    // pupil-set goals.
+    await tryQuery(`ALTER TABLE pupil_idp_goals ADD COLUMN IF NOT EXISTS success_criteria TEXT`)
+    await tryQuery(`ALTER TABLE pupil_idp_goals ADD COLUMN IF NOT EXISTS rationale TEXT`)
+    await tryQuery(`ALTER TABLE pupil_idp_goals ADD COLUMN IF NOT EXISTS source_observation_ids UUID[] NOT NULL DEFAULT '{}'`)
+    await tryQuery(`ALTER TABLE pupil_idp_goals ADD COLUMN IF NOT EXISTS origin TEXT NOT NULL DEFAULT 'teacher'`)
+    console.log('Phase 31: pupil_idp_goals evidence columns')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================

@@ -258,7 +258,12 @@ export default function HoDPupilProfile() {
 
       {activeTab === 'development' && (
         <Suspense fallback={<div className="flex justify-center py-12"><Loader2 className="w-6 h-6 animate-spin text-secondary" /></div>}>
-          <DevelopmentTab pupilId={id} />
+          <DevelopmentTab
+            pupilId={id}
+            pupilName={data?.pupil?.name || core?.pupil?.name}
+            canEdit={core?.viewer_role === 'admin' || MEDICAL_ROLES.includes(core?.viewer_role)}
+            observationCount={core?.stats?.observations ?? observations.length}
+          />
         </Suspense>
       )}
 

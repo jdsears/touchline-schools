@@ -2,12 +2,19 @@ import express from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { HOD_ROLES } from '../middleware/schoolAuth.js'
+import { suggestGoalsFromObservations } from '../services/idpService.js'
 
 const router = express.Router()
 router.use(authenticateToken)
 
 const SAFEGUARDING_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe', 'dsl', 'deputy_dsl']
 const MEDICAL_ROLES = [...HOD_ROLES, 'head_of_sport', 'teacher', 'coach']
+// Staff who may write to a pupil's development plan.
+const IDP_WRITE_ROLES = MEDICAL_ROLES
+
+const GOAL_STATUSES = ['in_progress', 'achieved', 'revised', 'abandoned']
+const GOAL_ORIGINS = ['teacher', 'ai_suggested', 'pupil']
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // Resolve the pupil's school (via team or teaching group) and the requester's
 // effective role in that school. Returns { pupil, schoolId, role, isAdmin }.
@@ -126,22 +133,247 @@ router.get('/:id', async (req, res) => {
   } catch (e) { console.error('pupilProfile/:id', e); res.status(500).json({ error: 'Failed to load profile' }) }
 })
 
+// ── IDP goals ───────────────────────────────────────────────────────
+// Goals live in pupil_idp_goals. Each one can cite the observations it
+// rests on (source_observation_ids); the responses inline those as
+// `evidence` so the Development tab can show the teacher why a goal exists.
+
+const GOAL_SELECT = `SELECT g.*, u.name AS created_by_name FROM pupil_idp_goals g
+  LEFT JOIN users u ON u.id = g.created_by_user_id`
+
+async function attachEvidence(goals) {
+  const ids = [...new Set(goals.flatMap(g => g.source_observation_ids || []))]
+  if (ids.length === 0) return goals.map(g => ({ ...g, evidence: [] }))
+  try {
+    const r = await pool.query(
+      `SELECT id, type, sport, context_type, created_at, LEFT(content, 240) AS content
+       FROM observations WHERE id = ANY($1::uuid[])`,
+      [ids]
+    )
+    const byId = new Map(r.rows.map(o => [o.id, o]))
+    return goals.map(g => ({ ...g, evidence: (g.source_observation_ids || []).map(id => byId.get(id)).filter(Boolean) }))
+  } catch (e) {
+    console.warn('pupilProfile idp evidence:', e.message)
+    return goals.map(g => ({ ...g, evidence: [] }))
+  }
+}
+
+async function loadGoal(pupilId, goalId) {
+  const r = await pool.query(`${GOAL_SELECT} WHERE g.id = $1 AND g.pupil_id = $2`, [goalId, pupilId])
+  return r.rows[0] || null
+}
+
+function logGoalAction(req, pupilId, schoolId, action, details) {
+  return pool.query(
+    `INSERT INTO audit_log (school_id, user_id, action, entity_type, entity_id, details)
+     VALUES ($1, $2, $3, 'pupil', $4, $5)`,
+    [schoolId, req.user.id, action, pupilId, JSON.stringify(details || {})]
+  ).catch(() => {})
+}
+
+function isoDateOrNull(value) {
+  if (!value) return null
+  const s = String(value).slice(0, 10)
+  return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : null
+}
+
+// Observation ids the client sent, kept only when they belong to this pupil.
+async function ownedObservationIds(pupilId, ids) {
+  const wanted = (Array.isArray(ids) ? ids : []).filter(id => UUID_RE.test(String(id)))
+  if (wanted.length === 0) return []
+  const r = await pool.query(`SELECT id FROM observations WHERE pupil_id = $1 AND id = ANY($2::uuid[])`, [pupilId, wanted])
+  return r.rows.map(o => o.id)
+}
+
 // GET /:id/idp-goals
 router.get('/:id/idp-goals', async (req, res) => {
   try {
     const access = await resolvePupilAccess(req, req.params.id)
     if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
     const r = await pool.query(
-      `SELECT g.*, u.name AS created_by_name FROM pupil_idp_goals g
-       LEFT JOIN users u ON u.id = g.created_by_user_id
-       WHERE g.pupil_id = $1 ORDER BY g.status, g.created_at DESC`,
+      `${GOAL_SELECT} WHERE g.pupil_id = $1 ORDER BY g.status, g.created_at DESC`,
       [req.params.id]
     )
-    res.json(r.rows)
+    res.json(await attachEvidence(r.rows))
   } catch (e) {
     if (e.code === '42P01') return res.json([]) // table not migrated yet
     console.error('pupilProfile idp-goals:', e.message)
     res.status(500).json({ error: 'Failed to load IDP goals' })
+  }
+})
+
+// POST /:id/idp-goals/suggest — Claude proposes goals from confirmed observations
+router.post('/:id/idp-goals/suggest', async (req, res, next) => {
+  try {
+    const access = await resolvePupilAccess(req, req.params.id)
+    if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
+    if (!gate(access, IDP_WRITE_ROLES)) return res.status(403).json({ error: 'Access denied' })
+    const pupilId = req.params.id
+
+    const [obs, goals, sports, assessments] = await Promise.all([
+      pool.query(
+        `SELECT id, type, sport, context_type, content, created_at
+         FROM observations
+         WHERE pupil_id = $1 AND COALESCE(review_state, 'confirmed') IN ('confirmed', 'edited')
+         ORDER BY created_at DESC LIMIT 30`,
+        [pupilId]
+      ),
+      pool.query(
+        `SELECT goal_description, sport_key, status, target_date FROM pupil_idp_goals
+         WHERE pupil_id = $1 ORDER BY created_at DESC LIMIT 12`,
+        [pupilId]
+      ).catch(() => ({ rows: [] })),
+      pool.query(
+        `SELECT DISTINCT LOWER(sport) AS sport FROM (
+           SELECT t.sport FROM teams t JOIN pupils p ON p.team_id = t.id WHERE p.id = $1
+           UNION SELECT t.sport FROM team_memberships tm JOIN teams t ON t.id = tm.team_id WHERE tm.pupil_id = $1
+           UNION SELECT su.sport FROM teaching_group_pupils tgp
+             JOIN sport_units su ON su.teaching_group_id = tgp.teaching_group_id
+             WHERE tgp.pupil_id = $1 AND su.end_date >= CURRENT_DATE - 120
+         ) s WHERE sport IS NOT NULL`,
+        [pupilId]
+      ).catch(() => ({ rows: [] })),
+      pool.query(
+        `SELECT pa.grade, pa.assessment_type, su.unit_name, su.sport
+         FROM pupil_assessments pa LEFT JOIN sport_units su ON su.id = pa.unit_id
+         WHERE pa.pupil_id = $1 AND pa.grade IS NOT NULL
+         ORDER BY pa.assessed_at DESC LIMIT 6`,
+        [pupilId]
+      ).catch(() => ({ rows: [] })),
+    ])
+
+    if (obs.rows.length === 0) {
+      return res.status(422).json({ error: 'No confirmed observations to work from yet. Log a few observations first.' })
+    }
+
+    const suggestions = await suggestGoalsFromObservations({
+      pupil: access.pupil,
+      sports: sports.rows.map(r => r.sport),
+      observations: obs.rows,
+      existingGoals: goals.rows,
+      assessments: assessments.rows,
+    })
+
+    await logGoalAction(req, pupilId, access.schoolId, 'idp_goals_suggested', { count: suggestions.length, observations: obs.rows.length })
+    res.json({ suggestions, observation_count: obs.rows.length })
+  } catch (e) {
+    if (e.code === 'AI_NOT_CONFIGURED') return next(e)
+    console.error('pupilProfile idp suggest:', e)
+    res.status(500).json({ error: e.message?.includes('JSON') ? 'The suggestion could not be read. Please try again.' : 'Failed to suggest goals' })
+  }
+})
+
+// POST /:id/idp-goals — create a goal (written by the teacher or accepted from a suggestion)
+router.post('/:id/idp-goals', async (req, res) => {
+  try {
+    const access = await resolvePupilAccess(req, req.params.id)
+    if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
+    if (!gate(access, IDP_WRITE_ROLES)) return res.status(403).json({ error: 'Access denied' })
+    const pupilId = req.params.id
+    const body = req.body || {}
+
+    const description = String(body.goal_description || '').replace(/\s+/g, ' ').trim()
+    if (!description) return res.status(400).json({ error: 'A goal description is required' })
+    if (description.length > 300) return res.status(400).json({ error: 'Keep the goal under 300 characters' })
+
+    const origin = GOAL_ORIGINS.includes(body.origin) ? body.origin : 'teacher'
+    let targetDate = isoDateOrNull(body.target_date)
+    if (!targetDate && body.target_weeks) {
+      const weeks = Math.min(52, Math.max(1, parseInt(body.target_weeks, 10) || 8))
+      const d = new Date(); d.setDate(d.getDate() + weeks * 7)
+      targetDate = d.toISOString().slice(0, 10)
+    }
+    const sportKey = body.sport_key ? String(body.sport_key).toLowerCase().trim().slice(0, 40) : null
+    const evidenceIds = await ownedObservationIds(pupilId, body.source_observation_ids)
+
+    const r = await pool.query(
+      `INSERT INTO pupil_idp_goals
+         (pupil_id, sport_key, goal_description, success_criteria, rationale, target_date,
+          status, origin, source_observation_ids, teacher_assessment_notes, created_by_user_id)
+       VALUES ($1, $2, $3, $4, $5, $6, 'in_progress', $7, $8::uuid[], $9, $10)
+       RETURNING *`,
+      [
+        pupilId, sportKey, description,
+        body.success_criteria ? String(body.success_criteria).trim().slice(0, 500) : null,
+        body.rationale ? String(body.rationale).trim().slice(0, 800) : null,
+        targetDate, origin, evidenceIds,
+        body.teacher_assessment_notes ? String(body.teacher_assessment_notes).trim().slice(0, 1000) : null,
+        req.user.id,
+      ]
+    )
+    await logGoalAction(req, pupilId, access.schoolId, 'idp_goal_created', { goal_id: r.rows[0].id, origin, evidence: evidenceIds.length })
+    const [goal] = await attachEvidence([{ ...r.rows[0], created_by_name: req.user.name || null }])
+    res.status(201).json(goal)
+  } catch (e) {
+    console.error('pupilProfile idp create:', e.message)
+    res.status(500).json({ error: 'Failed to save the goal' })
+  }
+})
+
+// PATCH /:id/idp-goals/:goalId — status, notes, wording, target
+router.patch('/:id/idp-goals/:goalId', async (req, res) => {
+  try {
+    const access = await resolvePupilAccess(req, req.params.id)
+    if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
+    if (!gate(access, IDP_WRITE_ROLES)) return res.status(403).json({ error: 'Access denied' })
+    const { id: pupilId, goalId } = req.params
+    if (!UUID_RE.test(goalId)) return res.status(400).json({ error: 'Invalid goal id' })
+    const existing = await loadGoal(pupilId, goalId)
+    if (!existing) return res.status(404).json({ error: 'Goal not found' })
+
+    const body = req.body || {}
+    const updates = []
+    const values = []
+    const set = (column, value) => { values.push(value); updates.push(`${column} = $${values.length}`) }
+
+    if (body.status !== undefined) {
+      if (!GOAL_STATUSES.includes(body.status)) return res.status(400).json({ error: `Status must be one of ${GOAL_STATUSES.join(', ')}` })
+      set('status', body.status)
+    }
+    if (body.goal_description !== undefined) {
+      const description = String(body.goal_description).replace(/\s+/g, ' ').trim()
+      if (!description || description.length > 300) return res.status(400).json({ error: 'Goal must be 1-300 characters' })
+      set('goal_description', description)
+    }
+    if (body.success_criteria !== undefined) set('success_criteria', body.success_criteria ? String(body.success_criteria).trim().slice(0, 500) : null)
+    if (body.teacher_assessment_notes !== undefined) set('teacher_assessment_notes', body.teacher_assessment_notes ? String(body.teacher_assessment_notes).trim().slice(0, 1000) : null)
+    if (body.sport_key !== undefined) set('sport_key', body.sport_key ? String(body.sport_key).toLowerCase().trim().slice(0, 40) : null)
+    if (body.target_date !== undefined) set('target_date', isoDateOrNull(body.target_date))
+    if (body.source_observation_ids !== undefined) {
+      values.push(await ownedObservationIds(pupilId, body.source_observation_ids))
+      updates.push(`source_observation_ids = $${values.length}::uuid[]`)
+    }
+    if (updates.length === 0) return res.status(400).json({ error: 'Nothing to update' })
+
+    values.push(goalId)
+    await pool.query(`UPDATE pupil_idp_goals SET ${updates.join(', ')}, updated_at = NOW() WHERE id = $${values.length}`, values)
+    await logGoalAction(req, pupilId, access.schoolId, 'idp_goal_updated', { goal_id: goalId, fields: Object.keys(body) })
+    const [goal] = await attachEvidence([await loadGoal(pupilId, goalId)])
+    res.json(goal)
+  } catch (e) {
+    console.error('pupilProfile idp update:', e.message)
+    res.status(500).json({ error: 'Failed to update the goal' })
+  }
+})
+
+// DELETE /:id/idp-goals/:goalId — remove a goal added by mistake
+router.delete('/:id/idp-goals/:goalId', async (req, res) => {
+  try {
+    const access = await resolvePupilAccess(req, req.params.id)
+    if (access.error) return res.status(access.error === 'not_found' ? 404 : 403).json({ error: access.error })
+    if (!gate(access, IDP_WRITE_ROLES)) return res.status(403).json({ error: 'Access denied' })
+    const { id: pupilId, goalId } = req.params
+    if (!UUID_RE.test(goalId)) return res.status(400).json({ error: 'Invalid goal id' })
+    const existing = await loadGoal(pupilId, goalId)
+    if (!existing) return res.status(404).json({ error: 'Goal not found' })
+    const isOwner = existing.created_by_user_id === req.user.id
+    if (!isOwner && !gate(access, HOD_ROLES)) return res.status(403).json({ error: 'Only the goal author or a Head of Department can remove it' })
+    await pool.query(`DELETE FROM pupil_idp_goals WHERE id = $1 AND pupil_id = $2`, [goalId, pupilId])
+    await logGoalAction(req, pupilId, access.schoolId, 'idp_goal_deleted', { goal_id: goalId })
+    res.status(204).end()
+  } catch (e) {
+    console.error('pupilProfile idp delete:', e.message)
+    res.status(500).json({ error: 'Failed to remove the goal' })
   }
 })
 
