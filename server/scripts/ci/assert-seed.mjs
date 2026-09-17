@@ -54,6 +54,25 @@ await expect('pupil_safeguarding_notes', `SELECT COUNT(*) n FROM pupil_safeguard
 await expect('venues', `SELECT COUNT(*) n FROM venues`, 1)
 await expect('pupil_consents', `SELECT COUNT(*) n FROM pupil_consents`, 1)
 
+// Demo richness: voice notes, Coach chat, notifications for the login persona
+await expect('voice recordings (audio_sources)', `SELECT COUNT(*) n FROM audio_sources`, 2)
+await expect('voice observations pending review', `SELECT COUNT(*) n FROM observations WHERE source = 'voice' AND review_state = 'pending_review'`, 1)
+await expect('department Coach messages', `SELECT COUNT(*) n FROM messages WHERE team_id IS NULL`, 2)
+await expect('notifications for demo HoD', `
+  SELECT COUNT(*) n FROM notifications no
+  JOIN users u ON u.id = no.user_id
+  WHERE LOWER(u.email) = 'j.okonkwo.demo@ashworthpark.norfolk.sch.uk'`, 3)
+// Regression: the bell must not open on an alarming pile of action items
+await (async () => {
+  try {
+    const r = await pool.query(`SELECT COUNT(*) n FROM pupil_consents WHERE status = 'granted' AND expires_at < NOW() + INTERVAL '30 days'`)
+    const n = parseInt(r.rows[0].n, 10)
+    results.push({ label: 'consents expiring within 30 days', value: n, min: '<= 3', ok: n <= 3 })
+  } catch (e) {
+    results.push({ label: 'consents expiring within 30 days', value: `ERROR: ${e.message}`, min: '<= 3', ok: false })
+  }
+})()
+
 // Regression: orphaned teaching groups (the duplicate "11 GCSE PE" bug)
 await expectExactly('orphan teaching_groups', `SELECT COUNT(*) n FROM teaching_groups tg WHERE tg.school_id NOT IN (SELECT id FROM schools)`, 0)
 // Regression: protected persona accumulating duplicate class enrolments

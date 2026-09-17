@@ -67,7 +67,8 @@ if (token) {
   await get('/teacher-dashboard/development', { validate: nonEmptyArray })
   await get('/teams/mine/fixtures', { validate: isArray })
   await get('/teams/mine/sessions', { validate: isArray }) // regression #57
-  await get('/chat/department/history', { validate: isArray }) // regression #56
+  await get('/chat/department/history', { validate: nonEmptyArray }) // regression #56 + seeded Coach exchange
+  await get('/voice-observations', { validate: nonEmptyArray }) // seeded voice recordings for the mic badge
   await get('/pupils/me/schedule', { validate: isArray }) // pupil calendar endpoint responds for staff too
 
   const myTeams = await get('/teams/mine', { validate: nonEmptyArray })
