@@ -181,7 +181,11 @@ if (token) {
   const mySchools = await get('/schools', { validate: nonEmptyArray })
   const demoSchoolId = mySchools?.find((s) => s.slug === 'ashworth-park-demo')?.id
   if (demoSchoolId) {
-    await get(`/school-safeguarding/${demoSchoolId}/safeguarding/incidents`, { validate: isArray })
+    // Rows must carry the date/type the log renders (it showed "Invalid Date"
+    // and a blank type when only incident_date/category came back).
+    await get(`/school-safeguarding/${demoSchoolId}/safeguarding/incidents`, {
+      validate: (b) => (Array.isArray(b) && b.every((i) => i.date && i.type) ? null : `expected date+type on every incident, got ${JSON.stringify(b?.[0]).slice(0, 120)}`),
+    })
   } else {
     record('demo school in /schools', false, `expected ashworth-park-demo in ${JSON.stringify(mySchools).slice(0, 120)}`)
   }

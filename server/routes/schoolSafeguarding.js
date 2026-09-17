@@ -508,8 +508,13 @@ router.get('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, r
     const { schoolId } = req.params
     const { status, severity } = req.query
 
+    // `date` and `type` are what the incident log renders; the table keeps
+    // the older incident_type alongside category, so serve one canonical type.
     let query = `
-      SELECT si.id, si.incident_date, si.severity, si.status, si.category,
+      SELECT si.id, si.incident_date, si.incident_date AS date,
+             COALESCE(si.incident_type, si.category) AS type,
+             si.severity, si.status, si.category, si.incident_type,
+             si.description, si.location, si.people_involved, si.involved_parties, si.actions_taken,
              si.reported_by, si.created_at, si.updated_at,
              u.name as reported_by_name
       FROM safeguarding_incidents si
@@ -545,13 +550,21 @@ router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, 
   try {
     const { schoolId } = req.params
     const {
-      incident_date, description, severity, category,
-      involved_parties, location, immediate_action_taken,
+      incident_date, date, description, severity, category, type,
+      involved_parties, people_involved, location, immediate_action_taken,
     } = req.body
 
     if (!description) {
       return res.status(400).json({ error: 'Description is required' })
     }
+
+    // The report form posts date/type/people_involved (a free-text list);
+    // older clients post incident_date/category/involved_parties.
+    const whenDate = incident_date || date || new Date()
+    const incidentType = type || category || 'general'
+    const parties = involved_parties
+      || (Array.isArray(people_involved) ? people_involved
+        : people_involved ? String(people_involved).split(',').map((s) => s.trim()).filter(Boolean) : null)
 
     const validSeverities = ['low', 'medium', 'high', 'critical']
     if (severity && !validSeverities.includes(severity)) {
@@ -568,15 +581,15 @@ router.post('/:schoolId/safeguarding/incidents', authenticateToken, loadSchool, 
 
     const result = await pool.query(
       `INSERT INTO safeguarding_incidents (
-        school_id, reported_by, incident_date, description, severity, category,
-        involved_parties, location, immediate_action_taken,
+        school_id, reported_by, incident_date, description, severity, category, incident_type,
+        involved_parties, people_involved, location, immediate_action_taken,
         status, access_log
-      ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,'open',$10)
-      RETURNING *`,
+      ) VALUES ($1,$2,$3,$4,$5,$6,$6,$7,$7,$8,$9,'open',$10)
+      RETURNING *, incident_date AS date, COALESCE(incident_type, category) AS type`,
       [
-        schoolId, req.user.id, incident_date || new Date(),
-        description, severity || 'medium', category || 'general',
-        involved_parties ? JSON.stringify(involved_parties) : null,
+        schoolId, req.user.id, whenDate,
+        description, severity || 'medium', incidentType,
+        parties ? JSON.stringify(parties) : null,
         location || null, immediate_action_taken || null,
         JSON.stringify(initialAccessLog),
       ]
@@ -632,7 +645,8 @@ router.get('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchoo
     const { schoolId, id } = req.params
 
     const result = await pool.query(
-      `SELECT si.*, u.name as reported_by_name
+      `SELECT si.*, si.incident_date AS date, COALESCE(si.incident_type, si.category) AS type,
+              u.name as reported_by_name
        FROM safeguarding_incidents si
        LEFT JOIN users u ON si.reported_by = u.id
        WHERE si.id = $1 AND si.school_id = $2`,
@@ -676,7 +690,7 @@ router.put('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchoo
     const {
       description, severity, status, category,
       involved_parties, location, immediate_action_taken,
-      resolution_notes, resolved_by,
+      resolution_notes, resolved_by, actions_taken,
     } = req.body
 
     // Verify incident exists
@@ -708,15 +722,17 @@ router.put('/:schoolId/safeguarding/incidents/:id', authenticateToken, loadSchoo
         resolution_notes = COALESCE($8, resolution_notes),
         resolved_by = COALESCE($9, resolved_by),
         access_log = COALESCE(access_log, '[]'::jsonb) || $10::jsonb,
+        actions_taken = COALESCE($13::jsonb, actions_taken),
         updated_at = NOW()
       WHERE id = $11 AND school_id = $12
-      RETURNING *`,
+      RETURNING *, incident_date AS date, COALESCE(incident_type, category) AS type`,
       [
         description, severity, status, category,
         involved_parties ? JSON.stringify(involved_parties) : null,
         location, immediate_action_taken,
         resolution_notes, resolved_by,
         JSON.stringify(editEntry), id, schoolId,
+        Array.isArray(actions_taken) ? JSON.stringify(actions_taken) : null,
       ]
     )
 

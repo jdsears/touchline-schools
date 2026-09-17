@@ -183,8 +183,8 @@ export default function HoDOverview() {
                     <div className="h-full bg-brand-primary rounded-full transition-all" style={{ width: `${pct}%` }} />
                   </div>
                   {rw.closes_at && (
-                    <div className="text-[11px] text-tertiary mt-1 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />Closes {formatDate(rw.closes_at)}
+                    <div className={`text-[11px] mt-1 flex items-center gap-1 ${new Date(rw.closes_at) < new Date() && completed < rw.total ? 'text-status-warning' : 'text-tertiary'}`}>
+                      <Clock className="w-3 h-3" />{new Date(rw.closes_at) < new Date() ? 'Was due' : 'Closes'} {formatDate(rw.closes_at)}
                     </div>
                   )}
                 </Link>
