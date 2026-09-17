@@ -1269,7 +1269,7 @@ export async function runMigrations() {
         recommendations JSONB,
         player_feedback JSONB,
         frames_analysed INTEGER,
-        model_used TEXT DEFAULT 'claude-sonnet-4-6',
+        model_used TEXT DEFAULT 'claude-sonnet-5',
         created_at TIMESTAMPTZ DEFAULT NOW()
       )
     `)
@@ -2034,7 +2034,7 @@ export async function runMigrations() {
       status TEXT DEFAULT 'draft',
       approved_by UUID REFERENCES users(id),
       sent_at TIMESTAMPTZ,
-      model_used TEXT DEFAULT 'claude-sonnet-4-6',
+      model_used TEXT DEFAULT 'claude-sonnet-5',
       generation_cost_tokens INTEGER,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
@@ -4235,6 +4235,14 @@ export async function runMigrations() {
       PRIMARY KEY (match_id, user_id)
     )`)
     console.log('Phase 27: email lifecycle logs')
+
+    // --- Phase 28: workhorse model default for new AI-generated rows ---
+    // CREATE TABLE IF NOT EXISTS never revisits an existing table's column
+    // defaults, so migrated databases would keep stamping new rows with the
+    // previous-generation model name. Historical rows are left untouched.
+    await tryQuery(`ALTER TABLE video_ai_analysis ALTER COLUMN model_used SET DEFAULT 'claude-sonnet-5'`)
+    await tryQuery(`ALTER TABLE match_reports ALTER COLUMN model_used SET DEFAULT 'claude-sonnet-5'`)
+    console.log('Phase 28: model_used defaults -> claude-sonnet-5')
 
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema

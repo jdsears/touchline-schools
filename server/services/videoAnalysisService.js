@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import pool from '../config/database.js'
+import { WORKHORSE_MODEL, WORKHORSE_REQUEST_DEFAULTS, responseText } from '../config/aiModels.js'
 import { getTaxonomy } from '../constants/sportTaxonomy.js'
 import { ASSISTANT_NAME } from './assistantIdentity.js'
 
@@ -285,14 +286,14 @@ Return JSON:
   })
 
   const response = await callClaudeWithRetry({
-    model: 'claude-sonnet-4-6',
+    model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
     max_tokens: 4000,
     system: cacheableSystem(`You are ${ASSISTANT_NAME}, the AI performance analysis assistant for ${term.context}. Analyse ${term.matchWord} footage segments precisely. Be specific about what you see. When shirt numbers are not readable, identify pupils by their position on the pitch and map to the squad list. Always respond with valid JSON.`),
     messages: [{ role: 'user', content }],
   })
 
   try {
-    const text = response.content[0].text
+    const text = responseText(response)
     // Strip markdown code fences - handle 3+ backticks, same-line or multi-line
     let cleaned = text.replace(/^`{3,}(?:json)?\s*/i, '').replace(/\s*`{3,}\s*$/i, '').trim()
     try {
@@ -311,7 +312,7 @@ Return JSON:
     }
     return { segmentSummary: text, observations: [], playerNotes: [] }
   } catch {
-    return { segmentSummary: response.content[0].text, observations: [], playerNotes: [] }
+    return { segmentSummary: responseText(response), observations: [], playerNotes: [] }
   }
 }
 
@@ -519,9 +520,8 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
 })() : ''}`
 
   const params = {
-    model: 'claude-sonnet-4-6',
+    model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
     max_tokens: 16000,
-    temperature: 0.3,
     system: cacheableSystem(`You are ${ASSISTANT_NAME}, the AI performance analysis assistant for ${term.context}. You synthesise detailed ${term.matchWord} segment analyses into comprehensive, actionable coaching reports. Be constructive and practical. Always respond with valid JSON.`),
     messages: [{ role: 'user', content: prompt }],
   }
@@ -538,7 +538,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
   }
 
   try {
-    let text = response.content[0].text
+    let text = responseText(response)
     // Strip markdown code fences - handle 3+ backticks, same-line or multi-line
     text = text.replace(/^`{3,}(?:json)?\s*/i, '').replace(/\s*`{3,}\s*$/i, '').trim()
 
@@ -626,7 +626,7 @@ The footage is from a fixed sideline camera. Do NOT confidently state "left chan
     return result
   } catch (outerErr) {
     console.error('[VideoAnalysis] Synthesis parse completely failed:', outerErr.message)
-    return { summary: response.content[0].text }
+    return { summary: responseText(response) }
   }
 }
 

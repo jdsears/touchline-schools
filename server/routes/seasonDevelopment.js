@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import pool from '../config/database.js'
+import { WORKHORSE_MODEL, WORKHORSE_REQUEST_DEFAULTS, responseText } from '../config/aiModels.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { checkAndIncrementUsage, getEntitlements } from '../services/billingService.js'
 
@@ -429,7 +430,7 @@ router.post('/:teamId/season-review', authenticateToken, async (req, res, next) 
     const client = new Anthropic()
 
     const message = await client.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       messages: [{
         role: 'user',
@@ -464,7 +465,7 @@ Keep it practical and encouraging - this is school sport. Use pupil first names 
       }],
     })
 
-    const reviewText = message.content[0]?.text || 'Unable to generate review.'
+    const reviewText = responseText(message) || 'Unable to generate review.'
 
     res.json({
       review: reviewText,

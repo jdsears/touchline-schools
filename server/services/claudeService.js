@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import dotenv from 'dotenv'
+import { WORKHORSE_MODEL, WORKHORSE_REQUEST_DEFAULTS, responseText } from '../config/aiModels.js'
 import { getSportFramework, getSportAgeGuidance, getSportGoverningBody, SUPPORTED_SPORTS } from './sportKnowledge.js'
 import { ASSISTANT_NAME } from './assistantIdentity.js'
 
@@ -1452,7 +1453,7 @@ ${knowledgeBaseContext.context}`
     if (options.stream) {
       // Caller consumes the SDK MessageStream (stream.on('text') / finalMessage())
       return anthropic.messages.stream({
-        model: 'claude-sonnet-4-6',
+        model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
         max_tokens: 2048,
         system: cacheableSystem(systemPrompt),
         messages: messages,
@@ -1460,14 +1461,14 @@ ${knowledgeBaseContext.context}`
     }
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2048,
       system: cacheableSystem(systemPrompt),
       messages: messages,
     })
 
     return {
-      message: response.content[0].text,
+      message: responseText(response),
       usage: response.usage,
     }
   } catch (error) {
@@ -1618,13 +1619,13 @@ Diagram rules:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 8000,
       system: cacheableSystem(systemPrompts.training + '\n\n' + sportSystemBlock(sport)),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    let text = response.content[0]?.text
+    let text = responseText(response)
     if (!text) {
       throw new Error('Empty response from AI service')
     }
@@ -1633,12 +1634,12 @@ Diagram rules:
     if (response.stop_reason === 'max_tokens') {
       console.warn('Training generation hit max_tokens, retrying with higher limit')
       const retryResponse = await anthropic.messages.create({
-        model: 'claude-sonnet-4-6',
+        model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
         max_tokens: 16000,
         system: cacheableSystem(systemPrompts.training + '\n\n' + sportSystemBlock(sport)),
         messages: [{ role: 'user', content: prompt }],
       })
-      text = retryResponse.content[0]?.text
+      text = responseText(retryResponse)
       if (!text) {
         throw new Error('Empty response from AI service on retry')
       }
@@ -1974,7 +1975,7 @@ One short, inspiring sentence for the team.`
 
   try {
     const stream = anthropic.messages.stream({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 1800,
       system: cacheableSystem(systemPrompts.matchDay + '\n\n' + sportSystemBlock(team?.sport)),
       messages: [{ role: 'user', content: prompt }],
@@ -2080,7 +2081,7 @@ Start with a one-line header: "**Individual Development Plan: ${pupil.name}**" f
 
   try {
     const stream = anthropic.messages.stream({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       system: cacheableSystem(systemPrompts.playerDev + '\n\n' + sportSystemBlock(pupil?.sport || pupil?.team_sport || null)),
       messages: [{ role: 'user', content: prompt }],
@@ -2138,13 +2139,13 @@ Generate analysis covering:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       system: cacheableSystem(systemPrompts.videoAnalysis + '\n\n' + sportSystemBlock(team?.sport)),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    return response.content[0].text
+    return responseText(response)
   } catch (error) {
     if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Video analysis generation error:', error)
@@ -2205,7 +2206,7 @@ If no matches are found, return an empty array: []`
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 4096,
       messages: [
         {
@@ -2228,7 +2229,7 @@ If no matches are found, return an empty array: []`
       ],
     })
 
-    const responseText = response.content[0].text
+    const responseText = responseText(response)
 
     // Parse the JSON from the response
     const jsonMatch = responseText.match(/\[[\s\S]*\]/)
@@ -2292,7 +2293,7 @@ If no table is found, return an empty array: []`
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 4096,
       messages: [
         {
@@ -2315,7 +2316,7 @@ If no table is found, return an empty array: []`
       ],
     })
 
-    const responseText = response.content[0].text
+    const responseText = responseText(response)
 
     // Parse the JSON from the response
     const jsonMatch = responseText.match(/\[[\s\S]*\]/)
@@ -2409,7 +2410,7 @@ If no table is found, return an empty array: []`
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 4096,
       messages: [
         {
@@ -2432,7 +2433,7 @@ If no table is found, return an empty array: []`
       ],
     })
 
-    const responseText = response.content[0].text
+    const responseText = responseText(response)
 
     // Parse the JSON from the response
     const jsonMatch = responseText.match(/\[[\s\S]*\]/)
@@ -2656,14 +2657,14 @@ ${playerContext.idp.generated_content || playerContext.idp.notes || 'Development
     ]
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 1500,
       system: cacheableSystem(systemPrompt),
       messages: messages,
     })
 
     return {
-      message: response.content[0].text,
+      message: responseText(response),
       usage: response.usage,
     }
   } catch (error) {
@@ -2715,7 +2716,7 @@ If no pupils are found, return an empty array: []`
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 8192,
       messages: [
         {
@@ -2738,7 +2739,7 @@ If no pupils are found, return an empty array: []`
       ],
     })
 
-    const responseText = response.content[0].text
+    const responseText = responseText(response)
 
     // Parse the JSON from the response
     const jsonMatch = responseText.match(/\[[\s\S]*\]/)
@@ -2871,13 +2872,13 @@ FORMAT YOUR RESPONSE IN CLEAN MARKDOWN:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 1500,
       system: cacheableSystem(`You are writing match reports for a school sport team${team?.sport ? ` (${team.sport})` : ''}. Use British English throughout. Your tone should be warm, encouraging, and celebratory of effort and development. Focus on positives while gently noting areas for growth. Remember this is school sport - fun and development are the priorities. Celebrate effort, be inclusive, keep it positive. For younger age groups, focus almost entirely on fun, effort, and teamwork - do not emphasise scores or results. For primary-age teams, a match report should read like a celebration of children playing and having fun. IMPORTANT: Always use the exact team name provided - never invent nicknames or alternative names for the team.${team.age_group ? `\nThis is an ${team.age_group} team.${getAgeGroupGuidance(team.age_group) ? ' ' + getAgeGroupGuidance(team.age_group).split('\n').slice(0, 5).join(' ') : ''}` : ''}`),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    return response.content[0].text
+    return responseText(response)
   } catch (error) {
     if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Match report generation error:', error)
@@ -2916,13 +2917,13 @@ FORMAT YOUR RESPONSE IN CLEAN MARKDOWN:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 500,
       system: cacheableSystem(`You are a school sport coach writing brief training summaries for parents and pupils. Use British English throughout. Be positive, encouraging, and focus on development and fun.`),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    return response.content[0].text
+    return responseText(response)
   } catch (error) {
     if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Training summary generation error:', error)
@@ -2977,13 +2978,13 @@ FORMAT YOUR RESPONSE:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 300,
       system: cacheableSystem(`You are ${ASSISTANT_NAME}, an encouraging school sport coach giving a pre-match team talk${team?.sport ? ` for ${team.sport}` : ''}. Use British English throughout. Be positive, energising, and focus on effort and enjoyment over results. Remember these are young pupils - no pressure, just fun and doing their best. Celebrate effort, be inclusive, make sport fun.${isYoungPlayer ? ' This pupil is very young (age ' + playerAge + '). A parent will likely read this to them. Use very simple, exciting words. Focus ONLY on fun, trying hard, and playing with friends. No tactics, no pressure.' : ''}`),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    return response.content[0].text
+    return responseText(response)
   } catch (error) {
     if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Pep talk generation error:', error)
@@ -3006,14 +3007,14 @@ export async function sendPublicChatMessage(message, conversationHistory = []) {
     ]
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 1024,
       system: cacheableSystem(systemPrompts.landingAssistant),
       messages: messages,
     })
 
     return {
-      message: response.content[0].text,
+      message: responseText(response),
       usage: response.usage,
     }
   } catch (error) {
@@ -3050,14 +3051,14 @@ export async function sendHelpChatMessage(message, conversationHistory = [], use
     ]
 
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 1024,
       system: cacheableSystem(systemPrompt),
       messages: messages,
     })
 
     return {
-      message: response.content[0].text,
+      message: responseText(response),
       usage: response.usage,
     }
   } catch (error) {
@@ -3178,13 +3179,13 @@ One paragraph summarising the pupil's attribute profile and development outlook.
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       system: cacheableSystem(systemPrompts.playerDev + '\n\n' + sportSystemBlock(pupil?.sport || pupil?.team_sport || null)),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    return response.content[0].text
+    return responseText(response)
   } catch (error) {
     if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Attribute analysis error:', error)
@@ -3282,12 +3283,12 @@ Rules:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const text = response.content[0].text.trim()
+    const text = responseText(response).trim()
 
     // Strip markdown code fences if present
     const cleaned = text.replace(/^`{3,}(?:json)?\s*/i, '').replace(/\s*`{3,}\s*$/i, '').trim()
@@ -3355,14 +3356,14 @@ Guidelines:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 600,
       system: cacheableSystem('You are writing match reports for a school sports team in England. Your tone is warm, encouraging, and celebratory of effort and development. Use British English throughout. This is school sport - fun, development, and inclusion are the priorities.'),
       messages: [{ role: 'user', content: prompt }],
     })
 
     return {
-      text: response.content[0].text,
+      text: responseText(response),
       usage: {
         input_tokens: response.usage.input_tokens,
         output_tokens: response.usage.output_tokens,
@@ -3418,13 +3419,13 @@ Return your analysis as a JSON object with this structure:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 1500,
       system: cacheableSystem('You are an analytics assistant for a grassroots youth football school in England. Provide data-driven insights that help volunteer coaches manage their teams better. Be sensitive to the fact that attendance issues may have personal or family reasons. Use British English throughout.'),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const text = response.content[0].text
+    const text = responseText(response)
     // Try to parse JSON from response
     let insights
     const jsonMatch = text.match(/\{[\s\S]*\}/)
@@ -3503,13 +3504,13 @@ Return a JSON object:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 3000,
       system: cacheableSystem('You are a report writer for a grassroots football school in England. You produce professional, warm, and comprehensive reports suitable for school AGMs and committee meetings. Use British English throughout. Celebrate community and development over results.'),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const text = response.content[0].text
+    const text = responseText(response)
     let sections
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
@@ -3578,14 +3579,14 @@ Guidelines:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       system: cacheableSystem('You are a professional grant writer specialising in UK grassroots sports funding applications. You write compelling, well-structured applications that align with Football Association priorities and UK sport funding criteria. Use British English throughout.'),
       messages: [{ role: 'user', content: prompt }],
     })
 
     return {
-      text: response.content[0].text,
+      text: responseText(response),
       usage: {
         input_tokens: response.usage.input_tokens,
         output_tokens: response.usage.output_tokens,
@@ -3645,13 +3646,13 @@ Return a JSON object:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       system: cacheableSystem('You are a compliance advisor for grassroots football schools in England. You are knowledgeable about FA safeguarding requirements, DBS checks, first aid requirements, and Charter Standard criteria. Use British English throughout. Be supportive of volunteer-run schools while being clear about mandatory requirements.'),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const text = response.content[0].text
+    const text = responseText(response)
     let analysis
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
@@ -3723,13 +3724,13 @@ Return a JSON object:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 1500,
       system: cacheableSystem('You are a coach development advisor for grassroots football in England. You are knowledgeable about the FA coaching pathway, CPD opportunities, and best practices in youth football coaching. Use British English throughout. Be encouraging and supportive of volunteer coaches.'),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const text = response.content[0].text
+    const text = responseText(response)
     let suggestions
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
@@ -3814,13 +3815,13 @@ Rules:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 4000,
       system: cacheableSystem(`You are an experienced UK PE teacher and lesson planning specialist. You create detailed, practical lesson plans that follow the UK PE National Curriculum and Ofsted-ready best practices. Always use British English. Your lesson plans are realistic for a state secondary school setting with typical equipment and facilities.`),
       messages: [{ role: 'user', content: prompt }],
     })
 
-    let text = response.content[0]?.text
+    let text = responseText(response)
     if (!text) throw new Error('Empty response from AI service')
 
     const jsonMatch = text.match(/\{[\s\S]*\}/)
@@ -3924,12 +3925,12 @@ Rules:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 800,
       system: cacheableSystem('You write match reports for UK school sport websites. Tone: positive, balanced, age-appropriate. British English.'),
       messages: [{ role: 'user', content: prompt }],
     })
-    return response.content[0]?.text?.trim() || ''
+    return responseText(response)?.trim() || ''
   } catch (error) {
     if (error?.code === 'AI_NOT_CONFIGURED' || error?.code === 'VIDEO_NOT_CONFIGURED') throw error
     console.error('Public match report generation failed:', error.message)
@@ -3989,12 +3990,12 @@ Return ONLY valid JSON. Array of fixture objects:
 
   try {
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-6',
+      model: WORKHORSE_MODEL, ...WORKHORSE_REQUEST_DEFAULTS,
       max_tokens: 2000,
       system: cacheableSystem('You are a UK school sport fixture scheduler. Return only valid JSON arrays.'),
       messages: [{ role: 'user', content: prompt }],
     })
-    const text = response.content[0]?.text?.trim() || '[]'
+    const text = responseText(response)?.trim() || '[]'
     const jsonMatch = text.match(/\[[\s\S]*\]/)
     return JSON.parse(jsonMatch?.[0] || '[]')
   } catch (error) {
