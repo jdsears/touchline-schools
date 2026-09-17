@@ -33,3 +33,81 @@ jobs:
         run: npm ci
       - name: Build client
         run: npm run build
+
+  integration:
+    name: Integration (migrations, seed, API smoke)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: moonboots
+          POSTGRES_PASSWORD: moonboots
+          POSTGRES_DB: moonboots_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U moonboots"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 20
+    env:
+      DATABASE_URL: postgres://moonboots:moonboots@localhost:5432/moonboots_test
+      JWT_SECRET: ci-integration-secret
+      PORT: 3555
+      SMOKE_BASE_URL: http://127.0.0.1:3555
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - name: Install dependencies
+        run: npm ci
+      - name: Migrations on a fresh database
+        run: |
+          set -o pipefail
+          cd server
+          node db/migrations.js 2>&1 | tee /tmp/migrate1.log
+          grep -q "Migrations completed" /tmp/migrate1.log
+          ! grep -q "Migration error" /tmp/migrate1.log
+      - name: Migrations again (idempotency)
+        run: |
+          set -o pipefail
+          cd server
+          node db/migrations.js 2>&1 | tee /tmp/migrate2.log
+          grep -q "Migrations completed" /tmp/migrate2.log
+          ! grep -q "Migration error" /tmp/migrate2.log
+      - name: Boot server
+        run: |
+          cd server
+          nohup node index.js > /tmp/server.log 2>&1 &
+          for i in $(seq 1 60); do
+            sleep 1
+            if curl -sf http://127.0.0.1:3555/api/health > /dev/null; then
+              echo "server healthy after ${i}s"
+              exit 0
+            fi
+          done
+          echo "server never became healthy"
+          cat /tmp/server.log
+          exit 1
+      - name: Demo seed (fresh)
+        run: |
+          set -o pipefail
+          cd server
+          node db/demo-seed/index.js 2>&1 | tee /tmp/seed1.log
+          ! grep -qi "failed" /tmp/seed1.log
+      - name: Demo seed again (nightly reseed path)
+        run: |
+          set -o pipefail
+          cd server
+          node db/demo-seed/index.js 2>&1 | tee /tmp/seed2.log
+          ! grep -qi "failed" /tmp/seed2.log
+      - name: Seed assertions
+        run: cd server && node scripts/ci/assert-seed.mjs
+      - name: API smoke as demo Head of PE
+        run: cd server && node scripts/ci/smoke.mjs
+      - name: Server log on failure
+        if: failure()
+        run: cat /tmp/server.log 2>/dev/null || true
