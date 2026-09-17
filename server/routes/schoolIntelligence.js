@@ -1223,7 +1223,7 @@ router.post(
         await trackAIUsage(
           schoolId,
           'attendance_insights',
-          'claude-sonnet-4-5-20250929',
+          'claude-sonnet-4-6', // what generateAttendanceInsights actually runs on
           aiResult.usage.input_tokens || 0,
           aiResult.usage.output_tokens || 0
         )
