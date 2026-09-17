@@ -133,6 +133,47 @@ const templates = {
     text: `Fixture tomorrow: ${teamName} ${homeAway === 'home' ? 'vs' : 'at'} ${opponent}\n${matchDate}${matchTime ? ` at ${matchTime}` : ''}\n${location || ''} (${sport})\n${fixtureUrl || ''}`,
   }),
 
+  // Parent consent request - personal link, no account needed
+  consentRequest: ({ schoolName, pupilName, parentName, consentNames = [], link, expiresDays = 30, message }) => ({
+    subject: `${schoolName}: consent request for ${pupilName}`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+          body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f5; }
+          .container { max-width: 560px; margin: 0 auto; padding: 40px 20px; }
+          .card { background: white; border-radius: 12px; padding: 40px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+          h1 { color: #0F1E3D; font-size: 22px; margin: 0 0 16px 0; }
+          p { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 12px 0; }
+          ul { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 16px 0; padding-left: 20px; }
+          .note { background: #f8fafc; border-left: 3px solid #C9A961; border-radius: 6px; padding: 12px 16px; margin: 16px 0; font-style: italic; }
+          .button { display: inline-block; background: #0F1E3D; color: #ffffff; text-decoration: none; padding: 13px 26px; border-radius: 8px; font-weight: 600; margin: 16px 0 0 0; }
+          .small { font-size: 13px; color: #94a3b8; }
+          .footer { text-align: center; margin-top: 32px; color: #94a3b8; font-size: 13px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="card">
+            <h1>Consent request for ${pupilName}</h1>
+            <p>Hi ${parentName || 'there'}, the PE department at ${schoolName} needs your permission for the following:</p>
+            <ul>${consentNames.map(n => `<li>${n}</li>`).join('')}</ul>
+            ${message ? `<div class="note"><p style="margin:0">${message}</p></div>` : ''}
+            <p>It takes a minute and no account is needed. Each item can be accepted or declined separately.</p>
+            <div style="text-align:center;"><a href="${link}" class="button">Review and respond</a></div>
+            <p class="small" style="margin-top:20px;">This link is personal to you and expires in ${expiresDays} days. If you were not expecting it, you can ignore this email.</p>
+            <div class="footer">MoonBoots Sports on behalf of ${schoolName}</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `,
+    text: `Consent request for ${pupilName}\n\nHi ${parentName || 'there'}, the PE department at ${schoolName} needs your permission for:\n${consentNames.map(n => `- ${n}`).join('\n')}\n${message ? `\n${message}\n` : ''}\nReview and respond (no account needed): ${link}\n\nThis link is personal to you and expires in ${expiresDays} days.`,
+  }),
+
   // Team invite email
   teamInvite: ({ teamName, inviterName, role, inviteLink }) => ({
     subject: `You've been invited to join ${teamName}`,
