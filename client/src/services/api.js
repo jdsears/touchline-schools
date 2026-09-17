@@ -102,6 +102,7 @@ export const teamService = {
   generateSeasonFixtures: (teamId) => api.post(`/teams/${teamId}/matches/generate-season`),
   getMatch: (matchId) => api.get(`/matches/${matchId}`),
   updateMatch: (matchId, data) => api.put(`/matches/${matchId}`, data),
+  patchMatch: (matchId, data) => api.patch(`/matches/${matchId}`, data),
   deleteMatch: (matchId) => api.delete(`/matches/${matchId}`),
   getMatchPrep: (matchId) => api.get(`/matches/${matchId}/prep`),
   generateMatchPrep: (matchId) => api.post(`/matches/${matchId}/prep/generate`),

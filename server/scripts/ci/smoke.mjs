@@ -46,11 +46,11 @@ async function get(path, { expect = 200, validate } = {}) {
   }
 }
 
-async function post(path, body, { expect = 201, form = false, validate, label: customLabel } = {}) {
-  const label = customLabel || `POST ${path}`
+async function send(method, path, body, { expect, form = false, validate, label: customLabel } = {}) {
+  const label = customLabel || `${method} ${path}`
   try {
     const res = await fetch(`${BASE}/api${path}`, {
-      method: 'POST',
+      method,
       headers: form
         ? { Authorization: `Bearer ${token}` }
         : { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -77,6 +77,9 @@ async function post(path, body, { expect = 201, form = false, validate, label: c
     return null
   }
 }
+
+const post = (path, body, opts = {}) => send('POST', path, body, { expect: 201, ...opts })
+const patch = (path, body, opts = {}) => send('PATCH', path, body, { expect: 200, ...opts })
 
 // ── Sign in as the demo HoD ──────────────────────────────────────────
 try {
@@ -119,6 +122,48 @@ if (token) {
   await get('/chat/department/history', { validate: nonEmptyArray }) // regression #56 + seeded Coach exchange
   await get('/voice-observations', { validate: nonEmptyArray }) // seeded voice recordings for the mic badge
   await get('/pupils/me/schedule', { validate: isArray }) // pupil calendar endpoint responds for staff too
+
+  // ── Dashboard overview: every section reads live data (#67) ─────────
+  // The overview used to render a hardcoded "Confirm squad · vs Whitfield
+  // Grove" row and a static briefing; these feeds are what replaced them.
+  await get('/teacher-dashboard/today', {
+    validate: (b) => (['classes', 'lessons', 'training', 'fixtures'].every((k) => Array.isArray(b?.[k])) && /^\d{4}-\d{2}-\d{2}$/.test(b?.date || '')
+      ? null
+      : `expected date + four arrays, got ${JSON.stringify(b).slice(0, 120)}`),
+  })
+  const ROLES = new Set(['schoolAdmin', 'hod', 'teacherCurriculum', 'teacherExtraCurricular'])
+  const URGENCIES = new Set(['high', 'medium', 'low'])
+  await get('/teacher-dashboard/attention', {
+    validate: (b) => {
+      if (!Array.isArray(b?.items) || b.items.length === 0) return `expected non-empty items, got ${JSON.stringify(b).slice(0, 120)}`
+      const bad = b.items.find((it) => !it.verb || !it.subject || !String(it.href || '').startsWith('/') || !ROLES.has(it.role) || !URGENCIES.has(it.urgency))
+      return bad ? `malformed item ${JSON.stringify(bad).slice(0, 160)}` : null
+    },
+  })
+  await get('/teacher-dashboard/my-classes', { validate: isArray })
+  await get('/teacher-dashboard/my-teams', {
+    validate: (b) => {
+      if (!Array.isArray(b) || b.length === 0) return 'expected non-empty array'
+      const withNext = b.find((t) => t.next_fixture)
+      if (withNext && (!withNext.next_fixture.id || typeof withNext.next_fixture.squad_size === 'undefined')) {
+        return `next_fixture missing id/squad_size: ${JSON.stringify(withNext.next_fixture).slice(0, 120)}`
+      }
+      return null
+    },
+  })
+  await get('/hod/school-overview/attention', {
+    validate: (b) => (Array.isArray(b?.reporting_windows)
+      && b.reporting_windows.every((w) => Number.isInteger(w.submitted) && Number.isInteger(w.published) && Number.isInteger(w.total))
+      ? null
+      : `expected reporting_windows with integer counts, got ${JSON.stringify(b?.reporting_windows).slice(0, 160)}`),
+  })
+
+  // Top-bar feeds for a Head of PE. consent/venues/concussion resolved the
+  // school through a nonexistent school_members.status column (500 on every
+  // call); voice safeguarding accepted only owner/admin (silent 403 for HoDs).
+  await get('/consent/expiring?days=30', { validate: isArray })
+  await get('/voice-safeguarding/flagged', { validate: isArray })
+  await get('/venues', { validate: isArray })
 
   const myTeams = await get('/teams/mine', { validate: nonEmptyArray })
   if (myTeams?.[0]?.id) {
@@ -227,6 +272,52 @@ if (token) {
     }
   } else {
     record('onboarding smoke (school lookup)', false, 'demo school not found')
+  }
+
+  // ── Match prep and result round-trip (#67) ───────────────────────────
+  // The V15 prep page saved notes through PUT (into team_notes) and read
+  // them back from prep_notes, so nothing typed there ever reappeared; the
+  // overview had no way to record a result at all. Both now go via PATCH.
+  const demoMatch = await pool.query(`
+    SELECT m.id FROM matches m
+    JOIN teams t ON t.id = m.team_id
+    JOIN users u ON u.id = t.owner_id AND LOWER(u.email) = 'j.okonkwo.demo@ashworthpark.norfolk.sch.uk'
+    ORDER BY (m.score_for IS NULL AND COALESCE(m.date, m.match_date) < CURRENT_DATE) DESC, COALESCE(m.date, m.match_date) DESC
+    LIMIT 1`)
+  if (demoMatch.rows[0]) {
+    const mid = demoMatch.rows[0].id
+    const before = await get(`/matches/${mid}`)
+    const notes = JSON.stringify({ opposition: `smoke ${stamp}`, setPieces: '', talkingPoints: '' })
+    await patch(`/matches/${mid}`, { prep_notes: notes }, {
+      label: `PATCH /matches/${mid} (prep notes)`,
+      validate: (b) => (b?.prep_notes === notes ? null : `prep_notes did not round-trip: ${JSON.stringify(b?.prep_notes).slice(0, 100)}`),
+    })
+    await patch(`/matches/${mid}`, { formations: { format: '11v11', primary: { presetId: 'smoke', assignment: { s1: 'p1' } }, backup: null } }, {
+      label: `PATCH /matches/${mid} (formation)`,
+      validate: (b) => (b?.formations?.primary?.assignment?.s1 === 'p1' ? null : `formations did not round-trip: ${JSON.stringify(b?.formations).slice(0, 120)}`),
+    })
+    await patch(`/matches/${mid}`, { prep_completed: true }, {
+      label: `PATCH /matches/${mid} (prep complete)`,
+      validate: (b) => (b?.prep_completed_at ? null : 'prep_completed_at not set'),
+    })
+    await patch(`/matches/${mid}`, { prep_completed: false }, {
+      label: `PATCH /matches/${mid} (prep reopened)`,
+      validate: (b) => (b?.prep_completed_at === null ? null : 'prep_completed_at not cleared'),
+    })
+    await patch(`/matches/${mid}`, { score_for: 'three', score_against: 1 }, { expect: 400, label: `PATCH /matches/${mid} (rejects non-numeric score)` })
+    await patch(`/matches/${mid}`, { score_for: 2, score_against: 1 }, {
+      label: `PATCH /matches/${mid} (record result)`,
+      validate: (b) => (b?.score_for === 2 && b?.score_against === 1 ? null : `score did not round-trip: ${b?.score_for}-${b?.score_against}`),
+    })
+    // Put the fixture back as we found it so the demo data stays untouched.
+    await patch(`/matches/${mid}`, {
+      score_for: before?.score_for ?? null,
+      score_against: before?.score_against ?? null,
+      prep_notes: before?.prep_notes ?? null,
+      formations: before?.formations ?? null,
+    }, { label: `PATCH /matches/${mid} (restore)` })
+  } else {
+    record('demo match lookup', false, 'no match owned by the demo teacher')
   }
 }
 

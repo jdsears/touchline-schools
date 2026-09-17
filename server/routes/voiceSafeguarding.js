@@ -1,20 +1,24 @@
 import express from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
+import { HOD_ROLES } from '../middleware/schoolAuth.js'
 
 const router = express.Router()
 router.use(authenticateToken)
 
-// Middleware: require DSL or HoD role
+// Middleware: require DSL or HoD role. Same role set as the HoD area this
+// page lives in (owner, school_admin, admin, head_of_pe) — it previously
+// accepted only owner/admin, so a Head of PE got a silent 403 and the top
+// bar treated the feature as switched off.
 async function requireDSLAccess(req, res, next) {
   try {
     if (req.user.is_admin) return next()
 
     const result = await pool.query(
       `SELECT sm.role FROM school_members sm
-       WHERE sm.user_id = $1 AND sm.role IN ('owner', 'admin')
+       WHERE sm.user_id = $1 AND (sm.school_role = ANY($2) OR sm.role = ANY($2))
        LIMIT 1`,
-      [req.user.id]
+      [req.user.id, HOD_ROLES]
     )
 
     if (result.rows.length === 0) {
