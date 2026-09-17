@@ -181,3 +181,33 @@ export function requireSchoolRole(...roles) {
 export function getEffectiveRole(membership) {
   return membership.school_role || membership.role || 'teacher'
 }
+
+// Schools where the user holds an HoD-level role (every school for site
+// admins), oldest membership first.
+export async function listHodSchools(user) {
+  if (user.is_admin) {
+    const r = await pool.query(
+      `SELECT id, name, slug, primary_color, accent_color, 'school_admin' AS role FROM schools ORDER BY name`
+    )
+    return r.rows
+  }
+  const r = await pool.query(
+    `SELECT s.id, s.name, s.slug, s.primary_color, s.accent_color, COALESCE(sm.school_role, sm.role) AS role
+     FROM school_members sm
+     JOIN schools s ON s.id = sm.school_id
+     WHERE sm.user_id = $1 AND sm.status = 'active'
+       AND (sm.school_role = ANY($2) OR sm.role = ANY($2))
+     ORDER BY sm.joined_at ASC NULLS LAST, s.name`,
+    [user.id, HOD_ROLES]
+  )
+  return r.rows
+}
+
+// The school an HoD-level request applies to: the switcher's choice when it
+// is one of theirs (user.active_school_id, set from X-School-Id by
+// authenticateToken), otherwise their first school.
+export async function resolveHodSchool(user) {
+  const schools = await listHodSchools(user)
+  if (schools.length === 0) return null
+  return (user.active_school_id && schools.find(s => s.id === user.active_school_id)) || schools[0]
+}

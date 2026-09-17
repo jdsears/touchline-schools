@@ -2,7 +2,7 @@ import express from 'express'
 import jwt from 'jsonwebtoken'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { HOD_ROLES } from '../middleware/schoolAuth.js'
+import { HOD_ROLES, STAFF_ROLES, listHodSchools, resolveHodSchool } from '../middleware/schoolAuth.js'
 import { weekStartOf, isoDate, previousWeekStats, captureWeeklyStats } from '../services/weeklyStats.js'
 import { buildHodDigestData } from '../cron/emailLifecycle.js'
 import { renderEmailTemplate } from '../services/emailService.js'
@@ -16,33 +16,16 @@ router.use(authenticateToken)
 // HOD_ROLES = ['owner', 'school_admin', 'admin', 'head_of_pe']
 const HOD_ROLE_LIST = HOD_ROLES.map(r => `'${r}'`).join(', ')
 
-// Middleware: require HoD role (owner, school_admin, admin, or head_of_pe)
+// Middleware: require HoD role (owner, school_admin, admin, or head_of_pe).
+// Multi-school staff work in whichever school the switcher selected.
 async function requireHoD(req, res, next) {
   try {
-    // Site admins bypass
-    if (req.user.is_admin) {
-      const schoolResult = await pool.query('SELECT id FROM schools LIMIT 1')
-      if (schoolResult.rows.length > 0) req.schoolId = schoolResult.rows[0].id
-      return next()
-    }
-
-    // Check both school_role (new) and legacy role column
-    const result = await pool.query(
-      `SELECT sm.school_id, sm.role, sm.school_role
-       FROM school_members sm
-       WHERE sm.user_id = $1
-         AND (sm.school_role = ANY($2) OR sm.role = ANY($2))
-       ORDER BY sm.joined_at ASC
-       LIMIT 1`,
-      [req.user.id, HOD_ROLES]
-    )
-
-    if (result.rows.length === 0) {
+    const school = await resolveHodSchool(req.user)
+    if (!school) {
       return res.status(403).json({ error: 'Head of Department access required' })
     }
-
-    req.schoolId = result.rows[0].school_id
-    req.hodRole = result.rows[0].school_role || result.rows[0].role
+    req.schoolId = school.id
+    req.hodRole = school.role
     next()
   } catch (error) {
     console.error('HoD auth error:', error)
@@ -50,55 +33,74 @@ async function requireHoD(req, res, next) {
   }
 }
 
-// GET /check - Check if the current user has HoD access
+// GET /check - Check if the current user has HoD access, and which school
+// they are working in (plus every school they could switch to).
 router.get('/check', async (req, res) => {
   try {
-    if (req.user.is_admin) {
-      // Site admin: return the first school so HoD-only pages (e.g. Voice Settings)
-      // can still load rather than sitting on their "no school" fallback.
-      const schoolResult = await pool.query(
-        `SELECT s.id, s.name, s.slug FROM school_members sm
-         JOIN schools s ON sm.school_id = s.id
-         WHERE sm.user_id = $1
-         ORDER BY sm.joined_at ASC NULLS LAST
-         LIMIT 1`,
-        [req.user.id]
-      )
-      const fallback = schoolResult.rows[0] || (await pool.query('SELECT id, name, slug FROM schools ORDER BY created_at ASC LIMIT 1')).rows[0]
-      return res.json({
-        isHoD: true,
-        role: 'school_admin',
-        school_id: fallback?.id || null,
-        school_name: fallback?.name || null,
-        school_slug: fallback?.slug || null,
-      })
+    const schools = await listHodSchools(req.user)
+    if (schools.length === 0) {
+      return res.json({ isHoD: false, schools: [] })
     }
-
-    const result = await pool.query(
-      `SELECT sm.school_id, sm.role, sm.school_role, s.name AS school_name, s.slug AS school_slug
-       FROM school_members sm
-       JOIN schools s ON sm.school_id = s.id
-       WHERE sm.user_id = $1
-         AND (sm.school_role = ANY($2) OR sm.role = ANY($2))
-       LIMIT 1`,
-      [req.user.id, HOD_ROLES]
-    )
-
-    if (result.rows.length === 0) {
-      return res.json({ isHoD: false })
-    }
-
-    const effectiveRole = result.rows[0].school_role || result.rows[0].role
+    const active = (req.user.active_school_id && schools.find(s => s.id === req.user.active_school_id)) || schools[0]
     res.json({
       isHoD: true,
-      role: effectiveRole,
-      school_id: result.rows[0].school_id,
-      school_name: result.rows[0].school_name,
-      school_slug: result.rows[0].school_slug,
+      role: active.role,
+      school_id: active.id,
+      school_name: active.name,
+      school_slug: active.slug,
+      schools: schools.map(s => ({ id: s.id, name: s.name, slug: s.slug, role: s.role })),
     })
   } catch (error) {
     console.error('HoD check error:', error)
     res.status(500).json({ error: 'Failed to check access' })
+  }
+})
+
+// GET /schools - trust / multi-academy view: one row per school the user
+// oversees, with the numbers that decide where to look first.
+router.get('/schools', async (req, res) => {
+  try {
+    const schools = await listHodSchools(req.user)
+    if (schools.length === 0) return res.status(403).json({ error: 'Head of Department access required' })
+    const active = await resolveHodSchool(req.user)
+    const monday = weekStartOf()
+    const sunday = new Date(monday)
+    sunday.setDate(sunday.getDate() + 6)
+    const ws = isoDate(monday)
+    const we = isoDate(sunday)
+
+    const count = (sql, params) => pool.query(sql, params).then(r => parseInt(r.rows[0]?.n || 0, 10)).catch(() => 0)
+    const out = []
+    for (const s of schools) {
+      const [pupils, staff, teams, fixturesThisWeek, observationsThisWeek, pendingVoice, openSafeguarding, reportsAwaiting, consentsExpiring] = await Promise.all([
+        count(`SELECT COUNT(*) AS n FROM pupils p WHERE COALESCE(p.school_id, (SELECT t.school_id FROM teams t WHERE t.id = p.team_id)) = $1 AND p.is_active = true`, [s.id]),
+        count(`SELECT COUNT(*) AS n FROM school_members sm WHERE sm.school_id = $1 AND sm.status = 'active' AND COALESCE(sm.school_role, sm.role) = ANY($2)`, [s.id, STAFF_ROLES]),
+        count(`SELECT COUNT(*) AS n FROM teams WHERE school_id = $1`, [s.id]),
+        count(`SELECT COUNT(*) AS n FROM matches m JOIN teams t ON t.id = m.team_id WHERE t.school_id = $1 AND COALESCE(m.date, m.match_date) BETWEEN $2 AND $3`, [s.id, ws, we]),
+        count(`SELECT COUNT(*) AS n FROM observations o JOIN school_members sm ON sm.user_id = o.observer_id AND sm.school_id = $1 WHERE o.created_at >= $2::date AND o.created_at < ($3::date + 1)`, [s.id, ws, we]),
+        count(`SELECT COUNT(*) AS n FROM observations o JOIN school_members sm ON sm.user_id = o.observer_id AND sm.school_id = $1 WHERE o.review_state = 'pending_review'`, [s.id]),
+        count(`SELECT COUNT(*) AS n FROM safeguarding_incidents WHERE school_id = $1 AND status NOT IN ('closed', 'resolved')`, [s.id]),
+        count(`SELECT COUNT(*) AS n FROM pupil_reports pr JOIN reporting_windows rw ON rw.id = pr.reporting_window_id WHERE rw.school_id = $1 AND rw.status IN ('open', 'draft') AND pr.status = 'submitted'`, [s.id]),
+        count(`SELECT COUNT(*) AS n FROM pupil_consents pc JOIN consent_types ct ON ct.id = pc.consent_type_id AND ct.school_id = $1 WHERE pc.status = 'granted' AND pc.expires_at < NOW() + INTERVAL '30 days'`, [s.id]),
+      ])
+      out.push({
+        id: s.id, name: s.name, slug: s.slug, role: s.role,
+        primary_color: s.primary_color, accent_color: s.accent_color,
+        active: s.id === active?.id,
+        pupils, staff, teams,
+        fixtures_this_week: fixturesThisWeek,
+        observations_this_week: observationsThisWeek,
+        pending_voice: pendingVoice,
+        open_safeguarding: openSafeguarding,
+        reports_awaiting: reportsAwaiting,
+        consents_expiring: consentsExpiring,
+        attention: pendingVoice + openSafeguarding + reportsAwaiting + (consentsExpiring > 0 ? 1 : 0),
+      })
+    }
+    res.json({ week_start: ws, week_end: we, active_school_id: active?.id || null, schools: out })
+  } catch (error) {
+    console.error('HoD schools error:', error)
+    res.status(500).json({ error: 'Failed to load schools' })
   }
 })
 

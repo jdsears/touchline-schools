@@ -1,7 +1,7 @@
 import express from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
-import { HOD_ROLES } from '../middleware/schoolAuth.js'
+import { resolveHodSchool as resolveHodSchoolForUser } from '../middleware/schoolAuth.js'
 import { londonToday } from '../services/schoolTime.js'
 
 const router = express.Router()
@@ -244,22 +244,15 @@ function hhmm(value) {
   return value ? String(value).slice(0, 5) : null
 }
 
+// HoD items follow the school the switcher selected (see schoolAuth).
 async function resolveHodSchool(req) {
-  if (req.user.is_admin) {
-    const rows = await safeRows('admin school',
-      `SELECT s.id, s.slug FROM schools s ORDER BY s.created_at ASC LIMIT 1`, [])
-    return rows[0] ? { schoolId: rows[0].id, slug: rows[0].slug, role: 'school_admin' } : null
+  try {
+    const school = await resolveHodSchoolForUser(req.user)
+    return school ? { schoolId: school.id, slug: school.slug, role: school.role } : null
+  } catch (err) {
+    console.warn('Teacher dashboard hod school:', err.message)
+    return null
   }
-  const rows = await safeRows('hod school',
-    `SELECT sm.school_id, COALESCE(sm.school_role, sm.role) AS role, s.slug
-     FROM school_members sm
-     JOIN schools s ON s.id = sm.school_id
-     WHERE sm.user_id = $1 AND (sm.school_role = ANY($2) OR sm.role = ANY($2))
-     ORDER BY sm.joined_at ASC
-     LIMIT 1`,
-    [req.user.id, HOD_ROLES]
-  )
-  return rows[0] ? { schoolId: rows[0].school_id, slug: rows[0].slug, role: rows[0].role } : null
 }
 
 // GET /attention - unified action queue for the dashboard

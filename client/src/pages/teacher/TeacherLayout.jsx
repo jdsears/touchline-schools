@@ -50,6 +50,16 @@ export default function TeacherLayout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [isHoD, setIsHoD] = useState(false)
   const [schoolRole, setSchoolRole] = useState(null)
+  const [schools, setSchools] = useState([])
+  const [activeSchoolId, setActiveSchoolId] = useState(null)
+
+  // Switching school reloads the app: every page and the branding cache
+  // read the school from the header the interceptor now sends.
+  function switchSchool(id) {
+    if (!id || id === activeSchoolId) return
+    try { localStorage.setItem('active_school_id', id) } catch { /* storage blocked */ }
+    window.location.assign('/teacher/hod')
+  }
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [voicePendingCount, setVoicePendingCount] = useState(0)
   const [showRecorder, setShowRecorder] = useState(false)
@@ -76,6 +86,8 @@ export default function TeacherLayout() {
       .then(res => {
         setIsHoD(res.data.isHoD)
         if (res.data.role) setSchoolRole(res.data.role)
+        setSchools(Array.isArray(res.data.schools) ? res.data.schools : [])
+        setActiveSchoolId(res.data.school_id || null)
       })
       .catch(() => setIsHoD(false))
 
@@ -127,6 +139,10 @@ export default function TeacherLayout() {
           school={{ name: schoolBranding?.schoolName, initials: schoolBranding?.schoolName?.split(' ').map(w => w[0]).join('').slice(0, 2) || 'MB', roleLabel: roleDisplay }}
           user={user}
           onLogout={logout}
+          schools={schools}
+          activeSchoolId={activeSchoolId}
+          onSwitchSchool={switchSchool}
+          topExtra={schools.length > 1 ? [{ id: 'trust', icon: 'schoolOverview', label: 'Trust overview', href: '/trust' }] : []}
         />
       </div>
 

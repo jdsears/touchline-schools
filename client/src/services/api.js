@@ -20,6 +20,10 @@ api.interceptors.request.use((config) => {
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  // Multi-school staff: the school chosen in the sidebar switcher. The
+  // server only honours it for schools the user belongs to.
+  const activeSchool = localStorage.getItem('active_school_id')
+  if (activeSchool) config.headers['X-School-Id'] = activeSchool
   return config
 })
 
@@ -742,6 +746,7 @@ export const onboardingService = {
 // Head of Department service (whole-school views)
 export const hodService = {
   check: () => api.get('/hod/check'),
+  getSchools: () => api.get('/hod/schools'),
   getOverview: () => api.get('/hod/overview'),
   getTeachers: () => api.get('/hod/teachers'),
   getTeams: (sport) => api.get('/hod/teams', { params: { sport } }),
