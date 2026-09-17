@@ -8,11 +8,15 @@ import ErrorBoundary from '../../components/common/ErrorBoundary'
 import { useSchoolBranding } from '../../hooks/useSchoolBranding'
 import Sidebar from '../../components/Sidebar'
 import TopBar from '../../components/TopBar'
+import { useVoiceQueue } from '../../hooks/useVoiceQueue'
 import {
   GraduationCap,
   Menu,
   Mic,
   X,
+  CloudOff,
+  RefreshCw,
+  Trash2,
 } from 'lucide-react'
 
 const ROLE_DISPLAY = {
@@ -49,6 +53,7 @@ export default function TeacherLayout() {
   const [voiceEnabled, setVoiceEnabled] = useState(false)
   const [voicePendingCount, setVoicePendingCount] = useState(0)
   const [showRecorder, setShowRecorder] = useState(false)
+  const voiceQueue = useVoiceQueue({ enabled: voiceEnabled })
 
   // The demo tour's voice step (and anything else) can open the recorder
   useEffect(() => {
@@ -144,6 +149,34 @@ export default function TeacherLayout() {
           </ErrorBoundary>
         </main>
       </div>
+
+      {/* Voice notes waiting on the device (recorded without signal) */}
+      {voiceEnabled && !showRecorder && voiceQueue.items.length > 0 && (
+        <div className="fixed z-40 rounded-xl shadow-lg border border-border-default bg-card px-3 py-2.5 text-xs"
+          style={{ right: 24, bottom: 88, width: 280 }} data-testid="voice-queue-pill">
+          <div className="flex items-center gap-2 text-primary font-semibold">
+            <CloudOff className="w-4 h-4 text-brand-accent" />
+            {voiceQueue.items.length} voice note{voiceQueue.items.length === 1 ? '' : 's'} waiting to upload
+          </div>
+          <p className="text-tertiary mt-0.5">
+            {!voiceQueue.online ? "You're offline — they'll send when you're back in signal."
+              : voiceQueue.flushing ? 'Uploading now…'
+              : voiceQueue.items.some(i => i.status === 'failed') ? 'One or more were rejected by the server.' : 'Retrying automatically.'}
+          </p>
+          <div className="flex items-center gap-2 mt-2">
+            <button onClick={() => voiceQueue.flush()} disabled={!voiceQueue.online || voiceQueue.flushing}
+              className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-brand-primary text-on-dark font-semibold disabled:opacity-50">
+              <RefreshCw className={`w-3 h-3 ${voiceQueue.flushing ? 'animate-spin' : ''}`} /> Upload now
+            </button>
+            {voiceQueue.items.filter(i => i.status === 'failed').map(i => (
+              <button key={i.id} onClick={() => voiceQueue.remove(i.id)} title={i.lastError || 'Rejected'}
+                className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-status-error hover:bg-status-error-tint">
+                <Trash2 className="w-3 h-3" /> Discard rejected
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Voice Observation FAB -- v1.5 spec: 52px, bottom-right, z-40 */}
       {voiceEnabled && !showRecorder && (

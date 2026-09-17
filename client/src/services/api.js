@@ -761,11 +761,12 @@ export const hodService = {
 
 // Voice Observations service
 export const voiceObservationService = {
-  upload: (audioFile, contextType, contextId) => {
+  upload: (audioFile, contextType, contextId, clientUploadId) => {
     const formData = new FormData()
     formData.append('audio', audioFile)
     formData.append('context_type', contextType)
     if (contextId) formData.append('context_id', contextId)
+    if (clientUploadId) formData.append('client_upload_id', clientUploadId)
     return api.post('/voice-observations/upload', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })

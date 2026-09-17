@@ -367,6 +367,32 @@ if (token) {
     record('onboarding smoke (school lookup)', false, 'demo school not found')
   }
 
+  // ── Offline voice notes: idempotent upload (#73) ─────────────────────
+  // Queued recordings are retried by the app and the service worker with
+  // the same client id; the second attempt must return the first record.
+  {
+    const clientUploadId = `smoke${stamp}${Math.random().toString(36).slice(2, 10)}`
+    const audioForm = () => {
+      const fd = new FormData()
+      fd.append('audio', new Blob([Buffer.from('1a45dfa3000000000000', 'hex')], { type: 'audio/webm' }), 'observation.webm')
+      fd.append('context_type', 'general')
+      fd.append('client_upload_id', clientUploadId)
+      return fd
+    }
+    const first = await post('/voice-observations/upload', audioForm(), {
+      form: true, label: 'POST /voice-observations/upload (with client_upload_id)',
+      validate: (b) => (b?.audio_source_id && b?.status === 'processing' ? null : `unexpected ${JSON.stringify(b).slice(0, 120)}`),
+    })
+    if (first?.audio_source_id) {
+      await post('/voice-observations/upload', audioForm(), {
+        form: true, expect: 200, label: 'POST /voice-observations/upload (retry is deduplicated)',
+        validate: (b) => (b?.audio_source_id === first.audio_source_id && b?.status === 'duplicate' ? null : `expected duplicate of ${first.audio_source_id}, got ${JSON.stringify(b).slice(0, 120)}`),
+      })
+      await pool.query(`DELETE FROM observations WHERE audio_source_id = $1`, [first.audio_source_id]).catch(() => {})
+      await pool.query(`DELETE FROM audio_sources WHERE id = $1`, [first.audio_source_id])
+    }
+  }
+
   // ── Parent consent self-serve (#72) ──────────────────────────────────
   // Staff create a personal link; the parent answers without an account;
   // answers land in pupil_consents; the link then refuses reuse.

@@ -162,7 +162,7 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
       return res.status(400).json({ error: 'Audio file is required' })
     }
 
-    const { context_type, context_id } = req.body
+    const { context_type, context_id, client_upload_id } = req.body
     if (!context_type) {
       return res.status(400).json({ error: 'context_type is required' })
     }
@@ -171,6 +171,7 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     if (!validContextTypes.includes(context_type)) {
       return res.status(400).json({ error: `context_type must be one of: ${validContextTypes.join(', ')}` })
     }
+    const clientUploadId = client_upload_id && /^[A-Za-z0-9_-]{8,64}$/.test(client_upload_id) ? client_upload_id : null
 
     stage = 'ensure_schema'
     await ensureVoiceSchema()
@@ -179,6 +180,25 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     const schoolId = await getUserSchoolId(req.user.id)
     if (!schoolId) {
       return res.status(403).json({ error: 'No school access' })
+    }
+
+    // Offline recordings are retried by the app and by the service worker's
+    // background sync; a retry whose first attempt actually landed must not
+    // file the note twice.
+    if (clientUploadId) {
+      stage = 'dedupe'
+      const existing = await pool.query(
+        `SELECT id FROM audio_sources WHERE teacher_id = $1 AND client_upload_id = $2`,
+        [req.user.id, clientUploadId]
+      ).catch(() => ({ rows: [] }))
+      if (existing.rows[0]) {
+        if (fs.existsSync(req.file.path)) { try { fs.unlinkSync(req.file.path) } catch { /* ignore */ } }
+        return res.status(200).json({
+          audio_source_id: existing.rows[0].id,
+          status: 'duplicate',
+          message: 'This recording was already uploaded.',
+        })
+      }
     }
 
     // Get school retention settings
@@ -220,9 +240,9 @@ router.post('/upload', voiceUploadLimiter, requireVoiceEnabled, audioUpload.sing
     // Create audio_sources record
     stage = 'insert_audio_source'
     await pool.query(
-      `INSERT INTO audio_sources (id, teacher_id, school_id, context_type, context_id, storage_url, retention_expires_at)
-       VALUES ($1, $2, $3, $4, $5, $6, NOW() + INTERVAL '1 day' * $7)`,
-      [audioSourceId, req.user.id, schoolId, context_type, context_id || null, storageUrl, retentionDays]
+      `INSERT INTO audio_sources (id, teacher_id, school_id, context_type, context_id, storage_url, retention_expires_at, client_upload_id)
+       VALUES ($1, $2, $3, $4, $5, $6, NOW() + INTERVAL '1 day' * $7, $8)`,
+      [audioSourceId, req.user.id, schoolId, context_type, context_id || null, storageUrl, retentionDays, clientUploadId]
     )
 
     // Audit log (best-effort — don't 500 the upload if audit insert fails)

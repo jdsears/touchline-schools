@@ -4317,6 +4317,15 @@ export async function runMigrations() {
     await tryQuery(`ALTER TABLE pupil_consents ADD COLUMN IF NOT EXISTS responded_at TIMESTAMPTZ`)
     console.log('Phase 32: consent_requests (parent self-serve)')
 
+    // --- Phase 33: idempotent voice uploads ---
+    // Recordings made offline are queued on the device and retried by the
+    // app and the service worker; the client id lets a retry that already
+    // landed return the existing recording instead of filing it twice.
+    await tryQuery(`ALTER TABLE audio_sources ADD COLUMN IF NOT EXISTS client_upload_id TEXT`)
+    await tryQuery(`CREATE UNIQUE INDEX IF NOT EXISTS idx_audio_sources_client_upload
+                    ON audio_sources(teacher_id, client_upload_id) WHERE client_upload_id IS NOT NULL`)
+    console.log('Phase 33: audio_sources.client_upload_id')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================

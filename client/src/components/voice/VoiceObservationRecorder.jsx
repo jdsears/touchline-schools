@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { voiceObservationService } from '../../services/api'
-import { Mic, Square, Loader2, X, Clock } from 'lucide-react'
+import { enqueueVoiceUpload, isNetworkError } from '../../lib/voiceQueue'
+import { Mic, Square, Loader2, X, Clock, CloudOff, CheckCircle2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const CONTEXT_OPTIONS = [
@@ -15,11 +16,14 @@ const CONTEXT_OPTIONS = [
 
 export default function VoiceObservationRecorder({ onClose, defaultContext, defaultContextId }) {
   const navigate = useNavigate()
-  const [state, setState] = useState('idle') // idle, recording, uploading, processing
+  const [state, setState] = useState('idle') // idle, recording, uploading, processing, queued
   const [contextType, setContextType] = useState(defaultContext || 'general')
   const [contextId, setContextId] = useState(defaultContextId || null)
   const [duration, setDuration] = useState(0)
   const [audioSourceId, setAudioSourceId] = useState(null)
+  const [queuedReason, setQueuedReason] = useState(null)
+  const durationRef = useRef(0)
+  const clientUploadIdRef = useRef(null)
   const [hasConsented, setHasConsented] = useState(
     localStorage.getItem('voice_obs_consent') === 'true'
   )
@@ -78,14 +82,17 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
       }
 
       mediaRecorder.start(1000) // Collect data every second
+      clientUploadIdRef.current = (crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}${Math.random()}`).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64)
       setState('recording')
       setDuration(0)
+      durationRef.current = 0
       timerRef.current = setInterval(() => {
         setDuration(d => {
           if (d >= 299) { // Max 5 minutes
             stopRecording()
             return d
           }
+          durationRef.current = d + 1
           return d + 1
         })
       }, 1000)
@@ -107,14 +114,39 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
     }
   }
 
+  // No signal on the field is the normal case, not the error case: keep the
+  // recording on the device and let the outbox upload it later.
+  async function keepForLater(file, reason) {
+    try {
+      await enqueueVoiceUpload({
+        blob: file, mimeType: file.type, filename: file.name,
+        contextType, contextId, durationSeconds: durationRef.current,
+      })
+      setQueuedReason(reason)
+      setState('queued')
+    } catch (err) {
+      console.error('Could not queue recording:', err)
+      toast.error('No connection, and this device could not store the recording. Please try again when online.')
+      setState('idle')
+    }
+  }
+
   async function uploadAndProcess(file) {
+    if (navigator.onLine === false) {
+      await keepForLater(file, 'offline')
+      return
+    }
     try {
       setState('processing')
-      const res = await voiceObservationService.upload(file, contextType, contextId)
+      const res = await voiceObservationService.upload(file, contextType, contextId, clientUploadIdRef.current)
       setAudioSourceId(res.data.audio_source_id)
       // Poll for completion
       pollForCompletion(res.data.audio_source_id)
     } catch (err) {
+      if (isNetworkError(err)) {
+        await keepForLater(file, 'network')
+        return
+      }
       const serverMsg = err.response?.data?.error
       toast.error(serverMsg || 'Failed to upload observation')
       console.error('Upload error:', err)
@@ -276,6 +308,22 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
               </div>
               <p className="text-sm text-secondary mt-4">Transcribing and extracting observations...</p>
               <p className="text-xs text-tertiary mt-1">This usually takes 10-20 seconds</p>
+            </>
+          )}
+
+          {state === 'queued' && (
+            <>
+              <div className="w-20 h-20 rounded-full bg-brand-accent-tint flex items-center justify-center">
+                <CloudOff className="w-8 h-8 text-brand-primary" />
+              </div>
+              <p className="text-sm font-semibold text-primary mt-4 text-center">Saved on this device</p>
+              <p className="text-xs text-secondary mt-1 text-center max-w-[260px]">
+                {queuedReason === 'offline' ? "You're offline" : 'The upload could not get through'}, so the recording is stored here and will upload by itself when you're back in signal — even if you close the app.
+              </p>
+              <button onClick={onClose}
+                className="mt-5 inline-flex items-center gap-1.5 px-4 py-2 bg-brand-primary text-on-dark rounded-lg text-sm font-medium">
+                <CheckCircle2 className="w-4 h-4" /> Done
+              </button>
             </>
           )}
         </div>
