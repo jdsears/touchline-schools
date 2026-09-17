@@ -4201,6 +4201,24 @@ export async function runMigrations() {
     await tryQuery(`CREATE INDEX IF NOT EXISTS idx_server_error_log_created ON server_error_log(created_at DESC)`)
     console.log('Phase 25: server_error_log')
 
+    // --- Phase 26: weekly department activity snapshots ---
+    // One row per school per ISO week; powers honest week-over-week trend
+    // chips on the HoD dashboard (the old hardcoded ones were removed).
+    await pool.query(`CREATE TABLE IF NOT EXISTS school_weekly_stats (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+      week_start DATE NOT NULL,
+      sports_active INTEGER DEFAULT 0,
+      unique_pupils INTEGER DEFAULT 0,
+      fixtures_count INTEGER DEFAULT 0,
+      observations_logged INTEGER DEFAULT 0,
+      active_staff INTEGER DEFAULT 0,
+      captured_at TIMESTAMPTZ DEFAULT NOW(),
+      UNIQUE(school_id, week_start)
+    )`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_school_weekly_stats ON school_weekly_stats(school_id, week_start DESC)`)
+    console.log('Phase 26: school_weekly_stats')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================

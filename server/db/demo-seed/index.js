@@ -32,7 +32,7 @@ import { seedIdps } from '../seeds/seed-idps.js'
 import { seedAchievements } from '../seeds/seed-achievements.js'
 import { seedSafeguardingFlags } from '../seeds/seed-safeguarding-flags.js'
 import { seedV2Capabilities } from './v2Capabilities.js'
-import { seedVoiceNotes, seedCoachChat, seedNotifications } from './richness.js'
+import { seedVoiceNotes, seedCoachChat, seedNotifications, seedWeeklyHistory } from './richness.js'
 
 dotenv.config()
 
@@ -257,7 +257,8 @@ export async function runDemoSeed({ wipeOnly = false, onLog } = {}) {
   await seedVoiceNotes(school.id, staff).catch(e => log(`[demo-seed] Voice notes failed: ${e.message}`))
   await seedCoachChat(staff).catch(e => log(`[demo-seed] Coach chat failed: ${e.message}`))
   await seedNotifications(staff).catch(e => log(`[demo-seed] Notifications failed: ${e.message}`))
-  log('[demo-seed] Demo richness seeded (voice notes, Coach chat, notifications)')
+  await seedWeeklyHistory(school.id).catch(e => log(`[demo-seed] Weekly history failed: ${e.message}`))
+  log('[demo-seed] Demo richness seeded (voice notes, Coach chat, notifications, weekly trends)')
 
   log('[demo-seed] Ashworth Park Academy demo tenant is ready.')
   return { wiped: true, seeded: true, schoolId: school.id }

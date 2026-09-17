@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { HOD_ROLES } from '../middleware/schoolAuth.js'
+import { weekStartOf, isoDate, previousWeekStats, captureWeeklyStats } from '../services/weeklyStats.js'
 
 const router = express.Router()
 
@@ -539,14 +540,13 @@ router.get('/school-overview/attention', requireHoD, async (req, res) => {
 router.get('/school-overview/weekly-summary', requireHoD, async (req, res) => {
   try {
     const schoolId = req.schoolId
-    const weekStart = new Date()
-    weekStart.setDate(weekStart.getDate() - weekStart.getDay() + 1) // Monday
+    const weekStart = weekStartOf()
     const weekEnd = new Date(weekStart)
     weekEnd.setDate(weekEnd.getDate() + 6)
-    const ws = weekStart.toISOString().slice(0, 10)
-    const we = weekEnd.toISOString().slice(0, 10)
+    const ws = isoDate(weekStart)
+    const we = isoDate(weekEnd)
 
-    const [fixtures, staffActivity, participation] = await Promise.all([
+    const [fixtures, staffActivity, participation, prevWeek] = await Promise.all([
       pool.query(
         `SELECT m.id, m.match_date, m.match_time, m.opponent, m.location,
                 m.home_away, m.score_for, m.score_against,
@@ -576,7 +576,30 @@ router.get('/school-overview/weekly-summary', requireHoD, async (req, res) => {
          WHERE t.school_id = $1 AND m.match_date BETWEEN $2 AND $3`,
         [schoolId, ws, we]
       ),
+      previousWeekStats(schoolId),
     ])
+
+    // Keep this week's snapshot fresh whenever a HoD looks (best-effort);
+    // the daily sweep covers schools nobody opened.
+    captureWeeklyStats(schoolId).catch(() => {})
+
+    const current = {
+      sports_active: parseInt(participation.rows[0]?.sports_active || 0, 10),
+      unique_pupils: parseInt(participation.rows[0]?.unique_pupils || 0, 10),
+      fixtures_count: fixtures.rows.length,
+      active_staff: staffActivity.rows.filter(
+        t => Number(t.observations_logged) > 0 || Number(t.reports_updated) > 0
+      ).length,
+    }
+
+    // Honest week-over-week deltas: only when a frozen prior-week snapshot
+    // exists. New schools simply show no chips for their first week.
+    const trends = prevWeek ? {
+      sports_active: { previous: prevWeek.sports_active, delta: current.sports_active - prevWeek.sports_active },
+      unique_pupils: { previous: prevWeek.unique_pupils, delta: current.unique_pupils - prevWeek.unique_pupils },
+      fixtures_count: { previous: prevWeek.fixtures_count, delta: current.fixtures_count - prevWeek.fixtures_count },
+      active_staff: { previous: prevWeek.active_staff, delta: current.active_staff - prevWeek.active_staff },
+    } : null
 
     res.json({
       week_start: ws,
@@ -584,6 +607,7 @@ router.get('/school-overview/weekly-summary', requireHoD, async (req, res) => {
       fixtures: fixtures.rows,
       staff_activity: staffActivity.rows,
       participation: participation.rows[0] || { sports_active: 0, unique_pupils: 0 },
+      trends,
     })
   } catch (error) {
     console.error('School overview weekly error:', error)

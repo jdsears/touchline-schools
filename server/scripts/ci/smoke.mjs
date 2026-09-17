@@ -95,6 +95,11 @@ if (token) {
 
   await get('/auth/me', { validate: (b) => (b?.user?.email?.includes('.demo@') && b?.user?.is_demo_user === true ? null : 'expected demo user payload') })
   await get('/hod/check', { validate: (b) => (b?.isHoD === true ? null : `expected isHoD true, got ${JSON.stringify(b).slice(0, 100)}`) })
+  await get('/hod/school-overview/weekly-summary', {
+    validate: (b) => (b?.trends && Number.isFinite(b.trends.unique_pupils?.delta)
+      ? null
+      : `expected trends with numeric deltas, got ${JSON.stringify(b?.trends).slice(0, 120)}`),
+  })
   await get('/notifications', { validate: isArray })
   await get('/teacher-dashboard/development', { validate: nonEmptyArray })
   await get('/teams/mine/fixtures', { validate: isArray })
