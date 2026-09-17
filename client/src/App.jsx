@@ -121,6 +121,7 @@ const HoDReporting = lazy(() => import('./pages/teacher/HoDReporting'))
 const WindowReportsList = lazy(() => import('./pages/teacher/WindowReportsList'))
 const ReportDetail = lazy(() => import('./pages/teacher/ReportDetail'))
 const TeacherSafeguarding = lazy(() => import('./pages/teacher/TeacherSafeguarding'))
+const TeacherSafeguardingIncidents = lazy(() => import('./pages/teacher/TeacherSafeguardingIncidents'))
 const VoiceObservationReview = lazy(() => import('./pages/teacher/VoiceObservationReview'))
 const VoiceSafeguardingReview = lazy(() => import('./pages/teacher/VoiceSafeguardingReview'))
 const HoDVoiceSettings = lazy(() => import('./pages/teacher/HoDVoiceSettings'))
@@ -345,6 +346,7 @@ export default function App() {
           <Route path="film-room" element={<FilmRoom />} />
           <Route path="assistant" element={<Chat />} />
           <Route path="safeguarding" element={<TeacherSafeguarding />} />
+          <Route path="safeguarding/incidents" element={<TeacherSafeguardingIncidents />} />
           {/* NOTE: no bare "settings" route here - the legacy club Settings page
               used to shadow the three-tier redirect declared further down */}
           <Route path="hod" element={<HoDOverview />} />

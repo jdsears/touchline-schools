@@ -130,6 +130,13 @@ export async function runMigrations() {
         can_manage_curriculum BOOLEAN DEFAULT false,
         can_view_reports BOOLEAN DEFAULT false,
         can_manage_safeguarding BOOLEAN DEFAULT false,
+        is_parent BOOLEAN DEFAULT false,
+        can_manage_payments BOOLEAN DEFAULT false,
+        can_manage_players BOOLEAN DEFAULT false,
+        can_view_financials BOOLEAN DEFAULT false,
+        can_invite_members BOOLEAN DEFAULT false,
+        status TEXT DEFAULT 'active',
+        invited_at TIMESTAMPTZ,
         joined_at TIMESTAMPTZ DEFAULT NOW(),
         UNIQUE(school_id, user_id)
       )
@@ -4247,6 +4254,26 @@ export async function runMigrations() {
     // --- Phase 29: match prep sign-off ---
     await tryQuery(`ALTER TABLE matches ADD COLUMN IF NOT EXISTS prep_completed_at TIMESTAMPTZ`)
     console.log('Phase 29: matches.prep_completed_at')
+
+    // --- Phase 30: school_members parity with the renamed club_members ---
+    // Databases that migrated from club_members carry status/invited_at and
+    // the legacy permission flags; databases bootstrapped fresh got the
+    // schools-era columns only, so every `status = 'active'` membership
+    // check (school role gate, consent, venues, incident log...) threw
+    // "column status does not exist" and the whole school area 500'd.
+    for (const col of [
+      `status TEXT DEFAULT 'active'`,
+      'invited_at TIMESTAMPTZ',
+      'is_parent BOOLEAN DEFAULT false',
+      'can_manage_payments BOOLEAN DEFAULT false',
+      'can_manage_players BOOLEAN DEFAULT false',
+      'can_view_financials BOOLEAN DEFAULT false',
+      'can_invite_members BOOLEAN DEFAULT false',
+    ]) {
+      await tryQuery(`ALTER TABLE school_members ADD COLUMN IF NOT EXISTS ${col}`)
+    }
+    await tryQuery(`UPDATE school_members SET status = 'active' WHERE status IS NULL`)
+    console.log('Phase 30: school_members legacy columns (status, invited_at, permission flags)')
 
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema

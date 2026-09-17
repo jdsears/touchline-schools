@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useOutletContext, useNavigate, useLocation } from 'react-router-dom'
 import { clubSafeguardingService } from '../../services/api'
+import { useAuth } from '../../context/AuthContext'
 import {
   Plus, ChevronDown, ChevronUp, ArrowLeft, ShieldAlert,
   Clock, CheckCircle, XCircle, AlertTriangle, FileText,
@@ -55,13 +56,44 @@ const EMPTY_FORM = {
   location: '',
 }
 
-export default function ClubSafeguardingIncidents() {
-  const { school, myRole } = useOutletContext()
+function formatIncidentDate(value) {
+  if (!value) return 'Date not recorded'
+  const d = new Date(value)
+  return Number.isNaN(d.getTime()) ? 'Date not recorded' : d.toLocaleDateString('en-GB')
+}
+
+function typeLabel(incident) {
+  const raw = incident?.type || incident?.incident_type || incident?.category || 'incident'
+  return String(raw).replace(/_/g, ' ')
+}
+
+// people_involved / involved_parties are stored as JSON arrays of names or
+// {name} objects; older rows hold free text.
+function peopleLabel(incident) {
+  const source = incident?.people_involved ?? incident?.involved_parties
+  if (!source) return ''
+  if (Array.isArray(source)) {
+    return source.map(p => (typeof p === 'string' ? p : p?.name || p?.label || '')).filter(Boolean).join(', ')
+  }
+  return String(source)
+}
+
+// Roles that may read the incident log. Mirrors requireSafeguardingAccess on
+// the server (plus per-member can_manage_safeguarding, and DSL roles).
+const INCIDENT_ROLES = ['owner', 'admin', 'school_admin', 'head_of_pe', 'dsl', 'deputy_dsl']
+
+// Renders inside the school-admin layout (outlet context supplies the school)
+// or inside the teacher layout via props from TeacherSafeguardingIncidents.
+export default function ClubSafeguardingIncidents({ school: schoolProp, myRole: roleProp, canManageOverride, basePath: basePathProp } = {}) {
+  const outlet = useOutletContext() || {}
+  const school = schoolProp || outlet.school
+  const myRole = roleProp || outlet.myRole
+  const { user } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [incidents, setIncidents] = useState([])
   const [loading, setLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
+  const [showForm, setShowForm] = useState(new URLSearchParams(location.search).get('report') === '1')
   const [form, setForm] = useState({ ...EMPTY_FORM })
   const [expandedId, setExpandedId] = useState(null)
   const [expandedDetail, setExpandedDetail] = useState(null)
@@ -69,8 +101,10 @@ export default function ClubSafeguardingIncidents() {
   const [saving, setSaving] = useState(false)
   const [updatingStatus, setUpdatingStatus] = useState(null)
 
-  const canManage = ['owner', 'admin'].includes(myRole)
-  const basePath = location.pathname.replace(/\/safeguarding.*/, '/safeguarding')
+  const canManage = canManageOverride ?? (
+    INCIDENT_ROLES.includes(myRole) || INCIDENT_ROLES.includes(outlet.mySchoolRole) || !!outlet.canManageSafeguarding
+  )
+  const basePath = basePathProp || location.pathname.replace(/\/safeguarding.*/, '/safeguarding')
 
   // Check if user has access (welfare officer, owner, or admin)
   const hasAccess = canManage
@@ -116,7 +150,11 @@ export default function ClubSafeguardingIncidents() {
     e.preventDefault()
     setSaving(true)
     try {
-      await clubSafeguardingService.createIncident(school.id, form)
+      await clubSafeguardingService.createIncident(school.id, {
+        ...form,
+        incident_date: form.date,
+        category: form.type,
+      })
       toast.success('Incident reported')
       setShowForm(false)
       setForm({ ...EMPTY_FORM })
@@ -138,7 +176,7 @@ export default function ClubSafeguardingIncidents() {
         actions_taken: [...actions, {
           text: actionText.trim(),
           date: new Date().toISOString(),
-          by: 'Current User',
+          by: user?.name || user?.email || 'Staff',
         }],
       })
       toast.success('Action recorded')
@@ -378,10 +416,10 @@ export default function ClubSafeguardingIncidents() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <p className="text-sm font-medium text-primary capitalize">
-                          {incident.type}
+                          {typeLabel(incident)}
                         </p>
                         <span className="text-xs text-tertiary">
-                          {new Date(incident.date).toLocaleDateString('en-GB')}
+                          {formatIncidentDate(incident.date || incident.incident_date)}
                         </span>
                       </div>
                       <p className="text-xs text-secondary truncate max-w-md mt-0.5">
@@ -417,12 +455,12 @@ export default function ClubSafeguardingIncidents() {
                         <Calendar className="w-4 h-4 text-tertiary mt-0.5 shrink-0" />
                         <div>
                           <p className="text-xs text-secondary">Date</p>
-                          <p className="text-primary">{new Date(detail.date).toLocaleDateString('en-GB')}</p>
+                          <p className="text-primary">{formatIncidentDate(detail.date || detail.incident_date)}</p>
                         </div>
                       </div>
                       <div>
                         <p className="text-xs text-secondary">Type</p>
-                        <p className="text-primary capitalize">{detail.type}</p>
+                        <p className="text-primary capitalize">{typeLabel(detail)}</p>
                       </div>
                       {detail.location && (
                         <div className="flex items-start gap-2">
@@ -435,10 +473,10 @@ export default function ClubSafeguardingIncidents() {
                       )}
                     </div>
 
-                    {detail.people_involved && (
+                    {peopleLabel(detail) && (
                       <div>
                         <p className="text-xs text-secondary mb-1">People Involved</p>
-                        <p className="text-sm text-primary">{detail.people_involved}</p>
+                        <p className="text-sm text-primary">{peopleLabel(detail)}</p>
                       </div>
                     )}
 

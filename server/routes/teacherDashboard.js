@@ -2,6 +2,7 @@ import express from 'express'
 import pool from '../config/database.js'
 import { authenticateToken } from '../middleware/auth.js'
 import { HOD_ROLES } from '../middleware/schoolAuth.js'
+import { londonToday } from '../services/schoolTime.js'
 
 const router = express.Router()
 router.use(authenticateToken)
@@ -14,14 +15,6 @@ const MY_TEAMS_SQL = `
      OR EXISTS (SELECT 1 FROM team_memberships tm
                 WHERE tm.team_id = t.id AND tm.user_id = $1
                   AND tm.role IN ('manager', 'assistant', 'scout'))`
-
-// Calendar date in the school's timezone. The server runs in UTC, so at
-// 00:30 on a BST morning toISOString() would still say yesterday.
-function londonToday() {
-  return new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit',
-  }).format(new Date())
-}
 
 // Rows-or-empty: one missing table (older databases) must not blank the
 // whole dashboard.
@@ -457,7 +450,7 @@ router.get('/attention', async (req, res) => {
           subject: [si.kind, si.severity].filter(Boolean).join(' · ') || 'Open incident',
           since: si.created_at,
           urgency: 'high',
-          href: hod.slug ? `/school/${hod.slug}/safeguarding/incidents` : '/teacher/safeguarding',
+          href: `/teacher/safeguarding/incidents?highlight=${si.id}`,
         })
       }
 
