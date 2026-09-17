@@ -1,3 +1,5 @@
+import { logServerError } from '../services/errorLog.js'
+
 export function errorHandler(err, req, res, next) {
   console.error('Error:', err)
   
@@ -39,8 +41,10 @@ export function errorHandler(err, req, res, next) {
     })
   }
 
-  // Default error
-  res.status(err.status || 500).json({
+  // Default error - persist 5xx so admins can see failures without host access
+  const status = err.status || 500
+  if (status >= 500) logServerError('request_error', err, req)
+  res.status(status).json({
     message: err.message || 'Internal server error',
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
   })

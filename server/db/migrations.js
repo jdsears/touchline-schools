@@ -4187,6 +4187,20 @@ export async function runMigrations() {
     END $$`)
     console.log('Phase 23: matches.result_data')
 
+    // --- Phase 25: server error log (observability) ---
+    await pool.query(`CREATE TABLE IF NOT EXISTS server_error_log (
+      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      kind TEXT NOT NULL,
+      message TEXT,
+      stack TEXT,
+      path TEXT,
+      method TEXT,
+      user_id UUID,
+      created_at TIMESTAMPTZ DEFAULT NOW()
+    )`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_server_error_log_created ON server_error_log(created_at DESC)`)
+    console.log('Phase 25: server_error_log')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================
