@@ -57,6 +57,7 @@ const InviteAccept = lazy(() => import('./pages/InviteAccept'))
 const ForgotPassword = lazy(() => import('./pages/ForgotPassword'))
 const ResetPassword = lazy(() => import('./pages/ResetPassword'))
 const MagicLinkVerify = lazy(() => import('./pages/MagicLinkVerify'))
+const ParentConsent = lazy(() => import('./pages/ParentConsent'))
 const Terms = lazy(() => import('./pages/Terms'))
 const Admin = lazy(() => import('./pages/Admin'))
 const AdminReseedDemo = lazy(() => import('./pages/AdminReseedDemo'))
@@ -238,6 +239,7 @@ export default function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/magic/:token" element={<MagicLinkVerify />} />
+        <Route path="/consent/:token" element={<ParentConsent />} />
         <Route path="/sso-callback" element={<SSOCallback />} />
         <Route path="/terms" element={<Terms />} />
         <Route path="/about" element={<About />} />

@@ -608,6 +608,14 @@ export const consentService = {
   getExpiring: (days = 30) => api.get('/consent/expiring', { params: { days } }),
   expireOverdue: () => api.post('/consent/expire-overdue'),
   bulkReset: () => api.post('/consent/bulk-reset'),
+  // Parent self-serve
+  listPupils: () => api.get('/consent/pupils'),
+  createRequests: (data) => api.post('/consent/requests', data),
+  listRequests: () => api.get('/consent/requests'),
+  resendRequest: (id) => api.post(`/consent/requests/${id}/resend`),
+  cancelRequest: (id) => api.post(`/consent/requests/${id}/cancel`),
+  getPublicRequest: (token) => api.get(`/consent/public/${encodeURIComponent(token)}`),
+  submitPublicRequest: (token, data) => api.post(`/consent/public/${encodeURIComponent(token)}`, data),
 }
 
 export const travelService = {

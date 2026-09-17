@@ -4286,6 +4286,37 @@ export async function runMigrations() {
     await tryQuery(`ALTER TABLE pupil_idp_goals ADD COLUMN IF NOT EXISTS origin TEXT NOT NULL DEFAULT 'teacher'`)
     console.log('Phase 31: pupil_idp_goals evidence columns')
 
+    // --- Phase 32: parent consent self-serve ---
+    // A request is a personal, expiring link emailed to a parent covering
+    // one pupil and a set of consent types; the parent's answers land in
+    // pupil_consents with the request they came from.
+    await tryQuery(`
+      CREATE TABLE IF NOT EXISTS consent_requests (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
+        pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
+        token TEXT NOT NULL UNIQUE,
+        parent_email TEXT NOT NULL,
+        parent_name TEXT,
+        consent_type_ids UUID[] NOT NULL DEFAULT '{}',
+        message TEXT,
+        status TEXT NOT NULL DEFAULT 'sent' CHECK (status IN ('sent', 'opened', 'completed', 'expired', 'cancelled')),
+        email_sent BOOLEAN NOT NULL DEFAULT false,
+        sent_by UUID REFERENCES users(id) ON DELETE SET NULL,
+        sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        opened_at TIMESTAMPTZ,
+        completed_at TIMESTAMPTZ,
+        expires_at TIMESTAMPTZ NOT NULL,
+        responder_name TEXT,
+        responder_ip TEXT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_consent_requests_pupil ON consent_requests(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_consent_requests_school_status ON consent_requests(school_id, status)`)
+    await tryQuery(`ALTER TABLE pupil_consents ADD COLUMN IF NOT EXISTS consent_request_id UUID REFERENCES consent_requests(id) ON DELETE SET NULL`)
+    await tryQuery(`ALTER TABLE pupil_consents ADD COLUMN IF NOT EXISTS responded_at TIMESTAMPTZ`)
+    console.log('Phase 32: consent_requests (parent self-serve)')
+
     // ================================================
     // PHASE 24: Consolidated boot-time ensure-schema
     // ================================================

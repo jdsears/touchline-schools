@@ -367,6 +367,63 @@ if (token) {
     record('onboarding smoke (school lookup)', false, 'demo school not found')
   }
 
+  // ── Parent consent self-serve (#72) ──────────────────────────────────
+  // Staff create a personal link; the parent answers without an account;
+  // answers land in pupil_consents; the link then refuses reuse.
+  const consentPupil = await pool.query(`SELECT id FROM pupils WHERE name = 'Toby Marsh' LIMIT 1`)
+  const consentTypes = await pool.query(`
+    SELECT ct.id FROM consent_types ct JOIN schools s ON s.id = ct.school_id
+    WHERE s.slug = 'ashworth-park-demo' ORDER BY ct.display_order LIMIT 2`)
+  if (consentPupil.rows[0] && consentTypes.rows.length === 2) {
+    const cpid = consentPupil.rows[0].id
+    const typeIds = consentTypes.rows.map((r) => r.id)
+    const parentEmail = `smoke.parent.${stamp}@example.com`
+    const before = await pool.query(`SELECT parent_email FROM pupils WHERE id = $1`, [cpid])
+    const createdReq = await post('/consent/requests', {
+      pupil_ids: [cpid], consent_type_ids: typeIds, parent_emails: { [cpid]: parentEmail }, message: 'Smoke test',
+    }, {
+      validate: (b) => (b?.created?.length === 1 && b.created[0].link?.includes('/consent/') && b?.skipped?.length === 0
+        ? null
+        : `unexpected ${JSON.stringify(b).slice(0, 160)}`),
+    })
+    const consentToken = createdReq?.created?.[0]?.link?.split('/consent/')[1]
+    if (consentToken) {
+      // No Authorization header: the parent has no account.
+      try {
+        const res = await fetch(`${BASE}/api/consent/public/${consentToken}`)
+        const body = await res.json()
+        record('GET /consent/public/:token (no auth)', res.status === 200 && body?.state === 'open' && body?.items?.length === 2 && body?.pupil?.first_name,
+          `status ${res.status}: ${JSON.stringify(body).slice(0, 150)}`)
+        const decisions = { [typeIds[0]]: 'granted', [typeIds[1]]: 'refused' }
+        const submit = await fetch(`${BASE}/api/consent/public/${consentToken}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ decisions, responder_name: 'Smoke Parent', confirmed: true }),
+        })
+        const submitted = await submit.json()
+        record('POST /consent/public/:token (answers recorded)', submit.status === 200 && submitted?.granted === 1 && submitted?.refused === 1,
+          `status ${submit.status}: ${JSON.stringify(submitted).slice(0, 150)}`)
+        const again = await fetch(`${BASE}/api/consent/public/${consentToken}`)
+        record('GET /consent/public/:token (completed link is closed)', again.status === 410, `status ${again.status}`)
+        const stored = await pool.query(
+          `SELECT status, parent_signature_text FROM pupil_consents WHERE pupil_id = $1 AND consent_type_id = ANY($2::uuid[]) ORDER BY status`,
+          [cpid, typeIds]
+        )
+        record('pupil_consents reflect the parent answers',
+          stored.rows.length === 2 && stored.rows.some((r) => r.status === 'granted') && stored.rows.some((r) => r.status === 'refused') && stored.rows.every((r) => r.parent_signature_text === 'Smoke Parent'),
+          JSON.stringify(stored.rows))
+      } catch (e) {
+        record('parent consent public flow', false, e.message)
+      }
+      await get('/consent/requests', { validate: (b) => (Array.isArray(b) && b.some((r) => r.status === 'completed' && r.parent_email === parentEmail) ? null : 'completed request missing from list') })
+      // Leave the demo as we found it.
+      await pool.query(`DELETE FROM pupil_consents WHERE pupil_id = $1 AND consent_type_id = ANY($2::uuid[]) AND parent_signature_text = 'Smoke Parent'`, [cpid, typeIds])
+      await pool.query(`DELETE FROM consent_requests WHERE parent_email = $1`, [parentEmail])
+      await pool.query(`UPDATE pupils SET parent_email = $1 WHERE id = $2`, [before.rows[0]?.parent_email || null, cpid])
+    }
+  } else {
+    record('parent consent fixtures', false, 'demo pupil or consent types missing')
+  }
+
   // ── Match prep and result round-trip (#67) ───────────────────────────
   // The V15 prep page saved notes through PUT (into team_notes) and read
   // them back from prep_notes, so nothing typed there ever reappeared; the
