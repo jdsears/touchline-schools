@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { teamService } from '../../services/api'
 import { SPORT_ICONS } from '../../constants/sports'
+import { resultOutcome, scoreline } from '../../lib/results'
 import TeamSessionsCard from '../../components/team/TeamSessionsCard'
 import { StatCard, IconTile } from '../../components/common/ui'
 import {
@@ -155,7 +156,7 @@ export default function TeacherTeamDetail() {
                   <h3 className="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Upcoming</h3>
                   <div className="space-y-2">
                     {upcoming.map(m => (
-                      <MatchRow key={m.id} match={m} />
+                      <MatchRow key={m.id} match={m} sport={team?.sport} />
                     ))}
                   </div>
                 </div>
@@ -167,7 +168,7 @@ export default function TeacherTeamDetail() {
                   <h3 className="text-xs font-semibold text-tertiary uppercase tracking-wider mb-2">Results</h3>
                   <div className="space-y-2">
                     {past.map(m => (
-                      <MatchRow key={m.id} match={m} showResult />
+                      <MatchRow key={m.id} match={m} showResult sport={team?.sport} />
                     ))}
                   </div>
                 </div>
@@ -185,13 +186,13 @@ export default function TeacherTeamDetail() {
   )
 }
 
-function MatchRow({ match, showResult }) {
+function MatchRow({ match, showResult, sport }) {
   const d = match.date || match.match_date
   const isHome = match.home_away === 'home'
-  const hasResult = match.score_for != null && match.score_against != null
-  const won = hasResult && match.score_for > match.score_against
-  const drew = hasResult && match.score_for === match.score_against
-  const lost = hasResult && match.score_for < match.score_against
+  const outcome = resultOutcome(match, sport)
+  const hasResult = !!outcome
+  const won = outcome === 'W'
+  const lost = outcome === 'L'
 
   return (
     <div className="flex items-center justify-between py-2 px-3 rounded-lg bg-subtle">
@@ -217,7 +218,7 @@ function MatchRow({ match, showResult }) {
         <span className={`text-sm font-bold px-2 py-1 rounded ${
           won ? 'text-status-success' : lost ? 'text-status-error' : 'text-secondary'
         }`}>
-          {match.score_for} - {match.score_against}
+          {outcome} {scoreline(match, sport)}
         </span>
       )}
     </div>
