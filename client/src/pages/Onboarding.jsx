@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SUPPORTED_SPORTS, SPORT_LABELS, SPORT_ICONS } from '../constants/sports'
 import { useNavigate } from 'react-router-dom'
 import { onboardingService } from '../services/api'
@@ -43,11 +43,26 @@ export default function Onboarding() {
     name: '', school_type: 'state', urn: '',
     contact_email: '', contact_phone: '',
     address_line1: '', city: '', county: '', postcode: '',
-    primary_color: '#1a365d', secondary_color: '#2ED573',
+    primary_color: '#1a365d', secondary_color: '#C9A961',
   })
+
+  // Users who already belong to a school (e.g. arriving from the Pupils
+  // page's "CSV Import" button) skip straight to the import step instead of
+  // being walked into creating a duplicate school.
+  useEffect(() => {
+    onboardingService.getStatus()
+      .then(res => {
+        if (res.data?.hasSchool && res.data.school?.id) {
+          setSchoolId(res.data.school.id)
+          setStep(2)
+        }
+      })
+      .catch(() => { /* no school yet - start at step 0 */ })
+  }, [])
 
   // Teachers form
   const [teachers, setTeachers] = useState([{ name: '', email: '', role: 'coach' }])
+  const [inviteResult, setInviteResult] = useState(null)
 
   // CSV import
   const [csvFile, setCsvFile] = useState(null)
@@ -82,11 +97,12 @@ export default function Onboarding() {
     }
     setSaving(true)
     try {
-      await onboardingService.inviteTeachers(schoolId, validTeachers)
-      toast.success(`${validTeachers.length} teacher${validTeachers.length > 1 ? 's' : ''} invited`)
-      setStep(2)
+      const res = await onboardingService.inviteTeachers(schoolId, validTeachers)
+      setInviteResult(res.data)
+      toast.success(`${res.data.invited} teacher${res.data.invited > 1 ? 's' : ''} invited`)
+      // Stay on this step so the sign-in links can be copied or confirmed sent
     } catch (err) {
-      toast.error('Failed to invite teachers')
+      toast.error(err.response?.data?.error || 'Failed to invite teachers')
     } finally {
       setSaving(false)
     }
@@ -297,6 +313,53 @@ export default function Onboarding() {
               <h1 className="text-2xl font-bold text-white mb-2">Invite your teachers</h1>
               <p className="text-secondary mb-6">Add PE staff and sports coaches. You can always add more later.</p>
 
+              {inviteResult ? (
+                <>
+                  <div className="bg-subtle rounded-xl border border-border-strong p-5 mb-8">
+                    <h3 className="text-sm font-semibold text-white mb-3">
+                      {inviteResult.invited} invitation{inviteResult.invited === 1 ? '' : 's'} created
+                    </h3>
+                    <div className="space-y-2">
+                      {(inviteResult.teachers || []).map(t => (
+                        <div key={t.email} className="flex items-center gap-3 p-2.5 rounded-lg bg-card text-sm">
+                          <div className="min-w-0 flex-1">
+                            <p className="text-white truncate">{t.name} <span className="text-tertiary">· {t.email}</span></p>
+                            <p className="text-xs text-tertiary capitalize">{t.role.replace(/_/g, ' ')}</p>
+                          </div>
+                          {t.email_sent ? (
+                            <span className="shrink-0 px-2 py-0.5 rounded-full text-xs bg-brand-primary-tint text-brand-primary">Email sent</span>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                navigator.clipboard?.writeText(t.invite_link)
+                                toast.success('Sign-in link copied')
+                              }}
+                              className="shrink-0 px-2.5 py-1 rounded-lg text-xs bg-brand-primary text-white hover:opacity-90 transition-opacity"
+                            >
+                              Copy sign-in link
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    {(inviteResult.teachers || []).some(t => !t.email_sent) && (
+                      <p className="text-xs text-tertiary mt-3">
+                        Email isn't configured on this server, so share each sign-in link directly — it signs the teacher in and stays valid for 7 days.
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => setStep(2)}
+                      className="flex items-center gap-2 px-6 py-3 bg-brand-primary hover:bg-brand-primary text-white rounded-lg font-medium transition-colors"
+                    >
+                      Continue
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
               <div className="space-y-3 mb-4">
                 {teachers.map((t, i) => (
                   <div key={i} className="flex items-center gap-3">
@@ -317,10 +380,12 @@ export default function Onboarding() {
                     <select
                       value={t.role}
                       onChange={e => updateTeacher(i, 'role', e.target.value)}
-                      className="w-32 px-2 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-brand-primary"
+                      className="w-36 px-2 py-2.5 bg-subtle border border-border-strong rounded-lg text-white text-sm focus:outline-none focus:border-brand-primary"
                     >
-                      <option value="admin">Head of PE</option>
-                      <option value="coach">Teacher</option>
+                      <option value="teacher">Teacher</option>
+                      <option value="coach">Coach</option>
+                      <option value="head_of_sport">Head of Sport</option>
+                      <option value="head_of_pe">Head of PE</option>
                     </select>
                     {teachers.length > 1 && (
                       <button onClick={() => removeTeacherRow(i)} className="p-1.5 text-tertiary hover:text-status-error">
@@ -355,6 +420,8 @@ export default function Onboarding() {
                   </button>
                 </div>
               </div>
+                </>
+              )}
             </>
           )}
 

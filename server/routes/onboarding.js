@@ -10,6 +10,30 @@ import bcrypt from 'bcryptjs'
 const router = express.Router()
 router.use(authenticateToken)
 
+const INVITABLE_ROLES = new Set(['teacher', 'coach', 'head_of_sport', 'head_of_pe'])
+const LEADERSHIP_ROLES = new Set(['owner', 'school_admin', 'admin', 'head_of_pe', 'head_of_sport'])
+
+// The wizard takes school_id from the request body, so every mutating step
+// must prove the caller actually leads that school — otherwise any signed-in
+// account could import pupils into, or invite itself into, any school.
+async function requireSchoolLeadership(req, res, schoolId) {
+  if (!schoolId) {
+    res.status(400).json({ error: 'school_id is required' })
+    return false
+  }
+  if (req.user.is_admin) return true
+  const m = await pool.query(
+    `SELECT COALESCE(school_role, role) AS role FROM school_members
+     WHERE school_id = $1 AND user_id = $2 LIMIT 1`,
+    [schoolId, req.user.id]
+  )
+  if (!m.rows[0] || !LEADERSHIP_ROLES.has(m.rows[0].role)) {
+    res.status(403).json({ error: 'You must be a leader of this school to do that' })
+    return false
+  }
+  return true
+}
+
 // Multer for CSV upload (in-memory, 5MB limit)
 const csvUpload = multer({
   storage: multer.memoryStorage(),
@@ -88,15 +112,19 @@ router.post('/school', async (req, res) => {
       [name, slug, school_type || 'state', urn || null,
        contact_email || req.user.email, contact_phone || null,
        address_line1 || null, address_line2 || null, city || null, county || null, postcode || null,
-       primary_color || '#1a365d', secondary_color || '#2ED573']
+       primary_color || '#1a365d', secondary_color || '#C9A961']
     )
 
     const school = result.rows[0]
 
-    // Add creator as owner
+    // Add creator as owner. Only columns that exist on every deployment —
+    // the club-era capability flags this used to insert don't exist on
+    // freshly-bootstrapped databases and made school creation fail there.
     await pool.query(
-      `INSERT INTO school_members (school_id, user_id, role, can_manage_payments, can_manage_players, can_view_financials, can_invite_members, joined_at)
-       VALUES ($1, $2, 'owner', true, true, true, true, NOW())
+      `INSERT INTO school_members (school_id, user_id, role, school_role,
+         can_view_all_classes, can_view_all_teams, can_manage_curriculum,
+         can_view_reports, can_manage_safeguarding, joined_at)
+       VALUES ($1, $2, 'owner', 'owner', true, true, true, true, true, NOW())
        ON CONFLICT (school_id, user_id) DO NOTHING`,
       [school.id, req.user.id]
     )
@@ -116,6 +144,11 @@ router.post('/teachers', async (req, res) => {
     if (!school_id || !teachers || !Array.isArray(teachers) || teachers.length === 0) {
       return res.status(400).json({ error: 'school_id and teachers array are required' })
     }
+    if (!(await requireSchoolLeadership(req, res, school_id))) return
+
+    const schoolRes = await pool.query('SELECT name FROM schools WHERE id = $1', [school_id])
+    const schoolName = schoolRes.rows[0]?.name || 'your school'
+    const frontendUrl = getFrontendUrl()
 
     const invited = []
     for (const teacher of teachers) {
@@ -123,35 +156,56 @@ router.post('/teachers', async (req, res) => {
 
       const email = teacher.email.trim().toLowerCase()
       const name = teacher.name?.trim() || email.split('@')[0]
-      const role = teacher.role || 'teacher'
+      const role = INVITABLE_ROLES.has(teacher.role) ? teacher.role : 'teacher'
 
       // Check if user already exists
       let userId
-      const existingUser = await pool.query('SELECT id FROM users WHERE email = $1', [email])
+      const existingUser = await pool.query('SELECT id FROM users WHERE LOWER(email) = $1', [email])
 
       if (existingUser.rows.length > 0) {
         userId = existingUser.rows[0].id
       } else {
-        // Create a placeholder user account (they will set password on first login)
+        // Placeholder account: no usable password until they follow the
+        // invite link (magic sign-in) and set one from their profile.
         const tempPassword = await bcrypt.hash(uuidv4(), 10)
         const newUser = await pool.query(
-          `INSERT INTO users (id, email, name, password, role, has_completed_onboarding)
-           VALUES ($1, $2, $3, $4, 'manager', false)
+          `INSERT INTO users (id, email, name, password_hash, role, has_completed_onboarding)
+           VALUES ($1, $2, $3, $4, 'manager', true)
            RETURNING id`,
           [uuidv4(), email, name, tempPassword]
         )
         userId = newUser.rows[0].id
       }
 
-      // Add as school member
+      // A long-lived magic sign-in token doubles as the invite link, so the
+      // teacher lands signed in with zero password friction.
+      const inviteToken = uuidv4()
       await pool.query(
-        `INSERT INTO school_members (school_id, user_id, role, school_role, can_manage_players, can_invite_members, can_view_reports, invited_at, joined_at)
-         VALUES ($1, $2, $3, $3, true, false, true, NOW(), NOW())
+        `UPDATE users SET magic_link_token = $1, magic_link_expires = NOW() + INTERVAL '7 days' WHERE id = $2`,
+        [inviteToken, userId]
+      )
+      const inviteLink = `${frontendUrl}/magic/${inviteToken}`
+
+      // Add as school member (same safe column set as school creation)
+      await pool.query(
+        `INSERT INTO school_members (school_id, user_id, role, school_role, can_view_reports, joined_at)
+         VALUES ($1, $2, $3, $3, true, NOW())
          ON CONFLICT (school_id, user_id) DO UPDATE SET role = EXCLUDED.role, school_role = EXCLUDED.school_role`,
         [school_id, userId, role]
       )
 
-      invited.push({ email, name, role })
+      let emailSent = false
+      if (isEmailEnabled()) {
+        const sent = await sendTeamInviteEmail(email, {
+          teamName: schoolName,
+          inviterName: req.user.name || 'A colleague',
+          role,
+          inviteLink,
+        }).catch(() => ({ success: false }))
+        emailSent = !!sent?.success
+      }
+
+      invited.push({ email, name, role, invite_link: inviteLink, email_sent: emailSent })
     }
 
     res.status(201).json({ invited: invited.length, teachers: invited })
@@ -169,6 +223,7 @@ router.post('/pupils/csv', csvUpload.single('file'), async (req, res) => {
     if (!school_id) {
       return res.status(400).json({ error: 'school_id is required' })
     }
+    if (!(await requireSchoolLeadership(req, res, school_id))) return
 
     if (!req.file) {
       return res.status(400).json({ error: 'CSV file is required' })
@@ -208,40 +263,73 @@ router.post('/pupils/csv', csvUpload.single('file'), async (req, res) => {
       poolTeamId = newTeam.rows[0].id
     }
 
+    // Existing roster for this school, so re-importing the same export (the
+    // most common real-world action) skips rather than duplicates.
+    const existingRes = await pool.query(
+      `SELECT LOWER(p.name) AS name, p.year_group FROM pupils p
+       LEFT JOIN teams t ON t.id = p.team_id
+       WHERE p.is_active = true AND (t.school_id = $1 OR p.school_id = $1)`,
+      [school_id]
+    )
+    const seen = new Set(existingRes.rows.map(r => `${r.name}|${r.year_group ?? ''}`))
+
     const created = []
     const skipped = []
+    let duplicates = 0
 
     for (const row of rows) {
       const firstName = mapField(row, 'first_name', 'firstname', 'first', 'forename', 'given_name')
       const lastName = mapField(row, 'last_name', 'lastname', 'last', 'surname', 'family_name')
+      // Whole-name column fallback ("name" / "pupil name" / "full name")
+      const wholeName = mapField(row, 'name', 'pupil_name', 'full_name', 'student_name')
 
-      if (!firstName && !lastName) {
+      let first = firstName
+      let last = lastName
+      if (!first && !last && wholeName) {
+        const parts = wholeName.trim().split(/\s+/)
+        first = parts[0]
+        last = parts.slice(1).join(' ')
+      }
+
+      if (!first && !last) {
         skipped.push({ row, reason: 'No name found' })
         continue
       }
 
+      // pupils.name is NOT NULL and is what every list/profile renders —
+      // it must always be written alongside the split fields.
+      const fullName = [first, last].filter(Boolean).join(' ').trim()
       const yearGroup = parseInt(mapField(row, 'year_group', 'year', 'yeargroup', 'form') || '0') || null
+
+      const dedupeKey = `${fullName.toLowerCase()}|${yearGroup ?? ''}`
+      if (seen.has(dedupeKey)) {
+        duplicates++
+        continue
+      }
+      seen.add(dedupeKey)
+
       const house = mapField(row, 'house', 'house_name')
-      const dob = mapField(row, 'dob', 'date_of_birth', 'dateofbirth', 'birthday')
-      const gender = mapField(row, 'gender', 'sex')
+      const dobRaw = mapField(row, 'dob', 'date_of_birth', 'dateofbirth', 'birthday')
+      const dob = dobRaw && !Number.isNaN(Date.parse(dobRaw)) ? dobRaw : null
 
       try {
         const result = await pool.query(
-          `INSERT INTO pupils (id, first_name, last_name, team_id, year_group, house, date_of_birth, is_active)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, true)
+          `INSERT INTO pupils (id, name, first_name, last_name, team_id, school_id, year_group, house, date_of_birth, is_active)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
            RETURNING id, first_name, last_name, year_group`,
-          [uuidv4(), firstName, lastName || '', poolTeamId,
-           yearGroup, house || null, dob || null]
+          [uuidv4(), fullName, first || '', last || '', poolTeamId, school_id,
+           yearGroup, house || null, dob]
         )
         created.push(result.rows[0])
       } catch (err) {
-        skipped.push({ row: `${firstName} ${lastName}`, reason: err.message })
+        skipped.push({ row: fullName, reason: err.message })
       }
     }
 
     res.status(201).json({
       total_rows: rows.length,
       created: created.length,
+      duplicates,
       skipped: skipped.length,
       skipped_details: skipped.slice(0, 10),
       headers_found: headers,
@@ -260,6 +348,7 @@ router.post('/teams', async (req, res) => {
     if (!school_id || !name || !sport) {
       return res.status(400).json({ error: 'school_id, name, and sport are required' })
     }
+    if (!(await requireSchoolLeadership(req, res, school_id))) return
 
     const result = await pool.query(
       `INSERT INTO teams (id, name, school_id, sport, age_group, gender, season_type, owner_id)

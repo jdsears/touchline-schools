@@ -217,6 +217,7 @@ router.put('/:id', async (req, res) => {
       `UPDATE pupils SET
         first_name = COALESCE($1, first_name),
         last_name = COALESCE($2, last_name),
+        name = TRIM(CONCAT_WS(' ', COALESCE($1, first_name), COALESCE($2, last_name))),
         year_group = COALESCE($3, year_group),
         house = COALESCE($4, house),
         date_of_birth = COALESCE($5, date_of_birth),
@@ -267,11 +268,15 @@ router.post('/', async (req, res) => {
       teamId = newTeam.rows[0].id
     }
 
+    // pupils.name is NOT NULL and is what lists/profiles render - always
+    // write it alongside the split fields (this insert used to omit it,
+    // which made the Add Pupil button fail on every deployment).
+    const fullName = [first_name, last_name].filter(Boolean).join(' ').trim()
     const result = await pool.query(
-      `INSERT INTO pupils (id, first_name, last_name, team_id, year_group, house, date_of_birth, is_active)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, true)
+      `INSERT INTO pupils (id, name, first_name, last_name, team_id, school_id, year_group, house, date_of_birth, is_active)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, true)
        RETURNING *`,
-      [uuidv4(), first_name, last_name || '', teamId, year_group || null, house || null, date_of_birth || null]
+      [uuidv4(), fullName, first_name, last_name || '', teamId, schoolId, year_group || null, house || null, date_of_birth || null]
     )
 
     res.status(201).json(result.rows[0])
