@@ -32,13 +32,55 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
   const chunksRef = useRef([])
   const timerRef = useRef(null)
   const streamRef = useRef(null)
+  const discardRef = useRef(false) // set when the teacher abandons a recording
+  const closedRef = useRef(false) // set once the modal is dismissed; stops polling
+  const stateRef = useRef('idle')
+  stateRef.current = state
 
   useEffect(() => {
     return () => {
+      closedRef.current = true
       stopTimer()
       stopMediaStream()
     }
   }, [])
+
+  // Escape always offers a way out; what it does depends on the state.
+  useEffect(() => {
+    function onKey(e) {
+      if (e.key === 'Escape') dismiss()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  // Leave the recorder: drop an in-progress recording, let a recording that
+  // is already being transcribed finish in the background, never interrupt
+  // an upload that is mid-flight.
+  function dismiss() {
+    const current = stateRef.current
+    if (current === 'uploading') return
+    if (current === 'recording') {
+      discardRecording()
+      return
+    }
+    if (current === 'processing') {
+      closedRef.current = true
+      toast('Still transcribing. It will appear under Voice Observations when it is ready.', { icon: '⏳' })
+    }
+    if (onClose) onClose()
+  }
+
+  function discardRecording() {
+    discardRef.current = true
+    stopTimer()
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+      mediaRecorderRef.current.stop()
+    }
+    stopMediaStream()
+    toast('Recording discarded')
+    if (onClose) onClose()
+  }
 
   function stopTimer() {
     if (timerRef.current) {
@@ -75,6 +117,7 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
 
       mediaRecorder.onstop = async () => {
         stopMediaStream()
+        if (discardRef.current) return
         const blob = new Blob(chunksRef.current, { type: mimeType })
         const ext = mimeType.includes('mp4') ? '.m4a' : '.webm'
         const file = new File([blob], `observation${ext}`, { type: mimeType })
@@ -159,9 +202,11 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
     let attempts = 0
 
     const poll = async () => {
+      if (closedRef.current) return
       attempts++
       try {
         const res = await voiceObservationService.getStatus(sourceId)
+        if (closedRef.current) return
         if (res.data.status === 'ready_for_review') {
           navigate(`/teacher/voice-review/${sourceId}`)
           return
@@ -233,11 +278,20 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="bg-card rounded-2xl border border-border-strong w-full max-w-sm p-6">
-        {/* Close */}
-        {state === 'idle' && (
-          <button onClick={onClose} className="absolute top-4 right-4 text-secondary hover:text-primary">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      onClick={(e) => { if (e.target === e.currentTarget && state === 'idle') dismiss() }}
+    >
+      <div className="relative bg-card rounded-2xl border border-border-strong w-full max-w-sm p-6">
+        {/* Close: sits inside the card, in every state except a mid-flight upload */}
+        {state !== 'uploading' && (
+          <button
+            type="button"
+            onClick={dismiss}
+            aria-label={state === 'recording' ? 'Discard recording' : 'Close'}
+            title={state === 'recording' ? 'Discard recording' : state === 'processing' ? 'Continue in the background' : 'Close'}
+            className="absolute top-3 right-3 p-1.5 rounded-lg text-secondary hover:text-primary hover:bg-subtle transition-colors"
+          >
             <X className="w-5 h-5" />
           </button>
         )}
@@ -265,8 +319,9 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
               <button
                 onClick={startRecording}
                 className="w-20 h-20 rounded-full bg-brand-primary hover:bg-brand-primary flex items-center justify-center transition-all hover:scale-105 shadow-lg shadow-pitch-600/30"
+                aria-label="Start recording"
               >
-                <Mic className="w-8 h-8 text-primary" />
+                <Mic className="w-8 h-8 text-on-dark" />
               </button>
               <p className="text-xs text-secondary mt-4">Tap to start recording</p>
             </>
@@ -280,8 +335,9 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
                 <button
                   onClick={stopRecording}
                   className="relative w-20 h-20 rounded-full bg-status-error hover:bg-status-error flex items-center justify-center transition-all shadow-lg shadow-alert-600/30"
+                  aria-label="Stop recording"
                 >
-                  <Square className="w-6 h-6 text-primary" />
+                  <Square className="w-6 h-6 text-on-dark" />
                 </button>
               </div>
               <div className="flex items-center gap-2 mt-4">
@@ -308,6 +364,9 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
               </div>
               <p className="text-sm text-secondary mt-4">Transcribing and extracting observations...</p>
               <p className="text-xs text-tertiary mt-1">This usually takes 10-20 seconds</p>
+              <button type="button" onClick={dismiss} className="mt-4 text-xs text-secondary underline underline-offset-2 hover:text-primary">
+                Continue in the background
+              </button>
             </>
           )}
 
