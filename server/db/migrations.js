@@ -3526,6 +3526,23 @@ export async function runMigrations() {
 
     console.log('Phase 10: Extended age range and sport knowledge base complete')
 
+    console.log('Historical phases completed')
+  } catch (error) {
+    // One statement the current database rejects must not silence every
+    // later phase: those run below regardless, each statement best-effort.
+    console.error('Migration error in the historical phases (later phases still run):', error)
+  }
+
+  await runLatePhases()
+  console.log('Migrations completed')
+}
+
+// Phases 11 onwards. Every statement here is idempotent and best-effort
+// (tryQuery), so a database that trips on one of them, or on anything in the
+// historical block above, still receives every column the current code
+// reads. A skipped statement is logged with its reason.
+async function runLatePhases() {
+  try {
     // ==========================================
     // PHASE 11: VOICE OBSERVATIONS GROUNDWORK
     // ==========================================
@@ -3536,35 +3553,35 @@ export async function runMigrations() {
     console.log('Running Phase 11: Voice observations groundwork...')
 
     // --- 11a: Add source and voice-related fields to observations table ---
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE observations ADD COLUMN IF NOT EXISTS source TEXT DEFAULT 'typed'
         CHECK (source IN ('typed', 'voice', 'assessment_import', 'video_tag', 'ai_suggested'));
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE observations ADD COLUMN IF NOT EXISTS audio_source_id UUID;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE observations ADD COLUMN IF NOT EXISTS transcript_fragment TEXT;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE observations ADD COLUMN IF NOT EXISTS confidence REAL;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE observations ADD COLUMN IF NOT EXISTS review_state TEXT DEFAULT 'confirmed'
         CHECK (review_state IN ('pending_review', 'confirmed', 'edited', 'rejected'));
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
     // --- 11b: Create audio_sources table ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS audio_sources (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS audio_sources (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       teacher_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
@@ -3580,36 +3597,36 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_teacher ON audio_sources(teacher_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_school ON audio_sources(school_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_audio_sources_retention ON audio_sources(retention_expires_at)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_audio_sources_teacher ON audio_sources(teacher_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_audio_sources_school ON audio_sources(school_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_audio_sources_retention ON audio_sources(retention_expires_at)`)
 
     // Add foreign key from observations to audio_sources
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE observations ADD CONSTRAINT observations_audio_source_fkey
         FOREIGN KEY (audio_source_id) REFERENCES audio_sources(id) ON DELETE SET NULL;
     EXCEPTION WHEN duplicate_object THEN NULL;
     END $$`)
 
     // --- 11c: Add pupil nicknames field ---
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE pupils ADD COLUMN IF NOT EXISTS nicknames TEXT[];
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
     // --- 11d: Add school-level voice observations configuration ---
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE schools ADD COLUMN IF NOT EXISTS voice_observations_enabled BOOLEAN DEFAULT false;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE schools ADD COLUMN IF NOT EXISTS audio_retention_days INTEGER DEFAULT 7
         CHECK (audio_retention_days BETWEEN 1 AND 30);
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE schools ADD COLUMN IF NOT EXISTS transcript_retention_days INTEGER DEFAULT 30
         CHECK (transcript_retention_days BETWEEN 7 AND 90);
     EXCEPTION WHEN others THEN NULL;
@@ -3622,7 +3639,7 @@ export async function runMigrations() {
     // =========================================================================
 
     // --- 12a: Data export requests table ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS data_export_requests (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS data_export_requests (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
       pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
@@ -3638,12 +3655,12 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_school ON data_export_requests(school_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_pupil ON data_export_requests(pupil_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_data_export_token ON data_export_requests(download_token)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_data_export_school ON data_export_requests(school_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_data_export_pupil ON data_export_requests(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_data_export_token ON data_export_requests(download_token)`)
 
     // --- 12b: Data deletion log (permanent record that deletion occurred) ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS data_deletion_log (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS data_deletion_log (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       school_id UUID NOT NULL,
       pupil_reference TEXT NOT NULL,
@@ -3656,7 +3673,7 @@ export async function runMigrations() {
     )`)
 
     // --- 12c: Consent records table (if not already created) ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS gdpr_consent_records (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS gdpr_consent_records (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
       pupil_id UUID REFERENCES pupils(id) ON DELETE CASCADE,
@@ -3672,8 +3689,8 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_school ON gdpr_consent_records(school_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_pupil ON gdpr_consent_records(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_school ON gdpr_consent_records(school_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_gdpr_consent_pupil ON gdpr_consent_records(pupil_id)`)
 
     console.log('Phase 12: GDPR data export & deletion complete')
 
@@ -3691,7 +3708,7 @@ export async function runMigrations() {
     //     read_only   - observer / governor / visiting inspector (read, no write)
     //   Legacy roles (owner, admin, coach) kept for backwards compatibility.
     // ---
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE school_members ADD COLUMN IF NOT EXISTS school_role TEXT
         CHECK (school_role IN (
           'owner', 'school_admin', 'head_of_pe', 'head_of_sport', 'teacher', 'read_only',
@@ -3701,7 +3718,7 @@ export async function runMigrations() {
     END $$`)
 
     // Backfill school_role from legacy role column for existing members
-    await pool.query(`UPDATE school_members SET school_role = CASE
+    await tryQuery(`UPDATE school_members SET school_role = CASE
       WHEN role = 'owner' THEN 'owner'
       WHEN role = 'admin' THEN 'school_admin'
       WHEN role = 'coach' THEN 'teacher'
@@ -3711,33 +3728,33 @@ export async function runMigrations() {
     WHERE school_role IS NULL`)
 
     // --- 13b: Add permissions columns if not already present ---
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_classes BOOLEAN DEFAULT false;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_all_teams BOOLEAN DEFAULT false;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_curriculum BOOLEAN DEFAULT false;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_view_reports BOOLEAN DEFAULT false;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE school_members ADD COLUMN IF NOT EXISTS can_manage_safeguarding BOOLEAN DEFAULT false;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
     // --- 13c: Populate new permission columns based on school_role ---
-    await pool.query(`UPDATE school_members SET
+    await tryQuery(`UPDATE school_members SET
       can_view_all_classes = (school_role IN ('owner', 'school_admin', 'head_of_pe')),
       can_view_all_teams   = (school_role IN ('owner', 'school_admin', 'head_of_pe', 'head_of_sport')),
       can_manage_curriculum = (school_role IN ('owner', 'school_admin', 'head_of_pe')),
@@ -3752,29 +3769,29 @@ export async function runMigrations() {
     // =========================================================================
 
     // --- 14a: SSO identity columns on users table ---
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_provider TEXT
         CHECK (sso_provider IN ('microsoft', 'google', 'saml'));
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_sub TEXT;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE users ADD COLUMN IF NOT EXISTS sso_email TEXT;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
 
     // Unique constraint: one SSO identity per provider per user
-    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_sso_identity
+    await tryQuery(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_sso_identity
       ON users(sso_provider, sso_sub)
       WHERE sso_provider IS NOT NULL AND sso_sub IS NOT NULL`)
 
     // --- 14b: SSO OAuth state table (PKCE + state tracking, short-lived) ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS sso_state (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS sso_state (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       state TEXT NOT NULL UNIQUE,
       provider TEXT NOT NULL CHECK (provider IN ('microsoft', 'google')),
@@ -3784,19 +3801,19 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       expires_at TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '10 minutes')
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_state_state ON sso_state(state)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_state_expires ON sso_state(expires_at)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_sso_state_state ON sso_state(state)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_sso_state_expires ON sso_state(expires_at)`)
 
     // --- 14c: SSO domain allowlist (school-level: which email domains map to this school's SSO) ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS sso_domain_allowlist (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS sso_domain_allowlist (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
       domain TEXT NOT NULL,
       created_at TIMESTAMPTZ DEFAULT NOW(),
       UNIQUE(school_id, domain)
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_sso_domain_school ON sso_domain_allowlist(school_id)`)
-    await pool.query(`CREATE UNIQUE INDEX IF NOT EXISTS idx_sso_domain_domain ON sso_domain_allowlist(domain)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_sso_domain_school ON sso_domain_allowlist(school_id)`)
+    await tryQuery(`CREATE UNIQUE INDEX IF NOT EXISTS idx_sso_domain_domain ON sso_domain_allowlist(domain)`)
 
     console.log('Phase 14: SSO migration complete')
 
@@ -3806,7 +3823,7 @@ export async function runMigrations() {
     console.log('Running Phase 15: Match events & pupil stats...')
 
     // --- 15a: match_events - flexible sport-agnostic event log ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS match_events (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS match_events (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
       event_type TEXT NOT NULL,
@@ -3818,12 +3835,12 @@ export async function runMigrations() {
       notes TEXT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_match ON match_events(match_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_pupil ON match_events(pupil_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_events_type ON match_events(event_type)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_match_events_match ON match_events(match_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_match_events_pupil ON match_events(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_match_events_type ON match_events(event_type)`)
 
     // --- 15b: match_pupil_stats - per-pupil per-match flexible stats ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS match_pupil_stats (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS match_pupil_stats (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
       pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
@@ -3834,8 +3851,8 @@ export async function runMigrations() {
       updated_at TIMESTAMPTZ DEFAULT NOW(),
       UNIQUE(match_id, pupil_id)
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_match ON match_pupil_stats(match_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_pupil ON match_pupil_stats(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_match ON match_pupil_stats(match_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_match_pupil_stats_pupil ON match_pupil_stats(pupil_id)`)
 
     console.log('Phase 15: Match events & pupil stats migration complete')
 
@@ -3846,21 +3863,21 @@ export async function runMigrations() {
 
     // --- 16a: Flag schools as demo tenants ---
     try {
-      await pool.query(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS is_demo_tenant BOOLEAN DEFAULT false`)
+      await tryQuery(`ALTER TABLE schools ADD COLUMN IF NOT EXISTS is_demo_tenant BOOLEAN DEFAULT false`)
     } catch (e) {
       console.warn('Phase 16a schools.is_demo_tenant warning:', e.message)
     }
 
     // --- 16b: Flag users as demo users + expiry ---
     try {
-      await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo_user BOOLEAN DEFAULT false`)
-      await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS demo_expires_at TIMESTAMPTZ`)
+      await tryQuery(`ALTER TABLE users ADD COLUMN IF NOT EXISTS is_demo_user BOOLEAN DEFAULT false`)
+      await tryQuery(`ALTER TABLE users ADD COLUMN IF NOT EXISTS demo_expires_at TIMESTAMPTZ`)
     } catch (e) {
       console.warn('Phase 16b users demo columns warning:', e.message)
     }
 
     // --- 16c: Prospects table - one row per prospective customer ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospects (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS demo_prospects (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name VARCHAR(255) NOT NULL,
       email VARCHAR(255) NOT NULL UNIQUE,
@@ -3873,11 +3890,11 @@ export async function runMigrations() {
       is_active BOOLEAN DEFAULT true,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_email ON demo_prospects(email)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_expires ON demo_prospects(access_expires_at)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_email ON demo_prospects(email)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_prospects_expires ON demo_prospects(access_expires_at)`)
 
     // --- 16d: Prospect credentials - one row per persona per prospect ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS demo_prospect_credentials (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS demo_prospect_credentials (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       prospect_id UUID NOT NULL REFERENCES demo_prospects(id) ON DELETE CASCADE,
       user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
@@ -3886,11 +3903,11 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       UNIQUE(prospect_id, persona)
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_creds_prospect ON demo_prospect_credentials(prospect_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_creds_user ON demo_prospect_credentials(user_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_creds_prospect ON demo_prospect_credentials(prospect_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_creds_user ON demo_prospect_credentials(user_id)`)
 
     // --- 16e: Demo telemetry events ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS demo_telemetry_events (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS demo_telemetry_events (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       prospect_id UUID REFERENCES demo_prospects(id) ON DELETE SET NULL,
       user_id UUID REFERENCES users(id) ON DELETE SET NULL,
@@ -3901,9 +3918,9 @@ export async function runMigrations() {
       session_id TEXT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_prospect ON demo_telemetry_events(prospect_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_event_type ON demo_telemetry_events(event_type)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_created ON demo_telemetry_events(created_at)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_prospect ON demo_telemetry_events(prospect_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_event_type ON demo_telemetry_events(event_type)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_telemetry_created ON demo_telemetry_events(created_at)`)
 
     console.log('Phase 16: Prospect demo instance migration complete')
 
@@ -3912,7 +3929,7 @@ export async function runMigrations() {
     // ============================================================
 
     // --- 17a: Demo requests table ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS demo_requests (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS demo_requests (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       name TEXT NOT NULL,
       role_at_school TEXT NOT NULL,
@@ -3931,15 +3948,15 @@ export async function runMigrations() {
       demo_prospect_id UUID REFERENCES demo_prospects(id) ON DELETE SET NULL,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_requests_email ON demo_requests(email)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_demo_requests_status ON demo_requests(status)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_requests_email ON demo_requests(email)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_demo_requests_status ON demo_requests(status)`)
 
     console.log('Phase 17: Demo access request migration complete')
 
     // ==========================================
     // PHASE 17b: Calendar export tokens
     // ==========================================
-    await pool.query(`CREATE TABLE IF NOT EXISTS calendar_tokens (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS calendar_tokens (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       token TEXT NOT NULL UNIQUE,
@@ -3947,8 +3964,8 @@ export async function runMigrations() {
       scope_id UUID,
       created_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_token ON calendar_tokens(token)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_user ON calendar_tokens(user_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_token ON calendar_tokens(token)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_calendar_tokens_user ON calendar_tokens(user_id)`)
     console.log('Phase 17b: Calendar tokens migration complete')
 
     // ==========================================
@@ -3960,12 +3977,16 @@ export async function runMigrations() {
     // seedAdminUsersAndLink using SEED_ADMIN_PASSWORD. No hardcoded passwords.
     const adminEmails = (process.env.ADMIN_EMAILS || '')
       .split(',').map(e => e.trim()).filter(Boolean)
-    for (const email of adminEmails) {
-      const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [email.toLowerCase()])
-      if (exists.rows.length > 0 && !exists.rows[0].is_admin) {
-        await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [exists.rows[0].id])
-        console.log(`  Promoted ${email} to admin`)
+    try {
+      for (const email of adminEmails) {
+        const exists = await pool.query('SELECT id, is_admin FROM users WHERE LOWER(email) = $1', [email.toLowerCase()])
+        if (exists.rows.length > 0 && !exists.rows[0].is_admin) {
+          await pool.query('UPDATE users SET is_admin = true WHERE id = $1', [exists.rows[0].id])
+          console.log(`  Promoted ${email} to admin`)
+        }
       }
+    } catch (e) {
+      console.warn('[migrations] admin promotion skipped:', e.message)
     }
 
     console.log('Phase 18: Admin promotion complete')
@@ -3977,12 +3998,12 @@ export async function runMigrations() {
     // are teacher-only unless explicitly opted in. This is a safeguarding
     // requirement: internal notes must never leak to pupils.
 
-    await pool.query(`
+    await tryQuery(`
       ALTER TABLE observations
       ADD COLUMN IF NOT EXISTS visible_to_pupil BOOLEAN NOT NULL DEFAULT FALSE
     `)
 
-    await pool.query(`
+    await tryQuery(`
       CREATE INDEX IF NOT EXISTS idx_observations_pupil_visible
       ON observations (pupil_id, visible_to_pupil)
       WHERE visible_to_pupil = TRUE
@@ -3994,7 +4015,7 @@ export async function runMigrations() {
     // PHASE 20: GCSE PE candidate flag on pupils
     // ================================================
 
-    await pool.query(`
+    await tryQuery(`
       ALTER TABLE pupils
       ADD COLUMN IF NOT EXISTS gcse_pe_candidate BOOLEAN NOT NULL DEFAULT FALSE
     `)
@@ -4012,9 +4033,13 @@ export async function runMigrations() {
     // 21a: identity & profile columns. The roster table is `pupils` on any
     // database that has run the Phase 8 renames (i.e. every real deployment)
     // and `players` only on ancient pre-rename snapshots - resolve which.
-    const rosterTable = (await pool.query(`SELECT to_regclass('public.pupils') AS t`)).rows[0].t
-      ? 'pupils' : 'players'
-    await pool.query(`
+    let rosterTable = 'pupils'
+    try {
+      rosterTable = (await pool.query(`SELECT to_regclass('public.pupils') AS t`)).rows[0].t ? 'pupils' : 'players'
+    } catch (e) {
+      console.warn('[migrations] roster table lookup failed, assuming pupils:', e.message)
+    }
+    await tryQuery(`
       ALTER TABLE ${rosterTable}
         ADD COLUMN IF NOT EXISTS preferred_name TEXT,
         ADD COLUMN IF NOT EXISTS pronouns TEXT,
@@ -4025,11 +4050,11 @@ export async function runMigrations() {
         ADD COLUMN IF NOT EXISTS house_id UUID,
         ADD COLUMN IF NOT EXISTS tutor_user_id UUID REFERENCES users(id) ON DELETE SET NULL
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_talent_pathway ON ${rosterTable}(talent_pathway_flag) WHERE talent_pathway_flag = TRUE`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupils_tutor ON ${rosterTable}(tutor_user_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupils_talent_pathway ON ${rosterTable}(talent_pathway_flag) WHERE talent_pathway_flag = TRUE`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupils_tutor ON ${rosterTable}(tutor_user_id)`)
 
     // 21b: medical notes
-    await pool.query(`
+    await tryQuery(`
       CREATE TABLE IF NOT EXISTS pupil_medical_notes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
@@ -4046,10 +4071,10 @@ export async function runMigrations() {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_medical_pupil ON pupil_medical_notes(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupil_medical_pupil ON pupil_medical_notes(pupil_id)`)
 
     // 21c: SEND / additional needs
-    await pool.query(`
+    await tryQuery(`
       CREATE TABLE IF NOT EXISTS pupil_send_notes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
@@ -4063,10 +4088,10 @@ export async function runMigrations() {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_send_pupil ON pupil_send_notes(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupil_send_pupil ON pupil_send_notes(pupil_id)`)
 
     // 21d: safeguarding notes (strict access — enforced at route layer)
-    await pool.query(`
+    await tryQuery(`
       CREATE TABLE IF NOT EXISTS pupil_safeguarding_notes (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
@@ -4078,12 +4103,12 @@ export async function runMigrations() {
         visible_to_roles JSONB NOT NULL DEFAULT '["hod","dsl","deputy_dsl"]'::jsonb
       )
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_pupil ON pupil_safeguarding_notes(pupil_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_open ON pupil_safeguarding_notes(pupil_id) WHERE resolved_at IS NULL`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_pupil ON pupil_safeguarding_notes(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupil_safeguarding_open ON pupil_safeguarding_notes(pupil_id) WHERE resolved_at IS NULL`)
 
     // 21e: IDP goals (granular, per-goal row — separate from the existing
     // development_plans summary table which keeps JSONB arrays)
-    await pool.query(`
+    await tryQuery(`
       CREATE TABLE IF NOT EXISTS pupil_idp_goals (
         id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
         pupil_id UUID NOT NULL REFERENCES pupils(id) ON DELETE CASCADE,
@@ -4099,12 +4124,12 @@ export async function runMigrations() {
         updated_at TIMESTAMPTZ DEFAULT NOW()
       )
     `)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_pupil ON pupil_idp_goals(pupil_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_status ON pupil_idp_goals(pupil_id, status)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_pupil ON pupil_idp_goals(pupil_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_pupil_idp_status ON pupil_idp_goals(pupil_id, status)`)
 
     // 21f: augment existing pupil_achievements with sport_key for filtering
     // (table was renamed from player_achievements earlier; tolerate either name)
-    await pool.query(`
+    await tryQuery(`
       DO $$ BEGIN
         IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupil_achievements') THEN
           ALTER TABLE pupil_achievements ADD COLUMN IF NOT EXISTS sport_key TEXT;
@@ -4113,7 +4138,7 @@ export async function runMigrations() {
         END IF;
       END $$
     `)
-    await pool.query(`
+    await tryQuery(`
       DO $$ BEGIN
         IF EXISTS (SELECT 1 FROM information_schema.tables WHERE table_name = 'pupil_achievements') THEN
           CREATE INDEX IF NOT EXISTS idx_pupil_achievements_sport ON pupil_achievements(sport_key) WHERE sport_key IS NOT NULL;
@@ -4124,7 +4149,7 @@ export async function runMigrations() {
     console.log('Phase 21: pupil profile expansion (medical, SEND, safeguarding, IDP goals, identity cols)')
 
     // --- Phase 22a: lesson_plans table (queried by routes/lessons.js but never created) ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS lesson_plans (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS lesson_plans (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       teaching_group_id UUID REFERENCES teaching_groups(id) ON DELETE SET NULL,
       sport_unit_id UUID REFERENCES sport_units(id) ON DELETE SET NULL,
@@ -4141,8 +4166,8 @@ export async function runMigrations() {
       created_at TIMESTAMPTZ DEFAULT NOW(),
       updated_at TIMESTAMPTZ DEFAULT NOW()
     )`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_lesson_plans_teacher ON lesson_plans(teacher_id)`)
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_lesson_plans_group ON lesson_plans(teaching_group_id) WHERE teaching_group_id IS NOT NULL`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_lesson_plans_teacher ON lesson_plans(teacher_id)`)
+    await tryQuery(`CREATE INDEX IF NOT EXISTS idx_lesson_plans_group ON lesson_plans(teaching_group_id) WHERE teaching_group_id IS NOT NULL`)
 
     // --- Phase 22b: widen sport CHECK constraints to every supported sport ---
     // (was hard-limited to the original 5; the AI layer, fixtures defaults and
@@ -4154,7 +4179,7 @@ export async function runMigrations() {
     ]
     const sportList = allSports.map((x) => `'${x}'`).join(', ')
     for (const tbl of ['teams', 'pupil_sports', 'teacher_sports']) {
-      await pool.query(`DO $$
+      await tryQuery(`DO $$
         DECLARE cname text;
         BEGIN
           FOR cname IN
@@ -4171,7 +4196,7 @@ export async function runMigrations() {
 
     // --- Phase 22c: widen pupils.year_group to cover primary years ---
     // (was CHECK BETWEEN 7 AND 13; the product supports Year 2 through Year 13)
-    await pool.query(`DO $$
+    await tryQuery(`DO $$
       DECLARE cname text;
       BEGIN
         FOR cname IN
@@ -4188,14 +4213,14 @@ export async function runMigrations() {
     console.log('Phase 22: lesson_plans table, sport + year-group constraint widening')
 
     // --- Phase 23: sport-specific result details (innings, event results, rubbers) ---
-    await pool.query(`DO $$ BEGIN
+    await tryQuery(`DO $$ BEGIN
       ALTER TABLE matches ADD COLUMN IF NOT EXISTS result_data JSONB;
     EXCEPTION WHEN others THEN NULL;
     END $$`)
     console.log('Phase 23: matches.result_data')
 
     // --- Phase 25: server error log (observability) ---
-    await pool.query(`CREATE TABLE IF NOT EXISTS server_error_log (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS server_error_log (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       kind TEXT NOT NULL,
       message TEXT,
@@ -4211,7 +4236,7 @@ export async function runMigrations() {
     // --- Phase 26: weekly department activity snapshots ---
     // One row per school per ISO week; powers honest week-over-week trend
     // chips on the HoD dashboard (the old hardcoded ones were removed).
-    await pool.query(`CREATE TABLE IF NOT EXISTS school_weekly_stats (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS school_weekly_stats (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       school_id UUID NOT NULL REFERENCES schools(id) ON DELETE CASCADE,
       week_start DATE NOT NULL,
@@ -4229,13 +4254,13 @@ export async function runMigrations() {
     // --- Phase 27: email lifecycle dedupe logs ---
     // One row per (recipient, week) digest and (recipient, match) reminder,
     // so scheduled sends can never repeat across restarts.
-    await pool.query(`CREATE TABLE IF NOT EXISTS email_digest_log (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS email_digest_log (
       user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       week_start DATE NOT NULL,
       sent_at TIMESTAMPTZ DEFAULT NOW(),
       PRIMARY KEY (user_id, week_start)
     )`)
-    await pool.query(`CREATE TABLE IF NOT EXISTS email_fixture_reminder_log (
+    await tryQuery(`CREATE TABLE IF NOT EXISTS email_fixture_reminder_log (
       match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
       user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       sent_at TIMESTAMPTZ DEFAULT NOW(),
@@ -4351,12 +4376,14 @@ export async function runMigrations() {
     // Formerly index.js's ensureDemoPrerequisites, which only ran on demo
     // deployments and competed with this file as a second schema source.
     // Every statement inside is individually best-effort.
-    await runLegacyEnsure()
-    console.log('Phase 24: consolidated boot-time ensure-schema (formerly index.js)')
-
-    console.log('Migrations completed')
+    try {
+      await runLegacyEnsure()
+      console.log('Phase 24: consolidated boot-time ensure-schema (formerly index.js)')
+    } catch (error) {
+      console.error('[migrations] legacy ensure failed:', error.message)
+    }
   } catch (error) {
-    console.error('Migration error:', error)
+    console.error('Migration error in the late phases:', error)
   }
 }
 
