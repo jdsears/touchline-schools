@@ -208,6 +208,10 @@ export default function VoiceObservationRecorder({ onClose, defaultContext, defa
         const res = await voiceObservationService.getStatus(sourceId)
         if (closedRef.current) return
         if (res.data.status === 'ready_for_review') {
+          // The recorder lives in the layout, so it would otherwise stay
+          // open on top of the review page it has just navigated to.
+          closedRef.current = true
+          if (onClose) onClose()
           navigate(`/teacher/voice-review/${sourceId}`)
           return
         }
